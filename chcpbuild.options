@@ -1,0 +1,5 @@
+{
+  "dev": {
+    "config-file": "http://192.168.199.105:31284/chcp.json"
+  }
+}

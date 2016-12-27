@@ -1,0 +1,202 @@
+[
+  {
+    "file": "css/index.css",
+    "hash": "aae0df5d8b6857820c3a49899bd2658a"
+  },
+  {
+    "file": "data/booksources.json",
+    "hash": "f2460c93705919dad2efd6fb4a263d17"
+  },
+  {
+    "file": "img/book_cover.png",
+    "hash": "f291c93b7934d69e8ba400d72908c0ca"
+  },
+  {
+    "file": "img/logo.png",
+    "hash": "7e34c95ac701f8cd9f793586b9df2156"
+  },
+  {
+    "file": "img/readbg1.jpg",
+    "hash": "9c3e73db5b3ef008c2f61056c4b325b7"
+  },
+  {
+    "file": "index.html",
+    "hash": "ac19d79dc16f933fb59c0230eced5522"
+  },
+  {
+    "file": "js/app.js",
+    "hash": "bd450cb86ed14ef10245b4735f682407"
+  },
+  {
+    "file": "js/book.js",
+    "hash": "274f38fd34b542306f455f258b77b906"
+  },
+  {
+    "file": "js/index.js",
+    "hash": "b144c071205225b243caacc5b550f592"
+  },
+  {
+    "file": "js/main.js",
+    "hash": "5af243f2b4ece2844f4c22588eba9fc5"
+  },
+  {
+    "file": "js/page.js",
+    "hash": "fca4aaee7d2d07764e0f5213a4126752"
+  },
+  {
+    "file": "js/util.js",
+    "hash": "5b85f77374388a5a808953b31911124d"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.css",
+    "hash": "b9b46bcc4dad6cc90fc4f95073c50735"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.css.map",
+    "hash": "d6cc0a3c7532b74efe92da8992bd7542"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
+    "hash": "ab6b02efeaf178e0247b9504051472fb"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css.map",
+    "hash": "5f587b800215ee268efd2676ac010b25"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap.css",
+    "hash": "2a31dca112f26923b51676cb764c58d5"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap.css.map",
+    "hash": "c7ffd8c7a285780039b2366034f3bca2"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap.min.css",
+    "hash": "ec3bb52a00e176a7181d454dffaea219"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/css/bootstrap.min.css.map",
+    "hash": "35b79ebe0b7805c1c84524ad920faa33"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/fonts/glyphicons-halflings-regular.eot",
+    "hash": "f4769f9bdb7466be65088239c12046d1"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/fonts/glyphicons-halflings-regular.svg",
+    "hash": "89889688147bd7575d6327160d64e760"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/fonts/glyphicons-halflings-regular.ttf",
+    "hash": "e18bbf611f2a2e43afc071aa2f4e1512"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/fonts/glyphicons-halflings-regular.woff",
+    "hash": "fa2772327f55d8198301fdb8bcfc8158"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/fonts/glyphicons-halflings-regular.woff2",
+    "hash": "448c34a56d699c29117adc64c43affeb"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/js/bootstrap.js",
+    "hash": "fb81549ee2896513a1ed5714b1b1a0f0"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/js/bootstrap.min.js",
+    "hash": "5869c96cc8f19086aee625d670d741f9"
+  },
+  {
+    "file": "lib/bootstrap-3.3.7/js/npm.js",
+    "hash": "ccb7f3909e30b1eb8f65a24393c6e12b"
+  },
+  {
+    "file": "lib/jquery-1.11.0/jquery.js",
+    "hash": "3b80424646a7ecdb19273d86800c1ac0"
+  },
+  {
+    "file": "lib/jquery-1.11.0/jquery.min.js",
+    "hash": "5506e81cd13183312c8cf5425c9f8c5e"
+  },
+  {
+    "file": "lib/jquery-1.11.0/jquery.min.map",
+    "hash": "fc62400fe4e96157560a4f2a6e115e38"
+  },
+  {
+    "file": "lib/jquery-2.1.4/jquery.js",
+    "hash": "107fbe9555bfc88ec5cab524c790fe34"
+  },
+  {
+    "file": "lib/jquery-2.1.4/jquery.min.js",
+    "hash": "4a356126b9573eb7bd1e9a7494737410"
+  },
+  {
+    "file": "lib/jquery-2.1.4/jquery.min.map",
+    "hash": "2d03a9e84c18b0c9ca7ae86efd7857f8"
+  },
+  {
+    "file": "lib/jquery-3.1.1/jquery.js",
+    "hash": "46836bbc603c9565b5cc061100ccbac8"
+  },
+  {
+    "file": "lib/jquery-3.1.1/jquery.min.js",
+    "hash": "e071abda8fe61194711cfc2ab99fe104"
+  },
+  {
+    "file": "lib/jquery-3.1.1/jquery.min.map",
+    "hash": "5fdc2e1b3fed81a837570703204c2a8e"
+  },
+  {
+    "file": "lib/require.js",
+    "hash": "2842d0ca2a86ca59639ffe99308bdf3f"
+  },
+  {
+    "file": "page/bookdetail.page.css",
+    "hash": "3d17f06eeb9ab3ee87c749275c677d86"
+  },
+  {
+    "file": "page/bookdetail.page.html",
+    "hash": "31e132bccdd356ff56771346f2f9266f"
+  },
+  {
+    "file": "page/bookdetail.page.js",
+    "hash": "75a85fb0d3e76760f5be92c60256bec8"
+  },
+  {
+    "file": "page/bookshelf.page.css",
+    "hash": "93348a24a806afd16f7d010e31d41bb2"
+  },
+  {
+    "file": "page/bookshelf.page.html",
+    "hash": "5318674467a8f78a588b0548a9f2725c"
+  },
+  {
+    "file": "page/bookshelf.page.js",
+    "hash": "8740beedcdedb61e47e0107ea1c844ab"
+  },
+  {
+    "file": "page/readbook.page.css",
+    "hash": "e81544a3392a92b422246678725d3cdf"
+  },
+  {
+    "file": "page/readbook.page.html",
+    "hash": "28066869c44231f7f59e222119efc81f"
+  },
+  {
+    "file": "page/readbook.page.js",
+    "hash": "59e2a598b83d0e2057164aeae4d1f8d2"
+  },
+  {
+    "file": "page/search.page.css",
+    "hash": "5620835324e1b1cebc7213a41b0dad2e"
+  },
+  {
+    "file": "page/search.page.html",
+    "hash": "2d73ef4673f2fa709ab4a50f60b52213"
+  },
+  {
+    "file": "page/search.page.js",
+    "hash": "02aef275e483c9027529c3ae8efbec0d"
+  }
+]

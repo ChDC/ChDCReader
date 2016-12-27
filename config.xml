@@ -9,6 +9,7 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <icon src="res/icon.png" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />
@@ -28,7 +29,6 @@
     <plugin name="cordova-plugin-network-information" spec="~1.3.1" />
     <plugin name="cordova-plugin-device" spec="~1.1.4" />
     <chcp>
-        <config-file url="http://192.168.199.105:8000/novelreader/chcp.json" />
-        <local-development enabled="false" />
+        <config-file url="https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/www/chcp.json" />
     </chcp>
 </widget>
