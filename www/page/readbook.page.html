@@ -1,0 +1,134 @@
+<div class="container">
+  <div class="chapter">
+    <div class="chapter-header">
+      <h4 class="chapter-title">
+      </h4>
+    </div>
+
+    <div class="chapter-content">
+    </div>
+
+    <div class="chapter-bottom">
+      <button class="btnLast">上一章</button>
+      <button class="btnNext">下一章</button>
+    </div>
+    <div class="chapter-bottom">
+      Foot
+    </div>
+  </div>
+
+  <div class="toolbar top">
+    <button class="toolbar-button btn btn-link" id="btnClose"><i class="glyphicon glyphicon-chevron-left"></i><!--返回--></button>
+    <div class="float-right">
+      <span class="labelCurrentSource"></span>
+      <button class="toolbar-button btn btn-link" id="btnChangeMainContentSource">换源</button> |
+      <button class="toolbar-button btn btn-link">原网页</button>
+    </div>
+  </div>
+  <div class="toolbar bottom" style="height:120px;">
+    <table class="toolbar-table">
+      <tbody>
+        <tr>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>字体</button>
+          </td>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>背景</button>
+          </td>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>关灯</button>
+          </td>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>缓存</button>
+          </td>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>模式</button>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>上一章</button>
+          </td>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>书签</button>
+          </td>
+          <td id="btnCatalog">
+            <button class="toolbar-button btn btn-link"  data-toggle="modal" data-target="#modalCatalog"><i class="glyphicon glyphicon-font"></i><br/>目录</button>
+          </td>
+          <td id="btnBookShelf">
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>书架</button>
+          </td>
+          <td>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-font"></i><br/>下一章</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- Modal 目录 -->
+  <div class="modal fade" id="modalCatalog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
+          <div class="float-right">
+            <span class="labelCurrentSource"></span>
+            <button type="button" class="btn btn-link modal-title" id="btnChangeMainCatalogSource">换源</button>|
+            <button type="button" class="btn btn-link modal-title" id="btnChangeMainCatalogSource">倒序</button>|
+            <button type="button" class="btn btn-link modal-title" id="btnRefreshCatalog">刷新</button>
+          </div>
+          <h4 class="modal-title" id="myModalLabel">目录</h4>
+        </div>
+        <div class="modal-body">
+          <ul id="listCatalog">
+
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <!-- <button type="button" class="btn btn-primary">确定</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 更换内容源 -->
+  <div class="modal fade" id="modalBookSource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+<!--           <div class="float-right">
+            <span id="labelMainCatalogSource"></span>
+            <button type="button" class="btn btn-link modal-title" id="btnChangeMainCatalogSource">换源</button>|
+            <button type="button" class="btn btn-link modal-title" id="btnChangeMainCatalogSource">倒序</button>
+          </div> -->
+          <h4 class="modal-title" id="myModalLabel">更换内容源</h4>
+        </div>
+        <div class="modal-body">
+          <ul id="listBookSource">
+
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <!-- <button type="button" class="btn btn-primary">确定</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="template">
+    <li class="listCatalogEntry" data-dismiss="modal">第一章</li>
+
+    <li class="listBookSourceEntry" data-dismiss="modal">
+      <h4 class="bookSourceTitle">起点中文网</h4>
+      <p>
+        <span>最新章节：</span>
+        <span class="bookSourceLastestChapter"></span></p>
+    </li>
+
+  </div>
+</div>

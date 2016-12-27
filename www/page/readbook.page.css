@@ -1,0 +1,32 @@
+.container{
+    background-image: url(../img/readbg1.jpg);
+}
+
+.chapter-title{
+    text-align: center;
+    font-size: 21.06px;
+    font-weight: bold;
+    margin: 0px;
+    padding: 30px 5px 10px 5px;
+}
+
+.chapter-content p{
+    font-size: 18px;
+    line-height: 32px;
+    margin-top: 15px 0 0 0;
+    padding: 0px;
+}
+
+.chpater{
+    position: relative;
+    height: 100%;
+}
+
+.toolbar{
+    display: none;
+}
+
+#modalCatalog .modal-body{
+    overflow-y: scroll;
+    height: 500px;
+}
