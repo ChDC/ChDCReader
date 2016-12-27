@@ -2,10 +2,10 @@
 <widget id="com.chdc.novelreader" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>ChDCNovelReader</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        ChDC Novel Reader
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="chendacai@qq.com" href="https://github.com/ChDC">
+        ChDC
     </author>
     <content src="index.html" />
     <access origin="*" />
