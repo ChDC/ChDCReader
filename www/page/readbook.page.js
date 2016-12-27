@@ -32,11 +32,14 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     function loadView(){
         // 弹出工具栏
-        $(".chapter").on("click", function(){
+        $(".chapter").on("click", function(event){
+            debugger;
+            function
+            if(event.clientY )
             $('.toolbar').toggle();
         });
         $(".toolbar").click(function(){
-            $('.toolbar').toggle();
+            $('.toolbar').hide();
         });
         $(".btnNext").click(btnNext);
         $(".btnLast").click(btnLast);
@@ -152,7 +155,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     return {
         onload: function(params, p){
-            debugger;
             book = params.book;
             readingRecord = params.readingRecord;
             options = {bookSourceManager: app.bookSourceManager};
