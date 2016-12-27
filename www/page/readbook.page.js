@@ -34,9 +34,23 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         // 弹出工具栏
         $(".chapter").on("click", function(event){
             debugger;
-            function
-            if(event.clientY )
-            $('.toolbar').toggle();
+            function isClickInRegion(minHeight, maxHeight)
+            {
+                var clientHeight = $()
+            }
+
+            if(isClickInRegion(0.3, 0.6))
+            {
+                $('.toolbar').toggle();
+            }
+            else if(isClickInRegion(0, 0.3))
+            {
+
+            }
+            else if(isClickInRegion(0.6, 0.9))
+            {
+
+            }
         });
         $(".toolbar").click(function(){
             $('.toolbar').hide();
