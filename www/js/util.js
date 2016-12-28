@@ -221,22 +221,24 @@ define(["jquery"], function($){
             }
             return html;
         },
-        arrayIndex: function(array, item, compareFuntion){
+        arrayIndex: function(array, item, compareFuntion, startIndex){
+            startIndex = startIndex || 0;
             var compareFuntion = compareFuntion || function(i1, i2){
                 return i1 == i2;
             }
 
-            for(var i = 0; i < array.length; i++){
+            for(var i = startIndex; i < array.length; i++){
                 if(compareFuntion(array[i], item))
                     return i;
             }
             return -1;
         },
-        arrayLastIndex: function(array, item, compareFuntion){
+        arrayLastIndex: function(array, item, compareFuntion, startIndex){
+            startIndex = startIndex || array.length - 1;
             var compareFuntion = compareFuntion || function(i1, i2){
                 return i1 == i2;
             }
-            for(var i = array.length - 1; i >= 0; i--){
+            for(var i = startIndex; i >= 0; i--){
                 if(compareFuntion(array[i], item))
                     return i;
             }

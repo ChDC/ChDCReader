@@ -4,30 +4,57 @@ define(["../lib/jquery-3.1.1/jquery.min", "util"], function($, util) {
     console.log('hello');
 
     // 从副列表中匹配查询主列表的元素
-    function listMatch(mainArray, viceArray, index, compareFunction){
+    function listMatch(listA, listB, indexA, compareFunction){
 
-        // 比较邻居
-        function compareNeighbor(index){
-
+        // 比较前、后 n 个邻居
+        function compareNeighbor(indexB, offset){
+            var nia = indexA + offset;
+            var nib = indexB + offset;
+            var equal = -1;
+            if(nia < 0 || nia >= listA.length)
+                // 如果 indexA 越界，则返回 2
+                leftEqual = 2;
+            else if(nib < 0 || nib >= listB.length)
+                // 如果 indexA 越界，则返回 1
+                leftEqual = 1;
+            else
+                // 如果两者相等，则返回 3
+                // 如果不相等则返回 0
+                leftEqual = compareFunction(listA[nia], listB[nib]) ? 3 : 0;
         }
 
         // 提供最优结果
         // 最终从所有结果中选出一个最好的
         var result = [];
-        var i, j;
+        var i, j, r;
 
-        var item = mainArray[index];
+        var itemA = listA[indexA];
+        i = -1;
 
-        i = util.arrayIndex(viceArray, item, compareFunction);
-        if(i < 0){
-            // 没找到一个结果
-            return -1;
+        while(true)
+        {
+            i = util.arrayIndex(listB, itemA, compareFunction, i+1);
+            if(i < 0){
+                // 没找到结果
+                // 返回结果集合中的一个最优结果
+
+                // 最优结果：权值最大，并且索引值最靠近 indexA
+
+
+
+                return -1;
+            }
+            // 找到结果，开始分析
+            // 比对前邻和后邻是否相同
+            var leftEqual = compareNeighbor(i, -1) + 0.5; // 前面的权重大
+            var rightEqual = compareNeighbor(i, 1);
+
+            r = compareNeighbor(i);
+            result.append({
+                index: i,
+                weight: leftEqual + rightEqual
+            });
         }
-        // 找到结果，开始分析
-        // 比对前邻和后邻是否相同
-        result.append({
-            index: i,
-        });
 
         return i;
     }
