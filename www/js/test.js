@@ -18,11 +18,11 @@ define(["../lib/jquery-3.1.1/jquery.min", "util"], function($, util) {
         else
             console.error(s);
     }
-    print('A', listMatch(lm, lv, 0, compare), 2);
-    print('B', listMatch(lm, lv, 1, compare), 3); // 重复元素
-    print('D', listMatch(lm, lv, 3, compare), 5); // 乱序元素
-    print('E', listMatch(lm, lv, 4, compare), 4); // 乱序元素
-    print('G', listMatch(lm, lv, 5, compare), -1); // 不存在元素
+    print('A', util.listMatch(lm, lv, 0, compare), 2);
+    print('B', util.listMatch(lm, lv, 1, compare), 3); // 重复元素
+    print('D', util.listMatch(lm, lv, 3, compare), 5); // 乱序元素
+    print('E', util.listMatch(lm, lv, 4, compare), 4); // 乱序元素
+    print('G', util.listMatch(lm, lv, 5, compare), -1); // 不存在元素
 
 
 });

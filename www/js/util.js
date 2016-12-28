@@ -329,7 +329,7 @@ define(["jquery"], function($){
 
             while(true)
             {
-                i = util.arrayIndex(listB, itemA, compareFunction, i+1);
+                i = this.arrayIndex(listB, itemA, compareFunction, i+1);
                 if(i < 0){
                     // 没找到结果
                     // 返回结果集合中的一个最优结果
@@ -337,14 +337,14 @@ define(["jquery"], function($){
                     // 最优结果：权值最大，并且索引值最靠近 indexA
                     if(result.length == 0)
                         return -1;
-                    var rr = util.arrayMaxIndex(result, function(a, b){
+                    var rr = this.arrayMaxIndex(result, function(a, b){
                         return a.weight - b.weight;
                     });
                     if(rr.length <= 1){
                         return result[rr[0]].index;
                     }
                     else{
-                        return result[util.arrayMinIndex(rr, function(a, b){
+                        return result[this.arrayMinIndex(rr, function(a, b){
                             var ia = result[a].index;
                             var ib = result[b].index;
                             return Math.abs(ia-indexA) - Math.abs(ib-indexA);
