@@ -225,6 +225,7 @@ define(["jquery", "util"], function($, util) {
     Book.prototype.__getBookCatalogFromHTML = function(html, htmlLink, options){
         var self = this;
         options = $.extend({}, options);
+        options.bookSourceId = options.bookSourceId || self.currentSource;
         var catalog = [];
         var bsm = options.bookSourceManager.sources[options.bookSourceId];
         if(!bsm)return;
@@ -370,7 +371,6 @@ define(["jquery", "util"], function($, util) {
 
     // 缓存制定数量的章节
     Book.prototype.cacheChapter = function(count, success, fail, options){
-        debugger;
         var self = this;
         options = $.extend({}, options);
         self.getCatalog(function(catalog){
@@ -407,7 +407,6 @@ define(["jquery", "util"], function($, util) {
 
     // 通过书名字和目录搜索唯一的书籍
     BookSourceManager.prototype.getBook = function(bsid, bookName, bookAuthor, success, fail){
-        debugger;
         var self = this;
         if(bsid && bookName && bookAuthor && bsid in self.sources){
             // 通过当前书名和作者名搜索添加源

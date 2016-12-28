@@ -3,6 +3,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     var book = null;
     var readingRecord = null;
     var options = null;
+    var chapterScrollY = 0;
 
     function fail(error){
         util.showError(error.message);
@@ -31,12 +32,20 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     }
 
     function loadView(){
+        // 将章节滚动位置存储到变量中
+        $('.chapter').scroll(function(){
+            chapterScrollY = $('.chapter').scrollTop();
+        });
+
         // 弹出工具栏
         $(".chapter").on("click", function(event){
-            debugger;
             function isClickInRegion(minHeight, maxHeight)
             {
-                var clientHeight = $()
+                var clientHeight = $(window).height();
+                var y = event.clientY;
+                minHeight *= clientHeight;
+                maxHeight *= clientHeight;
+                return y >= minHeight && y <= maxHeight;
             }
 
             if(isClickInRegion(0.3, 0.6))
@@ -45,12 +54,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             }
             else if(isClickInRegion(0, 0.3))
             {
-
+                $('.toolbar').hide();
             }
             else if(isClickInRegion(0.6, 0.9))
             {
-
+                $('.toolbar').hide();
             }
+        });
+        $(".toolbar").blur(function(){
+            $('.toolbar').hide();
         });
         $(".toolbar").click(function(){
             $('.toolbar').hide();
@@ -61,7 +73,10 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         // 按钮事件
         $("#btnClose").click(function(){page.closePage();});
         $("#btnBookShelf").click(function(){page.showPage("bookshelf", null, {clear: true});});
-       // $("#btnCatalog").click(function(){$('#modalCatalog').modal('show');});
+        $("#btnCatalog").click(function(){
+            // $('#modalCatalog').modal('show');
+            loadCatalog();
+        });
         $("#btnChangeMainContentSource").click(function(){
             $("#modalBookSource").modal('show');
             loadBookSource("mainContentSource");
@@ -70,9 +85,12 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             $("#modalBookSource").modal('show');
             loadBookSource("mainCatalogSource");
         });
-        // $('#modalCatalog').on('show.bs.modal', function (e) {
-        //     $("#modalCatalog .modal-body").css("height", $());
-        // });
+        $('#modalCatalog').on('shown.bs.modal', function (e) {
+            var targetChapter = $('#listCatalog > [data-index=' + readingRecord.chapterIndex + ']');
+            var top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
+            $('#listCatalogContainer').scrollTop(top);
+            // $("#modalCatalog .modal-body").css("height", $());
+        });
         $(".labelCurrentSource").text(app.bookSourceManager.sources[book.currentSource].name);
         $("#btnRefreshCatalog").click(function(){
             loadCatalog(true);
@@ -138,32 +156,50 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         app.bookShelf.save();
         $(".chapter-title").text(chapter.title);
         $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
-        window.scrollTo(0, readingRecord.page);
+        $('.chapter').scrollTop(readingRecord.page);
         // $("#modalCatalog").modal('hide');
     };
 
     function loadCatalog(forceRefresh){
+        $('#listCatalogContainer').height($(window).height() * 0.5);
+
         function listCatalogEntryClick(event){
             var target = event.currentTarget;
             if(target){
                 target = $(target);
-                loadChapter(target.data('index'));
+                // loadChapter(target.data('index'));
+                loadChapter(parseInt(target.attr('data-index')));
             }
         }
         book.getCatalog(function(catalog){
             var listCatalog = $("#listCatalog");
             var listCatalogEntry = $(".template .listCatalogEntry");
             listCatalog.empty();
+            // var targetChapter = null;
+            // var targetIndex = null;
             $(catalog).each(function(i){
                 var lce = listCatalogEntry.clone();
                 lce.text(this.title);
-                lce.data("index", i);
+                // lce.data("index", i);
+                lce.attr("data-index", i);
                 lce.click(listCatalogEntryClick);
                 listCatalog.append(lce);
+                if(i == readingRecord.chapterIndex)
+                {
+                    lce.css("color", 'red');
+                    // targetChapter = lce;
+                    // debugger;
+                    // targetIndex = i;
+                }
             });
-            if(forceRefresh){
-                util.showMessage("目录刷新成功！");
-            }
+
+            // var targetChapter = $('#listCatalog > [data-index=' + targetIndex + ']');
+            // var top = targetChapter.position().top;
+            // debugger;
+            // $('#listCatalogContainer').scrollTop(top);
+            // if(forceRefresh){
+            //     util.showMessage("目录刷新成功！");
+            // }
         }, fail, {bookSourceManager: app.bookSourceManager, forceRefresh:forceRefresh});
     }
 
@@ -175,13 +211,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
             loadView();
             loadCurrentChapter();
-            loadCatalog();
         },
         onresume: function(){
 
         },
         onpause: function(){
-
+            // 执行该事件的时候，界面可能已经被销毁了
+            // 保存阅读进度
+            readingRecord.page = chapterScrollY;
+            app.bookShelf.save();
         },
         onclose: function(params){
 

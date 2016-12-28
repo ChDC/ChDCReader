@@ -1,4 +1,4 @@
-define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, page) {
+define(["jquery", "util", "book", "page", "bootstrap", "reactCSS"], function($, util, book, page, reactCSS) {
     "use strict"
 
     var app = {
@@ -17,6 +17,8 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
                 util.showMessage("更新资源成功！");
                 location.reload();
             }, false);
+
+            // reactCSS.init();
 
             this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
             this.bookShelf = new book.BookShelf();

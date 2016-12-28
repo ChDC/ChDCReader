@@ -98,8 +98,9 @@ define(["jquery", "util"], function($, util){
             var self = this;
             // 触发当前页面的关闭事件
             var jsurl = p.jsurl;
+            var executeOnPause = jsurl == self.currentPage.jsurl;
             require([jsurl], function(page){
-                if(jsurl == self.currentPage.jsurl && page.onpause)
+                if(executeOnPause && page.onpause)
                     page.onpause();
                 if(page.onclose)
                     page.onclose(params);

@@ -1,5 +1,20 @@
-.container{
+
+.chapter{
+    padding: 15px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    word-wrap: break-word;
     background-image: url(../img/readbg1.jpg);
+}
+
+.container{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    overflow: auto;
 }
 
 .chapter-title{
@@ -7,7 +22,7 @@
     font-size: 21.06px;
     font-weight: bold;
     margin: 0px;
-    padding: 30px 5px 10px 5px;
+    padding: 5px 5px 10px 5px;
 }
 
 .chapter-content p{
@@ -17,16 +32,13 @@
     padding: 0px;
 }
 
-.chpater{
-    position: relative;
-    height: 100%;
-}
 
 .toolbar{
     display: none;
 }
 
-#modalCatalog .modal-body{
-    overflow-y: scroll;
-    height: 500px;
+#listCatalogContainer{
+    width: 100%;
+    /*position: absolute;*/
+    overflow: auto;
 }
