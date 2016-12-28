@@ -1,13 +1,25 @@
 <div class="container">
   <div class="row header">
-    <button class="btn btn-link col-xs-4 btnBookShelf">书架</button>
-    <button class="btn btn-link col-xs-4 btnFind">发现</button>
-    <button class="btn btn-link col-xs-4 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+    <button class="btn btn-link col-xs-3 btnBookShelf">书架</button>
+    <button class="btn btn-link col-xs-3 btnFind">发现</button>
+    <button class="btn btn-link col-xs-3 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+
+    <div class="btn-group col-xs-3">
+      <button type="button" class="btn btn-link dropdown-toggle btnSettings " data-toggle="dropdown">:</button>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li id="btnCheckUpdate"><a>检查更新</a></li>
+        <li class="divider"></li>
+        <li><a>设置</a></li>
+      </ul>
+    </div>
+
   </div>
 
   <div class="bookshelf">
 
   </div>
+
+
   <div class="template">
     <div class="media book">
       <div class="media-left">

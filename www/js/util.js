@@ -221,22 +221,24 @@ define(["jquery"], function($){
             }
             return html;
         },
-        arrayIndex: function(array, item, compareFuntion){
+        arrayIndex: function(array, item, compareFuntion, startIndex){
+            startIndex = startIndex || 0;
             var compareFuntion = compareFuntion || function(i1, i2){
                 return i1 == i2;
             }
 
-            for(var i = 0; i < array.length; i++){
+            for(var i = startIndex; i < array.length; i++){
                 if(compareFuntion(array[i], item))
                     return i;
             }
             return -1;
         },
-        arrayLastIndex: function(array, item, compareFuntion){
+        arrayLastIndex: function(array, item, compareFuntion, startIndex){
+            startIndex = startIndex || array.length - 1;
             var compareFuntion = compareFuntion || function(i1, i2){
                 return i1 == i2;
             }
-            for(var i = array.length - 1; i >= 0; i--){
+            for(var i = startIndex; i >= 0; i--){
                 if(compareFuntion(array[i], item))
                     return i;
             }
@@ -249,6 +251,29 @@ define(["jquery"], function($){
                 $.extend(nc, array[i]);
                 array[i] = nc;
             }
+        },
+        // 返回数组中值最大的索引的集合
+        arrayMaxIndex: function(array, compareFuntion){
+            compareFuntion = compareFuntion || function(a, b){
+                return a - b;
+            }
+
+            var result = [0];
+            if(!array || array.length <= 0)
+                return result;
+            var max = array[0];
+            for(var i = 1; i < array.length - 1; i++){
+                var r = compareFuntion(array[i], max);
+                if(r > 0){
+                    result.length = 0;
+                    result.push(i);
+                    max = array[i];
+                }
+                else if(r == 0){
+                    result.push(i);
+                }
+            }
+            return result;
         }
     };
 

@@ -25,8 +25,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         });
     };
 
+    function loadView(){
+        $("#btnCheckUpdate").click(function(){
+            app.chekcUpdate();
+        });
+    }
+
     return {
         onload: function(params){
+            loadView();
             app.bookShelf.load();
             $(".btnSearch").click(function(){
                 page.showPage("search");
