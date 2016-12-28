@@ -234,7 +234,7 @@ define(["jquery", "util"], function($, util) {
             chapter.link = util.fixurl(element.attr('href'), htmlLink);
             chapter.title = Book.fixer.fixChapterTitle(element.text());
             // chapter.bookSourceId = options.bookSourceId;
-            var i = util.arrayIndex(catalog, function(e){
+            var i = util.arrayIndex(catalog, null, function(e){
                 return e && e.title == chapter.title;
             });
             if(i >= 0){
@@ -409,7 +409,7 @@ define(["jquery", "util"], function($, util) {
             // 通过当前书名和作者名搜索添加源
             self.searchBook(bsid, bookName,
                 function(books, keyword, bsid){
-                    var i = util.arrayIndex(books, function(e){
+                    var i = util.arrayIndex(books, null, function(e){
                         return e.name == bookName && e.author == bookAuthor;
                     });
                     if(i >= 0){

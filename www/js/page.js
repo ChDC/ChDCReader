@@ -14,7 +14,7 @@ define(["jquery", "util"], function($, util){
             var pageContainer = $(self.container);
 
             // 如果栈中有该页则从栈中加载
-            var i = util.arrayLastIndex(self.pageStack, function(element){
+            var i = util.arrayLastIndex(self.pageStack, name, function(element, name){
                 return element.page.name == name;
             });
             if(i>=0){

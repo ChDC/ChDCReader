@@ -221,16 +221,23 @@ define(["jquery"], function($){
             }
             return html;
         },
-        arrayIndex: function(array, findMatcher){
+        arrayIndex: function(array, item, compareFuntion){
+            var compareFuntion = compareFuntion || function(i1, i2){
+                return i1 == i2;
+            }
+
             for(var i = 0; i < array.length; i++){
-                if(findMatcher(array[i]))
+                if(compareFuntion(array[i], item))
                     return i;
             }
             return -1;
         },
-        arrayLastIndex: function(array, findMatcher){
+        arrayLastIndex: function(array, item, compareFuntion){
+            var compareFuntion = compareFuntion || function(i1, i2){
+                return i1 == i2;
+            }
             for(var i = array.length - 1; i >= 0; i--){
-                if(findMatcher(array[i]))
+                if(compareFuntion(array[i], item))
                     return i;
             }
             return -1;

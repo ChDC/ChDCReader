@@ -25,7 +25,7 @@
   },
   {
     "file": "js/book.js",
-    "hash": "f972f6e9ee9c15614b32b932e3f7ab7e"
+    "hash": "9541213be112ae292ca601e247de82d4"
   },
   {
     "file": "js/index.js",
@@ -37,11 +37,15 @@
   },
   {
     "file": "js/page.js",
-    "hash": "b31b42efaf31eb069a7571006a390df0"
+    "hash": "8ae3973eeffeb21e04802ea90bcd7e39"
+  },
+  {
+    "file": "js/test.js",
+    "hash": "2f8aebf63b80fb676227b27da967f104"
   },
   {
     "file": "js/util.js",
-    "hash": "5b85f77374388a5a808953b31911124d"
+    "hash": "d7af32dcac91017127abfb3f0b7fb215"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -146,5 +150,9 @@
   {
     "file": "page/search.page.js",
     "hash": "02aef275e483c9027529c3ae8efbec0d"
+  },
+  {
+    "file": "test.html",
+    "hash": "41d456365d08b64df36ce9b552e631f4"
   }
 ]
