@@ -35,8 +35,7 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
                     return;
                 }
                 util.showMessage('资源更新已下载，下次启动时生效！');
-            },
-
+            }
             function installationCallback(error) {
                 if (error) {
                     util.showMessage('安装资源更新失败！错误码：' + error.code);
