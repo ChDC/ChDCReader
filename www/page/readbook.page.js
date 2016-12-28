@@ -118,7 +118,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             var target = event.currentTarget;
             if(target){
                 var bid = $(target).data('bsid');
-                debugger;
                 book.setCurrentSource(bid, function(book){
                     // 更新源之后
                     // 刷新主目录源显示内容
@@ -141,6 +140,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                                 loadCurrentChapter(0);
                         }, options);
                     }
+                    // 更新书籍信息
+                    book.refreshBookInfo(null, null, {bookSourceManager: options.bookSourceManager});
                 }, fail, options);
             }
         }
