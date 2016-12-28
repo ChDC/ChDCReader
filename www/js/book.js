@@ -132,8 +132,6 @@ define(["jquery", "util"], function($, util) {
                         self.sources = {};
                     bs = book.sources[bsid];
                     self.sources[bsid] = bs;
-                    // 更新书籍信息
-                    self.refreshBookInfo(null, null, {bookSourceManager: options.bookSourceManager});
                     if(success)success(bs, self);
                 },
                 fail);
@@ -159,7 +157,6 @@ define(["jquery", "util"], function($, util) {
         options = $.extend({}, options);
         if(bookSourceId && bookSourceId in options.bookSourceManager.sources){
             self.currentSource = bookSourceId;
-            // TODO: 重新搜索正在读的章节索引
             self.__clearBookSources();
             if(success)success(self);
         }

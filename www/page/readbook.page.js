@@ -118,12 +118,11 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             var target = event.currentTarget;
             if(target){
                 var bid = $(target).data('bsid');
+                debugger;
                 book.setCurrentSource(bid, function(book){
                     // 更新源之后
                     // 刷新主目录源显示内容
                     $(".labelCurrentSource").text(app.bookSourceManager.sources[book.currentSource].name);
-                    // 刷新目录
-                    loadCatalog();
                     if(readingRecord.chapterTitle)
                     {
                         book.fuzzySearch(readingRecord.chapterTitle,
@@ -132,14 +131,14 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                                 readingRecord.chapterTitle = chapter.title;
 
                                 // 刷新当前章节信息
-                                loadChapter();
+                                loadCurrentChapter(0);
                             },
                             function(){
                                 readingRecord.chapterIndex = 0;
                                 readingRecord.chapterTitle = "";
 
                                 // 刷新当前章节信息
-                                loadChapter();
+                                loadCurrentChapter(0);
                         }, options);
                     }
                 }, fail, options);
@@ -175,8 +174,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             var listCatalog = $("#listCatalog");
             var listCatalogEntry = $(".template .listCatalogEntry");
             listCatalog.empty();
-            // var targetChapter = null;
-            // var targetIndex = null;
             $(catalog).each(function(i){
                 var lce = listCatalogEntry.clone();
                 lce.text(this.title);
@@ -187,19 +184,9 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                 if(i == readingRecord.chapterIndex)
                 {
                     lce.css("color", 'red');
-                    // targetChapter = lce;
-                    // debugger;
-                    // targetIndex = i;
                 }
             });
 
-            // var targetChapter = $('#listCatalog > [data-index=' + targetIndex + ']');
-            // var top = targetChapter.position().top;
-            // debugger;
-            // $('#listCatalogContainer').scrollTop(top);
-            // if(forceRefresh){
-            //     util.showMessage("目录刷新成功！");
-            // }
         }, fail, {bookSourceManager: app.bookSourceManager, forceRefresh:forceRefresh});
     }
 
