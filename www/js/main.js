@@ -25,9 +25,10 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
             page.init();
             // self.page = page;
             page.showPage("bookshelf");
-            this.chekcUpdate();
+            // this.chekcUpdate();
         },
         chekcUpdate: function(){
+            debugger;
             function fetchUpdateCallback(error, data) {
                 if (error) {
                     util.showMessage('加载资源更新失败！错误码：' + error.code);
@@ -62,5 +63,9 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
     };
     app.init();
     window.app = app;
+    debugger;
+    $("#btnCheckUpdate").click(function(){
+        app.chekcUpdate();
+    });
     return app;
 });
