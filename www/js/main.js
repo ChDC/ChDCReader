@@ -1,4 +1,4 @@
-define(["jquery", "util", "book", "page", "bootstrap", "reactCSS"], function($, util, book, page, reactCSS) {
+define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, page) {
     "use strict"
 
     var app = {
