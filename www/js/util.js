@@ -262,7 +262,7 @@ define(["jquery"], function($){
             if(!array || array.length <= 0)
                 return result;
             var max = array[0];
-            for(var i = 1; i < array.length - 1; i++){
+            for(var i = 1; i < array.length; i++){
                 var r = compareFuntion(array[i], max);
                 if(r > 0){
                     result.length = 0;
@@ -274,6 +274,100 @@ define(["jquery"], function($){
                 }
             }
             return result;
+        },
+        // 返回数组中值最小的索引的集合
+        arrayMinIndex: function(array, compareFuntion){
+            compareFuntion = compareFuntion || function(a, b){
+                return b - a;
+            }
+
+            var result = [0];
+            if(!array || array.length <= 0)
+                return result;
+            var min = array[0];
+            for(var i = 1; i < array.length; i++){
+                var r = compareFuntion(array[i], min);
+                if(r < 0){
+                    result.length = 0;
+                    result.push(i);
+                    min = array[i];
+                }
+                else if(r == 0){
+                    result.push(i);
+                }
+            }
+            return result;
+        },
+
+        // 从副列表中匹配查询主列表的元素
+        listMatch: function(listA, listB, indexA, compareFunction){
+            // 比较前、后 n 个邻居
+            function compareNeighbor(indexB, offset){
+                var nia = indexA + offset;
+                var nib = indexB + offset;
+                var equal = 0;
+                if(nia < 0 || nia >= listA.length)
+                    // 如果 indexA 越界，则返回 2
+                    equal = 2;
+                else if(nib < 0 || nib >= listB.length)
+                    // 如果 indexA 越界，则返回 1
+                    equal = 1;
+                else
+                    // 如果两者相等，则返回 3
+                    // 如果不相等则返回 0
+                    equal = compareFunction(listA[nia], listB[nib]) ? 3 : 0;
+                return equal;
+            }
+
+            // 提供最优结果
+            // 最终从所有结果中选出一个最好的
+            var result = [];
+            var i, j, r;
+
+            var itemA = listA[indexA];
+            i = -1;
+
+            while(true)
+            {
+                i = util.arrayIndex(listB, itemA, compareFunction, i+1);
+                if(i < 0){
+                    // 没找到结果
+                    // 返回结果集合中的一个最优结果
+
+                    // 最优结果：权值最大，并且索引值最靠近 indexA
+                    if(result.length == 0)
+                        return -1;
+                    var rr = util.arrayMaxIndex(result, function(a, b){
+                        return a.weight - b.weight;
+                    });
+                    if(rr.length <= 1){
+                        return result[rr[0]].index;
+                    }
+                    else{
+                        return result[util.arrayMinIndex(rr, function(a, b){
+                            var ia = result[a].index;
+                            var ib = result[b].index;
+                            return Math.abs(ia-indexA) - Math.abs(ib-indexA);
+                        })[0]].index;
+                    }
+                    return -1;
+                }
+                // 找到结果，开始分析
+                // 比对前邻和后邻是否相同
+                var leftEqual = compareNeighbor(i, -1) + 0.5; // 前面的权重大
+                var rightEqual = compareNeighbor(i, 1);
+                var weight = leftEqual + rightEqual;
+                if(weight == 6.5){
+                    // 前后两个邻居都相等
+                    return i;
+                }
+                else{
+                    result.push({
+                        index: i,
+                        weight: weight
+                    });
+                }
+            }
         }
     };
 
