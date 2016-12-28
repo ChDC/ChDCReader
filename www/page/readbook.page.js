@@ -81,9 +81,9 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             $("#modalBookSource").modal('show');
             loadBookSource("mainContentSource");
         });
-        $("#btnChangeMainCatalogSource").click(function(){
+        $("#btnChangeMainSource").click(function(){
             $("#modalBookSource").modal('show');
-            loadBookSource("mainCatalogSource");
+            loadBookSource("mainSource");
         });
         $('#modalCatalog').on('shown.bs.modal', function (e) {
             var targetChapter = $('#listCatalog > [data-index=' + readingRecord.chapterIndex + ']');
@@ -91,7 +91,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             $('#listCatalogContainer').scrollTop(top);
             // $("#modalCatalog .modal-body").css("height", $());
         });
-        $(".labelCurrentSource").text(app.bookSourceManager.sources[book.currentSource].name);
+        $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSource].name);
         $("#btnRefreshCatalog").click(function(){
             loadCatalog(true);
         });
@@ -118,10 +118,10 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             var target = event.currentTarget;
             if(target){
                 var bid = $(target).data('bsid');
-                book.setCurrentSource(bid, function(book){
+                book.setMainSource(bid, function(book){
                     // 更新源之后
                     // 刷新主目录源显示内容
-                    $(".labelCurrentSource").text(app.bookSourceManager.sources[book.currentSource].name);
+                    $(".labelmainSource").text(app.bookSourceManager.sources[book.mainSource].name);
                     if(readingRecord.chapterTitle)
                     {
                         book.fuzzySearch(readingRecord.chapterTitle,
@@ -149,6 +149,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     function loadChapter(chapterIndex){
         book.getChapter(chapterIndex, renderChapter, fail, options);
+        if(chapterIndex != readingRecord.chapterIndex)
+            readingRecord.page = 0;
     };
 
     function renderChapter(chapter, chapterIndex){
