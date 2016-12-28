@@ -30,5 +30,7 @@
     <plugin name="cordova-plugin-device" spec="~1.1.4" />
     <chcp>
         <config-file url="https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/www/chcp.json" />
+        <auto-install enabled="false" />
+        <auto-download enabled="false" />
     </chcp>
 </widget>
