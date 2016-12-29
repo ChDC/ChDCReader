@@ -196,6 +196,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     return {
         onload: function(params, p){
             book = params.book;
+            book.checkBookSources(app.bookSourceManager);
             readingRecord = params.readingRecord;
             options = {bookSourceManager: app.bookSourceManager};
 

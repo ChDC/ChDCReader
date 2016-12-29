@@ -368,6 +368,29 @@ define(["jquery"], function($){
                     });
                 }
             }
+        },
+
+        // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
+        objectSortedKey: function(object, getFunctionOrObjectKeyName){
+            if($.type(getFunctionOrObjectKeyName) == 'string'){
+                var objectKeyName = getFunctionOrObjectKeyName;
+                getFunctionOrObjectKeyName = function(item){
+                    return item[objectKeyName];
+                }
+            }
+            getFunctionOrObjectKeyName = getFunctionOrObjectKeyName || function(item){
+                return item;
+            }
+            var arr = [];
+            for(var k in object){
+                arr.push([k, getFunctionOrObjectKeyName(object[k])]);
+            }
+            arr.sort(function(e1, e2){return e1[1] - e2[1]});
+            var result = [];
+            for(var i = 0; i < arr.length; i++){
+                result[i] = arr[i][0];
+            }
+            return result;
         }
     };
 

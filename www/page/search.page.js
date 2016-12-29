@@ -17,7 +17,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             nb.find(".book-catagory").text(book.catagory);
             nb.find(".book-complete").text(book.complete);
             nb.find(".book-introduce").text(book.introduce);
-
             var bookDetailEvent = function(book){
                 return function(){
                     var params = {

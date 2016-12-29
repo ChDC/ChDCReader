@@ -39,7 +39,7 @@ define(["jquery", "util"], function($, util) {
     Book.prototype.introduce = "";  // 简介
     Book.prototype.sources = undefined;  // 内容来源
     Book.prototype.mainSource = undefined;  // 当前来源
-    Book.prototype.contentSources = undefined;  // 按权重排序的内容源
+    // Book.prototype.contentSources = undefined;  // 按权重排序的内容源
 
     Book.prototype.lastestChapter = undefined;  // 最新的章节
 
@@ -113,47 +113,78 @@ define(["jquery", "util"], function($, util) {
     };
 
     // 方法
-
     // 获取当前书籍指定的目录源信息
     Book.prototype.getBookSource = function(success, fail, options){
         var self = this;
         options = $.extend({}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
-
         var bs = self.sources[options.bookSourceId];
-        if(bs && bs.detailLink){
-            if(success)success(bs, self);
-        }
-        else if(bs === null){
-            if(fail)fail(getError(404));
+        if(bs){
+            if(success)success(bs, options.bookSourceId);
         }
         else{
-            options.bookSourceManager.getBook(options.bookSourceId, self.name, self.author,
-                function(book, bsid){
-                    // 找到书籍了
-                    if(!self.sources)
-                        self.sources = {};
-                    bs = book.sources[bsid];
-                    self.sources[bsid] = bs;
-                    if(success)success(bs, self);
-                },
-                function(error){
-                    debugger;
-                    if(error.id == 404)
-                        // 没找到该书就标记一下，下次直接跳过
-                        self.sources[options.bookSourceId] = null;
-                    if(fail)fail(error);
-                });
+            var bsm = options.bookSourceManager.sources[options.bookSourceId];
+            if(bsm)
+            {
+                self.sources[options.bookSourceId] = {
+                        detailLink: null,  // 详情页链接
+                        catalog: null,  // 目录
+                        weight: bsm.weight,
+                        disable: false
+                    };
+                if(success)success(self.sources[options.bookSourceId], options.bookSourceId);
+            }
+            else{
+                if(fail)fail(getError(404));
+            }
         }
+    }
+
+    // 获取当前书籍指定的目录源信息
+    Book.prototype.getBookSourceDetailLink = function(success, fail, options){
+        var self = this;
+        options = $.extend({}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        self.getBookSource(function(bs, bsid){
+
+            if(bs.detailLink){
+                success(bs.detailLink, bsid, bs);
+            }
+            else if(bs.disable){
+                if(fail)fail(getError(404));
+            }
+            else{
+                debugger;
+                options.bookSourceManager.getBook(options.bookSourceId, self.name, self.author,
+                    function(book, bsid){
+                        // 找到书籍了
+                        bs.detailLink = book.sources[bsid].detailLink;
+                        if(success)success(bs.detailLink, bsid, bs);
+                    },
+                    function(error){
+                        debugger;
+                        if(error.id == 404)
+                            // 没找到该书就标记一下，下次直接跳过
+                            bs.disable = true;
+                        if(fail)fail(error);
+                    });
+            }
+        },fail, options);
     };
 
-    // 检查内容源是否有缺失
-    Book.prototype.checkContentSources = function(bookSourceManager){
-        for(var k in bookSourceManager){
-            // TODO
-            if(!k in self.sources){
-
-            }
+    // 检查源是否有缺失
+    Book.prototype.checkBookSources = function(bookSourceManager){
+        debugger;
+        var self = this;
+        for(var k in bookSourceManager.sources){
+            if(!(k in self.sources))
+                self.sources[k] = {
+                        detailLink: null,  // 详情页链接
+                        catalog: null,  // 目录
+                        weight: bookSourceManager.weight,
+                        disable: false
+                    };
         }
     }
 
@@ -179,9 +210,8 @@ define(["jquery", "util"], function($, util) {
         var self = this;
         options = $.extend({}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
-        self.getBookSource(function(bs){
-            var bsm = options.bookSourceManager.sources[options.bookSourceId];
-            var detailLink = bs.detailLink;
+        self.getBookSourceDetailLink(function(detailLink, bsid, bs){
+            var bsm = options.bookSourceManager.sources[bsid];
             var detail = bsm.detail;
             var info = detail.info;
 
@@ -201,7 +231,7 @@ define(["jquery", "util"], function($, util) {
                 // self.sources = {}; // 内容来源
                 // self.sources[options.bookSourceId].catalog = self.__getBookCatalogFromHTML(element, detailLink, options);  // 目录
                 // self.readingChapter = undefined;  // 读到的章节
-                if(success)success(self, options.bookSourceId);
+                if(success)success(self, bsid);
             };
         },
         fail, options);
@@ -212,12 +242,12 @@ define(["jquery", "util"], function($, util) {
         var self = this;
         options = $.extend({}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
-        self.getBookSource(function(bs){
-            var detailLink = bs.detailLink;
+        self.getBookSourceDetailLink(function(detailLink, bsid, bs){
             util.getDOM(detailLink, {}, s, fail);
 
             function s(html){
                 var catalog = self.__getBookCatalogFromHTML(html, detailLink, options);
+                debugger;
                 bs.catalog = catalog;
                 if(success)success(catalog);
             };
@@ -261,7 +291,7 @@ define(["jquery", "util"], function($, util) {
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getBookSource(function(bs){
-            var bsm = options.bookSourceManager.sources[options.bookSourceId];
+            // var bsm = options.bookSourceManager.sources[options.bookSourceId];
             if(!options.forceRefresh && bs.catalog){
                 if(success)success(bs.catalog);
             }
@@ -338,6 +368,7 @@ define(["jquery", "util"], function($, util) {
     // * exclude 要排除的内容源
     // * bookSourceId 希望使用的内容源
     // * sourceChapterIndex 希望匹配的索引
+    // * count 获取的数目
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapterFromContentSources = function(catalog, index, success, fail, options){
         var self = this;
@@ -350,12 +381,16 @@ define(["jquery", "util"], function($, util) {
             getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.bookSourceId, options.sourceChapterIndex);
         }
         else if(options.bookSourceId){
-
+            // 有指定的源
+        }
+        else{
+            // TODO
         }
 
-
         function getChapterFromContentSources2(){
-
+            var contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
+            // 去掉要排序的源
+            // TODO
         }
 
 
@@ -364,7 +399,7 @@ define(["jquery", "util"], function($, util) {
             self.getCatalog(function(catalogB){
                 var chapterA = catalog[index];
                 var chapterB = catalogB[sourceChapterIndex];
-                if(Chapter.equalTitle(chapterA, chapterB){
+                if(Chapter.equalTitle(chapterA, chapterB)){
                     self.__getChapterContentFromBookSource(chapterB.link, function(chapterB){
                             var chapter = new Chapter();
                             chapter.title = chapterA.title;
@@ -509,8 +544,8 @@ define(["jquery", "util"], function($, util) {
                     book.sources[bsid] = {
                         detailLink: util.fixurl(element.find(detail.link).attr("href"), searchLink),  // 详情页链接
                         catalog: null,  // 目录
+                        weight: bs.weight
                     };
-
                     book.mainSource = bsid;  // 主要来源
                     return books.push(book);
                 });
