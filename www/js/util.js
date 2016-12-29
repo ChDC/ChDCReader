@@ -300,7 +300,7 @@ define(["jquery"], function($){
         },
 
         // 从副列表中匹配查询主列表的元素
-        listMatch: function(listA, listB, indexA, compareFunction){
+        listMatch: function(listA, listB, indexA, equalFunction){
             // 比较前、后 n 个邻居
             function compareNeighbor(indexB, offset){
                 var nia = indexA + offset;
@@ -315,7 +315,7 @@ define(["jquery"], function($){
                 else
                     // 如果两者相等，则返回 3
                     // 如果不相等则返回 0
-                    equal = compareFunction(listA[nia], listB[nib]) ? 3 : 0;
+                    equal = equalFunction(listA[nia], listB[nib]) ? 3 : 0;
                 return equal;
             }
 
@@ -329,7 +329,7 @@ define(["jquery"], function($){
 
             while(true)
             {
-                i = this.arrayIndex(listB, itemA, compareFunction, i+1);
+                i = this.arrayIndex(listB, itemA, equalFunction, i+1);
                 if(i < 0){
                     // 没找到结果
                     // 返回结果集合中的一个最优结果

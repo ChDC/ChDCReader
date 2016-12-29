@@ -147,6 +147,13 @@ define(["jquery", "util"], function($, util) {
         }
     };
 
+    // 检查内容源是否有缺失
+    Book.prototype.checkContentSources = function(bookSourceManager){
+        for(var k in bookSourceManager){
+            // TODO
+        }
+    }
+
     // 设置主源
     Book.prototype.setMainSource = function(bookSourceId, success, fail, options){
         if(self.mainSource == bookSourceId)
@@ -321,22 +328,55 @@ define(["jquery", "util"], function($, util) {
                 if(fail)fail(getError(203));
             }
         }, fail, options);
-        // TODO:
-        // 如果缓存中有就从缓存中加载
-        // 如果没有就刷新
     };
 
     // 按一定的算法从所有的源中找到合适的章节内容
     // options
     // * exclude 要排除的内容源
-    // * source 希望使用的内容源
+    // * bookSourceId 希望使用的内容源
     // * sourceChapterIndex 希望匹配的索引
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapterFromContentSources = function(catalog, index, success, fail, options){
         var self = this;
         options = $.extend({}, options);
-        // TODO
-        if(success)success(chapter, index, source, sourceChapterIndex);
+        debugger;
+        var bsm = options.bookSourceManager;
+
+        // 如果选项中有 bookSourceId 和 sourceChapterIndex，则比对指定的索引
+        if(options.bookSourceId && $.type(options.sourceChapterIndex) == 'number'){
+            getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.bookSourceId, options.sourceChapterIndex);
+        }
+        else if(options.bookSourceId){
+
+        }
+
+
+        function getChapterFromContentSources2(){
+
+        }
+
+
+        // 从指定的源和索引中获取章节
+        function getChapterFromSelectBookSourceAndSelectSourceChapterIndex(bookSourceId, sourceChapterIndex){
+            self.getCatalog(function(catalogB){
+                var chapterA = catalog[index];
+                var chapterB = catalogB[sourceChapterIndex];
+                if(Chapter.equalTitle(chapterA, chapterB){
+                    self.__getChapterContentFromBookSource(chapterB.link, function(chapterB){
+                            var chapter = new Chapter();
+                            chapter.title = chapterA.title;
+                            chapter.content = chapterB.content;
+                            if(success)success(chapter, index, bookSourceId, sourceChapterIndex);
+                        },
+                    fail, options);
+                }
+                else{
+                    // 不相等，则按正常方式获取
+                    //
+                }
+            },
+            fail, options);
+        }
     }
 
     // 从网络上获取章节内容
@@ -384,6 +424,22 @@ define(["jquery", "util"], function($, util) {
     Chapter.prototype.title = undefined;    // 标题
     Chapter.prototype.content = undefined;  // 内容
     Chapter.prototype.modifyTime = undefined;  // 修改时间
+
+    // 判断两个标题是否相等
+    Chapter.equalTitle = function(chapterA, chapterB){
+        // 比较去掉所有空格和标点符号之后的所有符号
+        function stripString(str){
+            // 去除英文字符串
+            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
+            // 去除中文字符串
+            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+            // 去除空白字符
+            str = str.replace(/\s/g, '');
+            return str;
+        }
+        // TODO：模糊判等
+        return stripString(chapterA.title) == stripString(chapterB.title);
+    }
 
     // **** BookSource *****
     function BookSourceManager(configFile){
