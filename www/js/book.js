@@ -151,6 +151,9 @@ define(["jquery", "util"], function($, util) {
     Book.prototype.checkContentSources = function(bookSourceManager){
         for(var k in bookSourceManager){
             // TODO
+            if(!k in self.sources){
+
+            }
         }
     }
 
