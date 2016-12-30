@@ -79,6 +79,7 @@ define(["jquery"], function($){
             this.log("Get:" + url + "&" + this.__getParamsString(params));
             url = encodeURI(url);
             var self = this;
+            // TODO: 设置重试的次数
             function handleNetworkError(data) {
                 self.error("Fail to getJSON: " + url + ", 网络错误");
                 self.showMessage("网络错误！");
@@ -299,7 +300,7 @@ define(["jquery"], function($){
             return result;
         },
 
-        // 从副列表中匹配查询主列表的元素
+        // 从副列表中匹配查询主列表的元素的索引
         listMatch: function(listA, listB, indexA, equalFunction){
             // 比较前、后 n 个邻居
             function compareNeighbor(indexB, offset){

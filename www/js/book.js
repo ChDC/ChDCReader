@@ -129,7 +129,7 @@ define(["jquery", "util"], function($, util) {
                 self.sources[options.bookSourceId] = {
                         detailLink: null,  // 详情页链接
                         catalog: null,  // 目录
-                        weight: bsm.weight,
+                        weight: bsm.weight || 0,
                         disable: false
                     };
                 if(success)success(self.sources[options.bookSourceId], options.bookSourceId);
@@ -182,7 +182,7 @@ define(["jquery", "util"], function($, util) {
                 self.sources[k] = {
                         detailLink: null,  // 详情页链接
                         catalog: null,  // 目录
-                        weight: bookSourceManager.weight,
+                        weight: bookSourceManager.weight || 0,
                         disable: false
                     };
         }
@@ -370,50 +370,160 @@ define(["jquery", "util"], function($, util) {
     // * sourceChapterIndex 希望匹配的索引
     // * count 获取的数目
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
-    Book.prototype.getChapterFromContentSources = function(catalog, index, success, fail, options){
+    Book.prototype.getChapterFromContentSources = function(catalog, index, success, finalFail, options){
         var self = this;
         options = $.extend({}, options);
         debugger;
         var bsm = options.bookSourceManager;
+        var chapterA = catalog[index];
+        var result = []; // 结果的集合，按权重排序
+        var count = options.count || 1; // 想获取的数目
+
+        // ***** 常量 ******
+        var FOUND_WEIGHT = 1; // 找到后增加的权重
+        var NOTFOUND_WEIGHT = -2; // 没找到的权重
+        var EXECLUDE_WEIGHT = -4; // 排除的权重
+        var INCLUDE_WEIGHT = 1; // 指定的源
+        // *****************
+
 
         // 如果选项中有 bookSourceId 和 sourceChapterIndex，则比对指定的索引
         if(options.bookSourceId && $.type(options.sourceChapterIndex) == 'number'){
             getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.bookSourceId, options.sourceChapterIndex);
         }
         else if(options.bookSourceId){
-            // 有指定的源
+            // 仅有指定的源
+            getChapterFromContentSources2(options.bookSourceId);
         }
         else{
             // TODO
         }
 
-        function getChapterFromContentSources2(){
+        // 把结果添加到 Result
+        function addChapterToResult(chapterB, bookSourceId){
+            self.sources[bookSourceId].weight += FOUND_WEIGHT;
+            var chapter = new Chapter();
+            chapter.title = chapterA.title;
+            chapter.content = chapterB.content;
+            result.push({
+                chapter: chapter,
+                index: index,
+                bookSourceId: source,
+                sourceChapterIndex: indexB
+            });
+        }
+
+        // 提交结果
+        function submitResult(){
+            if(result.length <= 0){
+                if(fail)
+                    fail(getError(201));
+            }
+            else{
+                if(success){
+                    if(options.count && options.count > 1)
+                        success(result);
+                    else{
+                        var r = result[0];
+                        success(r.chapter, r.index, r.bookSourceId, r.sourceChapterIndex);
+                    }
+                }
+            }
+        }
+
+        function getChapterFromContentSources2(includeSource){
             var contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
-            // 去掉要排序的源
+            // 去掉要排除的源
+            if(options.exclude){
+                var i = contentSources.indexOf(options.exclude);
+                delete contentSources[i];
+                self.sources[options.exclude] += EXECLUDE_WEIGHT;
+            }
+            if(includeSource){
+                var i = contentSources.indexOf(includeSource);
+                delete contentSources[i];
+                // 放到结尾处
+                contentSources.push(includeSource);
+                self.sources[includeSource] += INCLUDE_WEIGHT;
+            }
+
             // TODO
+
+            var i = -1;
+            var source;
+            next();
+
+            // 失败后换下一个源
+            function next(){
+                // 注意网络不通的问题
+                i++;
+                if(i >= contentSources.length || count <= 0){
+                    submitResult();
+                    return;
+                }
+                source = contentSources[i];
+                if(!source)
+                    failToNext();
+                options.bookSourceId = source;
+                self.getCatalog(function(catalogB){
+                    var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
+                    if(indexB > 0){
+                        // 找到了
+                        var chapterBB = catalogB[indexB];
+                        self.__getChapterContentFromBookSource(chapterB.link, function(chapterB){
+                            // 找到了章节
+                            addChapterToResult(chapterB);
+                            next();
+                        },
+                        handleWithNormalMethod, options);
+                    }
+                    else{
+                        // 没找到，下一个源
+                        failToNext();
+                    }
+                },
+                failToNext, options);
+            }
+
+            function failToNext(error){
+                self.sources[options.bookSourceId].weight += NOTFOUND_WEIGHT;
+                next();
+            }
         }
 
 
+        function handleWithNormalMethod(error){
+            // 失败则按正常方式获取
+            // TODO
+            // 注意网络不通的问题
+            getChapterFromContentSources2();
+        }
+
         // 从指定的源和索引中获取章节
         function getChapterFromSelectBookSourceAndSelectSourceChapterIndex(bookSourceId, sourceChapterIndex){
+            self.sources[bookSourceId].weight += INCLUDE_WEIGHT;
             self.getCatalog(function(catalogB){
-                var chapterA = catalog[index];
                 var chapterB = catalogB[sourceChapterIndex];
                 if(Chapter.equalTitle(chapterA, chapterB)){
                     self.__getChapterContentFromBookSource(chapterB.link, function(chapterB){
-                            var chapter = new Chapter();
-                            chapter.title = chapterA.title;
-                            chapter.content = chapterB.content;
-                            if(success)success(chapter, index, bookSourceId, sourceChapterIndex);
+                            // 找到了章节
+                            addChapterToResult(chapterB, bookSourceId);
+                            count--;
+                            if(count > 0){
+                                handleWithNormalMethod();
+                            }
+                            else{
+                                submitResult();
+                            }
                         },
-                    fail, options);
+                        handleWithNormalMethod, options);
                 }
                 else{
                     // 不相等，则按正常方式获取
-                    //
+                    handleWithNormalMethod();
                 }
             },
-            fail, options);
+            handleWithNormalMethod, options);
         }
     }
 
@@ -544,7 +654,7 @@ define(["jquery", "util"], function($, util) {
                     book.sources[bsid] = {
                         detailLink: util.fixurl(element.find(detail.link).attr("href"), searchLink),  // 详情页链接
                         catalog: null,  // 目录
-                        weight: bs.weight
+                        weight: bs.weight || 0
                     };
                     book.mainSource = bsid;  // 主要来源
                     return books.push(book);
