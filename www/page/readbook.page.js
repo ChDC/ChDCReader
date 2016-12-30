@@ -77,6 +77,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             // $('#modalCatalog').modal('show');
             loadCatalog();
         });
+        // TODO: 修改内容源
         $("#btnChangeMainContentSource").click(function(){
             $("#modalBookSource").modal('show');
             loadBookSource("mainContentSource");
@@ -92,6 +93,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             // $("#modalCatalog .modal-body").css("height", $());
         });
         $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSource].name);
+        // TODO:labelContentSource
         $("#btnRefreshCatalog").click(function(){
             loadCatalog(true);
         });
@@ -118,13 +120,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             var target = event.currentTarget;
             if(target){
                 var bid = $(target).data('bsid');
+                var oldMainSource = self.mainSource;
                 book.setMainSource(bid, function(book){
                     // 更新源之后
                     // 刷新主目录源显示内容
                     $(".labelmainSource").text(app.bookSourceManager.sources[book.mainSource].name);
-                    if(readingRecord.chapterTitle)
+                    if(readingRecord.chapterIndex)
                     {
-                        book.fuzzySearch(readingRecord.chapterTitle,
+                        debugger;
+                        book.fuzzySearch(oldMainSource, readingRecord.chapterIndex,
                             function(chapter, chapterIndex){
                                 readingRecord.chapterIndex = chapterIndex;
                                 readingRecord.chapterTitle = chapter.title;
@@ -148,18 +152,18 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     }
 
     function loadChapter(chapterIndex){
-        book.getChapter(chapterIndex, renderChapter, fail, options);
+        book.getChapter(chapterIndex,
+            function(chapter, index, contentSourceId, contentSourceChapterIndex){
+                setReadingRecord(chapterIndex, chapter.title);
+                app.bookShelf.save();
+                $(".chapter-title").text(chapter.title);
+                $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
+                $('.chapter').scrollTop(readingRecord.page);
+                $(".labelContentSource").text(app.bookSourceManager.sources[contentSourceId].name);
+                // $("#modalCatalog").modal('hide');
+            }, fail, options);
         if(chapterIndex != readingRecord.chapterIndex)
             readingRecord.page = 0;
-    };
-
-    function renderChapter(chapter, chapterIndex){
-        setReadingRecord(chapterIndex, chapter.title);
-        app.bookShelf.save();
-        $(".chapter-title").text(chapter.title);
-        $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
-        $('.chapter').scrollTop(readingRecord.page);
-        // $("#modalCatalog").modal('hide');
     };
 
     function loadCatalog(forceRefresh){
