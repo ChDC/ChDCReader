@@ -14,7 +14,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         var offset = offset || 0;
         if(!readingRecord.chapterIndex)
             readingRecord.chapterIndex = 0;
-        loadChapter(readingRecord.chapterIndex + offset);
+        loadChapter(readingRecord.chapterIndex + offset, readingRecord.contentSourceId, readingRecord.contentSourceChapterIndex + offset);
     };
 
     function btnNext(event){
@@ -142,7 +142,10 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         }
     }
 
-    function loadChapter(chapterIndex, bookSourceId, contentSourceChapterIndex){
+    function loadChapter(chapterIndex, contentSourceId, contentSourceChapterIndex){
+        var opts = $.extend({}, options);
+        opts.contentSourceId = contentSourceId;
+        opts.contentSourceChapterIndex = contentSourceChapterIndex;
 
         book.getChapter(chapterIndex,
             function(chapter, index, contentSourceId, contentSourceChapterIndex){
@@ -153,7 +156,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                 $('.chapter').scrollTop(readingRecord.page);
                 $(".labelContentSource").text(app.bookSourceManager.sources[contentSourceId].name);
                 // $("#modalCatalog").modal('hide');
-            }, fail, options);
+            }, fail, opts);
         if(chapterIndex != readingRecord.chapterIndex)
             readingRecord.page = 0;
     };
