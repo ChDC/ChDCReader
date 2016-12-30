@@ -332,6 +332,12 @@ define(["jquery", "util"], function($, util) {
 
     // 用章节标题获取章节内容
     // chapterIndex 是从主要目录源中获取的章节索引
+    // options
+    // * exclude 要排除的内容源
+    // * contentSourceId 希望使用的内容源
+    // * contentSourceChapterIndex 希望匹配的索引
+    // * count 获取的数目
+    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapter = function(chapterIndex, success, fail, options){
         if($.type(chapterIndex) != "number"){
             if(fail)
@@ -341,10 +347,10 @@ define(["jquery", "util"], function($, util) {
 
         var self = this;
         options = $.extend({}, options);
-        options = options || {};
+        options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getCatalog(function(catalog){
-            if(chapterIndex >=0 && chapterIndex < catalog.length){
+            if(chapterIndex >= 0 && chapterIndex < catalog.length){
                 // 存在于目录中
                 self.getChapterFromContentSources(catalog, chapterIndex, success, fail, options);
             }
@@ -373,13 +379,15 @@ define(["jquery", "util"], function($, util) {
     // 按一定的算法从所有的源中找到合适的章节内容
     // options
     // * exclude 要排除的内容源
-    // * bookSourceId 希望使用的内容源
+    // * contentSourceId 希望使用的内容源
     // * contentSourceChapterIndex 希望匹配的索引
     // * count 获取的数目
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapterFromContentSources = function(catalog, index, success, finalFail, options){
         var self = this;
         options = $.extend({}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
         var chapterA = catalog[index];
         var result = []; // 结果的集合，按权重排序
         var count = options.count || 1; // 想获取的数目
@@ -392,15 +400,15 @@ define(["jquery", "util"], function($, util) {
         // *****************
 
         debugger;
-        // 如果选项中有 bookSourceId 和 contentSourceChapterIndex，则比对指定的索引
-        if(options.bookSourceId && $.type(options.contentSourceChapterIndex) == 'number'){
+        // 如果选项中有 contentSourceId 和 contentSourceChapterIndex，则比对指定的索引
+        if(options.contentSourceId && $.type(options.contentSourceChapterIndex) == 'number'){
             debugger;
-            getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.bookSourceId, options.contentSourceChapterIndex);
+            getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.contentSourceId, options.contentSourceChapterIndex);
         }
-        else if(options.bookSourceId){
+        else if(options.contentSourceId){
             debugger;
             // 仅有指定的源
-            getChapterFromContentSources2(options.bookSourceId);
+            getChapterFromContentSources2(options.contentSourceId);
         }
         else{
             // TODO
@@ -440,6 +448,10 @@ define(["jquery", "util"], function($, util) {
         }
 
         function getChapterFromContentSources2(includeSource){
+            
+            var opts = $.extend({}, options);
+            opts.bookSourceId = contentSourceId;
+
             var contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
             // 去掉要排除的源
             if(options.exclude){
@@ -499,14 +511,18 @@ define(["jquery", "util"], function($, util) {
         }
 
         // 从指定的源和索引中获取章节
-        function getChapterFromSelectBookSourceAndSelectSourceChapterIndex(bookSourceId, contentSourceChapterIndex){
-            self.sources[bookSourceId].weight += INCLUDE_WEIGHT;
+        function getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex){
+            
+            var opts = $.extend({}, options);
+            opts.bookSourceId = contentSourceId;
+
+            self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
             self.getCatalog(function(catalogB){
                 var chapterB = catalogB[contentSourceChapterIndex];
                 if(Chapter.equalTitle(chapterA, chapterB)){
                     self.__getChapterContentFromBookSource(chapterB.link, function(chapterB){
                             // 找到了章节
-                            addChapterToResult(chapterB, contentSourceChapterIndex, bookSourceId);
+                            addChapterToResult(chapterB, contentSourceChapterIndex, contentSourceId);
                             count--;
                             if(count > 0){
                                 handleWithNormalMethod();
@@ -515,14 +531,14 @@ define(["jquery", "util"], function($, util) {
                                 submitResult();
                             }
                         },
-                        handleWithNormalMethod, options);
+                        handleWithNormalMethod, opts);
                 }
                 else{
                     // 不相等，则按正常方式获取
                     handleWithNormalMethod();
                 }
             },
-            handleWithNormalMethod, options);
+            handleWithNormalMethod, opts);
         }
     }
 
@@ -665,6 +681,45 @@ define(["jquery", "util"], function($, util) {
     };
 
 
+
+    // **** ReadingRecord *****
+    function ReadingRecord(){
+        this.chapterIndex = 0;
+        this.page = 0;
+    };
+
+    ReadingRecord.prototype.bookName = undefined; // 书名
+    ReadingRecord.prototype.bookAuthor = undefined; // 作者
+    ReadingRecord.prototype.chapterIndex = undefined; // 章节索引
+    ReadingRecord.prototype.chapterTitle = undefined; // 章节标题
+    ReadingRecord.prototype.page = undefined; // 章内的页数
+    ReadingRecord.prototype.contentSourceId = undefined; // 内容源ID
+    ReadingRecord.prototype.contentSourceChapterIndex = undefined; // 内容源的章节索引
+
+    // 清除数据
+    ReadingRecord.prototype.reset = function(){
+        this.chapterIndex = 0;
+        this.chapterTitle = "";
+        this.page = 0;
+        this.contentSourceId = null;
+        this.contentSourceChapterIndex = null;
+    }
+
+    // 设置正在读的章节
+    ReadingRecord.prototype.setReadingRecord = function(chapterIndex, chapterTitle, contentSourceId, contentSourceChapterIndex){
+        self.chapterIndex = chapterIndex;
+        self.chapterTitle = chapterTitle;
+        self.contentSourceId = contentSourceId;
+        self.contentSourceChapterIndex = contentSourceChapterIndex;
+    };
+
+    // **** ReadingRecordManager *****
+    // 可用于书架的阅读进度，阅读历史，书签
+    // function ReadingRecordManager(){
+    //     this.records = [];
+    // };
+
+
     // **** BookShelf *****
     function BookShelf(){
         this.books = [];
@@ -697,23 +752,9 @@ define(["jquery", "util"], function($, util) {
         if(success)success();
     };
 
-    // **** ReadingRecord *****
-    function ReadingRecord(){
-        this.chapterIndex = 0;
-        this.page = 0;
-    };
 
-    ReadingRecord.prototype.bookName = undefined; // 书名
-    ReadingRecord.prototype.bookAuthor = undefined; // 作者
-    ReadingRecord.prototype.chapterIndex = undefined; // 章节索引
-    ReadingRecord.prototype.chapterTitle = undefined; // 章节标题
-    ReadingRecord.prototype.page = undefined; // 章内的页数
 
-    // **** ReadingRecordManager *****
-    // 可用于书架的阅读进度，阅读历史，书签
-    function ReadingRecordManager(){
-        this.records = [];
-    };
+    // **** Return package *****
 
     return {
         Book: Book,

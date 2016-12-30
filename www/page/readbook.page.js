@@ -9,12 +9,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         util.showError(error.message);
     }
 
-    // 设置正在读的章节
-    var setReadingRecord = function(chapterIndex, chapterTitle){
-        readingRecord.chapterIndex = chapterIndex;
-        readingRecord.chapterTitle = chapterTitle;
-    };
-
     // 获取当前章节
     var loadCurrentChapter = function(offset){
         var offset = offset || 0;
@@ -132,14 +126,11 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                             function(chapter, chapterIndex){
                                 readingRecord.chapterIndex = chapterIndex;
                                 readingRecord.chapterTitle = chapter.title;
-
                                 // 刷新当前章节信息
                                 loadCurrentChapter(0);
                             },
                             function(){
-                                readingRecord.chapterIndex = 0;
-                                readingRecord.chapterTitle = "";
-
+                                readingRecord.reset();
                                 // 刷新当前章节信息
                                 loadCurrentChapter(0);
                         }, options);
@@ -151,10 +142,11 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         }
     }
 
-    function loadChapter(chapterIndex){
+    function loadChapter(chapterIndex, bookSourceId, contentSourceChapterIndex){
+
         book.getChapter(chapterIndex,
             function(chapter, index, contentSourceId, contentSourceChapterIndex){
-                setReadingRecord(chapterIndex, chapter.title);
+                readingRecord.setReadingRecord(chapterIndex, chapter.title, contentSourceId, contentSourceChapterIndex);
                 app.bookShelf.save();
                 $(".chapter-title").text(chapter.title);
                 $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
