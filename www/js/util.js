@@ -303,7 +303,7 @@ define(["jquery"], function($){
         // 从副列表中匹配查询主列表的元素的索引
         listMatch: function(listA, listB, indexA, equalFunction){
             if(listA == listB)
-                return index;
+                return indexA;
 
             // 比较前、后 n 个邻居
             function compareNeighbor(indexB, offset){

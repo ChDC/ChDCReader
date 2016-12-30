@@ -29,7 +29,7 @@
 
         "id": "qidian",
         "name": "笔趣阁",
-        "weight": 2,
+        "weight": 99,
         "search": {
             "info": {
                 "book": "#results > div.result-list > div.result-item",
@@ -76,7 +76,7 @@
         },
         "id": "qidian",
         "name": "起点中文网",
-        "weight": 1,
+        "weight": 100,
         "search": {
             "info": {
                 "book": "#result-list li[data-rid]",

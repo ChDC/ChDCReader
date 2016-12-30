@@ -155,7 +155,6 @@ define(["jquery", "util"], function($, util) {
                 if(fail)fail(getError(404));
             }
             else{
-                debugger;
                 options.bookSourceManager.getBook(options.bookSourceId, self.name, self.author,
                     function(book, bsid){
                         // 找到书籍了
@@ -175,14 +174,14 @@ define(["jquery", "util"], function($, util) {
 
     // 检查源是否有缺失
     Book.prototype.checkBookSources = function(bookSourceManager){
-        debugger;
         var self = this;
-        for(var k in bookSourceManager.sources){
+        var sources = bookSourceManager.sources;
+        for(var k in sources){
             if(!(k in self.sources))
                 self.sources[k] = {
                         detailLink: null,  // 详情页链接
                         catalog: null,  // 目录
-                        weight: bookSourceManager.weight || 0,
+                        weight: sources[k].weight || 0,
                         disable: false
                     };
         }
@@ -247,7 +246,6 @@ define(["jquery", "util"], function($, util) {
 
             function s(html){
                 var catalog = self.__getBookCatalogFromHTML(html, detailLink, options);
-                debugger;
                 bs.catalog = catalog;
                 if(success)success(catalog);
             };
@@ -306,7 +304,6 @@ define(["jquery", "util"], function($, util) {
 
     // 在指定的源 B 中搜索目录源的中某章节的相对应的章节
     Book.prototype.fuzzySearch = function(sourceB, index, success, fail, options){
-        debugger;
         var self = this;
         options = $.extend({}, options);
 
@@ -383,8 +380,6 @@ define(["jquery", "util"], function($, util) {
     Book.prototype.getChapterFromContentSources = function(catalog, index, success, finalFail, options){
         var self = this;
         options = $.extend({}, options);
-        debugger;
-        var bsm = options.bookSourceManager;
         var chapterA = catalog[index];
         var result = []; // 结果的集合，按权重排序
         var count = options.count || 1; // 想获取的数目
@@ -396,22 +391,25 @@ define(["jquery", "util"], function($, util) {
         var INCLUDE_WEIGHT = 1; // 指定的源
         // *****************
 
-
+        debugger;
         // 如果选项中有 bookSourceId 和 contentSourceChapterIndex，则比对指定的索引
         if(options.bookSourceId && $.type(options.contentSourceChapterIndex) == 'number'){
+            debugger;
             getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.bookSourceId, options.contentSourceChapterIndex);
         }
         else if(options.bookSourceId){
+            debugger;
             // 仅有指定的源
             getChapterFromContentSources2(options.bookSourceId);
         }
         else{
             // TODO
+            getChapterFromContentSources2();
         }
 
         // 把结果添加到 Result
-        function addChapterToResult(chapterB, bookSourceId){
-            self.sources[bookSourceId].weight += FOUND_WEIGHT;
+        function addChapterToResult(chapterB, indexB, source){
+            self.sources[source].weight += FOUND_WEIGHT;
             var chapter = new Chapter();
             chapter.title = chapterA.title;
             chapter.content = chapterB.content;
@@ -458,36 +456,36 @@ define(["jquery", "util"], function($, util) {
             }
 
             // TODO
-
-            var i = -1;
             var source;
             next();
 
             // 失败后换下一个源
             function next(){
                 // 注意网络不通的问题
-                i++;
-                if(i >= contentSources.length || count <= 0){
+                if(contentSources.length <= 0 || count <= 0){
                     submitResult();
                     return;
                 }
-                source = contentSources[i];
+                source = contentSources.pop();
                 if(!source)
-                    failToNext();
+                    next();
+
                 self.fuzzySearch(source, index, 
                     function(chapterBB, indexB, catalogB, sourceB){
                         self.__getChapterContentFromBookSource(chapterBB.link, function(chapterB){
                             // 找到了章节
-                            addChapterToResult(chapterB);
+                            addChapterToResult(chapterB, indexB, sourceB);
+                            count--;
                             next();
                         },
-                        failToNext, options);
+                        failToNext, {bookSourceManager: options.bookSourceManager, bookSourceId: sourceB});
                     }
                     , failToNext, options);
             }
 
             function failToNext(error){
-                self.sources[options.bookSourceId].weight += NOTFOUND_WEIGHT;
+                debugger;
+                self.sources[source].weight += NOTFOUND_WEIGHT;
                 next();
             }
         }
@@ -508,7 +506,7 @@ define(["jquery", "util"], function($, util) {
                 if(Chapter.equalTitle(chapterA, chapterB)){
                     self.__getChapterContentFromBookSource(chapterB.link, function(chapterB){
                             // 找到了章节
-                            addChapterToResult(chapterB, bookSourceId);
+                            addChapterToResult(chapterB, contentSourceChapterIndex, bookSourceId);
                             count--;
                             if(count > 0){
                                 handleWithNormalMethod();
@@ -576,6 +574,8 @@ define(["jquery", "util"], function($, util) {
 
     // 判断两个标题是否相等
     Chapter.equalTitle = function(chapterA, chapterB){
+        if(!chapterA || !chapterB)
+            return false;
         // 比较去掉所有空格和标点符号之后的所有符号
         function stripString(str){
             // 去除英文字符串
