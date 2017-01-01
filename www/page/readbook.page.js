@@ -16,7 +16,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             readingRecord.chapterIndex = 0;
         loadChapter(readingRecord.chapterIndex + offset, {
             contentSourceId: readingRecord.options.contentSourceId,
-            contentSourceChapterIndex: readingRecord.options.contentSourceChapterIndex + offset});
+            contentSourceChapterIndex: readingRecord.options.contentSourceChapterIndex + offset
+        });
     };
 
     function btnNext(event){
@@ -149,17 +150,27 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         $.extend(opts, extras);
         book.getChapter(chapterIndex,
             function(chapter, index, options){
-                readingRecord.setReadingRecord(chapterIndex, chapter.title, options);
-                app.bookShelf.save();
                 $(".chapter-title").text(chapter.title);
                 $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
                 $('.chapter').scrollTop(readingRecord.page);
                 $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
                 // $("#modalCatalog").modal('hide');
+                readingRecord.setReadingRecord(chapterIndex, chapter.title, options);
+                app.bookShelf.save();
+                cacheChapter(chapterIndex, options);
             }, fail, opts);
         if(chapterIndex != readingRecord.chapterIndex)
             readingRecord.page = 0;
     };
+
+    function cacheChapter(chapterIndex, opts){
+        // 缓存后面的章节
+        opts = $.extend({}, options, opts);
+        chapterIndex++;
+        opts.contentSourceChapterIndex++;
+        opts.count = app.settings.cacheCountEachChapter;
+        book.cacheChapter(chapterIndex, app.settings.cacheChapterCount, opts);
+    }
 
     function loadCatalog(forceRefresh){
         $('#listCatalogContainer').height($(window).height() * 0.5);

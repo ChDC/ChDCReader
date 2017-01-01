@@ -1,6 +1,12 @@
 define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, page) {
     "use strict"
 
+    var settings = {
+        cacheChapterCount: 3, // 缓存后面章节的数目
+        cacheCountEachChapter: 1, // 默认情况下每章缓存的源章节数目
+        cacheCountEachChapterWithWifi: 3 // 在 Wifi 下每章缓存的源章节数目
+    };
+
     var app = {
         /**************** 全局变量 *******************/
         // 书籍来源管理器
@@ -22,6 +28,7 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
 
             this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
             this.bookShelf = new book.BookShelf();
+            this.settings = settings;
             page.init();
             // self.page = page;
             page.showPage("bookshelf");

@@ -26,6 +26,7 @@
 }
 
 .chapter-content p{
+    text-indent: 2em;
     font-size: 18px;
     line-height: 32px;
     margin-top: 15px 0 0 0;

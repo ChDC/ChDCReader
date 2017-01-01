@@ -26,6 +26,9 @@ define(["jquery"], function($){
             },
             setItem: function(keyName, keyValue) {
                 return localStorage.setItem(keyName, JSON.stringify(keyValue));
+            },
+            hasItem: function(keyName) {
+                return keyName in localStorage;
             }
         },
 
@@ -214,8 +217,6 @@ define(["jquery"], function($){
 
             for(var i = 0; i < lines.length; i++){
                 var line = lines[i];
-
-                line = "　　" + line;
                 line = line.replace(/ /g, '&nbsp;');
 
                 html += pStart + line + '</p>';
@@ -399,17 +400,22 @@ define(["jquery"], function($){
 
         // 保存 JSON 对象到文件中
         saveJSONToFile: function(file, data, success, fail){
-
+            // TODO
+            this.storage.setItem(file, data);
+            if(success)success();
         },
 
         // 从文件中获取 JSON 对象
         loadJSONFromFile: function(file, success, fail){
-
+            // TODO
+            var data = this.storage.getItem(file);
+            if(success)success(data);
         },
 
         // 检查文件是否存在
         fileExists: function(file){
-
+            // TODO
+            return this.storage.hasItem(file);
         }
     };
 
