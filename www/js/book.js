@@ -548,7 +548,7 @@ define(["jquery", "util"], function($, util) {
                     var i = contentSources.indexOf(exclude);
                     delete contentSources[i];
                     if(!options.noInfluenceWeight)
-                        self.sources[exclude] += EXECLUDE_WEIGHT;
+                        self.sources[exclude].weight += EXECLUDE_WEIGHT;
                 }
             }
             if(includeSource){
@@ -558,7 +558,7 @@ define(["jquery", "util"], function($, util) {
                 // 放到结尾处
                 contentSources.push(includeSource);
                 if(!options.noInfluenceWeight)
-                    self.sources[includeSource] += INCLUDE_WEIGHT;
+                    self.sources[includeSource].weight += INCLUDE_WEIGHT;
             }
 
             next();

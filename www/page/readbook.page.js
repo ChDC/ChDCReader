@@ -74,6 +74,12 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             // $('#modalCatalog').modal('show');
             loadCatalog();
         });
+        $("#btnBadChapter").click(function(){
+            debugger;
+            var opts = $.extend({}, options);
+            opts.excludes = [readingRecord.options.contentSourceId];
+            loadChapter(readingRecord.chapterIndex, opts);
+        });
         // TODO: 修改内容源
         $("#btnChangeMainContentSource").click(function(){
             $("#modalBookSource").modal('show');
