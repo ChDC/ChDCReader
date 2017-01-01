@@ -147,7 +147,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     function loadChapter(chapterIndex, extras){
         var opts = $.extend({}, options);
         $.extend(opts, extras);
-        debugger;
         book.getChapter(chapterIndex,
             function(chapter, index, options){
                 readingRecord.setReadingRecord(chapterIndex, chapter.title, options);

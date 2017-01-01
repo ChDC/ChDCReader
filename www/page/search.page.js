@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "page", "util"], function($, app, page, util){
+define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, book){
 
     // 加载结果列表
     function loadBooks(id, books, bookSourceId){
@@ -44,7 +44,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         onload: function(params, baseurl){
             // 添加选项
             var bookSource = $(".bookSource");
-            debugger;
             var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
             for(var i = 0; i < keys.length; i++)
             {
@@ -58,7 +57,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                 var keyword = $(".keyword").val();
                 var bookSourceId = $(".bookSource").val();
                 if(keyword && bookSourceId){
-                    app.bookSourceManager.searchBook(bookSourceId, keyword,
+                    book.Book.searchBook(app.bookSourceManager, bookSourceId, keyword,
                             function(books){
                                 loadBooks(".result", books, bookSourceId);
                             });
