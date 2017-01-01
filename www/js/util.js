@@ -395,6 +395,21 @@ define(["jquery"], function($){
                 result[i] = arr[i][0];
             }
             return result;
+        },
+
+        // 保存 JSON 对象到文件中
+        saveJSONToFile: function(file, data, success, fail){
+
+        },
+
+        // 从文件中获取 JSON 对象
+        loadJSONFromFile: function(file, success, fail){
+
+        },
+
+        // 检查文件是否存在
+        fileExists: function(file){
+
         }
     };
 

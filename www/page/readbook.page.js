@@ -14,7 +14,9 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         var offset = offset || 0;
         if(!readingRecord.chapterIndex)
             readingRecord.chapterIndex = 0;
-        loadChapter(readingRecord.chapterIndex + offset, readingRecord.contentSourceId, readingRecord.contentSourceChapterIndex + offset);
+        loadChapter(readingRecord.chapterIndex + offset, {
+            contentSourceId: readingRecord.options.contentSourceId,
+            contentSourceChapterIndex: readingRecord.options.contentSourceChapterIndex + offset});
     };
 
     function btnNext(event){
@@ -142,19 +144,18 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         }
     }
 
-    function loadChapter(chapterIndex, contentSourceId, contentSourceChapterIndex){
+    function loadChapter(chapterIndex, extras){
         var opts = $.extend({}, options);
-        opts.contentSourceId = contentSourceId;
-        opts.contentSourceChapterIndex = contentSourceChapterIndex;
-
+        $.extend(opts, extras);
+        debugger;
         book.getChapter(chapterIndex,
-            function(chapter, index, contentSourceId, contentSourceChapterIndex){
-                readingRecord.setReadingRecord(chapterIndex, chapter.title, contentSourceId, contentSourceChapterIndex);
+            function(chapter, index, options){
+                readingRecord.setReadingRecord(chapterIndex, chapter.title, options);
                 app.bookShelf.save();
                 $(".chapter-title").text(chapter.title);
                 $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
                 $('.chapter').scrollTop(readingRecord.page);
-                $(".labelContentSource").text(app.bookSourceManager.sources[contentSourceId].name);
+                $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
                 // $("#modalCatalog").modal('hide');
             }, fail, opts);
         if(chapterIndex != readingRecord.chapterIndex)
