@@ -1,15 +1,19 @@
 [
   {
     "file": "css/index.css",
-    "hash": "3e98e67cdd4c7eb74931a5519a3e37bf"
+    "hash": "fc9cd6b6ac77b7fb3eac1f1735ee27c4"
   },
   {
     "file": "data/booksources.json",
-    "hash": "f2460c93705919dad2efd6fb4a263d17"
+    "hash": "1d994476024fbf64c5b8afbf52dccdc0"
   },
   {
     "file": "img/book_cover.png",
     "hash": "f291c93b7934d69e8ba400d72908c0ca"
+  },
+  {
+    "file": "img/loading.gif",
+    "hash": "aef3c727d3d44e0655f61894bd346d0c"
   },
   {
     "file": "img/readbg1.jpg",
@@ -17,7 +21,7 @@
   },
   {
     "file": "index.html",
-    "hash": "a3052f979c67e0801d0d335ba1dbaa16"
+    "hash": "0a7aa34c2004e755ee8e007346fc0aff"
   },
   {
     "file": "js/app.js",
@@ -25,7 +29,7 @@
   },
   {
     "file": "js/book.js",
-    "hash": "9541213be112ae292ca601e247de82d4"
+    "hash": "fd49a8f66b3dd80b81c09235b0ecff47"
   },
   {
     "file": "js/index.js",
@@ -33,19 +37,15 @@
   },
   {
     "file": "js/main.js",
-    "hash": "b1817ea7828ba1cf1d6a5a35ddf5bd40"
+    "hash": "79a5a2b56f6a5a0b4b75d2713c0bb3a4"
   },
   {
     "file": "js/page.js",
     "hash": "8ae3973eeffeb21e04802ea90bcd7e39"
   },
   {
-    "file": "js/test.js",
-    "hash": "f7d3c25abdfbb540ca4c8de278730d8b"
-  },
-  {
     "file": "js/util.js",
-    "hash": "d7af32dcac91017127abfb3f0b7fb215"
+    "hash": "f05adff7a7aabc535b0b4412e68e3081"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -105,11 +105,11 @@
   },
   {
     "file": "page/bookdetail.page.css",
-    "hash": "3d17f06eeb9ab3ee87c749275c677d86"
+    "hash": "fa35fb12c1f4adf866a6879f71646698"
   },
   {
     "file": "page/bookdetail.page.html",
-    "hash": "31e132bccdd356ff56771346f2f9266f"
+    "hash": "e0292bc15b7157921a42aeab41a79573"
   },
   {
     "file": "page/bookdetail.page.js",
@@ -117,42 +117,42 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "93348a24a806afd16f7d010e31d41bb2"
+    "hash": "d55ab172db6a7f7a720c16135841c206"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "5318674467a8f78a588b0548a9f2725c"
+    "hash": "68bf079b98d09f93312fb92e827aeeaa"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "8740beedcdedb61e47e0107ea1c844ab"
+    "hash": "1955afc8f77ff1ed40a83696d1b56be4"
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "6787ea8eb47c6be317c98c5964753f80"
+    "hash": "7248ed74ae37b6857bc61a397b2b24c4"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "090a27c0503281a6f96be97996652492"
+    "hash": "c69e8f6ff50f3f3245423deb9b0058fc"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "bdff098a69217c6507d1ce6d97e24bec"
+    "hash": "95941c6d803c26a8f72e9e8bff1f8dc5"
   },
   {
     "file": "page/search.page.css",
-    "hash": "5620835324e1b1cebc7213a41b0dad2e"
+    "hash": "b57a157ff4d007c5679a297e00519b39"
   },
   {
     "file": "page/search.page.html",
-    "hash": "2d73ef4673f2fa709ab4a50f60b52213"
+    "hash": "7d28e7357539f0fe76644ae7099aeecd"
   },
   {
     "file": "page/search.page.js",
-    "hash": "02aef275e483c9027529c3ae8efbec0d"
+    "hash": "8b860bfecff2ba5cc8886499cc8d97e7"
   },
   {
     "file": "test.html",
-    "hash": "41d456365d08b64df36ce9b552e631f4"
+    "hash": "3c0300402b79178ac4f0e4040bbf1a18"
   }
 ]
