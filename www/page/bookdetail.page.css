@@ -12,6 +12,16 @@
     border-color: #aaa;
 }
 
-h4 {
+.book-chapters-div h4 {
     text-align: center;
+}
+
+.book-cover{
+    margin: 10px 0;
+    width:90px;
+    height:120px;
+}
+
+.media-body button{
+    margin: 5px 10px;
 }

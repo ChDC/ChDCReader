@@ -179,6 +179,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     }
 
     function loadCatalog(forceRefresh){
+        app.showLoading();
         $('#listCatalogContainer').height($(window).height() * 0.5);
 
         function listCatalogEntryClick(event){
@@ -205,6 +206,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                     lce.css("color", 'red');
                 }
             });
+            app.hideLoading();
 
         }, fail, {bookSourceManager: app.bookSourceManager, forceRefresh:forceRefresh});
     }

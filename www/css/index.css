@@ -6,7 +6,14 @@
 }
 
 ul {
+    padding: 0 10px;
+    position: relative;
     list-style-type: none
+}
+
+li {
+    border-top: 1px solid #e1e1e1;
+    padding: 1em 0;
 }
 
 .message-box-container{
@@ -79,4 +86,11 @@ ul {
 
 .template{
     display: none;
+}
+
+#dialogLoading .modal-dialog{
+    margin: auto;
+    position: relative;
+    top: 50%;
+    text-align: center;
 }

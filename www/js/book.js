@@ -20,6 +20,7 @@ define(["jquery", "util"], function($, util) {
             203: "前面没有章节了！",
             204: "索引值超界！",
             205: "索引值应该是数字！",
+            206: "章节内容错误",
 
             301: "设置主要内容来源失败！",
             401: "源配置不正确！",
@@ -641,7 +642,6 @@ define(["jquery", "util"], function($, util) {
 
     // 从网络上获取章节内容
     Book.prototype.__getChapterContentFromBookSource = function(chapterLink, success, fail, options){
-        debugger;
         var self = this;
         options = $.extend({}, options);
 
@@ -653,10 +653,15 @@ define(["jquery", "util"], function($, util) {
 
         function getChapterFromHtml(html){
             var chapter = new Chapter();
+            chapter.content = Book.fixer.fixChapterContent(html.find(info.content).html());
+            if(!chapter.content){
+                // 没有章节内容就返回错误
+                if(fail)fail(getError(206));
+                return;
+            }
             chapter.link = chapterLink;
             chapter.title = Book.fixer.fixChapterTitle(html.find(info.title).text());
             // chapter.modifyTime = html.find(info.modifyTime).text().trim();
-            chapter.content = Book.fixer.fixChapterContent(html.find(info.content).html());
             if(success)success(chapter);
         }
     };
@@ -762,8 +767,6 @@ define(["jquery", "util"], function($, util) {
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.cacheChapter = function(chapterIndex, nextCount, options){
 
-        debugger;
-        // TODO
         var self = this;
         options = $.extend({}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;

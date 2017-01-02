@@ -1,10 +1,16 @@
 <div class="container">
-  <div class="serachbar row header">
-    <input class="col-xs-7 keyword" type="text" value="银狐" />
+  <div class="titlebar row header">
+    <button class="toolbar-button btn btn-link pull-left" id="btnClose"><i class="glyphicon glyphicon-chevron-left"></i><!--返回--></button>
+    <p class="title">搜索</p>
+  </div>
+
+  <div class="searchbar header row">
+    <input class="col-xs-7 keyword" type="text" placeholder="输入书名" value="银狐" />
     <select class="col-xs-3 bookSource">
     </select>
-    <button class="btn btn-link col-xs-2 pull-right btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+    <button class="btn btn-link col-xs-2 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
   </div>
+
   <div class="result">
 
   </div>

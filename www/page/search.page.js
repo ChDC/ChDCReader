@@ -52,14 +52,16 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
                 var newOption = '<option value ="'+ bskey + '">' + bs.name + '</option>';
                 bookSource.append(newOption);
             }
-
+            $("#btnClose").click(function(){page.closePage();});
             $(".btnSearch").click(function(){
+                app.showLoading();
                 var keyword = $(".keyword").val();
                 var bookSourceId = $(".bookSource").val();
                 if(keyword && bookSourceId){
                     book.Book.searchBook(app.bookSourceManager, bookSourceId, keyword,
                             function(books){
                                 loadBooks(".result", books, bookSourceId);
+                                app.hideLoading();
                             });
                 }
             });

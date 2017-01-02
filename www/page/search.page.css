@@ -1,16 +1,53 @@
+.titlebar{
+    width:100%;
+    padding: 0;
+}
+.titlebar p{
+    position: relative;
+    left: 20%;
+    width: 60%;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
+    padding: 7px 5px;
+}
+
+
 .header{
     width:100%;
     background-color: #EE0000;
-    padding:10px;
+    /*padding:10px;*/
     margin:0;
 }
 
+.searchbar{
+    width:100%;
+}
+
 .keyword{
-    margin: 0 10px 0 0;
+    /*width: 108px;*/
+    /*margin: 0 10px 0 0;*/
+    padding: 7px 5px;
+    background-color: transparent;
+    border-width: 0;
+    color: white;
+}
+
+.bookSource {
+    color: white;
+    padding: 7px 5px;
+    background-color: transparent;
+    border-width: 0;
+}
+
+.bookSource option{
+    color: #000;
 }
 
 .btn-link{
     color: #fff;
+    background-color: #EE0000;
 }
 
 
@@ -28,6 +65,7 @@
 
 
 .book-cover{
+    margin: 10px 0;
     width:90px;
     height:120px;
 }
@@ -37,4 +75,8 @@
     border-style: solid;
     border-width: 0 0 1px 0;
     border-color: #aaa;
+}
+
+.result .media-body button{
+    margin: 5px 10px;
 }

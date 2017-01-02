@@ -64,6 +64,13 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
                 console.log('About to install: ' + data.readyToInstallVersion);
                 if(chcp)chcp.installUpdate(installationCallback);
             });
+        },
+
+        showLoading: function(){
+            $("#dialogLoading").modal('show');
+        },
+        hideLoading: function(){
+            $("#dialogLoading").modal('hide');
         }
     };
     app.init();

@@ -39,7 +39,21 @@
 }
 
 #listCatalogContainer{
+    /*position: relative;*/
     width: 100%;
     /*position: absolute;*/
     overflow: auto;
 }
+
+
+/*#listCatalog{
+    padding: 0 10px;
+    position: relative;
+    list-style-type:circle;
+}*/
+
+/*.listCatalogEntry{
+    width: 100%;
+    border-top: 1px solid #e1e1e1;
+    padding: 1em 0;
+}*/
