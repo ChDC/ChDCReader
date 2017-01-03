@@ -46,11 +46,11 @@
     overflow: auto;
 }
 
-.btnLast{
+.toolbar .btnLast{
     background-color: #eee;
 }
 
-.btnNext{
+.toolbar .btnNext{
     background-color: #eee;
 }
 

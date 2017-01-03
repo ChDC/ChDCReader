@@ -158,6 +158,12 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     function loadChapter(chapterIndex, extras){
         var opts = $.extend({}, options);
         $.extend(opts, extras);
+        opts.onGetRemoteChapterContent = function(){
+            app.showLoading();
+        };
+        opts.onGottenRemoteChapterContent = function(){
+            app.hideLoading();
+        };
         book.getChapter(chapterIndex,
             function(chapter, index, options){
                 $(".chapter-title").text(chapter.title);

@@ -18,11 +18,12 @@ define(["jquery", "util"], function($, util) {
             201: "未发现该章节！",
             202: "没有更新的章节了！",
             203: "前面没有章节了！",
-            204: "索引值超界！",
             205: "索引值应该是数字！",
             206: "章节内容错误",
+            207: "未从缓存中发现该章节",
 
             301: "设置主要内容来源失败！",
+            302: "未找到该源",
             401: "源配置不正确！",
             404: "未在当前的源中找到该书！"
         };
@@ -200,7 +201,7 @@ define(["jquery", "util"], function($, util) {
                 if(success)success(self.sources[options.bookSourceId], options.bookSourceId);
             }
             else{
-                if(fail)fail(Book.getError(404));
+                if(fail)fail(Book.getError(302));
             }
         }
     }
@@ -367,28 +368,61 @@ define(["jquery", "util"], function($, util) {
 
     // *************************** 章节部分 ****************
 
+    // 获取指定源的指定索引的章节
+    Book.prototype.index = function(chapterIndex, success, fail, options){
+        if($.type(chapterIndex) != "number"){
+            if(fail)
+                fail(Book.getError(205));
+            return;
+        }
+
+        var self = this;
+        options = $.extend({}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        self.getCatalog(function(catalog){
+            if(chapterIndex >= 0 && chapterIndex < catalog.length){
+                // 存在于目录中
+                if(success)success(catalog[chapterIndex], chapterIndex, catalog);
+            }
+            else if(chapterIndex >= catalog.length)
+            {
+                // 超界了
+                // 没有下一章节或者目录没有更新
+                // 更新一下主目录源，然后再搜索
+                self.refreshCatalog(function(catalog){
+                    if(chapterIndex >=0 && chapterIndex < catalog.length){
+                        // 存在于目录中
+                        if(success)success(catalog[chapterIndex], chapterIndex, catalog);
+                    }
+                    else{
+                        if(fail)fail(Book.getError(202));
+                    }
+                }, fail, options);
+            }
+            else{
+                // index < 0
+                if(fail)fail(Book.getError(203));
+            }
+        }, fail, options);
+    }
+
     // 在指定的源 B 中搜索目录源的中某章节的相对应的章节
     Book.prototype.fuzzySearch = function(sourceB, index, success, fail, options){
 
         var self = this;
         options = $.extend({}, options);
 
-        // 获取目录源的目录
-        self.getCatalog(function(catalog){
-            if(options.bookSourceId == sourceB){
-                if(index >= 0 && index < catalog.length)
-                {
-                    if(success){
-                        var chapter = catalog[index];
-                        success(chapter, index, catalog, sourceB);
-                    }
-                }
-                else{
-                    // 没找到，下一个源
-                    if(fail)fail(Book.getError(201));
-                }
-            }
-            else{
+        if(options.bookSourceId == sourceB){
+        // 两源相同
+            self.index(index, function(chapter, chapterIndex, catalog){
+                if(success)success(chapter, chapterIndex, catalog, sourceB);
+            },
+            fail, options);
+        }
+        else{
+            // 获取目录源的目录
+            self.getCatalog(function(catalog){
                 // 获取源B 的目录
                 options.bookSourceId = sourceB;
                 self.getCatalog(function(catalogB){
@@ -401,14 +435,29 @@ define(["jquery", "util"], function($, util) {
                         }
                     }
                     else{
-                        // 没找到，下一个源
-                        if(fail)fail(Book.getError(201));
+                        // 没找到
+                        // 更新章节目录然后重新查找
+                        self.refreshCatalog(function(catalogB){
+                            var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
+                            if(indexB >= 0){
+                                // 找到了
+                                if(success){
+                                    var chapterB = catalogB[indexB];
+                                    success(chapterB, indexB, catalogB, sourceB);
+                                }
+                            }
+                            else{
+                                if(fail)fail(Book.getError(201));
+                            }
+                        },
+                        fail, options);
                     }
                 },
                 fail, options);
-            }
-        },
-        fail, options);
+            },
+            fail, options);
+        }
+
     };
 
     // 从网上获取指定的章节
@@ -423,40 +472,13 @@ define(["jquery", "util"], function($, util) {
     // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapter = function(chapterIndex, success, fail, options){
-        if($.type(chapterIndex) != "number"){
-            if(fail)
-                fail(Book.getError(205));
-            return;
-        }
 
         var self = this;
         options = $.extend({}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        self.getCatalog(function(catalog){
-            if(chapterIndex >= 0 && chapterIndex < catalog.length){
-                // 存在于目录中
-                self.__getChapterFromContentSources(catalog, chapterIndex, success, fail, options);
-            }
-            else if(chapterIndex >= catalog.length)
-            {
-                // 超界了
-                // 没有下一章节或者目录没有更新
-                // 更新一下主目录源，然后再搜索
-                self.refreshCatalog(function(catalog){
-                    if(chapterIndex >=0 && chapterIndex < catalog.length){
-                        // 存在于目录中
-                        self.__getChapterFromContentSources(catalog, chapterIndex, success, fail, options);
-                    }
-                    else{
-                        if(fail)fail(Book.getError(202));
-                    }
-                }, fail, options);
-            }
-            else{
-                // index < 0
-                if(fail)fail(Book.getError(203));
-            }
+        self.index(chapterIndex, function(chapter, index, catalog){
+            self.__getChapterFromContentSources(catalog, chapterIndex, success, fail, options);
         }, fail, options);
     };
 
@@ -612,8 +634,9 @@ define(["jquery", "util"], function($, util) {
             opts.bookSourceId = contentSourceId;
             if(!options.noInfluenceWeight)
                 self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
-            self.getCatalog(function(catalogB){
-                var chapterB = catalogB[contentSourceChapterIndex];
+
+            self.index(contentSourceChapterIndex,
+                function(chapterB, indexB, catalogB){
                 if(Chapter.equalTitle(chapterA, chapterB)){
                     self.__getChapterContent(chapterB, contentSourceChapterIndex,
                         function(chapterB){
@@ -631,7 +654,6 @@ define(["jquery", "util"], function($, util) {
                         handleWithNormalMethod, opts);
                 }
                 else{
-                    debugger;
                     // 不相等，则按正常方式获取
                     handleWithNormalMethod();
                 }
@@ -669,6 +691,8 @@ define(["jquery", "util"], function($, util) {
     // 从本地或网络上获取章节内容
     // * cacheDir 缓存章节的目录
     // * onlyCacheNoLoad 只缓存章节，不加载章节
+    // * onGetRemoteChapterContent 当从外部获取章节时触发的事件
+    // * onGottenRemoteChapterContent 当从外部获取到章节时触发的事件
     // success(chapter)
     Book.prototype.__getChapterContent = function(chapter, index, success, fail, options){
         var self = this;
@@ -682,11 +706,15 @@ define(["jquery", "util"], function($, util) {
                 if(success)success(options.onlyCacheNoLoad? chapter: c);
             },
             function(error){
-                if(error.id == 201)
+                if(error.id == 207)
                 {
+                    if(options.onGetRemoteChapterContent)
+                        options.onGetRemoteChapterContent();
                     // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
                     self.__getChapterContentFromBookSource(chapter.link,
                         function(chapter){
+                            if(options.onGottenRemoteChapterContent)
+                                options.onGottenRemoteChapterContent();
                             // 获取章节成功
                             if(success)success(chapter);
                             // 缓存该章节
@@ -735,12 +763,12 @@ define(["jquery", "util"], function($, util) {
                 }
             },
             function(){
-                if(fail)fail(Book.getError(201));
+                if(fail)fail(Book.getError(207));
             });
         }
         else{
             // 章节不存在
-            if(fail)fail(Book.getError(201));
+            if(fail)fail(Book.getError(207));
         }
     };
 
@@ -776,7 +804,6 @@ define(["jquery", "util"], function($, util) {
         chapterIndex--;
         options.contentSourceChapterIndex--;
         nextCount++;
-
         next();
         function next(){
             chapterIndex++;
@@ -789,7 +816,12 @@ define(["jquery", "util"], function($, util) {
                         next();
                     },
                     function(error){
-                        next();
+                        if(error.id == 202)
+                            // 当没有更新的章节时，直接退出
+                            return;
+                        else{
+                            next();
+                        }
                     }, options);
             }
         }
