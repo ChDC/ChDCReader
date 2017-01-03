@@ -16,23 +16,13 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
         bookShelf: null,
         util: util,
         init: function(){
-            var self = this;
-
-            document.addEventListener("chcp_updateInstalled", function(){
-                debugger;
-                util.showMessage("更新资源成功！");
-                location.reload();
-            }, false);
-
-            // reactCSS.init();
-
-            this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
-            this.bookShelf = new book.BookShelf();
-            this.settings = settings;
-            page.init();
-            // self.page = page;
-            page.showPage("bookshelf");
-            // this.chekcUpdate();
+            if(typeof cordova != 'undefined'){
+                document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+                document.addEventListener("chcp_updateInstalled", this.onUpdateInstalled.bind(this), false);
+            }
+            else{
+                $(this.onDeviceReady.bind(this));
+            }
         },
         chekcUpdate: function(){
             debugger;
@@ -71,9 +61,24 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
         },
         hideLoading: function(){
             $("#dialogLoading").modal('hide');
+        },
+
+        onDeviceReady: function() {
+            var self = this;
+            this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
+            this.bookShelf = new book.BookShelf();
+            this.settings = settings;
+            page.init();
+            page.showPage("bookshelf");
+            // this.chekcUpdate();
+        },
+        onUpdateInstalled: function(){
+            util.showMessage("更新资源成功！");
+            location.reload();
         }
     };
-    app.init();
+
     window.app = app;
+    app.init();
     return app;
 });
