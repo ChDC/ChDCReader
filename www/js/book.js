@@ -744,8 +744,8 @@ define(["jquery", "util"], function($, util) {
         var bookSourceId = options.bookSourceId || '';
         var bid = self.name + '.' + self.author;
         var chapterFileName = index + '.' + bookSourceId + '.json';
-        var cacheDir = options.cacheDir;
-        var dest = cacheDir + "/" + bid + "/" + chapterFileName;
+        var cacheDir = options.cacheDir || "chapter";
+        var dest = cacheDir + "_" + bid + "_" + chapterFileName;
         return dest;
     }
 
@@ -756,29 +756,35 @@ define(["jquery", "util"], function($, util) {
 
         var self = this;
         var dest = self.__getCacheChapterLocation(index, options);
-        if(util.fileExists(dest)){
-            // 章节存在
-            if(options.onlyCacheNoLoad){
-                if(success)success(null);
-                return;
-            }
-            // 获取章节内容
-            util.loadJSONFromFile(dest, function(data){
-                if(success){
-                    var chapter = new Chapter();
-                    // 类型转换
-                    chapter = $.extend(chapter, data);
-                    success(chapter);
+        util.fileExists(dest,
+            function(){
+                // 章节存在
+                if(options.onlyCacheNoLoad){
+                    if(success)success(null);
+                    return;
                 }
+                // 获取章节内容
+                util.loadJSONFromFile(dest, function(data){
+                    if(data != null){
+                        if(success){
+                            var chapter = new Chapter();
+                            // 类型转换
+                            chapter = $.extend(chapter, data);
+                            success(chapter);
+                        }
+                    }
+                    else{
+                        if(fail)fail(Book.getError(207));
+                    }
+                },
+                function(){
+                    if(fail)fail(Book.getError(207));
+                });
             },
             function(){
+                // 章节不存在
                 if(fail)fail(Book.getError(207));
             });
-        }
-        else{
-            // 章节不存在
-            if(fail)fail(Book.getError(207));
-        }
     };
 
     // 缓存章节内容

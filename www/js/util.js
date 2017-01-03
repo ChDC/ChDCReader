@@ -9,6 +9,7 @@ define(["jquery"], function($){
     // });
 
     if (typeof cordovaHTTP != "undefined") {
+        console.log("Set HTTP Header!");
         cordovaHTTP.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36");
     }
 
@@ -406,21 +407,111 @@ define(["jquery"], function($){
         // 保存 JSON 对象到文件中
         saveJSONToFile: function(file, data, success, fail){
             // TODO
-            this.storage.setItem(file, data);
-            if(success)success();
+            //创建并写入文件
+            function createAndWriteFile(){
+                //持久化数据保存
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0,
+                    function (fs) {
+                        console.log('打开的文件系统: ' + fs.name);
+                        fs.root.getFile(file, { create: true, exclusive: false },
+                            function (fileEntry) {
+                                //文件内容
+                                var dataObj = new Blob([JSON.stringify(data)], { type: 'text/plain' });
+                                //写入文件
+                                writeFile(fileEntry, dataObj);
+
+                            }, fail);
+
+                    }, fail);
+            }
+
+            //将内容数据写入到文件中
+            function writeFile(fileEntry, dataObj) {
+                //创建一个写入对象
+                fileEntry.createWriter(function (fileWriter) {
+
+                    //文件写入成功
+                    fileWriter.onwriteend = function() {
+                        console.log("Successful file read...");
+                    };
+
+                    //文件写入失败
+                    fileWriter.onerror = function (e) {
+                        console.log("Failed file read: " + e.toString());
+                    };
+
+                    //写入文件
+                    fileWriter.write(dataObj);
+                    if(success)success();
+                });
+            }
+
+            if(window.requestFileSystem){
+                createAndWriteFile();
+            }
+            else{
+                this.storage.setItem(file, data);
+                if(success)success();
+            }
         },
 
         // 从文件中获取 JSON 对象
         loadJSONFromFile: function(file, success, fail){
             // TODO
-            var data = this.storage.getItem(file);
-            if(success)success(data);
+            function readFile(){
+                //持久化数据保存
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0,
+                    function (fs) {
+                        console.log('打开的文件系统: ' + fs.name);
+                        fs.root.getFile(file, { create: false, exclusive: false },
+                            function (fileEntry) {
+                                fileEntry.file(function (file) {
+                                    var reader = new FileReader();
+
+                                    reader.onloadend = function() {
+                                        var data = JSON.parse(this.result);
+                                        if(success)success(data);
+                                    };
+
+                                    reader.readAsText(file);
+
+                                }, fail);
+                            }, fail);
+
+                    }, fail);
+            }
+
+            if(window.requestFileSystem){
+                readFile();
+            }
+            else{
+                var data = this.storage.getItem(file);
+                if(success)success(data);
+            }
         },
 
         // 检查文件是否存在
-        fileExists: function(file){
+        fileExists: function(file, exist, notExist){
             // TODO
-            return this.storage.hasItem(file);
+            if(window.requestFileSystem){
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+
+                    console.log('file system open: ' + fs.name);
+                    fs.root.getFile(file, { create: false, exclusive: false }, function (fileEntry) {
+                            if(fileEntry.isFile)
+                                if(exist)exist();
+                            else
+                                if(notExist)notExist();
+                        }, notExist);
+
+                }, notExist);
+            }
+            else{
+                if(this.storage.hasItem(file))
+                    if(exist)exist();
+                else
+                    if(notExist)notExist();
+            }
         }
     };
 
