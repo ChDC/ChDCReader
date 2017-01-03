@@ -34,7 +34,12 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
                 };
             }(book);
             // nb.click(bookDetailEvent);
-            nb.find(".btnAddToBookshelf").click(bookAddBookShelfEvent);
+            if(app.bookShelf.hasBook(book)){
+                nb.find(".btnAddToBookshelf").hide();
+            }
+            else{
+                nb.find(".btnAddToBookshelf").click(bookAddBookShelfEvent);
+            }
             nb.find(".btnDetail").click(bookDetailEvent);
             bs.append(nb);
         };

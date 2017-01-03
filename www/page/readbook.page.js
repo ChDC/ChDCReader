@@ -80,6 +80,10 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             opts.excludes = [readingRecord.options.contentSourceId];
             loadChapter(readingRecord.chapterIndex, opts);
         });
+        $("#btnSortReversed").click(function(){
+            var list = $('#listCatalog');
+            list.append(list.children().toArray().reverse());
+        });
         // TODO: 修改内容源
         $("#btnChangeMainContentSource").click(function(){
             $("#modalBookSource").modal('show');

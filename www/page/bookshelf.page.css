@@ -17,10 +17,10 @@
     padding:15px 15px 15px 15px;
 }
 
-
 .book-cover{
-    width:90px;
+    width: 90px;
     height:120px;
+    margin: 10px 0;
 }
 
 .bookshelf .book{

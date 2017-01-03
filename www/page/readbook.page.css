@@ -34,6 +34,7 @@
 }
 
 
+
 .toolbar{
     display: none;
 }
@@ -43,6 +44,14 @@
     width: 100%;
     /*position: absolute;*/
     overflow: auto;
+}
+
+.btnLast{
+    background-color: #eee;
+}
+
+.btnNext{
+    background-color: #eee;
 }
 
 

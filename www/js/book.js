@@ -333,13 +333,13 @@ define(["jquery", "util"], function($, util) {
             var chapter = new Chapter();
             chapter.link = util.fixurl(element.attr('href'), htmlLink);
             chapter.title = Book.fixer.fixChapterTitle(element.text());
-            // chapter.bookSourceId = options.bookSourceId;
-            var i = util.arrayIndex(catalog, null, function(e){
-                return e && e.title == chapter.title;
-            });
-            if(i >= 0){
-                catalog[i] = null;
-            }
+            // 去重复
+            // var i = util.arrayIndex(catalog, null, function(e){
+            //     return e && e.title == chapter.title;
+            // });
+            // if(i >= 0){
+            //     catalog[i] = null;
+            // }
             catalog.push(chapter);
         });
         return catalog.filter(function(e){return e});
@@ -925,7 +925,16 @@ define(["jquery", "util"], function($, util) {
         if(success)success();
     };
 
-
+    // 判断书架中是否有某书
+    BookShelf.prototype.hasBook = function(book){
+        var i = util.arrayIndex(this.books, book, function(e1, e2){
+            return e1.name == e2.name && e1.author == e2.author && e1.mainSource == e2.mainSource;
+        });
+        if(i >= 0)
+            return this.books[i];
+        else
+            return null;
+    };
 
     // **** Return package *****
 

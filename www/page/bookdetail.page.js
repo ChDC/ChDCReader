@@ -26,11 +26,16 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             page.showPage("readbook", params);
         });
 
-        nb.find(".btnAddToBookshelf").click(function(){
-            app.bookShelf.addBook(book, function(){
-                util.showMessage("添加成功！");
+        if(app.bookShelf.hasBook(book)){
+            nb.find(".btnAddToBookshelf").hide();
+        }
+        else{
+            nb.find(".btnAddToBookshelf").click(function(){
+                app.bookShelf.addBook(book, function(){
+                    util.showMessage("添加成功！");
+                });
             });
-        });
+        }
     };
 
     // 加载章节列表
