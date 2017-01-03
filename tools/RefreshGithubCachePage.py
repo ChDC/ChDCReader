@@ -13,7 +13,7 @@ log = logging.getLogger()
 
 def main():
     pool = Pool(4)
-    baseURL = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/www/'
+    baseURL = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/'
     urls = []
     for root, dirs, files in os.walk('www'):
         for file in files:
