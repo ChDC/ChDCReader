@@ -15,7 +15,7 @@ def main():
     pool = Pool(4)
     baseURL = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/www/'
     urls = []
-    for root, dirs, files in os.walk('../www'):
+    for root, dirs, files in os.walk('www'):
         for file in files:
             file = os.path.join(root, file)
             url = parse.urljoin(baseURL, file.replace(os.sep, '/'))
