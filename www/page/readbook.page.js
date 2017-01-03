@@ -6,6 +6,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     var chapterScrollY = 0;
 
     function fail(error){
+        app.hideLoading();
         util.showError(error.message);
     }
 

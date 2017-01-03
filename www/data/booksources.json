@@ -51,7 +51,8 @@
     "qidian": {
         "catalog": {
             "info": {
-                "link": "div.volume li[data-rid]>a"
+                "link": "div.volume li[data-rid]>a",
+                "vipLinkPattern": "vip"
             },
             "url": "http://book.qidian.com/info/{book_id}#Catalog"
         },

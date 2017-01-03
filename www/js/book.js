@@ -333,6 +333,10 @@ define(["jquery", "util"], function($, util) {
             var element = $(this);
             var chapter = new Chapter();
             chapter.link = util.fixurl(element.attr('href'), htmlLink);
+            if(info.vipLinkPattern && chapter.link.match(info.vipLinkPattern)){
+               chapter.link = null;
+            }
+
             chapter.title = Book.fixer.fixChapterTitle(element.text());
             // 去重复
             // var i = util.arrayIndex(catalog, null, function(e){
@@ -542,8 +546,8 @@ define(["jquery", "util"], function($, util) {
         // 提交结果
         function submitResult(){
             if(result.length <= 0){
-                if(fail)
-                    fail(Book.getError(201));
+                if(finalFail)
+                    finalFail(Book.getError(201));
             }
             else{
                 if(success){
@@ -664,6 +668,11 @@ define(["jquery", "util"], function($, util) {
 
     // 从网络上获取章节内容
     Book.prototype.__getChapterContentFromBookSource = function(chapterLink, success, fail, options){
+        if(!chapterLink){
+            if(fail)fail(Book.getError(206));
+            return;
+        }
+
         var self = this;
         options = $.extend({}, options);
 
@@ -678,7 +687,7 @@ define(["jquery", "util"], function($, util) {
             chapter.content = Book.fixer.fixChapterContent(html.find(info.content).html());
             if(!chapter.content){
                 // 没有章节内容就返回错误
-                if(fail)fail(getError(206));
+                if(fail)fail(Book.getError(206));
                 return;
             }
             chapter.link = chapterLink;

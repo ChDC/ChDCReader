@@ -79,12 +79,17 @@ define(["jquery"], function($){
         * failure: 失败调用的函数
         */
         get: function(url, params, success, failure) {
+            if(url == null){
+                if(failure)
+                    failure('null');
+                return;
+            }
             this.log("Get:" + url + "&" + this.__getParamsString(params));
             url = encodeURI(url);
             var self = this;
             // TODO: 设置重试的次数
             function handleNetworkError(data) {
-                self.error("Fail to getJSON: " + url + ", 网络错误");
+                self.error("Fail to get: " + url + ", 网络错误");
                 self.showMessage("网络错误！");
                 if (failure) failure(data);
             }
