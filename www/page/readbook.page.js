@@ -29,7 +29,20 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         loadCurrentChapter(-1);
     }
 
+    function pullUpToLastChapter(){
+
+    }
     function loadView(){
+        var lock = false;
+        $(".chapterContainer").scroll(function(event){
+            if(!lock && $(this).children().last().position().top <=0){
+                lock = true;
+                console.log('Load next chapter!');
+
+
+            }
+        });
+        pullUpToLastChapter();
         // 将章节滚动位置存储到变量中
         $('.chapter').scroll(function(){
             chapterScrollY = $('.chapter').scrollTop();

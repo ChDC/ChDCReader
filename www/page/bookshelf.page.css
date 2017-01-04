@@ -24,7 +24,7 @@
 }
 
 .bookshelf .book{
-    padding-bottom: 15px;
+    padding: 10px 10px;
     border-style: solid;
     border-width: 0 0 1px 0;
     border-color: #aaa;

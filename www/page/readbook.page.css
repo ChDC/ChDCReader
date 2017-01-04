@@ -1,5 +1,4 @@
-
-.chapter{
+.chapterContainer{
     padding: 15px;
     position: absolute;
     height: 100%;
@@ -7,6 +6,10 @@
     overflow: auto;
     word-wrap: break-word;
     background-image: url(../img/readbg1.jpg);
+}
+
+.chapter{
+    word-wrap: break-word;
 }
 
 .container{
