@@ -48,15 +48,19 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
             if(isClickInRegion(0.3, 0.6))
             {
+                // 弹出工具栏
                 $('.toolbar').toggle();
             }
             else if(isClickInRegion(0, 0.3))
             {
+                // 点击上半部分，向上滚动
                 $('.toolbar').hide();
             }
             else if(isClickInRegion(0.6, 0.9))
             {
+                // 点击下半部分，向下滚动
                 $('.toolbar').hide();
+
             }
         });
         $(".toolbar").blur(function(){

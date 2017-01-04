@@ -498,19 +498,23 @@ define(["jquery"], function($){
 
                     console.log('file system open: ' + fs.name);
                     fs.root.getFile(file, { create: false, exclusive: false }, function (fileEntry) {
-                            if(fileEntry.isFile)
+                            if(fileEntry.isFile){
                                 if(exist)exist();
-                            else
+                            }
+                            else{
                                 if(notExist)notExist();
+                            }
                         }, notExist);
 
                 }, notExist);
             }
             else{
-                if(this.storage.hasItem(file))
+                if(this.storage.hasItem(file)){
                     if(exist)exist();
-                else
+                }
+                else{
                     if(notExist)notExist();
+                }
             }
         }
     };
