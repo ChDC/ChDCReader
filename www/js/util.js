@@ -256,7 +256,7 @@ define(["jquery"], function($){
         arrayCast: function(array, ClassFunction){
             for(var i = 0; i < array.length; i++){
                 var nc = new ClassFunction();
-                $.extend(nc, array[i]);
+                $.extend(true, nc, array[i]);
                 array[i] = nc;
             }
         },
@@ -405,11 +405,10 @@ define(["jquery"], function($){
         },
 
         // 保存 JSON 对象到文件中
-        saveJSONToFile: function(file, data, success, fail, isPersistent){
-            // TODO
+        saveJSONToFile: function(file, data, success, fail, isCacheDir){
             //创建并写入文件
             function createAndWriteFile(){
-                var fileSystem = isPersistent? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 //持久化数据保存
                 window.requestFileSystem(fileSystem, 0,
                     function (fs) {
@@ -454,10 +453,9 @@ define(["jquery"], function($){
         },
 
         // 从文件中获取 JSON 对象
-        loadJSONFromFile: function(file, success, fail, isPersistent){
-            // TODO
+        loadJSONFromFile: function(file, success, fail, isCacheDir){
             function readFile(){
-                var fileSystem = isPersistent? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 //持久化数据保存
                 window.requestFileSystem(fileSystem, 0,
                     function (fs) {
@@ -489,10 +487,9 @@ define(["jquery"], function($){
         },
 
         // 检查文件是否存在
-        fileExists: function(file, exist, notExist, isPersistent){
-            // TODO
+        fileExists: function(file, exist, notExist, isCacheDir){
             if(window.requestFileSystem){
-                var fileSystem = isPersistent? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 window.requestFileSystem(fileSystem, 0, function (fs) {
 
                     fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {

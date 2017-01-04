@@ -99,7 +99,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         });
         $("#btnBadChapter").click(function(){
             debugger;
-            var opts = $.extend({}, options);
+            var opts = $.extend(true, {}, options);
             opts.excludes = [readingRecord.options.contentSourceId];
             loadChapter(readingRecord.chapterIndex, opts);
         });
@@ -179,8 +179,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     }
 
     function loadChapter(chapterIndex, extras){
-        var opts = $.extend({}, options);
-        $.extend(opts, extras);
+        var opts = $.extend(true, {}, options);
+        $.extend(true, opts, extras);
         opts.onGetRemoteChapterContent = function(){
             app.showLoading();
         };
@@ -210,7 +210,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     function cacheChapter(chapterIndex, opts){
         // 缓存后面的章节
-        opts = $.extend({}, options, opts);
+        opts = $.extend(true, {}, options, opts);
         chapterIndex++;
         opts.contentSourceChapterIndex++;
         opts.count = app.settings.cacheCountEachChapter;

@@ -1,4 +1,5 @@
-define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, page) {
+define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($, util, book, page, bookshelf) {
+
     "use strict"
 
     var settings = {
@@ -66,7 +67,8 @@ define(["jquery", "util", "book", "page", "bootstrap"], function($, util, book, 
         onDeviceReady: function() {
             var self = this;
             this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
-            this.bookShelf = new book.BookShelf();
+
+            this.bookShelf = new bookshelf.BookShelf();
             this.settings = settings;
             page.init();
             page.showPage("bookshelf");
