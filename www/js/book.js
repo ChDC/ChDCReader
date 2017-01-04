@@ -62,6 +62,8 @@ define(["jquery", "util"], function($, util) {
     Book.searchBook = function(bookSourceManager, bsid, keyword, success, fail){
         var bs = bookSourceManager.sources[bsid];
         if(!bs)return;
+        util.log('Search Book from: ' + bsid);
+
         var search = bs.search;
         var searchLink = util.format(search.url, {keyword: keyword});
         util.getDOM(searchLink, {}, getBookFromHtml, fail);
@@ -304,6 +306,8 @@ define(["jquery", "util"], function($, util) {
 
     // 刷新目录
     Book.prototype.refreshCatalog = function(success, fail, options){
+        util.log('Refresh Catalog!');
+
         var self = this;
         options = $.extend({}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
@@ -673,6 +677,8 @@ define(["jquery", "util"], function($, util) {
             return;
         }
 
+        util.log('Load Chpater content from Book Source: ' + chapterLink);
+
         var self = this;
         options = $.extend({}, options);
 
@@ -743,7 +749,7 @@ define(["jquery", "util"], function($, util) {
         var self = this;
         var bookSourceId = options.bookSourceId || '';
         var bid = self.name + '.' + self.author;
-        var chapterFileName = index + '.' + bookSourceId + '.json';
+        var chapterFileName = index + '.' + bookSourceId;
         var cacheDir = options.cacheDir || "chapter";
         var dest = cacheDir + "_" + bid + "_" + chapterFileName;
         return dest;
@@ -950,26 +956,31 @@ define(["jquery", "util"], function($, util) {
     BookShelf.prototype.books = undefined;
 
     // 添加书籍到书架中
-    BookShelf.prototype.load = function(){
+    BookShelf.prototype.load = function(success, fail){
         var self = this;
-        var bookShelf = util.storage.getItem("bookShelf") || {};
-        $.extend(self, bookShelf);
-
-        util.arrayCast(self.books, Book);
-        util.arrayCast(self.readingRecords, ReadingRecord);
+        util.loadJSONFromFile("bookshelf",
+            function(data){
+                var bookShelf = data;
+                $.extend(self, bookShelf);
+                util.arrayCast(self.books, Book);
+                util.arrayCast(self.readingRecords, ReadingRecord);
+                if(success)success();
+            },
+            fail, true);
     };
 
     // 添加书籍到书架中
-    BookShelf.prototype.save = function(){
-        util.storage.setItem("bookShelf", this || {});
+    BookShelf.prototype.save = function(success, fail){
+        var self = this;
+        util.saveJSONToFile("bookshelf", self,
+            success, fail, true);
     };
 
     // 添加书籍到书架中
     BookShelf.prototype.addBook = function(book, success, fail){
         this.books.push(book);
         this.readingRecords.push(new ReadingRecord());
-        this.save();
-        if(success)success();
+        this.save(success);
     };
 
     // 判断书架中是否有某书

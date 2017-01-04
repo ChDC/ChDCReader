@@ -46,20 +46,24 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                 return y >= minHeight && y <= maxHeight;
             }
 
-            if(isClickInRegion(0.3, 0.6))
+            if(isClickInRegion(0.33, 0.66))
             {
                 // 弹出工具栏
                 $('.toolbar').toggle();
             }
-            else if(isClickInRegion(0, 0.3))
+            else if(isClickInRegion(0, 0.33))
             {
                 // 点击上半部分，向上滚动
                 $('.toolbar').hide();
+                var chapter = $('.chapter');
+                chapter.scrollTop(chapter.scrollTop() - chapter.height());
             }
-            else if(isClickInRegion(0.6, 0.9))
+            else if(isClickInRegion(0.66, 1))
             {
                 // 点击下半部分，向下滚动
                 $('.toolbar').hide();
+                var chapter = $('.chapter');
+                chapter.scrollTop(chapter.scrollTop() + chapter.height());
 
             }
         });

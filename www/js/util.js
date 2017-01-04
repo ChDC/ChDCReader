@@ -405,15 +405,15 @@ define(["jquery"], function($){
         },
 
         // 保存 JSON 对象到文件中
-        saveJSONToFile: function(file, data, success, fail){
+        saveJSONToFile: function(file, data, success, fail, isPersistent){
             // TODO
             //创建并写入文件
             function createAndWriteFile(){
+                var fileSystem = isPersistent? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 //持久化数据保存
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0,
+                window.requestFileSystem(fileSystem, 0,
                     function (fs) {
-                        console.log('打开的文件系统: ' + fs.name);
-                        fs.root.getFile(file, { create: true, exclusive: false },
+                        fs.root.getFile(file + ".json", { create: true, exclusive: false },
                             function (fileEntry) {
                                 //文件内容
                                 var dataObj = new Blob([JSON.stringify(data)], { type: 'text/plain' });
@@ -432,12 +432,10 @@ define(["jquery"], function($){
 
                     //文件写入成功
                     fileWriter.onwriteend = function() {
-                        console.log("Successful file read...");
                     };
 
                     //文件写入失败
                     fileWriter.onerror = function (e) {
-                        console.log("Failed file read: " + e.toString());
                     };
 
                     //写入文件
@@ -456,14 +454,14 @@ define(["jquery"], function($){
         },
 
         // 从文件中获取 JSON 对象
-        loadJSONFromFile: function(file, success, fail){
+        loadJSONFromFile: function(file, success, fail, isPersistent){
             // TODO
             function readFile(){
+                var fileSystem = isPersistent? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 //持久化数据保存
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0,
+                window.requestFileSystem(fileSystem, 0,
                     function (fs) {
-                        console.log('打开的文件系统: ' + fs.name);
-                        fs.root.getFile(file, { create: false, exclusive: false },
+                        fs.root.getFile(file + ".json", { create: false, exclusive: false },
                             function (fileEntry) {
                                 fileEntry.file(function (file) {
                                     var reader = new FileReader();
@@ -491,13 +489,13 @@ define(["jquery"], function($){
         },
 
         // 检查文件是否存在
-        fileExists: function(file, exist, notExist){
+        fileExists: function(file, exist, notExist, isPersistent){
             // TODO
             if(window.requestFileSystem){
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+                var fileSystem = isPersistent? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                window.requestFileSystem(fileSystem, 0, function (fs) {
 
-                    console.log('file system open: ' + fs.name);
-                    fs.root.getFile(file, { create: false, exclusive: false }, function (fileEntry) {
+                    fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
                             if(fileEntry.isFile){
                                 if(exist)exist();
                             }

@@ -34,13 +34,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     return {
         onload: function(params){
             loadView();
-            app.bookShelf.load();
+
             $(".btnSearch").click(function(){
                 page.showPage("search");
             });
         },
         onresume: function(){
-            loadBooks(".bookshelf", app.bookShelf);
+            app.bookShelf.load(function(){
+                loadBooks(".bookshelf", app.bookShelf);
+            });
         },
         onpause: function(){
 
