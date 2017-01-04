@@ -44,8 +44,9 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         });
         pullUpToLastChapter();
         // 将章节滚动位置存储到变量中
-        $('.chapter').scroll(function(){
-            chapterScrollY = $('.chapter').scrollTop();
+        $('.chapterContainer').scroll(function(){
+            // TODO
+            chapterScrollY = $('.chapterContainer').scrollTop();
         });
 
         // 弹出工具栏
@@ -186,17 +187,23 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         opts.onGottenRemoteChapterContent = function(){
             app.hideLoading();
         };
+
         book.getChapter(chapterIndex,
             function(chapter, index, options){
                 $(".chapter-title").text(chapter.title);
                 $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
-                $('.chapter').scrollTop(readingRecord.page);
+
                 $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
-                // $("#modalCatalog").modal('hide');
+
+                // TODO：滚动事件需要修改
+                $('.chapterContainer').scrollTop(readingRecord.page);
+
                 readingRecord.setReadingRecord(chapterIndex, chapter.title, options);
                 app.bookShelf.save();
                 cacheChapter(chapterIndex, options);
+                // 加载下一章的内容
             }, fail, opts);
+        // TODO：修改
         if(chapterIndex != readingRecord.chapterIndex)
             readingRecord.page = 0;
     };
