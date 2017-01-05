@@ -224,7 +224,6 @@ define(["jquery", "util"], function($, util) {
                         if(success)success(bs.detailLink, bsid, bs);
                     },
                     function(error){
-                        debugger;
                         if(error.id == 404){
                             // 没找到该书就标记一下，下次直接跳过
                             bs.disable = true;
@@ -298,7 +297,6 @@ define(["jquery", "util"], function($, util) {
 
     // 刷新目录
     Book.prototype.refreshCatalog = function(success, fail, options){
-        debugger;
         util.log('Refresh Catalog!');
 
         var self = this;
@@ -310,7 +308,6 @@ define(["jquery", "util"], function($, util) {
             function s(html){
                 var catalog = self.__getBookCatalogFromHTML(html, detailLink, options);
                 bs.catalog = catalog;
-                debugger;
                 bs.updatedCatalog = true;
                 if(success)success(catalog);
             };

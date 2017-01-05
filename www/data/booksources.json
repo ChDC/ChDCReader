@@ -26,7 +26,6 @@
             },
             "url": "http://www.biquge.com/{book_id}"
         },
-
         "id": "qidian",
         "name": "笔趣阁",
         "contentSourceWeight": 1000,

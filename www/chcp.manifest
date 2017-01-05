@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "c29d118565a7c0323941fb141e2b92ee"
+    "hash": "649a684586417f4d4a4e95432a3a0288"
   },
   {
     "file": "img/book_cover.png",
@@ -24,20 +24,20 @@
     "hash": "0a7aa34c2004e755ee8e007346fc0aff"
   },
   {
-    "file": "iscroll.js",
-    "hash": "81534f819dbb8f857997bf1900f5d6a6"
-  },
-  {
     "file": "js/app.js",
     "hash": "bd450cb86ed14ef10245b4735f682407"
   },
   {
     "file": "js/book.js",
-    "hash": "013074115c88ecaa9abe44437dadd827"
+    "hash": "5a2253eeb863843e4212abd1f61c4fb0"
+  },
+  {
+    "file": "js/bookshelf.js",
+    "hash": "69ea0d8e7c890969ce00495f04f773d0"
   },
   {
     "file": "js/main.js",
-    "hash": "0e47651a71643bdaeb5439eb4de9a0c5"
+    "hash": "bcd18f7ef937362543120cfeb6035b75"
   },
   {
     "file": "js/page.js",
@@ -45,7 +45,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "a8a7fe10aed10e0a87173190892067bb"
+    "hash": "cd49c989cf31ce1242202dc3f153d968"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -141,7 +141,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "1b19e5889cf8532b0503876d2cd9a356"
+    "hash": "792f5e67d8666952cf32e54a421740bd"
   },
   {
     "file": "page/search.page.css",
