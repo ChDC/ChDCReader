@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "1d994476024fbf64c5b8afbf52dccdc0"
+    "hash": "c29d118565a7c0323941fb141e2b92ee"
   },
   {
     "file": "img/book_cover.png",
@@ -24,20 +24,20 @@
     "hash": "0a7aa34c2004e755ee8e007346fc0aff"
   },
   {
+    "file": "iscroll.js",
+    "hash": "81534f819dbb8f857997bf1900f5d6a6"
+  },
+  {
     "file": "js/app.js",
     "hash": "bd450cb86ed14ef10245b4735f682407"
   },
   {
     "file": "js/book.js",
-    "hash": "a3e9061778cf80bae0843e3e7fae91b3"
-  },
-  {
-    "file": "js/index.js",
-    "hash": "b144c071205225b243caacc5b550f592"
+    "hash": "013074115c88ecaa9abe44437dadd827"
   },
   {
     "file": "js/main.js",
-    "hash": "79a5a2b56f6a5a0b4b75d2713c0bb3a4"
+    "hash": "0e47651a71643bdaeb5439eb4de9a0c5"
   },
   {
     "file": "js/page.js",
@@ -45,7 +45,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "f05adff7a7aabc535b0b4412e68e3081"
+    "hash": "a8a7fe10aed10e0a87173190892067bb"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -92,6 +92,10 @@
     "hash": "ccb7f3909e30b1eb8f65a24393c6e12b"
   },
   {
+    "file": "lib/iscroll.js",
+    "hash": "efadfd8348c16e3a5b5d8b0d5e6652ad"
+  },
+  {
     "file": "lib/jquery-3.1.1/jquery.min.js",
     "hash": "e071abda8fe61194711cfc2ab99fe104"
   },
@@ -117,27 +121,27 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "ec2e039dffbdeb5bf18e40d95467dc8d"
+    "hash": "fbae886cabb0e5c3644bc35f4d89513a"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "c76c76c0b3abb2805a6ba4ec005236c7"
+    "hash": "68bf079b98d09f93312fb92e827aeeaa"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "1955afc8f77ff1ed40a83696d1b56be4"
+    "hash": "2e5e1ffa2d9625d1446ab21eef38e4a9"
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "e86bbff753b48278a2e0057049c62afa"
+    "hash": "5c58ec2abdd3f244967d3ae6ee2e70d6"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "56588ee9e928376d91c085af0bc58dc8"
+    "hash": "ddc3a6da718b99c1fe926daa0908f72a"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "367f2c43ea094c07124cf42ee08def42"
+    "hash": "1b19e5889cf8532b0503876d2cd9a356"
   },
   {
     "file": "page/search.page.css",
@@ -153,6 +157,6 @@
   },
   {
     "file": "test.html",
-    "hash": "3c0300402b79178ac4f0e4040bbf1a18"
+    "hash": "91f20eabd481688135cd7f6cdba7afe9"
   }
 ]
