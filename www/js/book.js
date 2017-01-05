@@ -248,10 +248,10 @@ define(["jquery", "util"], function($, util) {
 
     // 设置主源
     Book.prototype.setMainSource = function(bookSourceId, success, fail, options){
+        var self = this;
         if(self.mainSource == bookSourceId)
             return;
 
-        var self = this;
         options = $.extend(true, {}, options);
         if(bookSourceId && bookSourceId in options.bookSourceManager.sources){
             self.mainSource = bookSourceId;
@@ -412,6 +412,7 @@ define(["jquery", "util"], function($, util) {
 
         var self = this;
         options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
 
         if(options.bookSourceId == sourceB){
         // 两源相同
@@ -564,7 +565,6 @@ define(["jquery", "util"], function($, util) {
             var contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
             // 去掉要排除的源
             if(options.excludes){
-                debugger;
                 for(var ei = 0; ei < options.excludes.length; ei++)
                 {
                     var exclude = options.excludes[ei];
@@ -756,7 +756,7 @@ define(["jquery", "util"], function($, util) {
         var dest = self.__getCacheChapterLocation(index, options);
 
         if(options.onlyCacheNoLoad){
-            util.fileExists(dest,
+            util.dataExists(dest,
                 function(){
                     if(success)success(null);
                 },
@@ -768,7 +768,7 @@ define(["jquery", "util"], function($, util) {
         }
         else{
             // 获取章节内容
-            util.loadJSONFromFile(dest,
+            util.loadData(dest,
                 function(data){
                     // 章节存在
                     if(data != null){
@@ -796,7 +796,7 @@ define(["jquery", "util"], function($, util) {
         var self = this;
         // 保存到文件中
         var dest = self.__getCacheChapterLocation(index, options);
-        util.saveJSONToFile(dest, chapter, success, fail, true); // 将 JSON 对象序列化到文件中
+        util.saveData(dest, chapter, success, fail, true); // 将 JSON 对象序列化到文件中
     };
 
 

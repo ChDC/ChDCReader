@@ -32,7 +32,20 @@ define(["jquery"], function($){
                 return keyName in localStorage;
             }
         },
-
+        /**
+         * 临时存储
+         */
+        cacheStorage: {
+            getItem: function(keyName) {
+                return JSON.parse(sessionStorage.getItem(keyName));
+            },
+            setItem: function(keyName, keyValue) {
+                return sessionStorage.setItem(keyName, JSON.stringify(keyValue));
+            },
+            hasItem: function(keyName) {
+                return keyName in sessionStorage;
+            }
+        },
         /*
         * 输出log 信息
         */
@@ -405,7 +418,7 @@ define(["jquery"], function($){
         },
 
         // 保存 JSON 对象到文件中
-        saveJSONToFile: function(file, data, success, fail, isCacheDir){
+        __saveJSONToFile: function(file, data, success, fail, isCacheDir){
             //创建并写入文件
             function createAndWriteFile(){
                 var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
@@ -415,7 +428,7 @@ define(["jquery"], function($){
                         fs.root.getFile(file + ".json", { create: true, exclusive: false },
                             function (fileEntry) {
                                 //文件内容
-                                var dataObj = new Blob([JSON.stringify(data)], { type: 'text/plain' });
+                                var dataObj = new Blob([data], { type: 'text/plain' });
                                 //写入文件
                                 writeFile(fileEntry, dataObj);
 
@@ -443,17 +456,12 @@ define(["jquery"], function($){
                 });
             }
 
-            if(window.requestFileSystem){
-                createAndWriteFile();
-            }
-            else{
-                this.storage.setItem(file, data);
-                if(success)success();
-            }
+            data = JSON.stringify(data);
+            createAndWriteFile();
         },
 
         // 从文件中获取 JSON 对象
-        loadJSONFromFile: function(file, success, fail, isCacheDir){
+        __loadJSONFromFile: function(file, success, fail, isCacheDir){
             function readFile(){
                 var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 //持久化数据保存
@@ -477,34 +485,58 @@ define(["jquery"], function($){
                     }, fail);
             }
 
+            readFile();
+        },
+
+        // 检查文件是否存在
+        __fileExists: function(file, exist, notExist, isCacheDir){
+            var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+            window.requestFileSystem(fileSystem, 0, function (fs) {
+
+                fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
+                        if(fileEntry.isFile){
+                            if(exist)exist();
+                        }
+                        else{
+                            if(notExist)notExist();
+                        }
+                    }, notExist);
+
+            }, notExist);
+        },
+
+        // 保存数据
+        saveData: function(key, data, success, fail, onlyCache){
             if(window.requestFileSystem){
-                readFile();
+                this.__saveJSONToFile(key, data, success, fail, onlyCache);
             }
             else{
-                var data = this.storage.getItem(file);
+                var s = onlyCache? this.cacheStorage : this.storage;
+                s.setItem(key, data);
+                if(success)success();
+            }
+        },
+
+        // 加载数据
+        loadData: function(key, success, fail, onlyCache){
+            if(window.requestFileSystem){
+                this.__loadJSONFromFile(key, success, fail, onlyCache);
+            }
+            else{
+                var s = onlyCache? this.cacheStorage : this.storage;
+                var data = s.getItem(key);
                 if(success)success(data);
             }
         },
 
-        // 检查文件是否存在
-        fileExists: function(file, exist, notExist, isCacheDir){
+        // 数据是否存在
+        dataExists: function(key, exist, notExist, onlyCache){
             if(window.requestFileSystem){
-                var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-                window.requestFileSystem(fileSystem, 0, function (fs) {
-
-                    fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                            if(fileEntry.isFile){
-                                if(exist)exist();
-                            }
-                            else{
-                                if(notExist)notExist();
-                            }
-                        }, notExist);
-
-                }, notExist);
+                this.__fileExists(key, exist, notExist, onlyCache);
             }
             else{
-                if(this.storage.hasItem(file)){
+                var s = onlyCache? this.cacheStorage : this.storage;
+                if(s.hasItem(key)){
                     if(exist)exist();
                 }
                 else{

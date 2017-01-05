@@ -57,7 +57,7 @@ define(["jquery", "util", 'book'], function($, util, book) {
     // 添加书籍到书架中
     BookShelf.prototype.load = function(success, fail){
         var self = this;
-        util.loadJSONFromFile("bookshelf",
+        util.loadData("bookshelf",
             function(data){
                 var bookShelf = data;
                 $.extend(true, self, bookShelf);
@@ -67,7 +67,7 @@ define(["jquery", "util", 'book'], function($, util, book) {
                     for(var bsk in b.sources){
                         var bs = b.sources[bsk];
                         // 更新目录文件
-                        util.loadJSONFromFile(self.__getSaveCatalogLocation(b.name, b.author, bsk),
+                        util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk),
                             function(data){
                                 bs.catalog = data;
                             });
@@ -83,25 +83,34 @@ define(["jquery", "util", 'book'], function($, util, book) {
     // 添加书籍到书架中
     BookShelf.prototype.save = function(success, fail){
         var self = this;
-        var data = $.extend(true, {}, self);
-        //TODO: BUG 原因：没有深拷贝成功
-        debugger;
-        for(var bk in data.books){
-            var b = data.books[bk];
+
+        // BUG 原因：没有深拷贝成功
+        var catalogs = []; // 用于临时存储移除的 Catalog
+        for(var bk in self.books){
+            catalogs[bk] = {};
+            var b = self.books[bk];
             for(var bsk in b.sources){
                 var bs = b.sources[bsk];
                 if(bs.updatedCatalog){
                     bs.updatedCatalog = false;
-                    self.books[bk].sources[bsk].updatedCatalog = false;
                     // 更新目录文件
-                    util.saveJSONToFile(self.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
+                    util.saveData(self.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
                 }
-                debugger;
-                bs.catalog = null;
+                catalogs[bk][bsk] = bs.catalog;
+                bs.catalog = null; // 删除目录用于存储到本地
             }
         }
-        util.saveJSONToFile("bookshelf", data,
+        util.saveData("bookshelf", self,
             success, fail);
+
+        // 恢复删除的目录
+        for(var bk in self.books){
+            var b = self.books[bk];
+            for(var bsk in b.sources){
+                var bs = b.sources[bsk];
+                bs.catalog = catalogs[bk][bsk];
+            }
+        }
     };
 
     // 添加书籍到书架中

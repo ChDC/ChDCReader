@@ -35,7 +35,7 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
             }(book);
             // nb.click(bookDetailEvent);
             if(app.bookShelf.hasBook(book)){
-                nb.find(".btnAddToBookshelf").hide();
+                nb.find(".btnAddToBookshelf").attr('disabled', 'disabled');
             }
             else{
                 nb.find(".btnAddToBookshelf").click(bookAddBookShelfEvent);

@@ -39,7 +39,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                 lock = true;
                 console.log('Load next chapter!');
 
-
             }
         });
         pullUpToLastChapter();
@@ -50,7 +49,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         });
 
         // 弹出工具栏
-        $(".chapter").on("click", function(event){
+        $(".chapterContainer").on("click", function(event){
             function isClickInRegion(minHeight, maxHeight)
             {
                 var clientHeight = $(window).height();
@@ -69,15 +68,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             {
                 // 点击上半部分，向上滚动
                 $('.toolbar').hide();
-                var chapter = $('.chapter');
-                chapter.scrollTop(chapter.scrollTop() - chapter.height());
+                var chapter = $('.chapterContainer');
+                chapter.scrollTop(chapter.scrollTop() - chapter.height() / 2);
             }
             else if(isClickInRegion(0.66, 1))
             {
                 // 点击下半部分，向下滚动
                 $('.toolbar').hide();
-                var chapter = $('.chapter');
-                chapter.scrollTop(chapter.scrollTop() + chapter.height());
+                var chapter = $('.chapterContainer');
+                chapter.scrollTop(chapter.scrollTop() + chapter.height() / 2);
 
             }
         });
@@ -98,7 +97,6 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             loadCatalog();
         });
         $("#btnBadChapter").click(function(){
-            debugger;
             var opts = $.extend(true, {}, options);
             opts.excludes = [readingRecord.options.contentSourceId];
             loadChapter(readingRecord.chapterIndex, opts);
@@ -135,6 +133,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         listBookSource.empty();
         var listBookSourceEntry = $(".template .listBookSourceEntry");
         for(var bsk in app.bookSourceManager.sources){
+            if(bsk == book.mainSource)
+                return;
             var nlbse = listBookSourceEntry.clone();
             var bs = app.bookSourceManager.sources[bsk];
             nlbse.find(".bookSourceTitle").text(bs.name);
@@ -150,15 +150,17 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             var target = event.currentTarget;
             if(target){
                 var bid = $(target).data('bsid');
-                var oldMainSource = self.mainSource;
+                var oldMainSource = book.mainSource;
                 book.setMainSource(bid, function(book){
+                    $("#modalCatalog").modal('hide');
                     // 更新源之后
                     // 刷新主目录源显示内容
-                    $(".labelmainSource").text(app.bookSourceManager.sources[book.mainSource].name);
+                    $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSource].name);
                     if(readingRecord.chapterIndex)
                     {
-                        debugger;
-                        book.fuzzySearch(oldMainSource, readingRecord.chapterIndex,
+                        var opts = $.extend(true, {}, options);
+                        opts.bookSourceId = oldMainSource;
+                        book.fuzzySearch(book.mainSource, readingRecord.chapterIndex,
                             function(chapter, chapterIndex){
                                 readingRecord.chapterIndex = chapterIndex;
                                 readingRecord.chapterTitle = chapter.title;
@@ -169,13 +171,39 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                                 readingRecord.reset();
                                 // 刷新当前章节信息
                                 loadCurrentChapter(0);
-                        }, options);
+                        }, opts);
                     }
                     // 更新书籍信息
-                    book.refreshBookInfo(null, null, {bookSourceManager: options.bookSourceManager});
+                    book.refreshBookInfo(null, null, options);
                 }, fail, options);
             }
         }
+    }
+
+
+    function saveReadingRecord(chapter, index, options){
+        // 保存进度
+        $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
+        // TODO：滚动事件需要修改
+        // $('.chapterContainer').scrollTop(readingRecord.page);
+        readingRecord.setReadingRecord(chapterIndex, chapter.title, options);
+        app.bookShelf.save();
+    }
+
+    // 加载第二页内容
+    function loadSecondPageChapter(chapterIndex, extras, success, fail){
+        debugger;
+        var opts = $.extend(true, {}, options);
+        $.extend(true, opts, extras);
+        book.getChapter(chapterIndex,
+            function(chapter, index, options){
+                $(".chapterContainer > div:nth-child(2) .chapter-title").text(chapter.title);
+                $(".chapterContainer > div:nth-child(2) .chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
+                if(success)success(chapter, index, options);
+            },
+            function(error){
+                if(fail)fail();
+            }, opts);
     }
 
     function loadChapter(chapterIndex, extras){
@@ -188,21 +216,24 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             app.hideLoading();
         };
 
-        book.getChapter(chapterIndex,
-            function(chapter, index, options){
-                $(".chapter-title").text(chapter.title);
-                $(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
+        loadSecondPageChapter(chapterIndex, opts,
+            function(){
+                // 将第一页换成第二页
+                // 再次加载第二页
+                // 成功后
+                saveReadingRecord();
+                loadSecondPageChapter(chapterIndex, opts,
+                    function(){
+                        cacheChapter(chapterIndex, options);
+                    },
+                    function(){
 
-                $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
+                    }, opts2);
+            },
+            function(){
 
-                // TODO：滚动事件需要修改
-                $('.chapterContainer').scrollTop(readingRecord.page);
+            });// 保存进度
 
-                readingRecord.setReadingRecord(chapterIndex, chapter.title, options);
-                app.bookShelf.save();
-                cacheChapter(chapterIndex, options);
-                // 加载下一章的内容
-            }, fail, opts);
         // TODO：修改
         if(chapterIndex != readingRecord.chapterIndex)
             readingRecord.page = 0;

@@ -57,6 +57,9 @@
     background-color: #eee;
 }
 
+.toolbar.top .btn{
+    padding: 6px 6px;
+}
 
 /*#listCatalog{
     padding: 0 10px;
