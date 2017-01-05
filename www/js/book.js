@@ -503,10 +503,10 @@ define(["jquery", "util"], function($, util) {
         var count = options.count || 1; // 想获取的数目
 
         // ***** 常量 ******
-        var FOUND_WEIGHT = 1; // 找到后增加的权重
+        var FOUND_WEIGHT = 0; // 找到后增加的权重
         var NOTFOUND_WEIGHT = -2; // 没找到的权重
         var EXECLUDE_WEIGHT = -4; // 排除的权重
-        var INCLUDE_WEIGHT = 1; // 指定的源
+        var INCLUDE_WEIGHT = 0; // 指定的源
         // *****************
 
         // 如果选项中有 contentSourceId 和 contentSourceChapterIndex，则比对指定的索引
@@ -698,8 +698,6 @@ define(["jquery", "util"], function($, util) {
     // 从本地或网络上获取章节内容
     // * cacheDir 缓存章节的目录
     // * onlyCacheNoLoad 只缓存章节，不加载章节
-    // * onGetRemoteChapterContent 当从外部获取章节时触发的事件
-    // * onGottenRemoteChapterContent 当从外部获取到章节时触发的事件
     // success(chapter)
     Book.prototype.__getChapterContent = function(chapter, index, success, fail, options){
         var self = this;
@@ -715,13 +713,9 @@ define(["jquery", "util"], function($, util) {
             function(error){
                 if(error.id == 207)
                 {
-                    if(options.onGetRemoteChapterContent)
-                        options.onGetRemoteChapterContent();
                     // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
                     self.__getChapterContentFromBookSource(chapter.link,
                         function(chapter){
-                            if(options.onGottenRemoteChapterContent)
-                                options.onGottenRemoteChapterContent();
                             // 获取章节成功
                             if(success)success(chapter);
                             // 缓存该章节
@@ -799,6 +793,69 @@ define(["jquery", "util"], function($, util) {
         util.saveData(dest, chapter, success, fail, true); // 将 JSON 对象序列化到文件中
     };
 
+    // 一次获取多个章节
+    // chapterIndex 是从主要目录源中获取的章节索引
+    // nextCount 获取的章节数目
+    // options
+    // * noInfluenceWeight false 是否要改变内容源的权重
+    // * cacheDir 缓存章节的目录
+    // * excludes 要排除的内容源
+    // * contentSourceId 希望使用的内容源
+    // * contentSourceChapterIndex 希望匹配的索引
+    // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
+    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+    Book.prototype.getChapters = function(chapterIndex, nextCount, success, fail, end, options){
+
+        var self = this;
+        options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        var endParams = [];
+
+        chapterIndex--;
+        options.contentSourceChapterIndex--;
+        nextCount++;
+        next();
+        function next(){
+            chapterIndex++;
+            options.contentSourceChapterIndex++;
+            nextCount--;
+            if(nextCount > 0){
+                self.getChapter(chapterIndex,
+                    function(chapter, index, opts){
+                        options = $.extend(true, options, opts);
+                        if(success)success(chapter, index, opts);
+                        endParams.length = 0;
+                        endParams.push(chapter);
+                        endParams.push(index);
+                        endParams.push(opts);
+                        next();
+                    },
+                    function(error){
+                        if(error.id == 202){
+                            // 当没有更新的章节时，直接退出
+                            if(fail)fail(error);
+                            if(end)end(endParams[0], endParams[1], endParams[2]);
+                            return;
+                        }
+                        else{
+                            if(!fail || fail(error))
+                                next();
+                            else{
+                                if(end)end(endParams[0], endParams[1], endParams[2]);
+                                return;
+                            }
+                        }
+                    }, options);
+            }
+            else{
+                if(end)
+                    end(endParams[0], endParams[1], endParams[2]);
+            }
+        }
+
+    }
+
 
     // chapterIndex 是从主要目录源中获取的章节索引
     // nextCount 缓存的章节数目
@@ -818,30 +875,7 @@ define(["jquery", "util"], function($, util) {
         options.noInfluenceWeight = true;
         options.onlyCacheNoLoad = true;
 
-        chapterIndex--;
-        options.contentSourceChapterIndex--;
-        nextCount++;
-        next();
-        function next(){
-            chapterIndex++;
-            options.contentSourceChapterIndex++;
-            nextCount--;
-            if(nextCount > 0){
-                self.getChapter(chapterIndex,
-                    function(chapter, index, opts){
-                        options = $.extend(true, options, opts);
-                        next();
-                    },
-                    function(error){
-                        if(error.id == 202)
-                            // 当没有更新的章节时，直接退出
-                            return;
-                        else{
-                            next();
-                        }
-                    }, options);
-            }
-        }
+        self.getChapters(chapterIndex, nextCount, null, null, null, options);
     }
     // *************************** 章节部分结束 ****************
 

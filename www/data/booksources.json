@@ -28,8 +28,8 @@
         },
         "id": "qidian",
         "name": "笔趣阁",
-        "contentSourceWeight": 1000,
-        "mainSourceWeight": -100,
+        "contentSourceWeight": 10,
+        "mainSourceWeight": -10,
         "search": {
             "info": {
                 "book": "#results > div.result-list > div.result-item",
@@ -77,8 +77,8 @@
         },
         "id": "qidian",
         "name": "起点中文网",
-        "contentSourceWeight": -100,
-        "mainSourceWeight": 1000,
+        "contentSourceWeight": -10,
+        "mainSourceWeight": 10,
         "search": {
             "info": {
                 "book": "#result-list li[data-rid]",

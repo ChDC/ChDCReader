@@ -133,6 +133,7 @@ define(["jquery", "util", 'book'], function($, util, book) {
 
     // **** Return package *****
     return {
-        BookShelf: BookShelf
+        BookShelf: BookShelf,
+        ReadingRecord: ReadingRecord
     };
 });
