@@ -71,7 +71,15 @@ def main():
 
     replaceCRLFtoLF(wwwDir)
     r, out, err = sh('cordova-hcp build')
-    r, out, err = sh('git add . && git commit -m "Update Resources" && git push github master')
+    if err:
+        print(err)
+    if out:
+        print(out)
+    r, out, err = sh('git add . && git commit -m "Update Resources" && git push github master', 'wenWEN6813')
+    if err:
+        print(err)
+    if out:
+        print(out)
     if r == 0:
         refreshGithubURL(wwwDir)
 
