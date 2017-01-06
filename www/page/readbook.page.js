@@ -315,6 +315,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
     function lastChapter(){
         var opts = $.extend(true, {}, options);
 
+        // 看看当前章节前面是否已经有一章了，有的话就直接使用
         book.getChapter(readingRecord.chapterIndex - 1,
             function(chapter, index, options){
                 var a = buildChapterAndReadingReord(chapter, index, options);
