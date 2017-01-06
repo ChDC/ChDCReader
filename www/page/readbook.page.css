@@ -8,6 +8,11 @@
     background-image: url(../img/readbg1.jpg);
 }
 
+.chapters{
+    position: relative;
+    width: 100%;
+}
+
 .chapter{
     word-wrap: break-word;
 }

@@ -4,7 +4,7 @@ define(["jquery", "util", 'book'], function($, util, book) {
     // **** ReadingRecord *****
     function ReadingRecord(){
         this.chapterIndex = 0;
-        this.page = 0;
+        this.pageScrollTop = 0;
         this.options = {};
     };
 
@@ -12,14 +12,14 @@ define(["jquery", "util", 'book'], function($, util, book) {
     ReadingRecord.prototype.bookAuthor = undefined; // 作者
     ReadingRecord.prototype.chapterIndex = undefined; // 章节索引
     ReadingRecord.prototype.chapterTitle = undefined; // 章节标题
-    ReadingRecord.prototype.page = undefined; // 章内的页数
+    ReadingRecord.prototype.pageScrollTop = undefined; // 章内的页数
     ReadingRecord.prototype.options = undefined; // 附加内容
 
     // 清除数据
     ReadingRecord.prototype.reset = function(){
         this.chapterIndex = 0;
         this.chapterTitle = "";
-        this.page = 0;
+        this.pageScrollTop = 0;
         this.options = {};
     }
 

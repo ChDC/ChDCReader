@@ -1,10 +1,11 @@
 "use strict"
 define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, util, bookshelf){
+
     var book = null;
-    var chapters = [];
-    var readingRecord = null;
-    var options = null;
-    var chapterScrollY = 0;
+    var chapters = [];  // 当前加载的章节
+    var readingRecord = null; // 正在读的记录
+    var options = null;  // 默认传递的选项参数
+    var chapterScrollY = 0;  // 当前阅读进度
 
     function fail(error){
         app.hideLoading();
@@ -12,18 +13,24 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
     }
 
     function loadView(){
-        // var lock = false;
-        // $(".chapterContainer").scroll(function(event){
-        //     if(!lock && $(this).children().last().position().top <=0){
-        //         lock = true;
-        //         console.log('Load next chapter!');
-        //     }
-        // });
-        // pullUpToLastChapter();
-        // 将章节滚动位置存储到变量中
-        $('.chapterContainer').scroll(function(){
-            // TODO
+
+        $('.chapterContainer').scroll(function(event){
+            // 将章节滚动位置存储到变量中
             chapterScrollY = $('.chapterContainer').scrollTop();
+            var cn = getCurrentChapterElement(1);
+            var cc = getCurrentChapterElement(0);
+            if(cn){
+                if(chapterScrollY > cn.position().top || cn.offset().top + cn.height() <= $(window).height()){
+                    util.log("Next chapter");
+                    nextChapter();
+                }
+            }
+            if(cc){
+                if(chapterScrollY + $(window).height()/2 < cc.position().top){
+                    util.log("Last chapter");
+                    lastChapter();
+                }
+            }
         });
 
         // 弹出工具栏
@@ -46,15 +53,15 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             {
                 // 点击上半部分，向上滚动
                 $('.toolbar').hide();
-                var chapter = $('.chapterContainer');
-                chapter.scrollTop(chapter.scrollTop() - chapter.height() / 2);
+                var cc = $('.chapterContainer');
+                cc.scrollTop(cc.scrollTop() - cc.height() / 2);
             }
             else if(isClickInRegion(0.66, 1))
             {
                 // 点击下半部分，向下滚动
                 $('.toolbar').hide();
-                var chapter = $('.chapterContainer');
-                chapter.scrollTop(chapter.scrollTop() + chapter.height() / 2);
+                var cc = $('.chapterContainer');
+                cc.scrollTop(cc.scrollTop() + cc.height() / 2);
 
             }
         });
@@ -77,8 +84,8 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         $("#btnBadChapter").click(function(){
             var opts = $.extend(true, {}, options);
             opts.excludes = [readingRecord.options.contentSourceId];
-            // TODO 加载章节
-            loadChapters(readingRecord.chapterIndex, opts);
+            clearChapters();
+            loadChapters(readingRecord.chapterIndex - app.settings.chapterIndexOffset, app.settings.chapterCount, null, null, opts);
         });
         $("#btnSortReversed").click(function(){
             var list = $('#listCatalog');
@@ -105,6 +112,10 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         });
     };
 
+    function clearChapters(){
+        chapters.length = 0;
+        $('.chapters').empty();
+    }
 
     function loadBookSource(){
         var self = this;
@@ -168,8 +179,9 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             var target = event.currentTarget;
             if(target){
                 target = $(target);
-                // loadChapter(target.data('index'));
-                loadChapter(parseInt(target.attr('data-index')));
+                clearChapters();
+                var chapterIndex = parseInt(target.attr('data-index'));
+                loadChapters(chapterIndex - app.settings.chapterIndexOffset, app.settings.chapterCount);
             }
         }
         book.getCatalog(function(catalog){
@@ -206,33 +218,42 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
 
     // 加载章节
     // count 是加载的章节数目
-    function loadChapters(chapterIndex, count, extras){
+    function loadChapters(chapterIndex, count, success, myFail, extras, activated){
         var opts = $.extend(true, {}, options, extras);
-        var actived = false;
+        if(chapterIndex < 0)
+            chapterIndex = 0;
         book.getChapters(chapterIndex, count,
             function(chapter, index, options){
                 var a = buildChapterAndReadingReord(chapter, index, options);
-                $('.chapterContainer').append(a[0]);
+                $('.chapters').append(a[0]);
                 chapters.push(a[1]);
-                if(!actived){
+
+                var loadedCount = index - chapterIndex + 1;
+                if(!activated &&
+                   (index - chapterIndex == app.settings.chapterIndexOffset ||
+                   index - chapterIndex + 1 == count)){
                     activateCurrentChapter();
-                    actived = true;
+                    activated = true;
+                }
+
+                if(success){
+                    success(chapter, index, options, chapterIndex, count);
                 }
             },
             function(error){
-                if(fail)fail(error);
+                if(myFail){
+                    myFail(error);
+                }
+                else{
+                    fail(error);
+                }
             },
             function(chapter, index, options){
                 cacheChapters(index, options);
             }, opts);
-
-        // // TODO：修改
-        // if(chapterIndex != readingRecord.chapterIndex)
-        //     readingRecord.page = 0;
     };
 
     function cacheChapters(chapterIndex, opts){
-        debugger;
         // 缓存后面的章节
         opts = $.extend(true, {}, options, opts);
         chapterIndex++;
@@ -241,33 +262,53 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         book.cacheChapter(chapterIndex, app.settings.cacheChapterCount, opts);
     }
 
+    // 获取当前的章节元素
+    function getCurrentChapterElement(offset){
+        var offset = offset || 0;
+        var i = app.settings.chapterIndexOffset + offset;
+        var cs = $('.chapters').children();
+        if(i >=0 && i < cs.length)
+            return cs.eq(i);
+        return null;
+    }
+
+    // 获取当前章节
+    function getCurrentChapter(offset){
+        var offset = offset || 0;
+        return chapters[app.settings.chapterIndexOffset + offset];
+    }
+
     // 激活当前章节，并保存信息
     function activateCurrentChapter(){
-        debugger;
-        $(".labelContentSource").text(app.bookSourceManager.sources[chapters[0].options.contentSourceId].name);
-        var rr = chapters[0];
+        $(".labelContentSource").text(app.bookSourceManager.sources[getCurrentChapter().options.contentSourceId].name);
+        var rr = chapters[app.settings.chapterIndexOffset];
+        $('.chapterContainer').scrollTop(getCurrentChapterElement().position().top)
         $.extend(readingRecord, rr);
         app.bookShelf.save();
     }
 
     // 使用 ReadingReocrd 加载章节
-    var loadChaptersWithReadingRecord = function(rr, count, offset){
+    var loadChaptersWithReadingRecord = function(rr, count, offset, success, fail, activated){
         var count = count || 1;
         var offset = offset || 0;
         if(!rr.chapterIndex)
             rr.chapterIndex = 0;
-        loadChapters(rr.chapterIndex + offset, count, {
-                contentSourceId: rr.contentSourceId,
-                contentSourceChapterIndex: rr.contentSourceChapterIndex + offset
-            });
+        loadChapters(rr.chapterIndex + offset, count,
+            success, fail,
+            {
+                contentSourceId: rr.options.contentSourceId,
+                contentSourceChapterIndex: rr.options.contentSourceChapterIndex + offset
+            }, activated);
     };
 
     // 下一章节
     function nextChapter(){
-        $('.chapterContainer').children().first().remove();
+        $('.chapters').children().first().remove();
         chapters.shift();
+        activateCurrentChapter();
         var theLast = chapters[chapters.length - 1];
-        loadChaptersWithReadingRecord(theLast, 1, 1);
+        loadChaptersWithReadingRecord(theLast, 1, 1, null, null, true);
+
     }
 
     // 上一章节
@@ -277,10 +318,10 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         book.getChapter(readingRecord.chapterIndex - 1,
             function(chapter, index, options){
                 var a = buildChapterAndReadingReord(chapter, index, options);
-                $('.chapterContainer').prepend(a[0]);
+                $('.chapters').prepend(a[0]);
                 chapters.unshift(a[1]);
 
-                $('.chapterContainer').children().last().remove();
+                $('.chapters').children().last().remove();
                 chapters.pop();
 
                 activateCurrentChapter();
@@ -290,11 +331,6 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             }, opts);
     }
 
-    // function saveReadingRecord(chapter, index, options){
-        // 保存进度
-        // TODO：滚动事件需要修改
-        // $('.chapterContainer').scrollTop(readingRecord.page);
-    // }
 
     return {
         onload: function(params, p){
@@ -303,7 +339,14 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             readingRecord = params.readingRecord;
             options = {bookSourceManager: app.bookSourceManager};
             loadView();
-            loadChaptersWithReadingRecord(readingRecord, 3);
+
+            var pageLocation = readingRecord.pageScrollTop;
+            loadChaptersWithReadingRecord(readingRecord, app.settings.chapterCount, -app.settings.chapterIndexOffset,
+                function(chapter, index, options){
+                    if(index == readingRecord.chapterIndex && pageLocation > 0){
+                        $('.chapterContainer').scrollTop(pageLocation);
+                    }
+                });
         },
         onresume: function(){
 
@@ -311,7 +354,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         onpause: function(){
             // 执行该事件的时候，界面可能已经被销毁了
             // 保存阅读进度
-            readingRecord.page = chapterScrollY;
+            readingRecord.pageScrollTop = chapterScrollY;
             app.bookShelf.save();
         },
         onclose: function(params){

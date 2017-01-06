@@ -376,6 +376,9 @@ define(["jquery", "util"], function($, util) {
             return;
         }
 
+        if(chapterIndex < 0)
+            chapterIndex = 0;
+
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
@@ -474,12 +477,15 @@ define(["jquery", "util"], function($, util) {
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapter = function(chapterIndex, success, fail, options){
 
+        if(chapterIndex < 0)
+            chapterIndex = 0;
+
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.index(chapterIndex, function(chapter, index, catalog){
-            self.__getChapterFromContentSources(catalog, chapterIndex, success, fail, options);
+            self.__getChapterFromContentSources(catalog, index, success, fail, options);
         }, fail, options);
     };
 
@@ -805,6 +811,8 @@ define(["jquery", "util"], function($, util) {
     // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapters = function(chapterIndex, nextCount, success, fail, end, options){
+        if(chapterIndex < 0)
+            chapterIndex = 0;
 
         var self = this;
         options = $.extend(true, {}, options);
@@ -823,6 +831,9 @@ define(["jquery", "util"], function($, util) {
             if(nextCount > 0){
                 self.getChapter(chapterIndex,
                     function(chapter, index, opts){
+                        chapterIndex = index;
+                        options.contentSourceChapterIndex = opts.contentSourceChapterIndex;
+
                         options = $.extend(true, options, opts);
                         if(success)success(chapter, index, opts);
                         endParams.length = 0;
