@@ -90,7 +90,7 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
             this.bookShelf = new bookshelf.BookShelf();
             page.init();
             page.showPage("bookshelf");
-            this.chekcUpdate();
+            this.chekcUpdate(true);
         },
         onUpdateInstalled: function(){
             util.showMessage("资源更新成功！");
