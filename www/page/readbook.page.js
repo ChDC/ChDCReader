@@ -25,7 +25,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
                     nextChapter();
                 }
             }
-            if(cc){
+            if(cc && chapterScrollY){
                 if(chapterScrollY + $(window).height()/2 < cc.position().top){
                     util.log("Last chapter");
                     lastChapter();
@@ -84,7 +84,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         $("#btnBadChapter").click(function(){
             var opts = $.extend(true, {}, options);
             opts.excludes = [readingRecord.options.contentSourceId];
-            clearChapters();
+
             loadChapters(readingRecord.chapterIndex - app.settings.chapterIndexOffset, app.settings.chapterCount, null, null, opts);
         });
         $("#btnSortReversed").click(function(){
@@ -111,11 +111,6 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             loadCatalog(true);
         });
     };
-
-    function clearChapters(){
-        chapters.length = 0;
-        $('.chapters').empty();
-    }
 
     function loadBookSource(){
         var self = this;
@@ -179,8 +174,9 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             var target = event.currentTarget;
             if(target){
                 target = $(target);
-                clearChapters();
                 var chapterIndex = parseInt(target.attr('data-index'));
+
+                readingRecord.chapterIndex = chapterIndex;
                 loadChapters(chapterIndex - app.settings.chapterIndexOffset, app.settings.chapterCount);
             }
         }
@@ -218,24 +214,24 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
 
     // 加载章节
     // count 是加载的章节数目
-    function loadChapters(chapterIndex, count, success, myFail, extras, activated){
+    function loadChapters(chapterIndex, count, success, myFail, extras){
+        chapters.length = 0;
+        $('.chapters').empty();
+
         var opts = $.extend(true, {}, options, extras);
-        if(chapterIndex < 0)
-            chapterIndex = 0;
         book.getChapters(chapterIndex, count,
             function(chapter, index, options){
-                var a = buildChapterAndReadingReord(chapter, index, options);
-                $('.chapters').append(a[0]);
-                chapters.push(a[1]);
+                if(chapter){
+                    var a = buildChapterAndReadingReord(chapter, index, options);
+                    $('.chapters').append(a[0]);
+                    chapters.push(a[1]);
 
-                var loadedCount = index - chapterIndex + 1;
-                if(!activated &&
-                   (index - chapterIndex == app.settings.chapterIndexOffset ||
-                   index - chapterIndex + 1 == count)){
-                    activateCurrentChapter();
-                    activated = true;
+                    if(index == readingRecord.chapterIndex){
+                        $.extend(readingRecord, a[1]);
+                        activateCurrentChapter();
+                        app.bookShelf.save();
+                    }
                 }
-
                 if(success){
                     success(chapter, index, options, chapterIndex, count);
                 }
@@ -264,8 +260,13 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
 
     // 获取当前的章节元素
     function getCurrentChapterElement(offset){
+
         var offset = offset || 0;
-        var i = app.settings.chapterIndexOffset + offset;
+        var i = util.arrayIndex(chapters, readingRecord, function(i1, i2){
+            return i1.chapterIndex == i2.chapterIndex;
+        });
+        i = i + offset;
+
         var cs = $('.chapters').children();
         if(i >=0 && i < cs.length)
             return cs.eq(i);
@@ -275,61 +276,87 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
     // 获取当前章节
     function getCurrentChapter(offset){
         var offset = offset || 0;
-        return chapters[app.settings.chapterIndexOffset + offset];
+        var i = util.arrayIndex(chapters, readingRecord, function(i1, i2){
+            return i1.chapterIndex == i2.chapterIndex;
+        });
+        i = i + offset;
+        if(i < 0)
+            return null;
+        else if(i > chapters.length)
+            return null;
+        return chapters[i];
     }
 
     // 激活当前章节，并保存信息
     function activateCurrentChapter(){
         $(".labelContentSource").text(app.bookSourceManager.sources[getCurrentChapter().options.contentSourceId].name);
-        var rr = chapters[app.settings.chapterIndexOffset];
         $('.chapterContainer').scrollTop(getCurrentChapterElement().position().top)
-        $.extend(readingRecord, rr);
-        app.bookShelf.save();
     }
 
     // 使用 ReadingReocrd 加载章节
-    var loadChaptersWithReadingRecord = function(rr, count, offset, success, fail, activated){
+    var loadChaptersWithReadingRecord = function(rr, count, offset, success, fail){
         var count = count || 1;
         var offset = offset || 0;
-        if(!rr.chapterIndex)
-            rr.chapterIndex = 0;
         loadChapters(rr.chapterIndex + offset, count,
             success, fail,
             {
                 contentSourceId: rr.options.contentSourceId,
                 contentSourceChapterIndex: rr.options.contentSourceChapterIndex + offset
-            }, activated);
+            });
     };
 
-    // 下一章节
-    function nextChapter(){
-        $('.chapters').children().first().remove();
-        chapters.shift();
-        activateCurrentChapter();
-        var theLast = chapters[chapters.length - 1];
-        loadChaptersWithReadingRecord(theLast, 1, 1, null, null, true);
+    function showCurrentChapter(offset){
+        var showed = false;
+        var cc = getCurrentChapter(offset);
+        if(cc){
+            if(chapters.length >= app.settings.chapterCount){
+                if(offset > 0){
+                    $('.chapters').children().first().remove();
+                    chapters.shift();
+                }
+                else if(offset < 0){
+                    $('.chapters').children().last().remove();
+                    chapters.pop();
+                }
+            }
+            readingRecord.chapterIndex += offset;
+            showed = true;
+            activateCurrentChapter();
+        }
 
-    }
-
-    // 上一章节
-    function lastChapter(){
         var opts = $.extend(true, {}, options);
-
-        // 看看当前章节前面是否已经有一章了，有的话就直接使用
-        book.getChapter(readingRecord.chapterIndex - 1,
+        book.getChapter(readingRecord.chapterIndex + offset,
             function(chapter, index, options){
                 var a = buildChapterAndReadingReord(chapter, index, options);
-                $('.chapters').prepend(a[0]);
-                chapters.unshift(a[1]);
-
-                $('.chapters').children().last().remove();
-                chapters.pop();
-
-                activateCurrentChapter();
+                if(offset > 0){
+                    $('.chapters').append(a[0]);
+                    chapters.push(a[1]);
+                    // 当向下获取章节的时候缓存章节
+                    cacheChapters(index, options);
+                }
+                else if(offset < 0){
+                    $('.chapters').prepend(a[0]);
+                    chapters.unshift(a[1]);
+                    activateCurrentChapter();
+                }
+                if(!showed){
+                    readingRecord.chapterIndex += offset;
+                    activateCurrentChapter();
+                }
             },
             function(error){
                 if(fail)fail(error);
             }, opts);
+    }
+
+    // 下一章节
+    function nextChapter(){
+        showCurrentChapter(1);
+    }
+
+    // 上一章节
+    function lastChapter(){
+        showCurrentChapter(-1);
     }
 
 

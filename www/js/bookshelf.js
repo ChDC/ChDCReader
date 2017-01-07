@@ -115,9 +115,11 @@ define(["jquery", "util", 'book'], function($, util, book) {
 
     // 添加书籍到书架中
     BookShelf.prototype.addBook = function(book, success, fail){
-        this.books.push(book);
-        this.readingRecords.push(new ReadingRecord());
-        this.save(success);
+        if(!this.hasBook(book)){
+            this.books.push(book);
+            this.readingRecords.push(new ReadingRecord());
+            this.save(success);
+        }
     };
 
     // 判断书架中是否有某书

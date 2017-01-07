@@ -172,7 +172,7 @@ define(["jquery", "util"], function($, util) {
         fixLastestChapter: function(text)
         {
             //最新的章节
-            text = text.trim();
+            text = text.replace(/^最新更新/, '').trim()
             return text;
         }
     };
@@ -264,7 +264,7 @@ define(["jquery", "util"], function($, util) {
 
     // 使用详情页链接刷新书籍信息
     // 前提：book.sources 中有详情链接
-    Book.prototype.refreshBookInfo = function(success, fail, options){
+    Book.prototype.refreshBookInfo = function(success, fail, options, onlyLastestChapter){
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
@@ -277,19 +277,19 @@ define(["jquery", "util"], function($, util) {
 
             function getBookDetailFromHtml(html){
                 // 更新信息的时候不更新书名和作者，因为换源的时候需要用到
-                // self.name = Book.fixer.fixName(html.find(info.name).text());  // 书名
-                // self.author = Book.fixer.fixAuthor(html.find(info.author).text());  // 作者
-
-                self.catagory = Book.fixer.fixCatagory(html.find(info.catagory).text());  // 分类
-                self.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);  // 封面
-                self.complete = Book.fixer.fixComplete(html.find(info.complete).text());  // 是否完结
-                self.introduce = Book.fixer.fixIntroduce(html.find(info.introduce).text());  // 简介
-                self.lastestChapter = Book.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
-
-                // self.sources = {}; // 内容来源
-                // self.sources[options.bookSourceId].catalog = self.__getBookCatalogFromHTML(element, detailLink, options);  // 目录
-                // self.readingChapter = undefined;  // 读到的章节
-                if(success)success(self, bsid);
+                if(!onlyLastestChapter){
+                    self.catagory = Book.fixer.fixCatagory(html.find(info.catagory).text());  // 分类
+                    self.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);  // 封面
+                    self.complete = Book.fixer.fixComplete(html.find(info.complete).text());  // 是否完结
+                    self.introduce = Book.fixer.fixIntroduce(html.find(info.introduce).text());  // 简介
+                }
+                var lastestChapter = Book.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
+                var lastestChapterUpdated = false;
+                if(self.lastestChapter != lastestChapter){
+                    self.lastestChapter = lastestChapter;
+                    lastestChapterUpdated = true;
+                }
+                if(success)success(lastestChapterUpdated);
             };
         },
         fail, options);
@@ -376,8 +376,11 @@ define(["jquery", "util"], function($, util) {
             return;
         }
 
-        if(chapterIndex < 0)
-            chapterIndex = 0;
+        if(chapterIndex < 0){
+            if(fail)
+                fail(Book.getError(203));
+            return;
+        }
 
         var self = this;
         options = $.extend(true, {}, options);
@@ -477,8 +480,11 @@ define(["jquery", "util"], function($, util) {
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapter = function(chapterIndex, success, fail, options){
 
-        if(chapterIndex < 0)
-            chapterIndex = 0;
+        if(chapterIndex < 0){
+            if(fail)
+                fail(Book.getError(203));
+            return;
+        }
 
         var self = this;
         options = $.extend(true, {}, options);
@@ -520,12 +526,10 @@ define(["jquery", "util"], function($, util) {
             getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.contentSourceId, options.contentSourceChapterIndex);
         }
         else if(options.contentSourceId){
-            debugger;
             // 仅有指定的源
             getChapterFromContentSources2(options.contentSourceId);
         }
         else{
-            // TODO
             getChapterFromContentSources2();
         }
 
@@ -581,7 +585,6 @@ define(["jquery", "util"], function($, util) {
                 }
             }
             if(includeSource){
-                debugger;
                 var i = contentSources.indexOf(includeSource);
                 delete contentSources[i];
                 // 放到结尾处
@@ -628,7 +631,6 @@ define(["jquery", "util"], function($, util) {
 
         function handleWithNormalMethod(error){
             // 失败则按正常方式获取
-            // TODO
             // 注意网络不通的问题
             getChapterFromContentSources2();
         }
@@ -811,8 +813,6 @@ define(["jquery", "util"], function($, util) {
     // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getChapters = function(chapterIndex, nextCount, success, fail, end, options){
-        if(chapterIndex < 0)
-            chapterIndex = 0;
 
         var self = this;
         options = $.extend(true, {}, options);
@@ -831,9 +831,6 @@ define(["jquery", "util"], function($, util) {
             if(nextCount > 0){
                 self.getChapter(chapterIndex,
                     function(chapter, index, opts){
-                        chapterIndex = index;
-                        options.contentSourceChapterIndex = opts.contentSourceChapterIndex;
-
                         options = $.extend(true, options, opts);
                         if(success)success(chapter, index, opts);
                         endParams.length = 0;
@@ -848,6 +845,14 @@ define(["jquery", "util"], function($, util) {
                             if(fail)fail(error);
                             if(end)end(endParams[0], endParams[1], endParams[2]);
                             return;
+                        }
+                        else if(error.id == 203){
+                            if(success)success(null, chapterIndex, options);
+                            endParams.length = 0;
+                            endParams.push(null);
+                            endParams.push(chapterIndex);
+                            endParams.push(options);
+                            next();
                         }
                         else{
                             if(!fail || fail(error))
@@ -891,8 +896,9 @@ define(["jquery", "util"], function($, util) {
     // *************************** 章节部分结束 ****************
 
     // 获取书籍最新章节
-    Book.prototype.getLastestChapterTitle = function(keyword, success, fail, options){
-        // TODO
+    Book.prototype.refreshLastestChapter = function(success, fail, options){
+        var self = this;
+        self.refreshBookInfo(success, fail, options, true);
     };
 
     // **** Chapter ****
@@ -921,6 +927,47 @@ define(["jquery", "util"], function($, util) {
         }
         // TODO：模糊判等
         return stripString(chapterA.title) == stripString(chapterB.title);
+    }
+
+        // 判断两个标题是否相等
+    Chapter.equalTitle = function(chapterA, chapterB){
+        if(!chapterA || !chapterB)
+            return false;
+        // 比较去掉所有空格和标点符号之后的所有符号
+        function stripString(str){
+            // 去除英文字符串
+            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
+            // 去除中文字符串
+            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+            // 去除空白字符
+            str = str.replace(/\s/g, '');
+            return str;
+        }
+        // TODO：模糊判等
+        return stripString(chapterA.title) == stripString(chapterB.title);
+    }
+
+    // 判断两个标题是否相等，传入的是章节
+    Chapter.equalTitle = function(chapterA, chapterB){
+        return Chapter.equalTitle2(chapterA.title, chapterB.title);
+    }
+
+    // 判断两个标题是否相等，传入的是章节标题
+    Chapter.equalTitle2 = function(chapterTitleA, chapterTitleB){
+        if(!chapterTitleA || !chapterTitleB)
+            return false;
+        // 比较去掉所有空格和标点符号之后的所有符号
+        function stripString(str){
+            // 去除英文字符串
+            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
+            // 去除中文字符串
+            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+            // 去除空白字符
+            str = str.replace(/\s/g, '');
+            return str;
+        }
+        // TODO：模糊判等
+        return stripString(chapterTitleA) == stripString(chapterTitleB);
     }
 
     // **** BookSource *****

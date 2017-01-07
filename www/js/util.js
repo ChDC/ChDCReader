@@ -66,6 +66,8 @@ define(["jquery"], function($){
           return r.substring(0, r.length-1);
         },
         showMessage: function(msg, delay, level){
+            if(!msg)
+                return;
             delay = delay || 1000;
             var msgBoxContainer = $('<div class="message-box-container"></div>')
             var msgBox = $('<div class="message-box"></div>');
@@ -86,7 +88,8 @@ define(["jquery"], function($){
             msgBoxContainer.fadeIn().delay(delay).fadeOut("", function(){$(this).remove();});
         },
         showError: function(msg, delay){
-            this.showMessage(msg, delay, 'error');
+            if(msg)
+                this.showMessage(msg, delay, 'error');
         },
         /*
         * 原始的获取 JSON url: 完整的 URL params: 参数 success: 成功调用的函数，第一个参数为 data 参数
@@ -104,7 +107,7 @@ define(["jquery"], function($){
             // TODO: 设置重试的次数
             function handleNetworkError(data) {
                 self.error("Fail to get: " + url + ", 网络错误");
-                self.showMessage("网络错误！");
+                // self.showError("网络错误！");
                 if (failure) failure(data);
             }
             if (typeof cordovaHTTP != "undefined") {
