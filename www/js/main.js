@@ -28,35 +28,50 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
                 $(this.onDeviceReady.bind(this));
             }
         },
-        chekcUpdate: function(){
-            debugger;
+        // 检查资源更新
+        // * isInstanceInstall 下载好资源后是否立即进行安装
+        chekcUpdate: function(isInstanceInstall){
+
+            if(!chcp)
+                return;
             function fetchUpdateCallback(error, data) {
                 if (error) {
-                    util.showMessage('加载资源更新失败！\n' + error.description);
-                    return;
+                    util.error('Fail to download update: ' + error.description);
+                    util.showMessage('更新下载失败！\n' + error.description);
                 }
-                util.showMessage('资源更新已下载，下次启动时生效！');
+                else{
+                    if(!isInstanceInstall){
+                        util.showMessage('更新已下载，下次启动时生效！');
+                    }
+                    else{
+                        util.log('Start to install update');
+                        chcp.installUpdate(installationCallback);
+                    }
+                }
             }
+
             function installationCallback(error) {
                 if (error) {
-                    util.showMessage('安装资源更新失败！\n' + error.description);
+                    util.error('Fail to install update: ' + error.description);
+                    util.showMessage('安装更新失败！\n' + error.description);
                 }
                 else {
-                    util.showMessage('资源更新安装成功！');
+                    util.log('Success to install update');
+                    // util.showMessage('安装更新成功！');
                 }
             }
 
-            if(chcp)chcp.isUpdateAvailableForInstallation(function(error, data) {
+            // 查看本地是否有尚未安装的更新
+            chcp.isUpdateAvailableForInstallation(function(error, data) {
                 if (error) {
-                    util.showMessage('开始获取资源更新。。。');
-                    if(chcp)chcp.fetchUpdate(fetchUpdateCallback);
-                    return;
+                    // util.showMessage('开始获取资源更新。。。');
+                    util.log('Start to check update');
+                    chcp.fetchUpdate(fetchUpdateCallback);
                 }
-
-                // update is in cache and can be installed - install it
-                console.log('Current version: ' + data.currentVersion);
-                console.log('About to install: ' + data.readyToInstallVersion);
-                if(chcp)chcp.installUpdate(installationCallback);
+                else{
+                    util.log('Start to install update');
+                    chcp.installUpdate(installationCallback);
+                }
             });
         },
 
@@ -69,17 +84,17 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
 
         onDeviceReady: function() {
             var self = this;
+            this.__loadSettings();
             this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
 
             this.bookShelf = new bookshelf.BookShelf();
-            this.__loadSettings();
             page.init();
             page.showPage("bookshelf");
-            // this.chekcUpdate();
+            this.chekcUpdate();
         },
         onUpdateInstalled: function(){
-            util.showMessage("更新资源成功！");
-            location.reload();
+            util.showMessage("资源更新成功！");
+            // location.reload();
         },
         saveSettings: function(){
             util.saveData('settings', this.settings);
