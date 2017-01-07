@@ -1,3 +1,5 @@
+/*********** Location ***************/
+
 .titlebar{
     width:100%;
     padding: 0;
@@ -41,16 +43,6 @@
     border-width: 0;
 }
 
-.bookSource option{
-    color: #000;
-}
-
-.btn-link{
-    color: #fff;
-    background-color: #EE0000;
-}
-
-
 .btnSearch{
     width: 40px;
 }
@@ -80,3 +72,17 @@
 .result .media-body button{
     margin: 2px 3px;
 }
+
+
+/*********** Color ***************/
+
+
+.bookSource option{
+    color: #000;
+}
+
+.btn-link{
+    color: #fff;
+    background-color: #EE0000;
+}
+

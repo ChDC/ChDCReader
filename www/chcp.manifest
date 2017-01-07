@@ -1,7 +1,7 @@
 [
   {
     "file": "css/index.css",
-    "hash": "46400ad08551b3c20d4e726a2b494198"
+    "hash": "99ad16b34a4e51cb015eaab385c952b6"
   },
   {
     "file": "data/booksources.json",
@@ -29,15 +29,15 @@
   },
   {
     "file": "js/book.js",
-    "hash": "f5ce59b2688ab59c4458f4e603554530"
+    "hash": "251acaa0007ffaab31a0515333a32f46"
   },
   {
     "file": "js/bookshelf.js",
-    "hash": "137cdfe4234c6ad571e7c3155f021189"
+    "hash": "a1caa7adcf0af9c21fe2ef10f525759a"
   },
   {
     "file": "js/main.js",
-    "hash": "4052a9f20116dddaee75e504eaeb0a14"
+    "hash": "62a6209a58af322399c11737b820c6c4"
   },
   {
     "file": "js/page.js",
@@ -45,7 +45,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "9c605cf834e242022ea0f36009883e4e"
+    "hash": "a4d90e58da970210128d2a505940fdf1"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -109,7 +109,7 @@
   },
   {
     "file": "page/bookdetail.page.css",
-    "hash": "111a37ece82e154536951e6e1685c221"
+    "hash": "010eff202557eeea0c42113600c5b762"
   },
   {
     "file": "page/bookdetail.page.html",
@@ -121,7 +121,7 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "175d1a5952174ffb01d06e82e10504e3"
+    "hash": "45d19bb57b9e26d285ed1462c32d2815"
   },
   {
     "file": "page/bookshelf.page.html",
@@ -129,23 +129,23 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "0d823829a0ba57bd3bdb3e6860c557f5"
+    "hash": "d9e9923a440e09a014a0adeba54303fc"
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "628963e6bb9e848b5b0c06cb2888a9b2"
+    "hash": "ba4b16011634764d05d980e4998c071b"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "267c1bf4253cd9560dfbcabd620e3a8c"
+    "hash": "f150d4a6b85df6b5c6d6510c75edbfdf"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "ad98d0d90c3d07409179def97affcfce"
+    "hash": "ff7f74bf8650edf4dcfd1e0eaba2a99c"
   },
   {
     "file": "page/search.page.css",
-    "hash": "4327d8cd8964ae1f3f2292497adb9c4c"
+    "hash": "99ae5a9178b82adbce3fbf2d2ecfe810"
   },
   {
     "file": "page/search.page.html",

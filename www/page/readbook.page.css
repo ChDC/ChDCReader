@@ -1,3 +1,5 @@
+/*********** Location ***************/
+
 .chapterContainer{
     padding: 15px;
     position: absolute;
@@ -5,8 +7,8 @@
     width: 100%;
     overflow: auto;
     word-wrap: break-word;
-    background-image: url(../img/readbg1.jpg);
 }
+
 
 .chapters{
     position: relative;
@@ -54,13 +56,6 @@
     overflow: auto;
 }
 
-.toolbar .btnLast{
-    background-color: #eee;
-}
-
-.toolbar .btnNext{
-    background-color: #eee;
-}
 
 .toolbar.top .btn{
     padding: 6px 6px;
@@ -77,3 +72,45 @@
     border-top: 1px solid #e1e1e1;
     padding: 1em 0;
 }*/
+
+/*********** Color ***************/
+.toolbar{
+    display: none;
+    /*background-color: #181818;*/
+    /*color: white;*/
+}
+
+.yellowTheme{
+    background-image: url(../img/readbg1.jpg);
+}
+
+.nightTheme{
+    background-color: #252526;
+    background-image: none;
+    /*color: #3399ff;*/
+    /*color: #f1f1cf;*/
+}
+
+.toolbar .btn{
+    font-size: 0.5em;
+    /*color: #cacaca;*/
+}
+
+.lastAndNextChapter{
+    bottom: 78px;
+    position: fixed;
+    width: 100%;
+    height: 78px;
+    line-height: 58px;
+    left: 0px;
+    background-color: transparent;
+}
+
+.btnNext, .btnLast{
+    margin: 10px 20px;
+    height: 60px;
+    background-color: #ccc;
+    border-radius: 100px;
+    /*position: fixed;*/
+    /*top: -30px;*/
+}

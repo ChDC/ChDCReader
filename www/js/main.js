@@ -12,6 +12,7 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
 
     var app = {
         /**************** 全局变量 *******************/
+        settings: settings,
         // 书籍来源管理器
         bookSourceManager: null,
 
@@ -71,7 +72,7 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
             this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
 
             this.bookShelf = new bookshelf.BookShelf();
-            this.settings = settings;
+            this.__loadSettings();
             page.init();
             page.showPage("bookshelf");
             // this.chekcUpdate();
@@ -79,6 +80,17 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
         onUpdateInstalled: function(){
             util.showMessage("更新资源成功！");
             location.reload();
+        },
+        saveSettings: function(){
+            util.saveData('settings', this.settings);
+        },
+        __loadSettings: function(){
+            var self = this;
+            util.loadData('settings', function(data){
+                if(data)
+                    self.settings = data;
+            })
+
         }
     };
 

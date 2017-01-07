@@ -2,7 +2,6 @@
 define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, booklib){
 
     function isReadingLastestChapter(book, readingRecord){
-        debugger;
         return booklib.Chapter.equalTitle2(book.lastestChapter, readingRecord.chapterTitle);
     }
 

@@ -1,6 +1,5 @@
-.btn-link{
-    color: #fff;
-}
+
+/*********** Location ***************/
 
 .container{
     padding: 5px 15px 5px 15px;
@@ -25,3 +24,12 @@
 .media-body button{
     margin: 5px 10px;
 }
+
+
+/*********** Color ***************/
+.btn-link{
+    color: #fff;
+}
+
+
+

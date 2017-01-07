@@ -215,6 +215,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
     // 加载章节
     // count 是加载的章节数目
     function loadChapters(chapterIndex, count, success, myFail, extras){
+        app.showLoading();
         chapters.length = 0;
         $('.chapters').empty();
 
@@ -227,6 +228,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
                     chapters.push(a[1]);
 
                     if(index == readingRecord.chapterIndex){
+                        app.hideLoading();
                         $.extend(readingRecord, a[1]);
                         activateCurrentChapter();
                         app.bookShelf.save();
