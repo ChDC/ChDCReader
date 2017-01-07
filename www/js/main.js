@@ -32,12 +32,15 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
         // * isInstanceInstall 下载好资源后是否立即进行安装
         chekcUpdate: function(isInstanceInstall){
 
-            if(!chcp)
+            if(!window.chcp)
                 return;
             function fetchUpdateCallback(error, data) {
                 if (error) {
-                    util.error('Fail to download update: ' + error.description);
-                    util.showMessage('更新下载失败！\n' + error.description);
+                    if(error.id != 2){
+                        var errMsg = error.description + "(" + error.code + ")";
+                        util.error('Fail to download update: ' + errMsg);
+                        util.showMessage('更新下载失败！\n' + errMsg);
+                    }
                 }
                 else{
                     if(!isInstanceInstall){
@@ -52,8 +55,9 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
 
             function installationCallback(error) {
                 if (error) {
-                    util.error('Fail to install update: ' + error.description);
-                    util.showMessage('安装更新失败！\n' + error.description);
+                    var errMsg = error.description + "(" + error.code + ")";
+                    util.error('Fail to install update: ' + errMsg);
+                    util.showMessage('安装更新失败！\n' + errMsg);
                 }
                 else {
                     util.log('Success to install update');

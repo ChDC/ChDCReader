@@ -984,11 +984,16 @@ define(["jquery", "util"], function($, util) {
 
 
     // **** BookSourceManager *****
-    function BookSourceManager(configFile){
+    function BookSourceManager(configFileOrConfig){
         var self = this;
-        $.getJSON(configFile, function(data){
-            self.sources = data;
-        });
+        if($.type(configFileOrConfig) == 'string'){
+            $.getJSON(configFileOrConfig, function(data){
+                self.sources = data;
+            });
+        }
+        else{
+            self.sources = configFileOrConfig;
+        }
     };
     BookSourceManager.prototype.sources = undefined;
 
@@ -998,8 +1003,17 @@ define(["jquery", "util"], function($, util) {
     }
 
     // 按内容源权重从小到大排序的数组
-    BookSourceManager.prototype.getSourcesKeysByContentSourceWeight = function(){
-        return util.objectSortedKey(this.sources, 'contentSourceWeight'); // 按内容源权重从小到大排序的数组
+    BookSourceManager.prototype.getSourcesKeysByContentSourceWeight = function(configFileOrConfig){
+
+    }
+
+    // 检查源是否正确
+    BookSourceManager.prototype.checkBookSources = function(configFile, finish){
+        $.getJSON(configFile, function(data){
+            // TODO
+            self.sources = data;
+            if(finish)finish();
+        });
     }
 
     // **** Return package *****

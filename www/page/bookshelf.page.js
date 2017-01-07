@@ -24,7 +24,6 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
             // 刷新最新章节
             book.refreshLastestChapter(function(updated){
                 if(updated){
-                    debugger;
                     nb.find(".book-lastestchapter")
                     .text("最新章节：" + (book.lastestChapter? book.lastestChapter : "无"))
                     .css('color', isReadingLastestChapter(book, readingRecord)? 'black' : 'red');
@@ -43,7 +42,19 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
 
     function loadView(){
         $("#btnCheckUpdate").click(function(){
-            app.chekcUpdate();
+            app.chekcUpdate(true);
+        });
+        $("#btnCheckBookSources").click(function(){
+            app.bookSourceManager.checkBookSources("data/booksourcesTest.json",
+                function(status, sources){
+                    // TODO
+                    util.showMessageDialog('检查结果', "test", function(){
+                        debugger;
+                        util.showMessage('确定');
+                    }, function(){
+                        util.showMessage('取消');
+                    });
+                });
         });
         $(".btnSearch").click(function(){
             page.showPage("search");
