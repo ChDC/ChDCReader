@@ -56,26 +56,60 @@ define(["jquery", "util", 'book'], function($, util, book) {
 
     // 添加书籍到书架中
     BookShelf.prototype.load = function(success, fail){
+        function loadCatalogs(){
+            var unfinished = [];
+            function checkAllFinished(){
+                for(var bk in self.books){
+                    var b = self.books[bk];
+                    for(var bsk in b.sources){
+                        if(unfinished[bk][bsk]){
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            function setFinished(bk, bsk){
+                unfinished[bk][bsk] = false;
+            }
+            function initUnfinished(){
+                for(var bk in self.books){
+                    unfinished[bk] = {};
+                    var b = self.books[bk];
+                    for(var bsk in b.sources){
+                        unfinished[bk][bsk] = true;
+                    }
+                }
+            }
+            initUnfinished();
+
+            for(var bk in self.books){
+                var b = self.books[bk];
+                for(var bsk in b.sources){
+                    var bs = b.sources[bsk];
+                    // 更新目录文件
+                    util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk),
+                        function(data){
+                            bs.catalog = data;
+                            setFinished(bk, bsk);
+                            if(checkAllFinished() && success)success();
+                        },
+                        function(){
+                            setFinished(bk, bsk);
+                            if(checkAllFinished() && success)success();
+                        });
+                }
+            }
+        }
+
         var self = this;
         util.loadData("bookshelf",
             function(data){
                 var bookShelf = data;
                 $.extend(true, self, bookShelf);
                 util.arrayCast(self.books, book.Book);
-                for(var bk in self.books){
-                    var b = self.books[bk];
-                    for(var bsk in b.sources){
-                        var bs = b.sources[bsk];
-                        // 更新目录文件
-                        util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk),
-                            function(data){
-                                bs.catalog = data;
-                            });
-                    }
-                }
-
                 util.arrayCast(self.readingRecords, ReadingRecord);
-                if(success)success();
+                loadCatalogs();
             },
             fail);
     };
