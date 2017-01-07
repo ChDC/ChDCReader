@@ -61,10 +61,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         }
     };
 
+    function loadView(){
+
+        loadBookDetail(".book", params.book, params.bookSourceId);
+        loadBookChapters(".book-chapters", params.book, params.bookSourceId);
+    }
+
     return {
         onload: function(params, p){
-            loadBookDetail(".book", params.book, params.bookSourceId);
-            loadBookChapters(".book-chapters", params.book, params.bookSourceId);
+            loadView();
         },
         onresume: function(){
 

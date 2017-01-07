@@ -32,7 +32,7 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
         // * isInstanceInstall 下载好资源后是否立即进行安装
         chekcUpdate: function(isInstanceInstall){
 
-            if(!chcp)
+            if(!window.chcp)
                 return;
             function fetchUpdateCallback(error, data) {
                 if (error) {

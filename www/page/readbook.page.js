@@ -296,7 +296,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
     }
 
     // 使用 ReadingReocrd 加载章节
-    var loadChaptersWithReadingRecord = function(rr, count, offset, success, fail){
+    function loadChaptersWithReadingRecord(rr, count, offset, success, fail){
         var count = count || 1;
         var offset = offset || 0;
         loadChapters(rr.chapterIndex + offset, count,

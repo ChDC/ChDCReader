@@ -91,6 +91,41 @@ define(["jquery"], function($){
             if(msg)
                 this.showMessage(msg, delay, 'error');
         },
+
+        showMessageDialog: function(title, msg, ok, cancel){
+            var dialog = $(
+    '<div class="modal fade" id="modalMessage">'
++ '    <div class="modal-dialog">'
++ '      <div class="modal-content">'
++ '        <div class="modal-header">'
++ '          <h4 class="modal-title">'
++ '          </h4>'
++ '        </div>'
++ '        <div class="modal-body">'
++ '          <p class="modal-message"></p>'
++ '        </div>'
++ '        <div class="modal-footer">'
++ '          <button type="button" class="btn btn-default" btnCancel data-dismiss="modal">'
++ '            取消'
++ '          </button>'
++ '          <button type="button" class="btn btn-primary btnOK" data-dismiss="modal">'
++ '          确定'
++ '          </button>'
++ '        </div>'
++ '      </div>'
++ '    </div>'
++ '  </div>');
+            debugger;
+            // TODO 失效后销毁
+            // dialog.remove();
+            $('body').append(dialog);
+            dialog.find('.btnOk').click(ok);
+            dialog.find('.btnCancel').click(cancel);
+            dialog.find('.modal-title').text(title);
+            dialog.find('.modal-message').text(msg);
+            dialog.modal('show');
+        },
+
         /*
         * 原始的获取 JSON url: 完整的 URL params: 参数 success: 成功调用的函数，第一个参数为 data 参数
         * failure: 失败调用的函数

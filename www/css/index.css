@@ -5,13 +5,17 @@
     overflow: auto;
 }
 
-ul {
+.list{
+
+}
+
+ul.list, .list ul {
     padding: 0 10px;
     position: relative;
     list-style-type: none
 }
 
-li {
+.list li {
     border-top: 1px solid #e1e1e1;
     padding: 1em 0;
 }
