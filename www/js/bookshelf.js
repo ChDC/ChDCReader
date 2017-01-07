@@ -83,21 +83,26 @@ define(["jquery", "util", 'book'], function($, util, book) {
             }
             initUnfinished();
 
+            function loadCatalog(bk, bsk){
+                var b = self.books[bk];
+                var bs = b.sources[bsk];
+                // 更新目录文件
+                util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk),
+                    function(data){
+                        bs.catalog = data;
+                        setFinished(bk, bsk);
+                        if(checkAllFinished() && success)success();
+                    },
+                    function(){
+                        setFinished(bk, bsk);
+                        if(checkAllFinished() && success)success();
+                    });
+            }
+
             for(var bk in self.books){
                 var b = self.books[bk];
                 for(var bsk in b.sources){
-                    var bs = b.sources[bsk];
-                    // 更新目录文件
-                    util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk),
-                        function(data){
-                            bs.catalog = data;
-                            setFinished(bk, bsk);
-                            if(checkAllFinished() && success)success();
-                        },
-                        function(){
-                            setFinished(bk, bsk);
-                            if(checkAllFinished() && success)success();
-                        });
+                    loadCatalog(bk, bsk);
                 }
             }
         }
