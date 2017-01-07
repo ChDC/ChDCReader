@@ -36,9 +36,11 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
                 return;
             function fetchUpdateCallback(error, data) {
                 if (error) {
-                    var errMsg = error.description + "(" + error.code + ")";
-                    util.error('Fail to download update: ' + errMsg);
-                    util.showMessage('更新下载失败！\n' + errMsg);
+                    if(error.id != 2){
+                        var errMsg = error.description + "(" + error.code + ")";
+                        util.error('Fail to download update: ' + errMsg);
+                        util.showMessage('更新下载失败！\n' + errMsg);
+                    }
                 }
                 else{
                     if(!isInstanceInstall){
