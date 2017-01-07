@@ -1,11 +1,15 @@
 [
   {
     "file": "css/index.css",
-    "hash": "99ad16b34a4e51cb015eaab385c952b6"
+    "hash": "2114b56f75b7b5b0480c50c7e7788c5d"
   },
   {
     "file": "data/booksources.json",
-    "hash": "c64b069444741d2987b264275229cb00"
+    "hash": "80a3eeda8ccec1d90a1dad9bbacc9cd5"
+  },
+  {
+    "file": "data/booksourcesTest.json",
+    "hash": "252a944f16c1e93bc7b0edc87b236b30"
   },
   {
     "file": "img/book_cover.png",
@@ -29,7 +33,7 @@
   },
   {
     "file": "js/book.js",
-    "hash": "251acaa0007ffaab31a0515333a32f46"
+    "hash": "ab11d4d7c23eed571a050d82123214e3"
   },
   {
     "file": "js/bookshelf.js",
@@ -37,7 +41,7 @@
   },
   {
     "file": "js/main.js",
-    "hash": "9988f757c4be95910e4d3466fb614a45"
+    "hash": "69bd9f9c992e52ac59745f574512ee6a"
   },
   {
     "file": "js/page.js",
@@ -45,7 +49,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "a4d90e58da970210128d2a505940fdf1"
+    "hash": "fa88ecfeb1b2f764c8af13037c4e937e"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -113,11 +117,11 @@
   },
   {
     "file": "page/bookdetail.page.html",
-    "hash": "e4d514a84b6806432e38b1b9fc712ee4"
+    "hash": "b0cbd60b87d6a0891424476467da873e"
   },
   {
     "file": "page/bookdetail.page.js",
-    "hash": "c61bfd77aa4604dec32ea90de3c17e45"
+    "hash": "08bffec0449fb0d9fc72fbd47e72a550"
   },
   {
     "file": "page/bookshelf.page.css",
@@ -125,11 +129,11 @@
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "68bf079b98d09f93312fb92e827aeeaa"
+    "hash": "51edb3a3a2f192a7ce3265fb456a1741"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "d9e9923a440e09a014a0adeba54303fc"
+    "hash": "22d139e8473613d0d446daa19a13ec81"
   },
   {
     "file": "page/readbook.page.css",
@@ -137,11 +141,11 @@
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "f150d4a6b85df6b5c6d6510c75edbfdf"
+    "hash": "2ce730bf2d167f481aaf47d64f602a4e"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "ff7f74bf8650edf4dcfd1e0eaba2a99c"
+    "hash": "ba7c97fd778483c1c62e05d0d45a2c9b"
   },
   {
     "file": "page/search.page.css",
