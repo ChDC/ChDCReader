@@ -911,42 +911,6 @@ define(["jquery", "util"], function($, util) {
     Chapter.prototype.content = undefined;  // 内容
     // Chapter.prototype.modifyTime = undefined;  // 修改时间
 
-    // 判断两个标题是否相等
-    Chapter.equalTitle = function(chapterA, chapterB){
-        if(!chapterA || !chapterB)
-            return false;
-        // 比较去掉所有空格和标点符号之后的所有符号
-        function stripString(str){
-            // 去除英文字符串
-            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
-            // 去除中文字符串
-            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
-            // 去除空白字符
-            str = str.replace(/\s/g, '');
-            return str;
-        }
-        // TODO：模糊判等
-        return stripString(chapterA.title) == stripString(chapterB.title);
-    }
-
-        // 判断两个标题是否相等
-    Chapter.equalTitle = function(chapterA, chapterB){
-        if(!chapterA || !chapterB)
-            return false;
-        // 比较去掉所有空格和标点符号之后的所有符号
-        function stripString(str){
-            // 去除英文字符串
-            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
-            // 去除中文字符串
-            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
-            // 去除空白字符
-            str = str.replace(/\s/g, '');
-            return str;
-        }
-        // TODO：模糊判等
-        return stripString(chapterA.title) == stripString(chapterB.title);
-    }
-
     // 判断两个标题是否相等，传入的是章节
     Chapter.equalTitle = function(chapterA, chapterB){
         return Chapter.equalTitle2(chapterA.title, chapterB.title);
