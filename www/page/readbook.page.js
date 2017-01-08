@@ -214,11 +214,14 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
 
     // 加载章节
     // count 是加载的章节数目
-    function loadChapters(chapterIndex, count, success, myFail, extras){
+    function loadChapters(chapterIndex, count, offset, success, myFail, extras){
         app.showLoading();
+
+        // Clear
         chapters.length = 0;
         $('.chapters').empty();
 
+        offset = offset || 0;
         var opts = $.extend(true, {}, options, extras);
         book.getChapters(chapterIndex, count,
             function(chapter, index, options){

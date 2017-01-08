@@ -66,9 +66,15 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
             loadView();
         },
         onresume: function(){
-            app.bookShelf.load(function(){
+            if(app.bookShelf.loaded){
+                debugger;
                 loadBooks(".bookshelf", app.bookShelf);
-            });
+            }
+            else{
+                app.bookShelf.load(function(){
+                    loadBooks(".bookshelf", app.bookShelf);
+                });
+            }
         },
         onpause: function(){
 

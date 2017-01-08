@@ -39,6 +39,7 @@ define(["jquery", "util", 'book'], function($, util, book) {
 
     // **** BookShelf *****
     function BookShelf(){
+        this.loaded = false; // 标记是否已经加载的数据
         this.books = [];
         this.sort = [0,1,2,3,4]; // 在书架的显示顺序
         this.readingRecords = []; // 阅读进度
@@ -56,6 +57,10 @@ define(["jquery", "util", 'book'], function($, util, book) {
 
     // 添加书籍到书架中
     BookShelf.prototype.load = function(success, fail){
+        function s(){
+            self.loaded = true;
+            if(success)success();
+        }
         function loadCatalogs(){
             var unfinished = [];
             function checkAllFinished(){
@@ -91,11 +96,11 @@ define(["jquery", "util", 'book'], function($, util, book) {
                     function(data){
                         bs.catalog = data;
                         setFinished(bk, bsk);
-                        if(checkAllFinished() && success)success();
+                        if(checkAllFinished())s();
                     },
                     function(){
                         setFinished(bk, bsk);
-                        if(checkAllFinished() && success)success();
+                        if(checkAllFinished())s();
                     });
             }
 
