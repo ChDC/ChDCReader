@@ -228,7 +228,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             opts.contentSourceChapterIndex += offset;
         }
 
-        book.getChapters(chapterIndex, count,
+        book.getChapters(chapterIndex, count, 0,
             function(chapter, index, options){
                 if(chapter){
                     var a = buildChapterAndReadingReord(chapter, index, options);
@@ -243,7 +243,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
                     }
                 }
                 if(success){
-                    success(chapter, index, options, chapterIndex, count);
+                    success(chapter, index, options);
                 }
             },
             function(error){

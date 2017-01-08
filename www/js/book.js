@@ -803,7 +803,8 @@ define(["jquery", "util"], function($, util) {
 
     // 一次获取多个章节
     // chapterIndex 是从主要目录源中获取的章节索引
-    // nextCount 获取的章节数目
+    // nextCount 获取的章节数目，当它值为 0 时，可以无限获取章节，当 success 返回 true 时停止
+    // direction 获取章节的方向，大于等于 0 则向下获取，小于 0 则向上获取
     // options
     // * noInfluenceWeight false 是否要改变内容源的权重
     // * cacheDir 缓存章节的目录
@@ -812,50 +813,80 @@ define(["jquery", "util"], function($, util) {
     // * contentSourceChapterIndex 希望匹配的索引
     // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
-    Book.prototype.getChapters = function(chapterIndex, nextCount, success, fail, end, options){
+    Book.prototype.getChapters = function(chapterIndex, nextCount, direction, success, fail, end, options){
+
+        var endParams = [];
+        var countless = nextCount == 0; // 是否是无限次数的获取
+
+        if(chapterIndex < 0){
+            nextCount += chapterIndex;
+            chapterIndex = 0;
+        }
+        if(nextCount < 0){
+            return;
+        }
 
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        var endParams = [];
 
-        chapterIndex--;
-        options.contentSourceChapterIndex--;
+        chapterIndex += (direction >= 0? -1 : 1);
+        options.contentSourceChapterIndex += (direction >= 0? -1 : 1);
+
         nextCount++;
         next();
         function next(){
-            chapterIndex++;
-            options.contentSourceChapterIndex++;
+            chapterIndex += (direction >= 0? 1 : -1);
+            options.contentSourceChapterIndex += (direction >= 0? 1 : -1);
+
             nextCount--;
-            if(nextCount > 0){
+            if(nextCount > 0 || countless){
                 self.getChapter(chapterIndex,
                     function(chapter, index, opts){
                         options = $.extend(true, options, opts);
-                        if(success)success(chapter, index, opts);
                         endParams.length = 0;
                         endParams.push(chapter);
                         endParams.push(index);
                         endParams.push(opts);
+                        if(countless){
+                            debugger;
+                            if(!success || !success(chapter, index, opts))
+                                return;
+                        }
+                        else{
+                            if(success)
+                                success(chapter, index, opts);
+                        }
                         next();
                     },
                     function(error){
-                        if(error.id == 202){
+                        debugger;
+                        if(error.id == 202 && direction >= 0 || // 后面没有章节了
+                           error.id == 203 && direction < 0){ // 前面没有章节了
                             // 当没有更新的章节时，直接退出
                             if(fail)fail(error);
                             if(end)end(endParams[0], endParams[1], endParams[2]);
                             return;
                         }
-                        else if(error.id == 203){
-                            if(success)success(null, chapterIndex, options);
+                        else if(error.id == 203 && direction >= 0 ||
+                            error.id == 202 && direction < 0){
+                            debugger;
                             endParams.length = 0;
                             endParams.push(null);
                             endParams.push(chapterIndex);
                             endParams.push(options);
+                            if(countless){
+                                if(!success || !success(null, chapterIndex, options))
+                                    return;
+                            }
+                            else{
+                                if(success)success(null, chapterIndex, options);
+                            }
                             next();
                         }
                         else{
-                            if(!fail || fail(error))
+                            if(fail && fail(error))
                                 next();
                             else{
                                 if(end)end(endParams[0], endParams[1], endParams[2]);
@@ -891,7 +922,7 @@ define(["jquery", "util"], function($, util) {
         options.noInfluenceWeight = true;
         options.onlyCacheNoLoad = true;
 
-        self.getChapters(chapterIndex, nextCount, null, null, null, options);
+        self.getChapters(chapterIndex, nextCount, 0, null, null, null, options);
     }
     // *************************** 章节部分结束 ****************
 

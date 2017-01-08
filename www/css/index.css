@@ -1,3 +1,11 @@
+h1, h2, h3, h4, h5, h6{
+    font-family: "黑体";
+}
+
+p{
+    font-family: "宋体";
+}
+
 .page-content-container{
     position: absolute;
     height: 100%;
