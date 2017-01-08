@@ -68,7 +68,7 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
             // 查看本地是否有尚未安装的更新
             chcp.isUpdateAvailableForInstallation(function(error, data) {
                 if (error) {
-                    // util.showMessage('开始获取资源更新。。。');
+                    util.showMessage('开始检查资源更新。。。');
                     util.log('Start to check update');
                     chcp.fetchUpdate(fetchUpdateCallback);
                 }
