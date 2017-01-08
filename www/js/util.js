@@ -148,7 +148,6 @@ define(["jquery"], function($){
             if (typeof cordovaHTTP != "undefined") {
                 this.log("HTTP with Cordova");
                 var s = function(data) {
-                    self.log("Success" + data);
                     if (data.status != 200) {
                         handleNetworkError(data);
                     } else {
