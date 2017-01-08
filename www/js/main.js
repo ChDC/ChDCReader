@@ -6,8 +6,8 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
         cacheChapterCount: 3, // 缓存后面章节的数目
         cacheCountEachChapter: 1, // 默认情况下每章缓存的源章节数目
         cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
-        chapterIndexOffset: 1,  // 当前章节的偏移值
-        chapterCount: 3,   // 每次加载的章节数目
+        // chapterIndexOffset: 1,  // 当前章节的偏移值
+        // chapterCount: 3,   // 每次加载的章节数目
     };
 
     var app = {

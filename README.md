@@ -13,3 +13,15 @@
 
 * 弹出框响应 Android 的返回键
 
+## TEST
+
+* 一分钟之内不能刷新目录
+* Book.getChapters
+* Book.cacheChapters
+* Book.getCountlessChapters
+
+## 章节加载策略
+
+先加载正在读的这一章节，然后加载后面的章节直到长度满足要求，最后加载前面的章节直到长度满足要求；
+
+之后，当滑动的时候，检查当前的长度是否满足要求，不满足则继续加载直到满足要求未知。

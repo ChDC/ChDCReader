@@ -135,8 +135,8 @@ define(["jquery", "util", 'book'], function($, util, book) {
             var b = self.books[bk];
             for(var bsk in b.sources){
                 var bs = b.sources[bsk];
-                if(bs.updatedCatalog){
-                    bs.updatedCatalog = false;
+                if(bs.needSaveCatalog){
+                    bs.needSaveCatalog = false;
                     // 更新目录文件
                     util.saveData(self.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
                 }

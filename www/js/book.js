@@ -25,7 +25,8 @@ define(["jquery", "util"], function($, util) {
             301: "设置主要内容来源失败！",
             302: "未找到该源",
             401: "源配置不正确！",
-            404: "未在当前的源中找到该书！"
+            404: "未在当前的源中找到该书！",
+            400: "不能频繁更新目录"
         };
         return {
             id: errorCode,
@@ -297,20 +298,31 @@ define(["jquery", "util"], function($, util) {
 
     // 刷新目录
     Book.prototype.refreshCatalog = function(success, fail, options){
-        util.log('Refresh Catalog!');
 
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
-        self.__getBookSourceDetailLink(function(detailLink, bsid, bs){
-            util.getDOM(detailLink, {}, s, fail);
 
-            function s(html){
-                var catalog = self.__getBookCatalogFromHTML(html, detailLink, options);
-                bs.catalog = catalog;
-                bs.updatedCatalog = true;
-                if(success)success(catalog);
-            };
+        self.getBookSource(function(bs){
+            if((new Date()).getTime() - bs.updatedCatalogTime < options.bookSourceManager.settings.refreshCatalogInterval){
+                debugger;
+                if(fail)fail(Book.getError(400));
+            }
+            else{
+                util.log('Refresh Catalog!');
+                self.__getBookSourceDetailLink(function(detailLink, bsid, bs){
+                    util.getDOM(detailLink, {}, s, fail);
+
+                    function s(html){
+                        var catalog = self.__getBookCatalogFromHTML(html, detailLink, options);
+                        bs.catalog = catalog;
+                        bs.updatedCatalogTime = (new Date()).getTime();
+                        bs.needSaveCatalog = true;
+                        if(success)success(catalog);
+                    };
+                },
+                fail, options);
+            }
         },
         fail, options);
     };
@@ -360,7 +372,15 @@ define(["jquery", "util"], function($, util) {
                 if(success)success(bs.catalog);
             }
             else{
-                self.refreshCatalog(success, fail, options);
+                self.refreshCatalog(success, function(error){
+                    if(error.id == 400){
+                        debugger;
+                        if(success)success(bs.catalog);
+                    }
+                    else{
+                        if(fail)fail(error);
+                    }
+                }, options);
             }
         },
         fail, options);
@@ -396,7 +416,8 @@ define(["jquery", "util"], function($, util) {
                 // 超界了
                 // 没有下一章节或者目录没有更新
                 // 更新一下主目录源，然后再搜索
-                self.refreshCatalog(function(catalog){
+                options.forceRefresh = true;
+                self.getCatalog(function(catalog){
                     if(chapterIndex >=0 && chapterIndex < catalog.length){
                         // 存在于目录中
                         if(success)success(catalog[chapterIndex], chapterIndex, catalog);
@@ -442,9 +463,12 @@ define(["jquery", "util"], function($, util) {
                         }
                     }
                     else{
+                        // TODO: 避免频繁刷新目录
                         // 没找到
                         // 更新章节目录然后重新查找
-                        self.refreshCatalog(function(catalogB){
+
+                        options.forceRefresh = true;
+                        self.getCatalog(function(catalogB){
                             var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
                             if(indexB >= 0){
                                 // 找到了
@@ -803,7 +827,6 @@ define(["jquery", "util"], function($, util) {
 
     // 一次获取多个章节
     // chapterIndex 是从主要目录源中获取的章节索引
-    // nextCount 获取的章节数目，当它值为 0 时，可以无限获取章节，当 success 返回 true 时停止
     // direction 获取章节的方向，大于等于 0 则向下获取，小于 0 则向上获取
     // options
     // * noInfluenceWeight false 是否要改变内容源的权重
@@ -811,17 +834,88 @@ define(["jquery", "util"], function($, util) {
     // * excludes 要排除的内容源
     // * contentSourceId 希望使用的内容源
     // * contentSourceChapterIndex 希望匹配的索引
-    // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
+    // * count 获取的数目
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
-    Book.prototype.getChapters = function(chapterIndex, nextCount, direction, success, fail, end, options){
-
-        var endParams = [];
-        var countless = nextCount == 0; // 是否是无限次数的获取
+    Book.prototype.getCountlessChapters = function(chapterIndex, direction, success, fail, finish, options){
+        debugger;
+        if(!success)
+            return;
 
         if(chapterIndex < 0){
-            nextCount += chapterIndex;
             chapterIndex = 0;
         }
+
+        var self = this;
+        options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        chapterIndex += (direction >= 0? -1 : 1);
+        options.contentSourceChapterIndex += (direction >= 0? -1 : 1);
+
+        next();
+        function next(){
+            chapterIndex += (direction >= 0? 1 : -1);
+            options.contentSourceChapterIndex += (direction >= 0? 1 : -1);
+
+            self.getChapter(chapterIndex,
+                function(chapter, index, opts){
+                    options = $.extend(true, options, opts);
+
+                    if(success(chapter, index, opts))
+                        next();
+                    else{
+                        if(finish)finish();
+                    }
+                },
+                function(error){
+                    if(error.id == 202 && direction >= 0 || // 后面没有章节了
+                       error.id == 203 && direction < 0){ // 前面没有章节了
+                        // 当没有更新的章节时，直接退出
+                        if(fail)fail(error);
+                        if(finish)finish();
+                        return;
+                    }
+                    else if(error.id == 203 && direction >= 0 ||
+                        error.id == 202 && direction < 0){
+                        debugger;
+                        if(success(null, chapterIndex, options))
+                            next();
+                        else{
+                            if(finish)finish();
+                        }
+                    }
+                    else{
+                        if(fail && fail(error))
+                            next();
+                        else{
+                            if(finish)finish();
+                        }
+                    }
+                }, options);
+            }
+        }
+    }
+
+
+    // 一次获取多个章节
+    // chapterIndex 是从主要目录源中获取的章节索引
+    // nextCount 获取的章节数目
+    // direction 获取章节的方向，大于等于 0 则向下获取，小于 0 则向上获取
+    // options
+    // * noInfluenceWeight false 是否要改变内容源的权重
+    // * cacheDir 缓存章节的目录
+    // * excludes 要排除的内容源
+    // * contentSourceId 希望使用的内容源
+    // * contentSourceChapterIndex 希望匹配的索引
+    // * count 获取的数目
+    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+    Book.prototype.getChapters = function(chapterIndex, nextCount, direction, success, fail, options){
+
+        // if(chapterIndex < 0){
+        //     nextCount += chapterIndex;
+        //     chapterIndex = 0;
+        // }
+        debugger;
         if(nextCount < 0){
             return;
         }
@@ -830,79 +924,12 @@ define(["jquery", "util"], function($, util) {
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
-
-        chapterIndex += (direction >= 0? -1 : 1);
-        options.contentSourceChapterIndex += (direction >= 0? -1 : 1);
-
-        nextCount++;
-        next();
-        function next(){
+        for(var i = 0; i < nextCount; i++){
+            self.getChapter(chapterIndex, success, fail, options);
             chapterIndex += (direction >= 0? 1 : -1);
             options.contentSourceChapterIndex += (direction >= 0? 1 : -1);
-
-            nextCount--;
-            if(nextCount > 0 || countless){
-                self.getChapter(chapterIndex,
-                    function(chapter, index, opts){
-                        options = $.extend(true, options, opts);
-                        endParams.length = 0;
-                        endParams.push(chapter);
-                        endParams.push(index);
-                        endParams.push(opts);
-                        if(countless){
-                            debugger;
-                            if(!success || !success(chapter, index, opts))
-                                return;
-                        }
-                        else{
-                            if(success)
-                                success(chapter, index, opts);
-                        }
-                        next();
-                    },
-                    function(error){
-                        debugger;
-                        if(error.id == 202 && direction >= 0 || // 后面没有章节了
-                           error.id == 203 && direction < 0){ // 前面没有章节了
-                            // 当没有更新的章节时，直接退出
-                            if(fail)fail(error);
-                            if(end)end(endParams[0], endParams[1], endParams[2]);
-                            return;
-                        }
-                        else if(error.id == 203 && direction >= 0 ||
-                            error.id == 202 && direction < 0){
-                            debugger;
-                            endParams.length = 0;
-                            endParams.push(null);
-                            endParams.push(chapterIndex);
-                            endParams.push(options);
-                            if(countless){
-                                if(!success || !success(null, chapterIndex, options))
-                                    return;
-                            }
-                            else{
-                                if(success)success(null, chapterIndex, options);
-                            }
-                            next();
-                        }
-                        else{
-                            if(fail && fail(error))
-                                next();
-                            else{
-                                if(end)end(endParams[0], endParams[1], endParams[2]);
-                                return;
-                            }
-                        }
-                    }, options);
-            }
-            else{
-                if(end)
-                    end(endParams[0], endParams[1], endParams[2]);
-            }
         }
-
     }
-
 
     // chapterIndex 是从主要目录源中获取的章节索引
     // nextCount 缓存的章节数目
@@ -922,7 +949,7 @@ define(["jquery", "util"], function($, util) {
         options.noInfluenceWeight = true;
         options.onlyCacheNoLoad = true;
 
-        self.getChapters(chapterIndex, nextCount, 0, null, null, null, options);
+        self.getChapters(chapterIndex, nextCount, 0, null, null, options);
     }
     // *************************** 章节部分结束 ****************
 
@@ -967,14 +994,16 @@ define(["jquery", "util"], function($, util) {
 
     // **** BookSource *****
     function BookSource(weight){
-        this.updatedCatalog = true;
+        this.needSaveCatalog = false;
+        this.updatedCatalogTime = 0;
         this.disable = false;
         this.weight = weight || 0;
     };
     BookSource.prototype.detailLink = null; // 详情页链接
     BookSource.prototype.catalog = null; // 目录
     BookSource.prototype.weight = 0;
-    BookSource.prototype.updatedCatalog = true; // 内容是否被更新，用于保存当本地文件中判断是否需要更新本地文件中的数据
+    BookSource.prototype.updatedCatalogTime = 0;
+    BookSource.prototype.needSaveCatalog = false; // 目录是否需要存储到本地
     BookSource.prototype.disable = false;
 
 
@@ -987,10 +1016,14 @@ define(["jquery", "util"], function($, util) {
             });
         }
         else{
-            self.sources = configFileOrConfig;
+            var data = configFileOrConfig;
+            self.sources = data;
         }
+        self.settings = {};
+        self.settings.refreshCatalogInterval = 60000; // 单位毫秒
     };
     BookSourceManager.prototype.sources = undefined;
+    BookSourceManager.prototype.settings = undefined;
 
     // 按主源权重从小到大排序的数组
     BookSourceManager.prototype.getSourcesKeysByMainSourceWeight = function(){
