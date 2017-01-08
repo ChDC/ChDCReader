@@ -45,7 +45,7 @@
   },
   {
     "file": "js/page.js",
-    "hash": "3459f8f6cf03569bbcd91f07acd5edfb"
+    "hash": "0d7e6574e31647f97d8737f9dd9e77bd"
   },
   {
     "file": "js/util.js",
@@ -133,7 +133,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "c954b1c1cb443c23f9fce70de890ea0e"
+    "hash": "c422618f63f360fb142292c1d7904d2a"
   },
   {
     "file": "page/readbook.page.css",
@@ -145,7 +145,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "e4c3686f71a89865e7aeff0672dc3fa9"
+    "hash": "19e9451dc7fad5755297e068ec435587"
   },
   {
     "file": "page/search.page.css",

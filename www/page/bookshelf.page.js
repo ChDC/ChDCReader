@@ -67,7 +67,6 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
         },
         onresume: function(){
             if(app.bookShelf.loaded){
-                debugger;
                 loadBooks(".bookshelf", app.bookShelf);
             }
             else{

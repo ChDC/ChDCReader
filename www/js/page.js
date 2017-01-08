@@ -130,12 +130,12 @@ define(["jquery", "util"], function($, util){
             this.__popPage();
         },
         __saveState: function(name, params){
-            var state = {
-                page: name,
-                params: params
-            };
+            // var state = {
+            //     page: name,
+            //     params: params
+            // };
             var hash = "#page=" + name;
-            window.history.pushState(state, "", hash);
+            window.history.pushState(true, "", hash);
         },
         __popState: function(event){
             var state = event.state;

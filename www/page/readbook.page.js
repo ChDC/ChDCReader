@@ -85,7 +85,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             var opts = $.extend(true, {}, options);
             opts.excludes = [readingRecord.options.contentSourceId];
 
-            loadChapters(readingRecord.chapterIndex - app.settings.chapterIndexOffset, app.settings.chapterCount, null, null, opts);
+            loadChapters(readingRecord.chapterIndex, app.settings.chapterCount, -app.settings.chapterIndexOffset, null, null, opts);
         });
         $("#btnSortReversed").click(function(){
             var list = $('#listCatalog');
@@ -177,7 +177,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
                 var chapterIndex = parseInt(target.attr('data-index'));
 
                 readingRecord.chapterIndex = chapterIndex;
-                loadChapters(chapterIndex - app.settings.chapterIndexOffset, app.settings.chapterCount);
+                loadChapters(chapterIndex, app.settings.chapterCount, -app.settings.chapterIndexOffset);
             }
         }
         book.getCatalog(function(catalog){
@@ -222,7 +222,12 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         $('.chapters').empty();
 
         offset = offset || 0;
+        chapterIndex += offset;
         var opts = $.extend(true, {}, options, extras);
+        if('contentSourceChapterIndex' in opts){
+            opts.contentSourceChapterIndex += offset;
+        }
+
         book.getChapters(chapterIndex, count,
             function(chapter, index, options){
                 if(chapter){
@@ -252,7 +257,7 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             function(chapter, index, options){
                 cacheChapters(index, options);
             }, opts);
-    };
+    }
 
     function cacheChapters(chapterIndex, opts){
         // 缓存后面的章节
@@ -298,18 +303,6 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         $('.chapterContainer').scrollTop(getCurrentChapterElement().position().top)
     }
 
-    // 使用 ReadingReocrd 加载章节
-    function loadChaptersWithReadingRecord(rr, count, offset, success, fail){
-        var count = count || 1;
-        var offset = offset || 0;
-        loadChapters(rr.chapterIndex + offset, count,
-            success, fail,
-            {
-                contentSourceId: rr.options.contentSourceId,
-                contentSourceChapterIndex: rr.options.contentSourceChapterIndex + offset
-            });
-    };
-
     function showCurrentChapter(offset){
         var showed = false;
         var cc = getCurrentChapter(offset);
@@ -329,8 +322,11 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             activateCurrentChapter();
         }
 
+
         var opts = $.extend(true, {}, options);
-        book.getChapter(readingRecord.chapterIndex + offset,
+        var ct = offset > 0 ? chapters[chapters.length - 1] : chapters[0];
+        var ci = ct.chapterIndex + offset;
+        book.getChapter(ci,
             function(chapter, index, options){
                 var a = buildChapterAndReadingReord(chapter, index, options);
                 if(offset > 0){
@@ -348,6 +344,13 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
                     readingRecord.chapterIndex += offset;
                     activateCurrentChapter();
                 }
+
+                if(index == readingRecord.chapterIndex){
+                    app.hideLoading();
+                    $.extend(readingRecord, a[1]);
+                    // activateCurrentChapter();
+                }
+                app.bookShelf.save();
             },
             function(error){
                 if(fail)fail(error);
@@ -374,12 +377,13 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
             loadView();
 
             var pageLocation = readingRecord.pageScrollTop;
-            loadChaptersWithReadingRecord(readingRecord, app.settings.chapterCount, -app.settings.chapterIndexOffset,
+            loadChapters(readingRecord.chapterIndex, app.settings.chapterCount, -app.settings.chapterIndexOffset,
                 function(chapter, index, options){
                     if(index == readingRecord.chapterIndex && pageLocation > 0){
                         $('.chapterContainer').scrollTop(pageLocation);
                     }
-                });
+                },
+                fail, readingRecord.options);
         },
         onresume: function(){
 
