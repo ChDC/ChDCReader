@@ -36,7 +36,10 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
                 return;
             function fetchUpdateCallback(error, data) {
                 if (error) {
-                    if(error.code != 2){
+                    if(error.code == 2){
+                        util.showMessage('没有更新');
+                    }
+                    else{
                         var errMsg = error.description + "(" + error.code + ")";
                         util.error('Fail to download update: ' + errMsg);
                         util.showMessage('更新下载失败！\n' + errMsg);
