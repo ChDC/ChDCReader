@@ -47,8 +47,21 @@ define(["jquery", "util"], function($, util) {
         if(i < ics.length){
             var ni = ics.eq(i);
             self.container.scrollTop(ni.position().top);
-            // self.checkBoundary();
-            // self.__checkCurrentItemChange();
+        }
+    }
+
+    // 滑动到上一个元素
+    Infinitelist.prototype.lastItem = function(){
+        var self = this;
+        var i = self.__getCurrentItemIndex();
+        if(i < 0)
+            return;
+
+        var ics = self.itemList.children();
+        i--;
+        if(i >= 0){
+            var ni = ics.eq(i);
+            self.container.scrollTop(ni.position().top);
         }
     }
 

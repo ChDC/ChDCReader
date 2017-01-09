@@ -15,7 +15,10 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
     }
 
     function getPageScorllTop(){
-        return $('.chapterContainer').scrollTop() - chapterList.currentItem.position().top;
+        if(chapterList.currentItem)
+            return $('.chapterContainer').scrollTop() - chapterList.currentItem.position().top;
+        else
+            return 0;
     }
 
     function loadView(){
@@ -61,9 +64,12 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
         $(".toolbar").blur(function(){
             $('.toolbar').hide();
         });
-        // $(".toolbar").click(function(){
-        //     $('.toolbar').hide();
-        // });
+        $(".toolbar.top, .toolbar.bottom").click(function(){
+            $('.toolbar').hide();
+        });
+        $(".toolbar.lastAndNextChapter").click(function(){
+            $('.toolbar.top, .toolbar.bottom').hide();
+        });
         $(".btnNext").click(nextChapter);
         $(".btnLast").click(lastChapter);
 
@@ -206,10 +212,11 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
             var index = newValue.data('chapterIndex');
             var title = newValue.data('chapterTitle');
             var options = newValue.data('options');
-
             readingRecord.setReadingRecord(index, title, options);
             readingRecord.pageScrollTop = pageScrollTop;
             app.bookShelf.save();
+
+            $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
         }
     }
 
