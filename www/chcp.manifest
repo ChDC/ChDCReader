@@ -125,15 +125,15 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "45d19bb57b9e26d285ed1462c32d2815"
+    "hash": "ab638ac146d246cbce8d48b3657a47ca"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "51edb3a3a2f192a7ce3265fb456a1741"
+    "hash": "59eb9662484f9e6a3976a9a1df5a9551"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "c422618f63f360fb142292c1d7904d2a"
+    "hash": "5a8d4417a39927781697384afab1c9dc"
   },
   {
     "file": "page/readbook.page.css",
@@ -145,7 +145,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "6eea541460cc3387f87672296d4f9c90"
+    "hash": "322da5ad63d7a3448ee6cebb2f3faef1"
   },
   {
     "file": "page/search.page.css",

@@ -247,7 +247,7 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
             },
             function(error){
                 success(null);
-                fail(error);
+                // fail(error);
             }, opts);
 
     }
