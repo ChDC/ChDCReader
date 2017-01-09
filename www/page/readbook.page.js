@@ -11,7 +11,8 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
 
     var DOWN_THRESHOLD = 3; // 向下加载章节的长度的阈值
     var UP_THRESHOLD = 1; // 向下加载章节的长度的阈值
-
+    var CHECK_SCROLL_THRESHOLD = 0.9; // 当滑动多长的距离检查一次章节
+    var lastCheckScrollY = null;
 
     function fail(error){
         app.hideLoading();
@@ -23,22 +24,11 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
         $('.chapterContainer').scroll(function(event){
             // 将章节滚动位置存储到变量中
             chapterScrollY = $('.chapterContainer').scrollTop();
-
-            // TODO
-            // var cn = getCurrentChapterElement(1);
-            // var cc = getCurrentChapterElement(0);
-            // if(cn){
-            //     if(chapterScrollY > cn.position().top || cn.offset().top + cn.height() <= $(window).height()){
-            //         util.log("Next chapter");
-            //         nextChapter();
-            //     }
-            // }
-            // if(cc && chapterScrollY){
-            //     if(chapterScrollY + $(window).height()/2 < cc.position().top){
-            //         util.log("Last chapter");
-            //         lastChapter();
-            //     }
-            // }
+            var wh = $(window).height();
+            if(lastCheckScrollY == null || Math.abs(chapterScrollY - lastCheckScrollY) > wh * CHECK_SCROLL_THRESHOLD) {
+                // lastCheckScrollY = chapterScrollY;
+                loadChapters();
+            }
         });
 
         // 弹出工具栏
@@ -270,6 +260,8 @@ define(["jquery", "main", "page", "util", 'bookshelf'], function($, app, page, u
     }
 
     function loadChapters(extras){
+
+        lastCheckScrollY = chapterScrollY;
         var cc = getCurrentChapter();
         if(!cc){
             app.showLoading();
