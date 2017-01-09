@@ -8,11 +8,11 @@ define(["jquery", "util", 'book'], function($, util, book) {
         this.options = {};
     };
 
-    ReadingRecord.prototype.bookName = undefined; // 书名
-    ReadingRecord.prototype.bookAuthor = undefined; // 作者
+    // ReadingRecord.prototype.bookName = undefined; // 书名
+    // ReadingRecord.prototype.bookAuthor = undefined; // 作者
     ReadingRecord.prototype.chapterIndex = undefined; // 章节索引
     ReadingRecord.prototype.chapterTitle = undefined; // 章节标题
-    ReadingRecord.prototype.pageScrollTop = undefined; // 章内的页数
+    ReadingRecord.prototype.pageScrollTop = undefined; // 章内的滚动位置
     ReadingRecord.prototype.options = undefined; // 附加内容
 
     // 清除数据
