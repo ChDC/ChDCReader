@@ -305,7 +305,6 @@ define(["jquery", "util"], function($, util) {
 
         self.getBookSource(function(bs){
             if((new Date()).getTime() - bs.updatedCatalogTime < options.bookSourceManager.settings.refreshCatalogInterval){
-                debugger;
                 if(fail)fail(Book.getError(400));
             }
             else{
@@ -374,7 +373,6 @@ define(["jquery", "util"], function($, util) {
             else{
                 self.refreshCatalog(success, function(error){
                     if(error.id == 400){
-                        debugger;
                         if(success)success(bs.catalog);
                     }
                     else{
@@ -837,10 +835,13 @@ define(["jquery", "util"], function($, util) {
     // * count 获取的数目
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     Book.prototype.getCountlessChapters = function(chapterIndex, direction, success, fail, finish, options){
-        debugger;
+
         if(!success)
             return;
-
+        if(chapterIndex < 0 && direction < 0){
+            if(fail)fail(Book.getError(203));
+            return;
+        }
         if(chapterIndex < 0){
             chapterIndex = 0;
         }
@@ -868,6 +869,7 @@ define(["jquery", "util"], function($, util) {
                     }
                 },
                 function(error){
+                    debugger;
                     if(error.id == 202 && direction >= 0 || // 后面没有章节了
                        error.id == 203 && direction < 0){ // 前面没有章节了
                         // 当没有更新的章节时，直接退出
@@ -892,7 +894,6 @@ define(["jquery", "util"], function($, util) {
                         }
                     }
                 }, options);
-            }
         }
     }
 

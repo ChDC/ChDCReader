@@ -1,7 +1,7 @@
 /*********** Location ***************/
 
 .chapterContainer{
-    padding: 15px;
+    padding: 0;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -16,6 +16,7 @@
 }
 
 .chapter{
+    padding: 15px;
     word-wrap: break-word;
 }
 
