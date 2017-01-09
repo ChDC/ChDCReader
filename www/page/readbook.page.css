@@ -13,6 +13,8 @@
 .chapters{
     position: relative;
     width: 100%;
+    list-style: none;
+    padding: 0;
 }
 
 .chapter{
