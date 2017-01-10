@@ -1,8 +1,8 @@
 "use strict"
 define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, booklib){
 
-    function isReadingLastestChapter(book, readingRecord){
-        return booklib.Chapter.equalTitle2(book.lastestChapter, readingRecord.chapterTitle);
+    function isReadingLastestChapter(lastestChapter, readingRecord){
+        return booklib.Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
     }
 
     // 加载书架列表
@@ -19,17 +19,14 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
                 nb.find(".book-cover").attr("src", book.cover);
             nb.find(".book-name").text(book.name);
             nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
-            nb.find(".book-lastestchapter")
-                .text("最新章节：" + (book.lastestChapter? book.lastestChapter : "无"))
-                .css('color', isReadingLastestChapter(book, readingRecord)? 'black' : 'red');
+
             // 刷新最新章节
-            book.refreshLastestChapter(function(updated){
-                if(updated){
-                    nb.find(".book-lastestchapter")
-                    .text("最新章节：" + (book.lastestChapter? book.lastestChapter : "无"))
-                    .css('color', isReadingLastestChapter(book, readingRecord)? 'black' : 'red');
-                }
+            book.getLastestChapter(function(lastestChapter){
+                nb.find(".book-lastestchapter")
+                    .text("最新章节：" + (lastestChapter? lastestChapter : "无"))
+                    .css('color', isReadingLastestChapter(lastestChapter, readingRecord)? 'black' : 'red');
             }, null, {bookSourceManager: app.bookSourceManager});
+
             nb.click(function(){
                 var params = {
                     book: book,

@@ -5,6 +5,7 @@ define(["jquery", "util", 'book'], function($, util, book) {
     function ReadingRecord(){
         this.chapterIndex = 0;
         this.pageScrollTop = 0;
+        this.chapterTitle = "";
         this.options = {};
     };
 

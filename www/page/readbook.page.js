@@ -2,6 +2,8 @@
 define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function($, app, page, util, bookshelf, Infinitelist){
 
     var options = null;  // 默认传递的选项参数
+    var tmpOptions = null;  // 默认传递的选项参数
+
     var book = null;
     var readingRecord = null; // 正在读的记录
     var chapterList = null; // 无限列表
@@ -81,11 +83,12 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
             loadCatalog();
         });
         $("#btnBadChapter").click(function(){
-            debugger;
             chapterList.emptyList();
-            chapterList.loadList({
+            app.showLoading();
+            tmpOptions = {
                 excludes: [readingRecord.options.contentSourceId]
-            });
+            }
+            chapterList.loadList();
         });
         $("#btnSortReversed").click(function(){
             var list = $('#listCatalog');
@@ -137,12 +140,12 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
                 var bid = $(target).data('bsid');
                 var oldMainSource = book.mainSource;
                 book.setMainSource(bid, function(book){
+                    app.bookShelf.save();
                     // 隐藏目录窗口
                     $("#modalCatalog").modal('hide');
                     // 更新源之后
                     $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSource].name);
-                    if(readingRecord.chapterIndex)
-                    {
+                    if(readingRecord.chapterIndex){
                         var opts = $.extend(true, {}, options);
                         opts.bookSourceId = oldMainSource;
                         book.fuzzySearch(book.mainSource, readingRecord.chapterIndex,
@@ -157,6 +160,9 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
                                 // 刷新当前章节信息
                                 loadCurrentChapter(0);
                         }, opts);
+                    }
+                    else{
+                        chapterList.loadList();
                     }
                     // 更新书籍信息
                     book.refreshBookInfo(null, null, options);
@@ -177,6 +183,7 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
                 var chapterIndex = parseInt(target.attr('data-index'));
                 readingRecord.chapterIndex = chapterIndex;
                 chapterList.emptyList();
+                app.showLoading();
                 chapterList.loadList();
             }
         }
@@ -215,13 +222,14 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
             readingRecord.setReadingRecord(index, title, options);
             readingRecord.pageScrollTop = pageScrollTop;
             app.bookShelf.save();
-
             $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
+            app.hideLoading();
         }
     }
 
     function onNewChapterItem(event, be, direction, success){
-        var opts = $.extend(true, {}, options);
+        var opts = $.extend(true, {}, options, tmpOptions);
+        tmpOptions = null;
         var chapterIndex = 0;
         if(be){
             $.extend(opts, be.data('options'));
@@ -246,8 +254,14 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
                 }
             },
             function(error){
-                success(null);
-                // fail(error);
+                if(error.id == 202 || error.id == 203){
+                    success(null, 1);
+                }
+                else{
+                    success(null);
+                }
+                fail(error);
+                app.hideLoading();
             }, opts);
 
     }
@@ -281,6 +295,7 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
 
             loadView();
             lastSavePageScrollTop = readingRecord.pageScrollTop;
+            app.showLoading();
             chapterList.loadList();
 
         },

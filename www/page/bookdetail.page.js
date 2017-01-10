@@ -11,7 +11,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         if(book.cover)
             nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
-        nb.find(".book-lastestchapter").text("最新章节：" + (book.lastestChapter? book.lastestChapter : "无"));
+        // nb.find(".book-lastestchapter").text("最新章节：" + (book.getLastestChapter()? book.getLastestChapter() : "无"));
         nb.find(".book-author").text(book.author);
         nb.find(".book-catagory").text(book.catagory);
         nb.find(".book-complete").text(book.complete);

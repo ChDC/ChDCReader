@@ -205,6 +205,7 @@ define(["jquery", "util"], function($, util) {
 
     // 检查指定方向的边界
     Infinitelist.prototype.__checkBoundary = function(direction, willClear, success){
+
         function isOutBoundary(item){
             var wh = $(window).height();
             var result = false;
@@ -213,6 +214,13 @@ define(["jquery", "util"], function($, util) {
             else
                 result = item.offset().top + item.outerHeight(true) < -self.UP_THRESHOLD * wh;
             return result;
+        }
+
+        function getBoundaryItem(){
+            var es = self.itemList.children();
+            if(es.length <= 0)
+                return null;
+            return direction >= 0 ? es.last() : es.first();
         }
 
         function isBoundarySatisfied(){
@@ -226,13 +234,15 @@ define(["jquery", "util"], function($, util) {
                 return result;
             }
 
-            var es = self.itemList.children();
-            if(es.length <= 0)
+            var be = getBoundaryItem();
+            if(!be)
                 return false;
-            var be = direction >= 0 ? es.last() : es.first();
-            var result = !Infinitelist.__itemEqual(self.currentItem, be) && isOnBoundary(be);
+            // 边界元素被标记为端 或者 在边界内
+            var result = be.data('end') ||
+                !Infinitelist.__itemEqual(self.currentItem, be) && isOnBoundary(be);
             return result;
         }
+
         function clearOutBoundary(){
             var ies = self.itemList.children();
             var cii = self.__getCurrentItemIndex();
@@ -267,8 +277,16 @@ define(["jquery", "util"], function($, util) {
                 be = direction >= 0 ? es.last() : es.first();
             }
             self.onNewListItem(self, be, direction,
-                function(newItem){
+                function(newItem, type){
                     if(!newItem){
+                        if(type == 1){
+                            // 该元素是边界
+                            // 标记边界
+                            var bbe = getBoundaryItem();
+                            if(bbe){
+                                bbe.data('end', true);
+                            }
+                        }
                         if(success)success();
                         return;
                     }

@@ -12,6 +12,8 @@ define(["jquery", "util"], function($, util) {
      * 2xx 章节错误
      * 3xx 设置源错误
      * 4xx 书籍错误
+     * 5xx 目录错误
+     * 6xx 书源错误
      */
     Book.getError = function(errorCode){
         var bookErrorCode = {
@@ -24,9 +26,16 @@ define(["jquery", "util"], function($, util) {
 
             301: "设置主要内容来源失败！",
             302: "未找到该源",
+
+            400: "不能频繁更新书籍目录",
+            402: "不能频繁更新最新章节",
             401: "源配置不正确！",
             404: "未在当前的源中找到该书！",
-            400: "不能频繁更新目录"
+
+            501: "目录为空",
+
+            601: "获取目录失败，请检查书源是否正常",
+            602: "搜索结果为空，请检查书源是否正常"
         };
         return {
             id: errorCode,
@@ -52,7 +61,14 @@ define(["jquery", "util"], function($, util) {
                         if(fail)fail(Book.getError(404));
                     }
                 },
-                fail);
+                function(error){
+                    if(error.id == 602){
+                        if(fail)fail(Book.getError(404));
+                    }
+                    else{
+                        if(fail)fail(error);
+                    }
+                });
         }
         else{
             if(fail)fail(Book.getError(401));
@@ -83,17 +99,22 @@ define(["jquery", "util"], function($, util) {
                     book.cover = util.fixurl(element.find(detail.cover).attr("data-src"), searchLink);  // 封面
                     book.complete = Book.fixer.fixComplete(element.find(detail.complete).text());  // 是否完结
                     book.introduce = Book.fixer.fixIntroduce(element.find(detail.introduce).text());  // 简介
-                    book.lastestChapter = Book.fixer.fixLastestChapter(element.find(detail.lastestChapter).text());  // 最新的章节
 
                     book.sources = {}; // 内容来源
                     var bss = new BookSource(bs.contentSourceWeight);
                     bss.detailLink = util.fixurl(element.find(detail.link).attr("href"), searchLink);
+                    bss.lastestChapter = Book.fixer.fixLastestChapter(element.find(detail.lastestChapter).text());  // 最新的章节
                     book.sources[bsid] = bss;
 
                     book.mainSource = bsid;  // 主要来源
                     return books.push(book);
                 });
-            if(success)success(books, keyword, bsid);
+            if(books.length <= 0){
+                if(fail)fail(Book.getError(602));
+            }
+            else{
+                if(success)success(books, keyword, bsid);
+            }
         };
     };
 
@@ -107,7 +128,7 @@ define(["jquery", "util"], function($, util) {
     Book.prototype.introduce = "";  // 简介
     Book.prototype.sources = undefined;  // 内容来源
     Book.prototype.mainSource = undefined;  // 当前来源
-    Book.prototype.lastestChapter = undefined;  // 最新的章节
+    // Book.prototype.lastestChapter = undefined;  // 最新的章节
 
     // 修复属性用的工具函数
     Book.fixer = {
@@ -265,7 +286,7 @@ define(["jquery", "util"], function($, util) {
 
     // 使用详情页链接刷新书籍信息
     // 前提：book.sources 中有详情链接
-    Book.prototype.refreshBookInfo = function(success, fail, options, onlyLastestChapter){
+    Book.prototype.refreshBookInfo = function(success, fail, options){
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
@@ -278,19 +299,12 @@ define(["jquery", "util"], function($, util) {
 
             function getBookDetailFromHtml(html){
                 // 更新信息的时候不更新书名和作者，因为换源的时候需要用到
-                if(!onlyLastestChapter){
-                    self.catagory = Book.fixer.fixCatagory(html.find(info.catagory).text());  // 分类
-                    self.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);  // 封面
-                    self.complete = Book.fixer.fixComplete(html.find(info.complete).text());  // 是否完结
-                    self.introduce = Book.fixer.fixIntroduce(html.find(info.introduce).text());  // 简介
-                }
-                var lastestChapter = Book.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
-                var lastestChapterUpdated = false;
-                if(self.lastestChapter != lastestChapter){
-                    self.lastestChapter = lastestChapter;
-                    lastestChapterUpdated = true;
-                }
-                if(success)success(lastestChapterUpdated);
+                self.catagory = Book.fixer.fixCatagory(html.find(info.catagory).text());  // 分类
+                self.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);  // 封面
+                self.complete = Book.fixer.fixComplete(html.find(info.complete).text());  // 是否完结
+                self.introduce = Book.fixer.fixIntroduce(html.find(info.introduce).text());  // 简介
+                self.sources[options.bookSourceId].lastestChapter = Book.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
+                if(success)success();
             };
         },
         fail, options);
@@ -304,7 +318,7 @@ define(["jquery", "util"], function($, util) {
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getBookSource(function(bs){
-            if((new Date()).getTime() - bs.updatedCatalogTime < options.bookSourceManager.settings.refreshCatalogInterval){
+            if((new Date()).getTime() - bs.updatedCatalogTime < options.bookSourceManager.settings.refreshCatalogInterval * 1000){
                 if(fail)fail(Book.getError(400));
             }
             else{
@@ -317,7 +331,12 @@ define(["jquery", "util"], function($, util) {
                         bs.catalog = catalog;
                         bs.updatedCatalogTime = (new Date()).getTime();
                         bs.needSaveCatalog = true;
-                        if(success)success(catalog);
+                        if(catalog.length <= 0){
+                            if(fail)fail(Book.getError(601));
+                        }
+                        else{
+                            if(success)success(catalog);
+                        }
                     };
                 },
                 fail, options);
@@ -335,8 +354,8 @@ define(["jquery", "util"], function($, util) {
         var bsm = options.bookSourceManager.sources[options.bookSourceId];
         if(!bsm)return;
         var info = bsm.catalog.info;
-
-        html.find(info.link).each(function(){
+        var chapters = html.find(info.link);
+        chapters.each(function(){
             var element = $(this);
             var chapter = new Chapter();
             chapter.link = util.fixurl(element.attr('href'), htmlLink);
@@ -366,7 +385,6 @@ define(["jquery", "util"], function($, util) {
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getBookSource(function(bs){
-            // var bsm = options.bookSourceManager.sources[options.bookSourceId];
             if(!options.forceRefresh && bs.catalog){
                 if(success)success(bs.catalog);
             }
@@ -405,6 +423,10 @@ define(["jquery", "util"], function($, util) {
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getCatalog(function(catalog){
+            if(!catalog || catalog.length <= 0){
+                if(fail)fail(Book.getError(501));
+                return;
+            }
             if(chapterIndex >= 0 && chapterIndex < catalog.length){
                 // 存在于目录中
                 if(success)success(catalog[chapterIndex], chapterIndex, catalog);
@@ -416,6 +438,10 @@ define(["jquery", "util"], function($, util) {
                 // 更新一下主目录源，然后再搜索
                 options.forceRefresh = true;
                 self.getCatalog(function(catalog){
+                    if(!catalog || catalog.length <= 0){
+                        if(fail)fail(Book.getError(501));
+                        return;
+                    }
                     if(chapterIndex >=0 && chapterIndex < catalog.length){
                         // 存在于目录中
                         if(success)success(catalog[chapterIndex], chapterIndex, catalog);
@@ -449,9 +475,17 @@ define(["jquery", "util"], function($, util) {
         else{
             // 获取目录源的目录
             self.getCatalog(function(catalog){
+                if(!catalog || catalog.length <= 0){
+                    if(fail)fail(Book.getError(501));
+                    return;
+                }
                 // 获取源B 的目录
                 options.bookSourceId = sourceB;
                 self.getCatalog(function(catalogB){
+                    if(!catalogB || catalogB.length <= 0){
+                        if(fail)fail(Book.getError(501));
+                        return;
+                    }
                     var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
                     if(indexB >= 0){
                         // 找到了
@@ -461,12 +495,14 @@ define(["jquery", "util"], function($, util) {
                         }
                     }
                     else{
-                        // TODO: 避免频繁刷新目录
                         // 没找到
                         // 更新章节目录然后重新查找
-
                         options.forceRefresh = true;
                         self.getCatalog(function(catalogB){
+                            if(!catalogB || catalogB.length <= 0){
+                                if(fail)fail(Book.getError(501));
+                                return;
+                            }
                             var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
                             if(indexB >= 0){
                                 // 找到了
@@ -543,6 +579,9 @@ define(["jquery", "util"], function($, util) {
         var INCLUDE_WEIGHT = 0; // 指定的源
         // *****************
 
+        // 如果指定的源是要排除的源，则清除之
+        if(options.excludes && options.excludes.indexOf(options.contentSourceId) >= 0)
+            options.contentSourceId = null;
         // 如果选项中有 contentSourceId 和 contentSourceChapterIndex，则比对指定的索引
         if(options.contentSourceId && $.type(options.contentSourceChapterIndex) == 'number'){
             getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.contentSourceId, options.contentSourceChapterIndex);
@@ -957,8 +996,64 @@ define(["jquery", "util"], function($, util) {
     // 获取书籍最新章节
     Book.prototype.refreshLastestChapter = function(success, fail, options){
         var self = this;
-        self.refreshBookInfo(success, fail, options, true);
+        options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        self.getBookSource(function(bs){
+            if((new Date()).getTime() - bs.updatedLastestChapterTime < options.bookSourceManager.settings.refreshLastestChapterInterval * 1000){
+                if(fail)fail(Book.getError(402));
+            }
+            else{
+                util.log('Refresh LastestChapter!');
+
+                self.__getBookSourceDetailLink(function(detailLink, bsid, bs){
+                    var bsm = options.bookSourceManager.sources[bsid];
+                    var detail = bsm.detail;
+                    var info = detail.info;
+
+                    util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
+
+                    function getBookDetailFromHtml(html){
+                        var lastestChapter = Book.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
+                        var lastestChapterUpdated = false;
+                        if(bs.lastestChapter != lastestChapter){
+                            bs.lastestChapter = lastestChapter;
+                            bs.updatedLastestChapterTime = (new Date()).getTime();
+                            lastestChapterUpdated = true;
+                        }
+                        if(success)success(lastestChapter, lastestChapterUpdated);
+                    };
+                },
+                fail, options);
+            }
+        },
+        fail, options);
     };
+
+    // 获取最新章节
+    // 缺省强制更新
+    Book.prototype.getLastestChapter = function(success, fail, options){
+        var self = this;
+        options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        self.getBookSource(function(bs){
+            // if(!options.forceRefresh && bs.lastestChapter){
+            //     if(success)success(bs.lastestChapter, false);
+            // }
+            // else{
+                self.refreshLastestChapter(success, function(error){
+                    if(error.id == 402){
+                        if(success)success(bs.lastestChapter, false);
+                    }
+                    else{
+                        if(fail)fail(error);
+                    }
+                }, options);
+            // }
+        },
+        fail, options);
+    }
 
     // **** Chapter ****
     function Chapter(){
@@ -997,6 +1092,7 @@ define(["jquery", "util"], function($, util) {
     function BookSource(weight){
         this.needSaveCatalog = false;
         this.updatedCatalogTime = 0;
+        this.updatedLastestChapterTime = 0;
         this.disable = false;
         this.weight = weight || 0;
     };
@@ -1004,8 +1100,15 @@ define(["jquery", "util"], function($, util) {
     BookSource.prototype.catalog = null; // 目录
     BookSource.prototype.weight = 0;
     BookSource.prototype.updatedCatalogTime = 0;
+    BookSource.prototype.updatedLastestChapterTime = 0;
     BookSource.prototype.needSaveCatalog = false; // 目录是否需要存储到本地
     BookSource.prototype.disable = false;
+    BookSource.prototype.lastestChapter = undefined;  // 最新的章节
+
+    // 是否能更新详情内容（包括目录和最新章节）
+    // BookSource.prototype.canUpdateDatail = function(){
+
+    // }
 
 
     // **** BookSourceManager *****
@@ -1021,7 +1124,9 @@ define(["jquery", "util"], function($, util) {
             self.sources = data;
         }
         self.settings = {};
-        self.settings.refreshCatalogInterval = 60000; // 单位毫秒
+        self.settings.refreshCatalogInterval = 600; // 单位秒
+        self.settings.refreshLastestChapterInterval = 600; // 单位秒
+
     };
     BookSourceManager.prototype.sources = undefined;
     BookSourceManager.prototype.settings = undefined;
