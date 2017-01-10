@@ -301,6 +301,8 @@ define(["jquery", "util"], function($, util) {
 
         function computeCatalogLink(){
             // TODO
+            // http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457
+
         }
 
         self.getBookSource(function(bs, bsid){
