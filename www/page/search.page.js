@@ -45,31 +45,45 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
         };
     };
 
+    function search(){
+        app.showLoading();
+        var keyword = $(".keyword").val();
+        var bookSourceId = $(".bookSource").val();
+        if(keyword && bookSourceId){
+            book.Book.searchBook(app.bookSourceManager, bookSourceId, keyword,
+                    function(books){
+                        loadBooks(".result", books, bookSourceId);
+                        app.hideLoading();
+                    });
+        }
+    }
+
+    function loadView(){
+        // 添加选项
+        var bookSource = $(".bookSource");
+        var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
+        for(var i = 0; i < keys.length; i++)
+        {
+            var bskey = keys[i];
+            var bs = app.bookSourceManager.sources[bskey];
+            var newOption = '<option value ="'+ bskey + '">' + bs.name + '</option>';
+            bookSource.append(newOption);
+        }
+        $("#btnClose").click(function(){page.closePage();});
+        $(".btnSearch").click(search);
+        $(".keyword").on('keydown', function(event){
+            if(event.keyCode==13){
+                search();
+            }
+        });
+        $(".keyword").on('focus', function(event){
+            event.currentTarget.select();
+        });
+    }
+
     return {
         onload: function(params, baseurl){
-            // 添加选项
-            var bookSource = $(".bookSource");
-            var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
-            for(var i = 0; i < keys.length; i++)
-            {
-                var bskey = keys[i];
-                var bs = app.bookSourceManager.sources[bskey];
-                var newOption = '<option value ="'+ bskey + '">' + bs.name + '</option>';
-                bookSource.append(newOption);
-            }
-            $("#btnClose").click(function(){page.closePage();});
-            $(".btnSearch").click(function(){
-                app.showLoading();
-                var keyword = $(".keyword").val();
-                var bookSourceId = $(".bookSource").val();
-                if(keyword && bookSourceId){
-                    book.Book.searchBook(app.bookSourceManager, bookSourceId, keyword,
-                            function(books){
-                                loadBooks(".result", books, bookSourceId);
-                                app.hideLoading();
-                            });
-                }
-            });
+            loadView();
         },
         onresume: function(){
 
