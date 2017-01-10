@@ -1,6 +1,8 @@
 {
     "biquge": {
         "catalog": {
+            "link": "{detailLink}",
+            "type": "html",
             "info": {
                 "link": "#list > dl a"
             }
@@ -46,6 +48,8 @@
     },
     "qidian": {
         "catalog": {
+            "link": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
+            "type": "JSON",
             "info": {
                 "link": "div.volume li[data-rid]>a",
                 "vipLinkPattern": "vip"
@@ -85,6 +89,10 @@
                     "lastestChapter": ".book-mid-info .update>a",
                     "link": ".book-mid-info>h4>a",
                     "name": ".book-mid-info>h4>a"
+                },
+                "bookid": {
+                    "element": ".book-mid-info>h4>a",
+                    "attribute": "data-bid"
                 }
             },
             "url": "http://se.qidian.com/?kw={keyword}"

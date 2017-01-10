@@ -85,6 +85,16 @@ define(["jquery", "util"], function($, util) {
         var searchLink = util.format(search.url, {keyword: keyword});
         util.getDOM(searchLink, {}, getBookFromHtml, fail);
 
+        function getBookIdFromHtml(bookElement, bookid, bss){
+            var bidElement = bookElement.find(bookid.element);
+            if(bookid.attribute){
+                var bid = bidElement.attr(bookid.attribute);
+                if(bid){
+                    bss.bookid = bid;
+                }
+                return;
+            }
+        }
         function getBookFromHtml(html){
             var info = search.info;
             var detail = info.detail;
@@ -104,8 +114,12 @@ define(["jquery", "util"], function($, util) {
                     var bss = new BookSource(bs.contentSourceWeight);
                     bss.detailLink = util.fixurl(element.find(detail.link).attr("href"), searchLink);
                     bss.lastestChapter = Book.fixer.fixLastestChapter(element.find(detail.lastestChapter).text());  // 最新的章节
+                    bss.searched = true;
                     book.sources[bsid] = bss;
 
+                    if(info.bookid){
+                        getBookIdFromHtml(element, info.bookid, bss);
+                    }
                     book.mainSource = bsid;  // 主要来源
                     return books.push(book);
                 });
@@ -224,36 +238,94 @@ define(["jquery", "util"], function($, util) {
         }
     }
 
-    // 获取当前书籍指定的目录源信息
+    // 获取当前书籍指定的目录源的相信信息链接
+    Book.prototype.getBook = function(success, fail, options){
+        debugger;
+        var self = this;
+        options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+        self.getBookSource(function(bs, bsid){
+
+            if(bs.disable)
+            {
+                if(fail)fail(Book.getError(404));
+                return;
+            }
+            Book.getBook(options.bookSourceManager, options.bookSourceId, self.name, self.author,
+                function(book, bsid){
+                    // 找到书籍了
+                    $.extend(bs, book.sources[bsid]);
+                    if(success)success(bsid, bs);
+                },
+                function(error){
+                    if(error.id == 404){
+                        // 没找到该书就标记一下，下次直接跳过
+                        bs.disable = true;
+                        bs.searched = true;
+                    }
+                    if(fail)fail(error);
+                });
+
+        },fail, options);
+    }
+
+    // 获取当前书籍指定的目录源的相信信息链接
     Book.prototype.__getBookSourceDetailLink = function(success, fail, options){
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getBookSource(function(bs, bsid){
-
-            if(bs.detailLink){
-                success(bs.detailLink, bsid, bs);
-            }
-            else if(bs.disable){
-                if(fail)fail(Book.getError(404));
+            debugger;
+            if(!bs.searched){
+                self.getBook(function(bsid, bs){
+                    success(bs.detailLink, bsid, bs);
+                }, fail, options);
             }
             else{
-                Book.getBook(options.bookSourceManager, options.bookSourceId, self.name, self.author,
-                    function(book, bsid){
-                        // 找到书籍了
-                        bs.detailLink = book.sources[bsid].detailLink;
-                        if(success)success(bs.detailLink, bsid, bs);
-                    },
-                    function(error){
-                        if(error.id == 404){
-                            // 没找到该书就标记一下，下次直接跳过
-                            bs.disable = true;
-                        }
-                        if(fail)fail(error);
-                    });
+                if(bs.disable){
+                    if(fail)fail(Book.getError(404));
+                }
+                else if(bs.detailLink){
+                    success(bs.detailLink, bsid, bs);
+                }
             }
-        },fail, options);
+        }, fail, options);
+    };
+
+    // 获取当前书籍指定的目录页的链接
+    Book.prototype.__getBookSourceCatalogLink = function(success, fail, options){
+        var self = this;
+        options = $.extend(true, {}, options);
+        options.bookSourceId = options.bookSourceId || self.mainSource;
+
+        function computeCatalogLink(){
+            // TODO
+        }
+
+        self.getBookSource(function(bs, bsid){
+            debugger;
+            if(!bs.searched){
+                self.getBook(function(bsid, bs){
+                    if(!bs.catalogLink){
+                        // 合成 catalogLink
+                        bs.catalogLink = computeCatalogLink();
+                    }
+                    success(bs.catalogLink, bsid, bs);
+                }, fail, options);
+            }
+            else{
+                if(bs.disable){
+                    if(fail)fail(Book.getError(404));
+                    return;
+                }
+                if(!bs.catalogLink){
+                    // 合成 catalogLink
+                    bs.catalogLink = computeCatalogLink();
+                }
+                success(bs.catalogLink, bsid, bs);
+            }
+        }, fail, options);
     };
 
     // 检查源是否有缺失
@@ -1095,8 +1167,11 @@ define(["jquery", "util"], function($, util) {
         this.updatedLastestChapterTime = 0;
         this.disable = false;
         this.weight = weight || 0;
+        this.searched = false;
     };
     BookSource.prototype.detailLink = null; // 详情页链接
+    BookSource.prototype.catalogLink = null; // 目录页链接
+    BookSource.prototype.bookid = null; // 书籍 ID
     BookSource.prototype.catalog = null; // 目录
     BookSource.prototype.weight = 0;
     BookSource.prototype.updatedCatalogTime = 0;
@@ -1104,6 +1179,7 @@ define(["jquery", "util"], function($, util) {
     BookSource.prototype.needSaveCatalog = false; // 目录是否需要存储到本地
     BookSource.prototype.disable = false;
     BookSource.prototype.lastestChapter = undefined;  // 最新的章节
+    BookSource.prototype.searched = false;  // 本书是否已经被搜索到了
 
     // 是否能更新详情内容（包括目录和最新章节）
     // BookSource.prototype.canUpdateDatail = function(){
