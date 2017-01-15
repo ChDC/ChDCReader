@@ -8,10 +8,10 @@ define(["jquery"], function($){
     //     }
     // });
 
-    if (typeof cordovaHTTP != "undefined") {
-        console.log("Set HTTP Header!");
-        cordovaHTTP.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36");
-    }
+    // if (typeof cordovaHTTP != "undefined") {
+    //     console.log("Set HTTP Header!");
+    //     cordovaHTTP.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36");
+    // }
 
     return {
         /*
@@ -145,21 +145,21 @@ define(["jquery"], function($){
                 // self.showError("网络错误！");
                 if (failure) failure(data);
             }
-            if (typeof cordovaHTTP != "undefined") {
-                this.log("HTTP with Cordova");
-                var s = function(data) {
-                    if (data.status != 200) {
-                        handleNetworkError(data);
-                    } else {
-                        success(data.data);
-                    }
-                };
-                return cordovaHTTP.get(url, params, {},
-                s, handleNetworkError);
-            } else {
-                this.log("HTTP with jQuery");
+            // if (typeof cordovaHTTP != "undefined") {
+            //     this.log("HTTP with Cordova");
+            //     var s = function(data) {
+            //         if (data.status != 200) {
+            //             handleNetworkError(data);
+            //         } else {
+            //             success(data.data);
+            //         }
+            //     };
+            //     return cordovaHTTP.get(url, params, {},
+            //     s, handleNetworkError);
+            // } else {
+                // this.log("HTTP with jQuery");
                 return $.get(url, params, success).fail(handleNetworkError);
-            }
+            // }
         },
 
         // 过滤某些标签
@@ -190,7 +190,7 @@ define(["jquery"], function($){
                 return html;
             };
             var s = function(data){
-                var html = $(filterHtmlContent(data));
+                var html = filterHtmlContent(data);
                 success(html);
             }
             this.get(url, params, s, failure);
@@ -223,6 +223,31 @@ define(["jquery"], function($){
                     return object[p1];
             })
             return result;
+        },
+        // 从 Object 中获取数据
+        getDataFromObject: function(obj, key){
+            var keys = key.split(/\./);
+            var result = obj;
+            for(var i = 0; i < keys.length; i++){
+                var k = keys[i];
+                if($.type(result) == 'array'){
+                    var tmp = [];
+                    for(var j = 0; j < result.length; j++){
+                        var tt = result[j][k];
+                        if($.type(tt) == 'array'){
+                            tmp = tmp.concat(tt);
+                        }
+                        else{
+                            tmp.push(tt);
+                        }
+                    }
+                    result = tmp;
+                }
+                else{
+                    result = result[k];
+                }
+            }
+            return result
         },
         // 修复抓取的 URL
         fixurl: function(url, host){

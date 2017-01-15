@@ -96,12 +96,8 @@ define(["jquery", "util"], function($, util) {
             }
         }
 
-        function computeCatalogLink(bss){
-            var catalogLink = bs.catalog.link;
-            return util.format(catalogLink, bss);
-        }
-
         function getBookFromHtml(html){
+            html = $(html);
             var info = search.info;
             var detail = info.detail;
             var books = [];
@@ -123,7 +119,7 @@ define(["jquery", "util"], function($, util) {
                     }
                     bss.detailLink = util.fixurl(element.find(detail.link).attr("href"), searchLink);
                     bss.lastestChapter = Book.fixer.fixLastestChapter(element.find(detail.lastestChapter).text());  // 最新的章节
-                    bss.catalogLink = computeCatalogLink(bss);
+                    // bss.catalogLink = computeCatalogLink(bss);
                     bss.searched = true;
                     book.sources[bsid] = bss;
 
@@ -304,6 +300,15 @@ define(["jquery", "util"], function($, util) {
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
+        function computeCatalogLink(bss, success){
+            var bsm = options.bookSourceManager.sources[options.bookSourceId];
+            if(!bsm)return;
+            var catalogLink = bsm.catalog.link;
+            var o = $.extend({}, bss, options.bookSourceManager[options.bookSourceId])
+            var link = util.format(catalogLink, o);
+            if(success)success(link);
+        }
+
         self.getBookSource(function(bs, bsid){
             if(!bs.searched){
                 self.getBook(function(bsid, bs){
@@ -315,7 +320,16 @@ define(["jquery", "util"], function($, util) {
                     if(fail)fail(Book.getError(404));
                 }
                 else{
-                    success(bs.catalogLink, bsid, bs);
+                    if(!bs.catalogLink)
+                    {
+                        computeCatalogLink(bs, function(link){
+                            bs.catalogLink = link;
+                            success(bs.catalogLink, bsid, bs);
+                        });
+                    }
+                    else{
+                        success(bs.catalogLink, bsid, bs);
+                    }
                 }
             }
         }, fail, options);
@@ -363,6 +377,7 @@ define(["jquery", "util"], function($, util) {
             util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
 
             function getBookDetailFromHtml(html){
+                html = $(html);
                 // 更新信息的时候不更新书名和作者，因为换源的时候需要用到
                 self.catagory = Book.fixer.fixCatagory(html.find(info.catagory).text());  // 分类
                 self.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);  // 封面
@@ -417,6 +432,7 @@ define(["jquery", "util"], function($, util) {
         options.bookSourceId = options.bookSourceId || self.mainSource;
         var bsm = options.bookSourceManager.sources[options.bookSourceId];
         if(!bsm)return;
+
         var info = bsm.catalog.info;
         var type = bsm.catalog.type.toLowerCase();
         var catalog = [];
@@ -433,10 +449,34 @@ define(["jquery", "util"], function($, util) {
                 break;
         }
         function getChaptersFromJSON(){
+            var json = JSON.parse(html);
+            var chapters = util.getDataFromObject(json, info.chapter);
+            $(chapters).each(function(){
+                var chapter = new Chapter();
+                var name = util.getDataFromObject(this, info.name);
+                var linkid = util.getDataFromObject(this, info.linkid);
+                chapter.title = name;
+                var vip = util.getDataFromObject(this, info.vip);
+                var locals = {
+                        name: name,
+                        linkid: linkid,
+                        vip: vip
+                    };
+
+                var vipLinkPattern = util.format(info.vipLinkPattern, locals);
+                if(eval(vipLinkPattern)){
+                    chapter.link = null;
+                }
+                else{
+                    chapter.link = util.format(info.link, locals);
+                }
+                catalog.push(chapter);
+            })
             debugger;
         }
 
         function getChaptersFromHTML(){
+            html = $(html);
             var chapters = html.find(info.link);
             chapters.each(function(){
                 var element = $(this);
@@ -835,6 +875,7 @@ define(["jquery", "util"], function($, util) {
         util.getDOM(chapterLink, {}, getChapterFromHtml, fail);
 
         function getChapterFromHtml(html){
+            html = $(html);
             var chapter = new Chapter();
             chapter.content = Book.fixer.fixChapterContent(html.find(info.content).html());
             if(!chapter.content){
@@ -1099,6 +1140,7 @@ define(["jquery", "util"], function($, util) {
                     util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
 
                     function getBookDetailFromHtml(html){
+                        html = $(html);
                         var lastestChapter = Book.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
                         var lastestChapterUpdated = false;
                         if(bs.lastestChapter != lastestChapter){
@@ -1219,6 +1261,10 @@ define(["jquery", "util"], function($, util) {
     };
     BookSourceManager.prototype.sources = undefined;
     BookSourceManager.prototype.settings = undefined;
+    BookSourceManager.prototype.qidian = {
+        csrfToken: "oJGHcTNcfLfSXs0HFt9kycMrM87i3IL9jy0VJuLu"
+    };
+
 
     // 按主源权重从小到大排序的数组
     BookSourceManager.prototype.getSourcesKeysByMainSourceWeight = function(){

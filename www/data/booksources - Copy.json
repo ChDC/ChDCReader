@@ -48,15 +48,12 @@
     },
     "qidian": {
         "catalog": {
-            "link": "http://book.qidian.com/ajax/book/category?_csrfToken={csrfToken}&bookId={bookid}",
+            "link": "http://book.qidian.com/ajax/book/category?_csrfToken={cookie:_csrfToken}&bookId={bookid}",
             "type": "JSON",
+            "preloadlink": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
             "info": {
-                "chapter": "data.vs.cs",
-                "linkid": "cU",
-                "name": "cN",
-                "vip": "sS",
-                "vipLinkPattern": "{vip}==0",
-                "link": "http://read.qidian.com/chapter/{linkid}"
+                "link": "div.volume li[data-rid]>a",
+                "vipLinkPattern": "vip"
             }
         },
         "chapter": {
