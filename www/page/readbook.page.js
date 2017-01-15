@@ -47,21 +47,21 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
                 // 弹出工具栏
                 $('.toolbar').toggle();
             }
-            else if(isClickInRegion(0, 0.33))
-            {
-                // 点击上半部分，向上滚动
-                $('.toolbar').hide();
-                var cc = $('.chapterContainer');
-                cc.scrollTop(cc.scrollTop() - cc.height() / 2);
-            }
-            else if(isClickInRegion(0.66, 1))
-            {
-                // 点击下半部分，向下滚动
-                $('.toolbar').hide();
-                var cc = $('.chapterContainer');
-                cc.scrollTop(cc.scrollTop() + cc.height() / 2);
+            // else if(isClickInRegion(0, 0.33))
+            // {
+            //     // 点击上半部分，向上滚动
+            //     $('.toolbar').hide();
+            //     var cc = $('.chapterContainer');
+            //     cc.scrollTop(cc.scrollTop() - cc.height() / 2);
+            // }
+            // else if(isClickInRegion(0.66, 1))
+            // {
+            //     // 点击下半部分，向下滚动
+            //     $('.toolbar').hide();
+            //     var cc = $('.chapterContainer');
+            //     cc.scrollTop(cc.scrollTop() + cc.height() / 2);
 
-            }
+            // }
         });
         $(".toolbar").blur(function(){
             $('.toolbar').hide();

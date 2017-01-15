@@ -472,7 +472,6 @@ define(["jquery", "util"], function($, util) {
                 }
                 catalog.push(chapter);
             })
-            debugger;
         }
 
         function getChaptersFromHTML(){
@@ -1261,8 +1260,31 @@ define(["jquery", "util"], function($, util) {
     };
     BookSourceManager.prototype.sources = undefined;
     BookSourceManager.prototype.settings = undefined;
+    BookSourceManager.prototype.init = function(){
+        debugger;
+        for(var key in this){
+            var value = this[key];
+            if($.type(value) == 'object' && 'init' in value){
+                value.init();
+            }
+        }
+    };
+
     BookSourceManager.prototype.qidian = {
-        csrfToken: "oJGHcTNcfLfSXs0HFt9kycMrM87i3IL9jy0VJuLu"
+        csrfToken: "oJGHcTNcfLfSXs0HFt9kycMrM87i3IL9jy0VJuLu",
+        getCSRToken: function(){
+            var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
+            $.getJSON(url, function(json, status, xhr){
+                if(json.code == 0){
+                    return;
+                }
+                var cookies = xhr.getResponseHeader("Cookies");
+                debugger;
+            });
+        },
+        init: function(){
+            this.getCSRToken();
+        }
     };
 
 

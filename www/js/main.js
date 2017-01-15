@@ -93,6 +93,7 @@ define(["jquery", "util", "book", "page", "bookshelf", "bootstrap"], function($,
             var self = this;
             this.__loadSettings();
             this.bookSourceManager = new book.BookSourceManager("data/booksources.json");
+            this.bookSourceManager.init();
 
             this.bookShelf = new bookshelf.BookShelf();
             page.init();
