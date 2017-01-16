@@ -1261,7 +1261,6 @@ define(["jquery", "util"], function($, util) {
     BookSourceManager.prototype.sources = undefined;
     BookSourceManager.prototype.settings = undefined;
     BookSourceManager.prototype.init = function(){
-        debugger;
         for(var key in this){
             var value = this[key];
             if($.type(value) == 'object' && 'init' in value){
