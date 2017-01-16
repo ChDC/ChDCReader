@@ -11,7 +11,6 @@ log = logging.getLogger()
 
 
 def refreshGithubURL(wwwDir):
-    baseURL = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/'
     pool = Pool(4)
     baseURL = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/'
     urls = []
