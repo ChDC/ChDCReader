@@ -50,7 +50,7 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
         var keyword = $(".keyword").val();
         var bookSourceId = $(".bookSource").val();
         if(keyword && bookSourceId){
-            book.Book.searchBook(app.bookSourceManager, bookSourceId, keyword,
+            app.bookSourceManager.searchBook(bookSourceId, keyword,
                     function(books){
                         loadBooks(".result", books, bookSourceId);
                         app.hideLoading();
