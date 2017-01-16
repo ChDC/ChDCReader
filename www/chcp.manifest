@@ -33,19 +33,23 @@
   },
   {
     "file": "js/book.js",
-    "hash": "1df8d2855d02b5fa8c9f83684f3f95e3"
+    "hash": "5ab683dad602791fe4f60efd91624b91"
   },
   {
     "file": "js/bookshelf.js",
     "hash": "7a973338a115827b0873c245064bbd20"
   },
   {
+    "file": "js/booksourcemanager.js",
+    "hash": "9d7e920c5d98db219a7935a145c207a8"
+  },
+  {
     "file": "js/infinitelist.js",
-    "hash": "f7b85da59f808c556fb3df78afbe74ec"
+    "hash": "d57cd74d4c3939f5ffa4b410abbdb7ef"
   },
   {
     "file": "js/main.js",
-    "hash": "1d5ee7f03689f3c04dec8fc12c9eb98d"
+    "hash": "1cdb6183845a3a176bda10b280821a63"
   },
   {
     "file": "js/page.js",
@@ -53,7 +57,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "73809be36a29b15aef1171c0e75d6f67"
+    "hash": "9a58d0f5ca1f9404194e4319cb184851"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -157,7 +161,7 @@
   },
   {
     "file": "page/search.page.js",
-    "hash": "9e5aad5a03c4f1285acbc540cb166cad"
+    "hash": "8a1acec7d9869f8099465e24187f028c"
   },
   {
     "file": "test.html",
