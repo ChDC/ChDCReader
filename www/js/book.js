@@ -1202,16 +1202,23 @@ define(["jquery", "util"], function($, util) {
             return false;
         // 比较去掉所有空格和标点符号之后的所有符号
         function stripString(str){
+            // 去除括号括起来的文字
+            str = str.replace(/（.*?）/, '');
+            str = str.replace(/\(.*?\)/, '');
+
             // 去除英文字符串
             str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
             // 去除中文字符串
             str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+
             // 去除空白字符
             str = str.replace(/\s/g, '');
             return str;
         }
         // TODO：模糊判等
-        return stripString(chapterTitleA) == stripString(chapterTitleB);
+        var cA = stripString(chapterTitleA);
+        var cB = stripString(chapterTitleB);
+        return cA == cB;
     }
 
     // **** BookSource *****

@@ -1,3 +1,3 @@
 cd ..
-cordova build android --release --buildConfig "E:\AppData\Sign\cordova.json"
+cordova build android --buildConfig "E:\AppData\Sign\cordova.json"
 pause

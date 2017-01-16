@@ -122,7 +122,7 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
         var listBookSourceEntry = $(".template .listBookSourceEntry");
         for(var bsk in app.bookSourceManager.sources){
             if(bsk == book.mainSource)
-                return;
+                continue;
             var nlbse = listBookSourceEntry.clone();
             var bs = app.bookSourceManager.sources[bsk];
             nlbse.find(".bookSourceTitle").text(bs.name);
