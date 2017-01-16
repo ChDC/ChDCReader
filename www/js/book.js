@@ -619,10 +619,19 @@ define(["jquery", "util"], function($, util) {
                         }
                     }
                     else{
+                        debugger;
                         // 没找到
                         // 可能是 equalFunction 不完善
                         // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
-
+                        var indexB = util.listMatchWithNeighbour(catalog, catalogB, index, Chapter.equalTitle);
+                        if(indexB >= 0){
+                            // 找到了
+                            if(success){
+                                var chapterB = catalogB[indexB];
+                                success(chapterB, indexB, catalogB, sourceB);
+                            }
+                            return;
+                        }
                         // 更新章节目录然后重新查找
                         options.forceRefresh = true;
                         self.getCatalog(function(catalogB){
@@ -639,6 +648,15 @@ define(["jquery", "util"], function($, util) {
                                 }
                             }
                             else{
+                                var indexB = util.listMatchWithNeighbour(catalog, catalogB, index, Chapter.equalTitle);
+                                if(indexB >= 0){
+                                    // 找到了
+                                    if(success){
+                                        var chapterB = catalogB[indexB];
+                                        success(chapterB, indexB, catalogB, sourceB);
+                                    }
+                                    return;
+                                }
                                 if(fail)fail(Book.getError(201));
                             }
                         },
