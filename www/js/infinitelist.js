@@ -253,9 +253,10 @@ define(["jquery", "util"], function($, util) {
                         break;
                     if(i >= cii - 1)
                         break;
+                    var itemHeight = item.outerHeight(true);
                     var cs = self.container.scrollTop();
-                    self.container.scrollTop(cs - item.outerHeight(true));
                     item.remove();
+                    self.container.scrollTop(cs - itemHeight);
                 }
             }
             else{

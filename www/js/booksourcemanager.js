@@ -385,7 +385,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
     };
 
     BookSourceManager.prototype.qidian = {
-        csrfToken: "oJGHcTNcfLfSXs0HFt9kycMrM87i3IL9jy0VJuLu",
+        csrfToken: "a3EgyIqD8ErQ0uXQ9Yu419ATIeEO83L1xBDI8qWG",
         getCSRToken: function(){
             var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
             $.getJSON(url, function(json, status, xhr){
