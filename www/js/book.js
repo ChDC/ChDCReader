@@ -620,6 +620,9 @@ define(["jquery", "util"], function($, util) {
                     }
                     else{
                         // 没找到
+                        // 可能是 equalFunction 不完善
+                        // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
+
                         // 更新章节目录然后重新查找
                         options.forceRefresh = true;
                         self.getCatalog(function(catalogB){

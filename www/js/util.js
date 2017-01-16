@@ -383,9 +383,12 @@ define(["jquery"], function($){
         },
 
         // 从副列表中匹配查询主列表的元素的索引
-        listMatch: function(listA, listB, indexA, equalFunction){
+        listMatch: function(listA, listB, indexA, equalFunction, startIndexB){
+            equalFunction = equalFunction || function(i1, i2){return i1==i2;};
+
             if(listA == listB)
                 return indexA;
+            startIndexB = startIndexB || 0;
 
             // 比较前、后 n 个邻居
             function compareNeighbor(indexB, offset){
@@ -408,10 +411,9 @@ define(["jquery"], function($){
             // 提供最优结果
             // 最终从所有结果中选出一个最好的
             var result = [];
-            var i, j, r;
+            var i = startIndexB - 1; //, j, r;
 
             var itemA = listA[indexA];
-            i = -1;
 
             while(true)
             {
@@ -421,8 +423,10 @@ define(["jquery"], function($){
                     // 返回结果集合中的一个最优结果
 
                     // 最优结果：权值最大，并且索引值最靠近 indexA
-                    if(result.length == 0)
+                    if(result.length == 0){
+                        // 一个结果也没有
                         return -1;
+                    }
                     var rr = this.arrayMaxIndex(result, function(a, b){
                         return a.weight - b.weight;
                     });
@@ -452,6 +456,73 @@ define(["jquery"], function($){
                         index: i,
                         weight: weight
                     });
+                }
+            }
+        },
+        // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
+        listMatchWithNeighbour: function(listA, listB, indexA, equalFunction, indexB){
+            if(listA == listB)
+                return indexA;
+            equalFunction = equalFunction || function(i1, i2){return i1==i2;};
+
+            if(indexA < 0 || indexA >= listA.length || listB.length < 2 || listA.length < 2)
+                return -1;
+
+            var indexBLeft, indexBRight, itemBLeft, itemBRight;
+            var indexALeft, indexARight, itemALeft, itemARight;
+
+            indexALeft = indexA - 1;
+            indexARight = indexA + 1;
+
+            if(indexALeft < 0){
+                // A 前面没有元素
+                // 那就搜索后面的是否和头部匹配
+                indexBRight = 1;
+                itemARight = listA[indexARight];
+                itemBRight = listB[indexBRight];
+                return equalFunction(itemARight, itemBRight) ? indexBRight - 1 : -1;
+            }
+
+            if(indexARight >= listA.length){
+                // A 到底部了
+                // 那就搜索前面的是否和尾部匹配
+                indexBLeft = listB.length - 2;
+                itemALeft = listA[indexALeft];
+                itemBLeft = listB[indexBLeft];
+                return equalFunction(itemALeft, itemBLeft) ? indexBLeft + 1 : -1;
+            }
+
+            itemALeft = listA[indexALeft];
+            itemARight = listA[indexARight]
+
+
+            var i = -1; // startIndexB
+
+            // 如果提供了 indexB 则使用
+            while(true)
+            {
+                i = this.arrayIndex(listB, itemALeft, equalFunction, i+1);
+                if(i < 0){
+                    // 没找到结果
+                    // 从前一个匹配不成功，表示listB 中没有匹配的前一个对象
+                    // 则只检查开头
+                    indexBRight = 1;
+                    itemBRight = listB[indexBRight];
+                    return equalFunction(itemARight, itemBRight) ? indexBRight - 1 : -1;
+                }
+
+                // 找到结果，开始分析
+                // 比较后面第二个是否相同
+                var indexBRight = i + 2;
+
+                if(indexBRight >= listB.length){
+                    // B 到底部了，直接返回
+                    return (i + 1 < listB.length) ?  i + 1 : -1;
+                }
+
+                itemBRight = listB[indexBRight];
+                if(equalFunction(itemARight, itemBRight)){
+                    return i + 1;
                 }
             }
         },
