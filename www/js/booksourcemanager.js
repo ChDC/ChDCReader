@@ -390,7 +390,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
             var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
             debugger;
             if(typeof cordovaHTTP != 'undefined'){
-                cordovaHTTP.get(url,
+                cordovaHTTP.get(url, {}, {},
                     function(response){
                         debugger;
                     },
