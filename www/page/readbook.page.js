@@ -245,6 +245,7 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
 
         book.getChapter(chapterIndex,
             function(chapter, index, options){
+                util.showMessage("开始预加载新章节");
                 var newItem = buildChapter(chapter, index, options);
                 success(newItem);
                 if(!be && lastSavePageScrollTop){
