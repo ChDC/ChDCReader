@@ -388,7 +388,6 @@ define(["jquery", "util", "book"], function($, util, booklib) {
         csrfToken: "a3EgyIqD8ErQ0uXQ9Yu419ATIeEO83L1xBDI8qWG",
         getCSRToken: function(){
             var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-            debugger;
             if(typeof cordovaHTTP != 'undefined'){
                 cordovaHTTP.get(url, {}, {},
                     function(response){

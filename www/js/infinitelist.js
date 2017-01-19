@@ -238,7 +238,7 @@ define(["jquery", "util"], function($, util) {
             if(!be)
                 return false;
             // 边界元素被标记为端 或者 在边界内
-            var result = be.data('end') ||
+            var result = be.data(direction + 'end') ||
                 !Infinitelist.__itemEqual(self.currentItem, be) && isOnBoundary(be);
             return result;
         }
@@ -285,7 +285,7 @@ define(["jquery", "util"], function($, util) {
                             // 标记边界
                             var bbe = getBoundaryItem();
                             if(bbe){
-                                bbe.data('end', true);
+                                bbe.data(direction + 'end', true);
                             }
                         }
                         if(success)success();
