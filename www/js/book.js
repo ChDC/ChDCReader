@@ -15,7 +15,7 @@ define(["jquery", "util"], function($, util) {
      */
     Book.getError = function(errorCode){
         var bookErrorCode = {
-            201: "未发现该章节！",
+            201: "未在书源中发现指定章节！",
             202: "没有更新的章节了！",
             203: "前面没有章节了！",
             205: "索引值应该是数字！",
