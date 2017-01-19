@@ -388,13 +388,24 @@ define(["jquery", "util", "book"], function($, util, booklib) {
         csrfToken: "a3EgyIqD8ErQ0uXQ9Yu419ATIeEO83L1xBDI8qWG",
         getCSRToken: function(){
             var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-            $.getJSON(url, function(json, status, xhr){
-                if(json.code == 0){
-                    return;
-                }
-                var cookies = xhr.getResponseHeader("Cookies");
-                debugger;
-            });
+            debugger;
+            if(typeof cordovaHttp != 'undefined'){
+                cordovaHttp.get(url,
+                    function(response){
+                        debugger;
+                    },
+                    function(e){
+                        debugger;
+                    });
+            }
+
+            // $.getJSON(url, function(json, status, xhr){
+            //     if(json.code == 0){
+            //         return;
+            //     }
+            //     var cookies = xhr.getResponseHeader("Cookies");
+            //     debugger;
+            // });
         },
         init: function(){
             this.getCSRToken();

@@ -25,7 +25,7 @@
   },
   {
     "file": "index.html",
-    "hash": "0a7aa34c2004e755ee8e007346fc0aff"
+    "hash": "4ebf87f84f318e655e79dab83dc9ce2d"
   },
   {
     "file": "js/app.js",
@@ -41,7 +41,7 @@
   },
   {
     "file": "js/booksourcemanager.js",
-    "hash": "9d7e920c5d98db219a7935a145c207a8"
+    "hash": "c8adb5e0bb1711e52d858647ed36472a"
   },
   {
     "file": "js/infinitelist.js",
@@ -133,11 +133,11 @@
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "59eb9662484f9e6a3976a9a1df5a9551"
+    "hash": "8d9a426619f53fc44620a4626fc10743"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "b56b693a8708efb52e8165fbfdcf19d5"
+    "hash": "0dd07a5422bb8c251666fb7cf053dae7"
   },
   {
     "file": "page/readbook.page.css",

@@ -57,6 +57,11 @@ define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, 
         $(".btnSearch").click(function(){
             page.showPage("search");
         });
+
+        $("#btnTest").click(function(){
+            debugger;
+            app.bookSourceManager.qidian.init();
+        });
     }
 
     return {
