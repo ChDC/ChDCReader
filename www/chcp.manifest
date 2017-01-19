@@ -41,7 +41,7 @@
   },
   {
     "file": "js/booksourcemanager.js",
-    "hash": "c8adb5e0bb1711e52d858647ed36472a"
+    "hash": "c9f1384eb7b4ae983e3fb3edb880ac63"
   },
   {
     "file": "js/infinitelist.js",
@@ -137,7 +137,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "0dd07a5422bb8c251666fb7cf053dae7"
+    "hash": "da221fe1dfc1ff4f27e9d40c6bf948ed"
   },
   {
     "file": "page/readbook.page.css",

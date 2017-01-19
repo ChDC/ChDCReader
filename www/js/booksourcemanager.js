@@ -389,8 +389,8 @@ define(["jquery", "util", "book"], function($, util, booklib) {
         getCSRToken: function(){
             var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
             debugger;
-            if(typeof cordovaHttp != 'undefined'){
-                cordovaHttp.get(url,
+            if(typeof cordovaHTTP != 'undefined'){
+                cordovaHTTP.get(url,
                     function(response){
                         debugger;
                     },
