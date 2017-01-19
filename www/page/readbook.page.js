@@ -254,7 +254,7 @@ define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function
                 }
             },
             function(error){
-                if(error.id == 202 || error.id == 203){
+                if(error.id == 202 || error.id == 203 || error.id == 201){
                     success(null, 1);
                 }
                 else{

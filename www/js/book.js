@@ -367,7 +367,6 @@ define(["jquery", "util"], function($, util) {
                         }
                     }
                     else{
-                        debugger;
                         // 没找到
                         // 可能是 equalFunction 不完善
                         // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等

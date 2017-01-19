@@ -33,7 +33,7 @@
   },
   {
     "file": "js/book.js",
-    "hash": "5ab683dad602791fe4f60efd91624b91"
+    "hash": "fb8af886ef6c7df40bf451ac6894ffd0"
   },
   {
     "file": "js/bookshelf.js",
@@ -149,7 +149,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "5eda7f88cc7399f35b3c45240daccf69"
+    "hash": "3d451ec1e639c0d781e48c93494d3ad8"
   },
   {
     "file": "page/search.page.css",
