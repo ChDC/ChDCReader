@@ -1,4 +1,4 @@
-define(["jquery", "util", "Book", "BookSourceManager", "page", "Bookshelf", "bootstrap"], function($, util, Book, BookSourceManager, page, BookShelf) {
+define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "bootstrap"], function($, util, Book, BookSourceManager, page, BookShelf) {
 
     "use strict"
 
