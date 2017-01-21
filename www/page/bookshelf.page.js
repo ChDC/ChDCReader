@@ -1,8 +1,8 @@
 "use strict"
-define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, booklib){
+define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, util, Chapter){
 
     function isReadingLastestChapter(lastestChapter, readingRecord){
-        return booklib.Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
+        return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
     }
 
     // 加载书架列表

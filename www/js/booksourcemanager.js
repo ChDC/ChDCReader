@@ -1,4 +1,4 @@
-define(["jquery", "util", "book"], function($, util, booklib) {
+define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Book, BookSource, Chapter) {
     "use strict"
 
     // book 全局的错误码定义
@@ -176,7 +176,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
             var bookItems = html.find(info.book);
             bookItems.each(function(){
                     var element = $(this);
-                    var book = new booklib.Book();
+                    var book = new Book();
                     book.name = BookSourceManager.fixer.fixName(element.find(detail.name).text());  // 书名
                     book.author = BookSourceManager.fixer.fixAuthor(element.find(detail.author).text());  // 作者
                     book.catagory = BookSourceManager.fixer.fixCatagory(element.find(detail.catagory).text());  // 分类
@@ -185,7 +185,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
                     book.introduce = BookSourceManager.fixer.fixIntroduce(element.find(detail.introduce).text());  // 简介
 
                     book.sources = {}; // 内容来源
-                    var bss = new booklib.BookSource(bs.contentSourceWeight);
+                    var bss = new BookSource(bsid, bs.contentSourceWeight);
                     if(info.bookid){
                         getBookIdFromHtml(element, info.bookid, bss);
                     }
@@ -271,7 +271,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
             var json = JSON.parse(html);
             var chapters = util.getDataFromObject(json, info.chapter);
             $(chapters).each(function(){
-                var chapter = new booklib.Chapter();
+                var chapter = new Chapter();
                 var name = util.getDataFromObject(this, info.name);
                 var linkid = util.getDataFromObject(this, info.linkid);
                 chapter.title = name;
@@ -298,7 +298,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
             var chapters = html.find(info.link);
             chapters.each(function(){
                 var element = $(this);
-                var chapter = new booklib.Chapter();
+                var chapter = new Chapter();
                 chapter.link = util.fixurl(element.attr('href'), htmlLink);
                 if(info.vipLinkPattern && chapter.link.match(info.vipLinkPattern)){
                    chapter.link = null;
@@ -335,7 +335,7 @@ define(["jquery", "util", "book"], function($, util, booklib) {
 
         function getChapterFromHtml(html){
             html = $(html);
-            var chapter = new booklib.Chapter();
+            var chapter = new Chapter();
             chapter.content = BookSourceManager.fixer.fixChapterContent(html.find(info.content).html());
             if(!chapter.content){
                 // 没有章节内容就返回错误
@@ -421,7 +421,5 @@ define(["jquery", "util", "book"], function($, util, booklib) {
         });
     };
 
-    return {
-        BookSourceManager: BookSourceManager
-    };
+    return BookSourceManager;
 });

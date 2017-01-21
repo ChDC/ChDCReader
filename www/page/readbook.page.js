@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "page", "util", 'bookshelf', 'infinitelist'], function($, app, page, util, bookshelf, Infinitelist){
+define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page, util, Infinitelist){
 
     var options = null;  // 默认传递的选项参数
     var tmpOptions = null;  // 默认传递的选项参数

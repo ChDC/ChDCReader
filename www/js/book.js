@@ -1,4 +1,4 @@
-define(["jquery", "util"], function($, util) {
+define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, BookSource) {
     "use strict"
 
     // ****** Book ****
@@ -68,7 +68,7 @@ define(["jquery", "util"], function($, util) {
             var bsm = options.bookSourceManager.sources[options.bookSourceId];
             if(bsm)
             {
-                var bss = new BookSource(bsm.contentSourceWeight);
+                var bss = new BookSource(options.bookSourceId, bsm.contentSourceWeight);
                 self.sources[options.bookSourceId] = bss;
 
                 if(success)success(bss, options.bookSourceId);
@@ -80,98 +80,98 @@ define(["jquery", "util"], function($, util) {
     }
 
     // 获取当前书籍指定的目录源的相同信息链接
-    Book.prototype.getBook = function(success, fail, options){
-        var self = this;
-        options = $.extend(true, {}, options);
-        options.bookSourceId = options.bookSourceId || self.mainSource;
-        self.getBookSource(function(bs, bsid){
+    // Book.prototype.getBook = function(success, fail, options){
+    //     var self = this;
+    //     options = $.extend(true, {}, options);
+    //     options.bookSourceId = options.bookSourceId || self.mainSource;
+    //     self.getBookSource(function(bs, bsid){
 
-            if(bs.disable)
-            {
-                if(fail)fail(Book.getError(404));
-                return;
-            }
-            options.bookSourceManager.getBook(options.bookSourceId, self.name, self.author,
-                function(book, bsid){
-                    // 找到书籍了
-                    $.extend(bs, book.sources[bsid]);
-                    if(success)success(bsid, bs);
-                },
-                function(error){
-                    if(error.id == 404){
-                        // 没找到该书就标记一下，下次直接跳过
-                        bs.disable = true;
-                        bs.searched = true;
-                    }
-                    if(fail)fail(error);
-                });
+    //         if(bs.disable)
+    //         {
+    //             if(fail)fail(Book.getError(404));
+    //             return;
+    //         }
+    //         options.bookSourceManager.getBook(options.bookSourceId, self.name, self.author,
+    //             function(book, bsid){
+    //                 // 找到书籍了
+    //                 $.extend(bs, book.sources[bsid]);
+    //                 if(success)success(bsid, bs);
+    //             },
+    //             function(error){
+    //                 if(error.id == 404){
+    //                     // 没找到该书就标记一下，下次直接跳过
+    //                     bs.disable = true;
+    //                     bs.searched = true;
+    //                 }
+    //                 if(fail)fail(error);
+    //             });
 
-        },fail, options);
-    }
+    //     },fail, options);
+    // }
 
-    // 获取当前书籍指定的目录源的相信信息链接
-    Book.prototype.__getBookSourceDetailLink = function(success, fail, options){
-        var self = this;
-        options = $.extend(true, {}, options);
-        options.bookSourceId = options.bookSourceId || self.mainSource;
+    // // 获取当前书籍指定的目录源的相信信息链接
+    // Book.prototype.__getBookSourceDetailLink = function(success, fail, options){
+    //     var self = this;
+    //     options = $.extend(true, {}, options);
+    //     options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        self.getBookSource(function(bs, bsid){
-            if(!bs.searched){
-                self.getBook(function(bsid, bs){
-                    success(bs.detailLink, bsid, bs);
-                }, fail, options);
-            }
-            else{
-                if(bs.disable){
-                    if(fail)fail(Book.getError(404));
-                }
-                else{
-                    success(bs.detailLink, bsid, bs);
-                }
-            }
-        }, fail, options);
-    };
+    //     self.getBookSource(function(bs, bsid){
+    //         if(!bs.searched){
+    //             self.getBook(function(bsid, bs){
+    //                 success(bs.detailLink, bsid, bs);
+    //             }, fail, options);
+    //         }
+    //         else{
+    //             if(bs.disable){
+    //                 if(fail)fail(Book.getError(404));
+    //             }
+    //             else{
+    //                 success(bs.detailLink, bsid, bs);
+    //             }
+    //         }
+    //     }, fail, options);
+    // };
 
-    // 获取当前书籍指定的目录页的链接
-    Book.prototype.__getBookSourceCatalogLink = function(success, fail, options){
-        var self = this;
-        options = $.extend(true, {}, options);
-        options.bookSourceId = options.bookSourceId || self.mainSource;
+    // // 获取当前书籍指定的目录页的链接
+    // Book.prototype.__getBookSourceCatalogLink = function(success, fail, options){
+    //     var self = this;
+    //     options = $.extend(true, {}, options);
+    //     options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        function computeCatalogLink(bss, success){
-            var bsm = options.bookSourceManager.sources[options.bookSourceId];
-            if(!bsm)return;
-            var catalogLink = bsm.catalog.link;
-            var o = $.extend({}, bss, options.bookSourceManager[options.bookSourceId]);
-            var link = util.format(catalogLink, o);
-            if(success)success(link);
-        }
+    //     function computeCatalogLink(bss, success){
+    //         var bsm = options.bookSourceManager.sources[options.bookSourceId];
+    //         if(!bsm)return;
+    //         var catalogLink = bsm.catalog.link;
+    //         var o = $.extend({}, bss, options.bookSourceManager[options.bookSourceId]);
+    //         var link = util.format(catalogLink, o);
+    //         if(success)success(link);
+    //     }
 
-        self.getBookSource(function(bs, bsid){
-            if(!bs.searched){
-                self.getBook(function(bsid, bs){
-                    success(bs.catalogLink, bsid, bs);
-                }, fail, options);
-            }
-            else{
-                if(bs.disable){
-                    if(fail)fail(Book.getError(404));
-                }
-                else{
-                    if(!bs.catalogLink)
-                    {
-                        computeCatalogLink(bs, function(link){
-                            bs.catalogLink = link;
-                            success(bs.catalogLink, bsid, bs);
-                        });
-                    }
-                    else{
-                        success(bs.catalogLink, bsid, bs);
-                    }
-                }
-            }
-        }, fail, options);
-    };
+    //     self.getBookSource(function(bs, bsid){
+    //         if(!bs.searched){
+    //             self.getBook(function(bsid, bs){
+    //                 success(bs.catalogLink, bsid, bs);
+    //             }, fail, options);
+    //         }
+    //         else{
+    //             if(bs.disable){
+    //                 if(fail)fail(Book.getError(404));
+    //             }
+    //             else{
+    //                 if(!bs.catalogLink)
+    //                 {
+    //                     computeCatalogLink(bs, function(link){
+    //                         bs.catalogLink = link;
+    //                         success(bs.catalogLink, bsid, bs);
+    //                     });
+    //                 }
+    //                 else{
+    //                     success(bs.catalogLink, bsid, bs);
+    //                 }
+    //             }
+    //         }
+    //     }, fail, options);
+    // };
 
     // 检查源是否有缺失
     Book.prototype.checkBookSources = function(bookSourceManager){
@@ -179,7 +179,7 @@ define(["jquery", "util"], function($, util) {
         var sources = bookSourceManager.sources;
         for(var k in sources){
             if(!(k in self.sources)){
-                var bss = new BookSource(sources[k].contentSourceWeight);
+                var bss = new BookSource(k, sources[k].contentSourceWeight);
                 self.sources[k] = bss;
             }
         }
@@ -202,32 +202,32 @@ define(["jquery", "util"], function($, util) {
     };
 
     // 刷新目录
-    Book.prototype.__refreshCatalog = function(success, fail, options){
+    // Book.prototype.__refreshCatalog = function(success, fail, options){
 
-        var self = this;
-        options = $.extend(true, {}, options);
-        options.bookSourceId = options.bookSourceId || self.mainSource;
+    //     var self = this;
+    //     options = $.extend(true, {}, options);
+    //     options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        self.getBookSource(function(bs){
-            if((new Date()).getTime() - bs.updatedCatalogTime < options.bookSourceManager.settings.refreshCatalogInterval * 1000){
-                if(fail)fail(Book.getError(400));
-            }
-            else{
-                util.log('Refresh Catalog!');
-                self.__getBookSourceCatalogLink(function(catalogLink, bsid, bs){
-                    options.bookSourceManager.getBookCatalog(options.bookSourceId, catalogLink,
-                        function(catalog){
-                            bs.catalog = catalog;
-                            bs.updatedCatalogTime = (new Date()).getTime();
-                            bs.needSaveCatalog = true;
-                            if(success)success(catalog);
-                        }, fail);
-                },
-                fail, options);
-            }
-        },
-        fail, options);
-    };
+    //     self.getBookSource(function(bs){
+    //         if((new Date()).getTime() - bs.updatedCatalogTime < options.bookSourceManager.settings.refreshCatalogInterval * 1000){
+    //             if(fail)fail(Book.getError(400));
+    //         }
+    //         else{
+    //             util.log('Refresh Catalog!');
+    //             self.__getBookSourceCatalogLink(function(catalogLink, bsid, bs){
+    //                 options.bookSourceManager.getBookCatalog(options.bookSourceId, catalogLink,
+    //                     function(catalog){
+    //                         bs.catalog = catalog;
+    //                         bs.updatedCatalogTime = (new Date()).getTime();
+    //                         bs.needSaveCatalog = true;
+    //                         if(success)success(catalog);
+    //                     }, fail);
+    //             },
+    //             fail, options);
+    //         }
+    //     },
+    //     fail, options);
+    // };
 
     // 获取目录
     // options:
@@ -238,19 +238,20 @@ define(["jquery", "util"], function($, util) {
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
         self.getBookSource(function(bs){
-            if(!options.forceRefresh && bs.catalog){
-                if(success)success(bs.catalog);
-            }
-            else{
-                self.__refreshCatalog(success, function(error){
-                    if(error.id == 400){
-                        if(success)success(bs.catalog);
-                    }
-                    else{
-                        if(fail)fail(error);
-                    }
-                }, options);
-            }
+            bs.getCatalog(options.bookSourceManager, self, options.forceRefresh, success, fail);
+            // if(!options.forceRefresh && bs.catalog){
+            //     if(success)success(bs.catalog);
+            // }
+            // else{
+            //     self.__refreshCatalog(success, function(error){
+            //         if(error.id == 400){
+            //             if(success)success(bs.catalog);
+            //         }
+            //         else{
+            //             if(fail)fail(error);
+            //         }
+            //     }, options);
+            // }
         },
         fail, options);
     }
@@ -262,16 +263,21 @@ define(["jquery", "util"], function($, util) {
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        self.__getBookSourceDetailLink(function(detailLink, bsid, bs){
-            options.bookSourceManager.getBookInfo(bsid, detailLink,
-                function(book){
-                    self.catagory = book.catagory;  // 分类
-                    self.cover = book.cover;  // 封面
-                    self.complete = book.complete;  // 是否完结
-                    self.introduce = book.introduce;  // 简介
-                }, fail);
-        },
-        fail, options);
+        self.getBookSource(function(bs, bsid){
+
+            bs.__getBookSourceDetailLink(options.bookSourceManager, self, function(detailLink, bsid, bs){
+                options.bookSourceManager.getBookInfo(bsid, detailLink,
+                    function(book){
+                        self.catagory = book.catagory;  // 分类
+                        self.cover = book.cover;  // 封面
+                        self.complete = book.complete;  // 是否完结
+                        self.introduce = book.introduce;  // 简介
+                    }, fail);
+            },
+            fail);
+
+        }, fail, options);
+
     };
 
     // *************************** 章节部分 ****************
@@ -853,36 +859,36 @@ define(["jquery", "util"], function($, util) {
     // *************************** 章节部分结束 ****************
 
     // 获取书籍最新章节
-    Book.prototype.refreshLastestChapter = function(success, fail, options){
-        var self = this;
-        options = $.extend(true, {}, options);
-        options.bookSourceId = options.bookSourceId || self.mainSource;
+    // Book.prototype.refreshLastestChapter = function(success, fail, options){
+    //     var self = this;
+    //     options = $.extend(true, {}, options);
+    //     options.bookSourceId = options.bookSourceId || self.mainSource;
 
-        self.getBookSource(function(bs){
-            if((new Date()).getTime() - bs.updatedLastestChapterTime < options.bookSourceManager.settings.refreshLastestChapterInterval * 1000){
-                if(fail)fail(Book.getError(402));
-            }
-            else{
-                util.log('Refresh LastestChapter!');
+    //     self.getBookSource(function(bs){
+            // if((new Date()).getTime() - bs.updatedLastestChapterTime < options.bookSourceManager.settings.refreshLastestChapterInterval * 1000){
+            //     if(fail)fail(Book.getError(402));
+            // }
+            // else{
+            //     util.log('Refresh LastestChapter!');
 
-                self.__getBookSourceDetailLink(function(detailLink, bsid, bs){
+            //     self.__getBookSourceDetailLink(function(detailLink, bsid, bs){
 
-                    options.bookSourceManager.getLastestChapter(bsid, detailLink,
-                        function(lastestChapter){
-                            var lastestChapterUpdated = false;
-                            if(bs.lastestChapter != lastestChapter){
-                                bs.lastestChapter = lastestChapter;
-                                bs.updatedLastestChapterTime = (new Date()).getTime();
-                                lastestChapterUpdated = true;
-                            }
-                            if(success)success(lastestChapter, lastestChapterUpdated);
-                        }, fail);
-                },
-                fail, options);
-            }
-        },
-        fail, options);
-    };
+            //         options.bookSourceManager.getLastestChapter(bsid, detailLink,
+            //             function(lastestChapter){
+            //                 var lastestChapterUpdated = false;
+            //                 if(bs.lastestChapter != lastestChapter){
+            //                     bs.lastestChapter = lastestChapter;
+            //                     bs.updatedLastestChapterTime = (new Date()).getTime();
+            //                     lastestChapterUpdated = true;
+            //                 }
+            //                 if(success)success(lastestChapter, lastestChapterUpdated);
+            //             }, fail);
+            //     },
+            //     fail, options);
+            // }
+    //     },
+    //     fail, options);
+    // };
 
     // 获取最新章节
     // 缺省强制更新
@@ -896,91 +902,19 @@ define(["jquery", "util"], function($, util) {
             //     if(success)success(bs.lastestChapter, false);
             // }
             // else{
-                self.refreshLastestChapter(success, function(error){
-                    if(error.id == 402){
-                        if(success)success(bs.lastestChapter, false);
-                    }
-                    else{
-                        if(fail)fail(error);
-                    }
-                }, options);
+                bs.refreshLastestChapter(options.bookSourceManager, self, success,
+                    function(error){
+                        if(error.id == 402){
+                            if(success)success(bs.lastestChapter, false);
+                        }
+                        else{
+                            if(fail)fail(error);
+                        }
+                    });
             // }
         },
         fail, options);
     }
 
-    // **** Chapter ****
-    function Chapter(){
-
-    }
-
-    Chapter.prototype.link = undefined;    // 链接
-    Chapter.prototype.title = undefined;    // 标题
-    Chapter.prototype.content = undefined;  // 内容
-    // Chapter.prototype.modifyTime = undefined;  // 修改时间
-
-    // 判断两个标题是否相等，传入的是章节
-    Chapter.equalTitle = function(chapterA, chapterB){
-        return Chapter.equalTitle2(chapterA.title, chapterB.title);
-    }
-
-    // 判断两个标题是否相等，传入的是章节标题
-    Chapter.equalTitle2 = function(chapterTitleA, chapterTitleB){
-        if(!chapterTitleA || !chapterTitleB)
-            return false;
-        // 比较去掉所有空格和标点符号之后的所有符号
-        function stripString(str){
-            // 去除括号括起来的文字
-            str = str.replace(/（.*?）/, '');
-            str = str.replace(/\(.*?\)/, '');
-
-            // 去除英文字符串
-            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
-            // 去除中文字符串
-            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
-
-            // 去除空白字符
-            str = str.replace(/\s/g, '');
-            return str;
-        }
-        // TODO：模糊判等
-        var cA = stripString(chapterTitleA);
-        var cB = stripString(chapterTitleB);
-        return cA == cB;
-    }
-
-    // **** BookSource *****
-    function BookSource(weight){
-        this.needSaveCatalog = false;
-        this.updatedCatalogTime = 0;
-        this.updatedLastestChapterTime = 0;
-        this.disable = false;
-        this.weight = weight || 0;
-        this.searched = false;
-    };
-    BookSource.prototype.detailLink = null; // 详情页链接
-    BookSource.prototype.catalogLink = null; // 目录页链接
-    BookSource.prototype.bookid = null; // 书籍 ID
-    BookSource.prototype.catalog = null; // 目录
-    BookSource.prototype.weight = 0;
-    BookSource.prototype.updatedCatalogTime = 0;
-    BookSource.prototype.updatedLastestChapterTime = 0;
-    BookSource.prototype.needSaveCatalog = false; // 目录是否需要存储到本地
-    BookSource.prototype.disable = false;
-    BookSource.prototype.lastestChapter = undefined;  // 最新的章节
-    BookSource.prototype.searched = false;  // 本书是否已经被搜索到了
-
-    // 是否能更新详情内容（包括目录和最新章节）
-    // BookSource.prototype.canUpdateDatail = function(){
-
-    // }
-
-
-
-    // **** Return package *****
-    return {
-        Book: Book,
-        BookSource: BookSource,
-        Chapter: Chapter
-    };
+    return Book;
 });

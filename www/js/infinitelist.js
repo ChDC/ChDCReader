@@ -316,9 +316,9 @@ define(["jquery", "util"], function($, util) {
             next();
         }
         else{
-            if(willClear){
-                clearOutBoundary();
-            }
+            // if(willClear){
+            //     clearOutBoundary();
+            // }
             if(success)success();
         }
     }

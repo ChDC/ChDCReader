@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "page", "util", 'book'], function($, app, page, util, book){
+define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     // 加载结果列表
     function loadBooks(id, books, bookSourceId){
