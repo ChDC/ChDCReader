@@ -32,28 +32,40 @@
     "hash": "9578e81a9ed9d32403f3133deab1e299"
   },
   {
-    "file": "js/book.js",
-    "hash": "15c64df6de4f2d14db1fe051d579c63e"
+    "file": "js/Book.js",
+    "hash": "5b1527a4fa572a9a4731d3c4571b2d08"
   },
   {
-    "file": "js/bookshelf.js",
-    "hash": "7a973338a115827b0873c245064bbd20"
+    "file": "js/BookShelf.js",
+    "hash": "c1a64c45ae49499cccf362af5aaed8d1"
   },
   {
-    "file": "js/booksourcemanager.js",
-    "hash": "869fb481b9a98ec9cada380bef8cad27"
+    "file": "js/BookSource.js",
+    "hash": "b3b8202f4f48cc742cfd2113dfc3e53c"
+  },
+  {
+    "file": "js/BookSourceManager.js",
+    "hash": "5bf7d85b4913bde6911dcc50294bad74"
+  },
+  {
+    "file": "js/Chapter.js",
+    "hash": "0722bd6f615c9ea11c031943ba4fe73e"
   },
   {
     "file": "js/infinitelist.js",
-    "hash": "99783ab2037c26766846099da7e1bc4c"
+    "hash": "0138d0b204439e0586ec70ba804e8b1c"
   },
   {
     "file": "js/main.js",
-    "hash": "1cdb6183845a3a176bda10b280821a63"
+    "hash": "0481cffba0fcceae5060bb4f25a91885"
   },
   {
     "file": "js/page.js",
     "hash": "0d7e6574e31647f97d8737f9dd9e77bd"
+  },
+  {
+    "file": "js/ReadingRecord.js",
+    "hash": "dc255f2432c275911fa0116805205523"
   },
   {
     "file": "js/util.js",
@@ -137,7 +149,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "da221fe1dfc1ff4f27e9d40c6bf948ed"
+    "hash": "adb86f3b90f71ea23829ff2a73b69ea6"
   },
   {
     "file": "page/readbook.page.css",
@@ -149,7 +161,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "3d451ec1e639c0d781e48c93494d3ad8"
+    "hash": "df3753ee1fbfb33b3452cdddd71d9b7c"
   },
   {
     "file": "page/search.page.css",
@@ -161,7 +173,7 @@
   },
   {
     "file": "page/search.page.js",
-    "hash": "8a1acec7d9869f8099465e24187f028c"
+    "hash": "696c550c46d3ef5f667d1e4517c32ca6"
   },
   {
     "file": "test.html",
