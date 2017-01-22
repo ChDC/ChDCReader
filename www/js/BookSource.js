@@ -12,6 +12,35 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
         this.weight = weight || 0;
         this.searched = false;
     };
+
+    BookSource.getError = function(errorCode){
+        var bookErrorCode = {
+            // 201: "未在书源中发现指定章节！",
+            // 202: "没有更新的章节了！",
+            // 203: "前面没有章节了！",
+            // 205: "索引值应该是数字！",
+            // 206: "章节内容错误",
+            // 207: "未从缓存中发现该章节",
+
+            // 301: "设置主要内容来源失败！",
+            // 302: "未找到该源",
+
+            400: "不能频繁更新书籍目录",
+            402: "不能频繁更新最新章节",
+            // 401: "源配置不正确！",
+            404: "未在当前的源中找到该书！",
+
+            // 501: "目录为空",
+
+            // 601: "获取目录失败，请检查书源是否正常",
+            // 602: "搜索结果为空，请检查书源是否正常"
+        };
+        return {
+            id: errorCode,
+            message: bookErrorCode[errorCode]
+        }
+    }
+
     BookSource.prototype.id = null; // 书源 ID
     BookSource.prototype.detailLink = null; // 详情页链接
     BookSource.prototype.catalogLink = null; // 目录页链接
@@ -36,7 +65,7 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
 
         if(self.disable)
         {
-            if(fail)fail(Book.getError(404));
+            if(fail)fail(BookSource.getError(404));
             return;
         }
         bookSourceManager.getBook(self.id, book.name, book.author,
@@ -71,7 +100,7 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
             }
             else{
                 if(self.disable){
-                    if(fail)fail(Book.getError(404));
+                    if(fail)fail(BookSource.getError(404));
                 }
                 else{
                     success(self.detailLink, self.id, self);
@@ -104,7 +133,7 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
             }
             else{
                 if(self.disable){
-                    if(fail)fail(Book.getError(404));
+                    if(fail)fail(BookSource.getError(404));
                 }
                 else{
                     if(!self.catalogLink)
@@ -131,7 +160,7 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
 
         // self.getBookSource(function(bs){
             if((new Date()).getTime() - self.updatedCatalogTime < bookSourceManager.settings.refreshCatalogInterval * 1000){
-                if(fail)fail(Book.getError(400));
+                if(fail)fail(BookSource.getError(400));
             }
             else{
                 util.log('Refresh Catalog!');
@@ -185,7 +214,7 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
 
         // self.getBookSource(function(bs){
             if((new Date()).getTime() - self.updatedLastestChapterTime < bookSourceManager.settings.refreshLastestChapterInterval * 1000){
-                if(fail)fail(Book.getError(402));
+                if(fail)fail(BookSource.getError(402));
             }
             else{
                 util.log('Refresh LastestChapter!');
