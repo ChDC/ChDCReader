@@ -61,7 +61,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         }
     };
 
-    function loadView(){
+    function loadView(params){
 
         loadBookDetail(".book", params.book, params.bookSourceId);
         loadBookChapters(".book-chapters", params.book, params.bookSourceId);
@@ -69,7 +69,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     return {
         onload: function(params, p){
-            loadView();
+            loadView(params);
         },
         onresume: function(){
 

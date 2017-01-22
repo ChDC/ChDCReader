@@ -25,6 +25,7 @@ define(["jquery", "util"], function($, util) {
             // 去除括号括起来的文字
             str = str.replace(/（.*?）/, '');
             str = str.replace(/\(.*?\)/, '');
+            str = str.replace(/【.*?】/, '');
 
             // 去除英文字符串
             str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
