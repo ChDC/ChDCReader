@@ -2,11 +2,9 @@ define(["jquery"], function($){
     "use strict"
 
     // init
-    // $.ajaxSetup({
-    //     beforeSend: function(request) {
-    //     request.setRequestHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36");
-    //     }
-    // });
+    $.ajaxSetup({
+        timeout : 3000 //超时时间设置，单位毫秒
+    });
 
     // if (typeof cordovaHTTP != "undefined") {
     //     console.log("Set HTTP Header!");

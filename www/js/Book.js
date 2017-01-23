@@ -134,7 +134,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
 
     // 使用详情页链接刷新书籍信息
     // 前提：book.sources 中有详情链接
-    Book.prototype.refreshBookInfo = function(bsid, success, fail, options){
+    Book.prototype.refreshBookInfo = function(success, fail, options){
         var self = this;
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSourceId;

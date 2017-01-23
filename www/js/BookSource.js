@@ -103,10 +103,26 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
     // 获取当前书籍指定的目录页的链接
     BookSource.prototype.__getBookSourceCatalogLink = function(bookSourceManager, book, success, fail){
         var self = this;
-
+        debugger;
         function computeCatalogLink(bss, success){
             var bsm = bookSourceManager.sources[self.id];
             if(!bsm)return;
+            if(bsm.detail.info.catalogLink){
+                self.__getBookSourceDetailLink(bookSourceManager, book,
+                    function(detailLink){
+                        util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
+
+                        function getBookDetailFromHtml(html){
+                            html = $(html);
+                            var link = html.find(bsm.detail.info.catalogLink).attr('href');
+                            if(success)success(link);
+                        };
+                    }
+                    , fail);
+
+                return;
+            }
+
             var catalogLink = bsm.catalog.link;
             var o = $.extend({}, bss, bookSourceManager[self.id]);
             var link = util.format(catalogLink, o);
@@ -116,7 +132,10 @@ define(["jquery", "util", 'Book'], function($, util, Book) {
         if(!self.searched){
             self.getBook(bookSourceManager, book,
                 function(bsid, bs){
-                    success(bs.catalogLink, bsid, bs);
+                    computeCatalogLink(self, function(link){
+                        self.catalogLink = link;
+                        success(self.catalogLink, self.id, self);
+                    });
                 }, fail);
         }
         else{

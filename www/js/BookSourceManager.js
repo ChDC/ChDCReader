@@ -336,6 +336,8 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
         function getChapterFromHtml(html){
             html = $(html);
             var chapter = new Chapter();
+            debugger;
+            // TODO: 创世获取章节内容
             chapter.content = BookSourceManager.fixer.fixChapterContent(html.find(info.content).html());
             if(!chapter.content){
                 // 没有章节内容就返回错误
