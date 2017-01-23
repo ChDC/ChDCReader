@@ -5,9 +5,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
     function BookShelf(){
         this.loaded = false; // 标记是否已经加载的数据
         this.books = [];
-        this.sort = [0,1,2,3,4]; // 在书架的显示顺序
-        this.readingRecords = []; // 阅读进度
-        this.bookmarks = []; // 书签
+        // this.bookmarks = []; // 书签
     };
     BookShelf.prototype.books = undefined;
 
@@ -19,7 +17,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
         return dest;
     }
 
-    // 添加书籍到书架中
+    // 加载书籍
     BookShelf.prototype.load = function(success, fail){
         function s(){
             self.loaded = true;
@@ -29,7 +27,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
             var unfinished = [];
             function checkAllFinished(){
                 for(var bk in self.books){
-                    var b = self.books[bk];
+                    var b = self.books[bk].book;
                     for(var bsk in b.sources){
                         if(unfinished[bk][bsk]){
                             return false;
@@ -44,7 +42,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
             function initUnfinished(){
                 for(var bk in self.books){
                     unfinished[bk] = {};
-                    var b = self.books[bk];
+                    var b = self.books[bk].book;
                     for(var bsk in b.sources){
                         unfinished[bk][bsk] = true;
                     }
@@ -53,7 +51,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
             initUnfinished();
 
             function loadCatalog(bk, bsk){
-                var b = self.books[bk];
+                var b = self.books[bk].book;
                 var bs = b.sources[bsk];
                 // 更新目录文件
                 util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk),
@@ -69,7 +67,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
             }
 
             for(var bk in self.books){
-                var b = self.books[bk];
+                var b = self.books[bk].book;
                 for(var bsk in b.sources){
                     loadCatalog(bk, bsk);
                 }
@@ -81,21 +79,16 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
             function(data){
                 var bookShelf = data;
                 $.extend(true, self, bookShelf);
-                util.arrayCast(self.books, Book);
                 $(self.books).each(function(){
-                    for(var bsid in this.sources){
-                        var nbs = new BookSource(bsid);
-                        $.extend(nbs, this.sources[bsid]);
-                        this.sources[bsid] = nbs;
-                    }
+                    this.book = Book.Cast(this.book);
+                    this.readingRecord = util.objectCast(this.readingRecord, ReadingRecord);
                 });
-                util.arrayCast(self.readingRecords, ReadingRecord);
                 loadCatalogs();
             },
             fail);
     };
 
-    // 添加书籍到书架中
+    // 保存数据
     BookShelf.prototype.save = function(success, fail){
         var self = this;
 
@@ -103,7 +96,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
         var catalogs = []; // 用于临时存储移除的 Catalog
         for(var bk in self.books){
             catalogs[bk] = {};
-            var b = self.books[bk];
+            var b = self.books[bk].book;
             for(var bsk in b.sources){
                 var bs = b.sources[bsk];
                 if(bs.needSaveCatalog){
@@ -120,7 +113,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
 
         // 恢复删除的目录
         for(var bk in self.books){
-            var b = self.books[bk];
+            var b = self.books[bk].book;
             for(var bsk in b.sources){
                 var bs = b.sources[bsk];
                 bs.catalog = catalogs[bk][bsk];
@@ -131,8 +124,10 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
     // 添加书籍到书架中
     BookShelf.prototype.addBook = function(book, success, fail){
         if(!this.hasBook(book)){
-            this.books.push(book);
-            this.readingRecords.push(new ReadingRecord());
+            this.books.push({
+                book: book,
+                readingRecord: new ReadingRecord(),
+            });
             this.save(success);
         }
     };
@@ -140,7 +135,8 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
     // 判断书架中是否有某书
     BookShelf.prototype.hasBook = function(book){
         var i = util.arrayIndex(this.books, book, function(e1, e2){
-            return e1.name == e2.name && e1.author == e2.author && e1.mainSource == e2.mainSource;
+            var b = e1.book;
+            return b.name == e2.name && b.author == e2.author && b.mainSourceId == e2.mainSourceId;
         });
         if(i >= 0)
             return this.books[i];
@@ -152,7 +148,7 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
     BookShelf.prototype.removeBook = function(index, success, fail){
         var self = this;
         // 清除目录
-        var b = self.books[index];
+        var b = self.books[index].book;
         for(var bsk in b.sources){
             var bs = b.sources[bsk];
             util.removeData(self.__getSaveCatalogLocation(b.name, b.author, bsk));
@@ -163,6 +159,5 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
         self.save(success);
     };
 
-    // **** Return package *****
     return BookShelf;
 });

@@ -86,7 +86,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         // });
         $("#btnChangeMainSource").click(function(){
             $("#modalBookSource").modal('show');
-            loadBookSource("mainSource");
+            loadBookSource();
         });
         $('#modalCatalog').on('shown.bs.modal', function (e) {
             var targetChapter = $('#listCatalog > [data-index=' + readingRecord.chapterIndex + ']');
@@ -94,7 +94,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             $('#listCatalogContainer').scrollTop(top);
             // $("#modalCatalog .modal-body").css("height", $());
         });
-        $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSource].name);
+        $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSourceId].name);
         $("#btnRefreshCatalog").click(function(){
             loadCatalog(true);
         });
@@ -106,7 +106,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         listBookSource.empty();
         var listBookSourceEntry = $(".template .listBookSourceEntry");
         for(var bsk in app.bookSourceManager.sources){
-            if(bsk == book.mainSource)
+            if(bsk == book.mainSourceId)
                 continue;
             var nlbse = listBookSourceEntry.clone();
             var bs = app.bookSourceManager.sources[bsk];
@@ -123,17 +123,17 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             var target = event.currentTarget;
             if(target){
                 var bid = $(target).data('bsid');
-                var oldMainSource = book.mainSource;
-                book.setMainSource(bid, function(book){
+                var oldMainSource = book.mainSourceId;
+                book.setMainSourceId(bid, function(book){
                     app.bookShelf.save();
                     // 隐藏目录窗口
                     $("#modalCatalog").modal('hide');
                     // 更新源之后
-                    $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSource].name);
+                    $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSourceId].name);
                     if(readingRecord.chapterIndex){
                         var opts = $.extend(true, {}, options);
                         opts.bookSourceId = oldMainSource;
-                        book.fuzzySearch(book.mainSource, readingRecord.chapterIndex,
+                        book.fuzzySearch(book.mainSourceId, readingRecord.chapterIndex,
                             function(chapter, chapterIndex){
                                 readingRecord.chapterIndex = chapterIndex;
                                 readingRecord.chapterTitle = chapter.title;

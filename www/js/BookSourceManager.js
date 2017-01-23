@@ -195,7 +195,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
                     bss.searched = true;
                     book.sources[bsid] = bss;
 
-                    book.mainSource = bsid;  // 主要来源
+                    book.mainSourceId = bsid;  // 主要来源
                     return books.push(book);
                 });
             if(books.length <= 0){

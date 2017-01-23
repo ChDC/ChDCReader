@@ -21,8 +21,10 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
         bs.empty();
         var b = $(".template .book");
         $(books).each(function(i){
-            var readingRecord = bookShelf.readingRecords[i];
-            var book = this;
+            var self = this;
+            var readingRecord = this.readingRecord;
+            var book = this.book;
+
             var nb = b.clone();
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
@@ -37,11 +39,7 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
             }, null, {bookSourceManager: app.bookSourceManager});
 
             nb.click(function(){
-                var params = {
-                    book: book,
-                    readingRecord: bookShelf.readingRecords[i]
-                };
-                page.showPage("readbook", params);
+                page.showPage("readbook", self);
             });
 
             nb.find('.btnBookMenu').click(function(event){

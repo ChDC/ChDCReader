@@ -310,6 +310,12 @@ define(["jquery"], function($){
             }
             return html;
         },
+        // 将数组中的每个成员的类型都转换为执行的类
+        objectCast: function(obj, ClassFunction){
+            var nc = new ClassFunction();
+            $.extend(true, nc, obj);
+            return nc;
+        },
         arrayIndex: function(array, item, compareFuntion, startIndex){
             startIndex = startIndex || 0;
             var compareFuntion = compareFuntion || function(i1, i2){
