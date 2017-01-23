@@ -54,6 +54,7 @@ define(["jquery", "util"], function($, util){
                         self.__closePage(popPage.page);
                     }
                     self.pageStack.length = 0;
+                    __showPage();
                 }
                 else{
                     // 将之前的页面存储起来
@@ -68,33 +69,40 @@ define(["jquery", "util"], function($, util){
                         require([self.currentPage.jsurl], function(page){
                             if(page.onpause)
                                 page.onpause();
+                            __showPage();
                         });
+                    }
+                    else{
+                        __showPage();
                     }
                 }
 
-                pageContainer.children().detach();
-                pageContainer.append(content);
+                function __showPage(){
+                    pageContainer.children().detach();
+                    pageContainer.append(content);
 
-                self.currentPage = {
-                    name: name,
-                    htmlurl: htmlurl,
-                    cssurl: cssurl,
-                    jsurl: jsurl
-                };
+                    self.currentPage = {
+                        name: name,
+                        htmlurl: htmlurl,
+                        cssurl: cssurl,
+                        jsurl: jsurl
+                    };
 
-                self.__saveState(name, params);
+                    self.__saveState(name, params);
 
-                // Load page js
-                require([jsurl], function(page){
-                    if(page.onload)
-                        page.onload(params);
-                    if(page.onresume)
-                        page.onresume();
-                });
+                    // Load page js
+                    require([jsurl], function(page){
+                        if(page.onload)
+                            page.onload(params);
+                        if(page.onresume)
+                            page.onresume();
+                    });
+                }
+
             });
         },
 
-        __closePage: function(p, params){
+        __closePage: function(p, params, success){
             var self = this;
             // 触发当前页面的关闭事件
             var jsurl = p.jsurl;
@@ -105,10 +113,11 @@ define(["jquery", "util"], function($, util){
                 if(page.onclose)
                     page.onclose(params);
                 requirejs.undef(jsurl);
+                if(success)success();
             });
         },
         // 从页面栈中弹出页面
-        __popPage: function(){
+        __popPage: function(success){
             var self = this;
             var p = self.pageStack.pop();
             if(p){
@@ -120,14 +129,20 @@ define(["jquery", "util"], function($, util){
                 require([self.currentPage.jsurl], function(page){
                     if(page.onresume)
                         page.onresume();
+                    if(success)success();
                 });
+            }
+            else{
+                if(success)success();
             }
         },
         // 关闭当前页面
-        closePage: function(params){
+        closePage: function(params, success){
             var self = this;
-            this.__closePage(self.currentPage, params);
-            this.__popPage();
+            self.__closePage(self.currentPage, params,
+                function(){
+                    self.__popPage(success);
+                });
         },
         __saveState: function(name, params){
             // var state = {

@@ -148,6 +148,21 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
             return null;
     };
 
+    // 判断书架中是否有某书
+    BookShelf.prototype.removeBook = function(index, success, fail){
+        var self = this;
+        // 清除目录
+        var b = self.books[index];
+        for(var bsk in b.sources){
+            var bs = b.sources[bsk];
+            util.removeData(self.__getSaveCatalogLocation(b.name, b.author, bsk));
+        }
+
+        util.arrayRemove(self.books, index);
+        // TODO: 清空缓存章节
+        self.save(success);
+    };
+
     // **** Return package *****
     return BookShelf;
 });

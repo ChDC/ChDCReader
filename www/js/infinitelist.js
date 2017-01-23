@@ -35,6 +35,15 @@ define(["jquery", "util"], function($, util) {
     // 是否正在检查边界
     Infinitelist.prototype.isCheckingBoundary = false;
 
+    // 获取页内的滚动位置
+    Infinitelist.prototype.getPageScorllTop = function(){
+        var self = this;
+        if(self.currentItem)
+            return self.container.scrollTop() - self.currentItem.position().top;
+        else
+            return 0;
+    }
+
     // 滑动到下一个元素
     Infinitelist.prototype.nextItem = function(){
         var self = this;

@@ -7,7 +7,6 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
     var book = null;
     var readingRecord = null; // 正在读的记录
     var chapterList = null; // 无限列表
-    var pageScrollTop = 0;
     var lastSavePageScrollTop = 0;
 
 
@@ -16,20 +15,8 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         util.showError(error.message);
     }
 
-    function getPageScorllTop(){
-        if(chapterList.currentItem)
-            return $('.chapterContainer').scrollTop() - chapterList.currentItem.position().top;
-        else
-            return 0;
-    }
-
     function loadView(){
         initList();
-
-        $('.chapterContainer').on('scroll', function(event){
-            // 将章节滚动位置存储到变量中
-            pageScrollTop = getPageScorllTop();
-        });
 
         // 弹出工具栏
         $(".chapterContainer").on("click", function(event){
@@ -66,12 +53,10 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         $(".toolbar").blur(function(){
             $('.toolbar').hide();
         });
-        $(".toolbar.top, .toolbar.bottom").click(function(){
+        $(".toolbar").click(function(){
             $('.toolbar').hide();
         });
-        $(".toolbar.lastAndNextChapter").click(function(){
-            $('.toolbar.top, .toolbar.bottom').hide();
-        });
+
         $(".btnNext").click(nextChapter);
         $(".btnLast").click(lastChapter);
 
@@ -220,7 +205,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             var title = newValue.data('chapterTitle');
             var options = newValue.data('options');
             readingRecord.setReadingRecord(index, title, options);
-            readingRecord.pageScrollTop = pageScrollTop;
+            readingRecord.pageScrollTop = chapterList.getPageScorllTop();
             app.bookShelf.save();
             $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
             app.hideLoading();
@@ -245,7 +230,6 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
         book.getChapter(chapterIndex,
             function(chapter, index, options){
-                util.showMessage("开始预加载新章节");
                 var newItem = buildChapter(chapter, index, options);
                 success(newItem);
                 if(!be && lastSavePageScrollTop){
@@ -306,7 +290,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         onpause: function(){
             // 执行该事件的时候，界面可能已经被销毁了
             // 保存阅读进度
-            readingRecord.pageScrollTop = pageScrollTop;
+            readingRecord.pageScrollTop = chapterList.getPageScorllTop();
             app.bookShelf.save();
         },
         onclose: function(params){

@@ -30,19 +30,20 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         },
         // 检查资源更新
         // * isInstanceInstall 下载好资源后是否立即进行安装
-        chekcUpdate: function(isInstanceInstall){
+        chekcUpdate: function(isInstanceInstall, showMessage){
 
             if(!window.chcp)
                 return;
             function fetchUpdateCallback(error, data) {
                 if (error) {
                     if(error.code == 2){
-                        util.showMessage('没有更新');
+                        if(showMessage)
+                            util.showMessage('没有更新');
                     }
                     else{
                         var errMsg = error.description + "(" + error.code + ")";
                         util.error('Fail to download update: ' + errMsg);
-                        util.showMessage('更新下载失败！\n' + errMsg);
+                        util.showError('更新下载失败！\n' + errMsg);
                     }
                 }
                 else{
@@ -60,7 +61,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
                 if (error) {
                     var errMsg = error.description + "(" + error.code + ")";
                     util.error('Fail to install update: ' + errMsg);
-                    util.showMessage('安装更新失败！\n' + errMsg);
+                    util.showError('安装更新失败！\n' + errMsg);
                 }
                 else {
                     util.log('Success to install update');
@@ -71,7 +72,8 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             // 查看本地是否有尚未安装的更新
             chcp.isUpdateAvailableForInstallation(function(error, data) {
                 if (error) {
-                    util.showMessage('开始检查资源更新。。。');
+                    if(showMessage)
+                        util.showMessage('开始检查资源更新。。。');
                     util.log('Start to check update');
                     chcp.fetchUpdate(fetchUpdateCallback);
                 }

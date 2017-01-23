@@ -381,7 +381,15 @@ define(["jquery"], function($){
             }
             return result;
         },
-
+        arrayRemove: function(array, index){
+            if(i < 0)
+                return array;
+            for(var i = index; i < array.length - 1; i++){
+                array[i] = array[i+1];
+            }
+            array.length--;
+            return array;
+        },
         // 从副列表中匹配查询主列表的元素的索引
         listMatch: function(listA, listB, indexA, equalFunction, startIndexB){
             equalFunction = equalFunction || function(i1, i2){return i1==i2;};
@@ -637,7 +645,19 @@ define(["jquery"], function($){
 
             }, notExist);
         },
+        // 删除文件
+        __removeFile: function(file, success, fail, isCacheDir){
+            // TODO
+            var fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+            window.requestFileSystem(fileSystem, 0, function (fs) {
 
+                fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
+                        debugger;
+                        fileEntry.remove(success, fail);
+                    }, fail);
+
+            }, fail);
+        },
         // 保存数据
         saveData: function(key, data, success, fail, onlyCache){
             if(window.requestFileSystem){
@@ -661,7 +681,17 @@ define(["jquery"], function($){
                 if(success)success(data);
             }
         },
-
+        // 删除数据
+        removeData: function(key, success, fail, onlyCache){
+            if(window.requestFileSystem){
+                this.__removeFile(key, success, fail, onlyCache);
+            }
+            else{
+                var s = onlyCache? this.cacheStorage : this.storage;
+                var data = s.removeItem(key);
+                if(success)success();
+            }
+        },
         // 数据是否存在
         dataExists: function(key, exist, notExist, onlyCache){
             if(window.requestFileSystem){
