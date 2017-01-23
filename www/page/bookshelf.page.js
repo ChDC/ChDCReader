@@ -5,6 +5,15 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
         return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
     }
 
+    function removeBook(event){
+        var target = $(event.currentTarget);
+        var i = target.data('book-index');
+        app.bookShelf.removeBook(i, function(){
+            loadBooks(".bookshelf", app.bookShelf);
+        });
+        return false;
+    }
+
     // 加载书架列表
     function loadBooks(id, bookShelf){
         var books = bookShelf.books;
@@ -34,13 +43,20 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
                 };
                 page.showPage("readbook", params);
             });
+
+            nb.find('.btnBookMenu').click(function(event){
+                $(event.currentTarget).dropdown();
+                return false;
+            }).dropdown();
+
+            nb.find('.btnRemoveBook').click(removeBook).data('book-index', i);
             bs.append(nb);
         });
     };
 
     function loadView(){
         $("#btnCheckUpdate").click(function(){
-            app.chekcUpdate(true);
+            app.chekcUpdate(true, true);
         });
         $("#btnCheckBookSources").click(function(){
             app.bookSourceManager.checkBookSources("data/booksourcesTest.json",

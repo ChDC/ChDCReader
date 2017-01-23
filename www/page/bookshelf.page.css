@@ -1,5 +1,8 @@
 
 /*********** Location ***************/
+.media{
+    margin-top:0;
+}
 
 .header{
     width:100%;
@@ -35,7 +38,7 @@
 
 /*********** Color ***************/
 
-.btn-link{
+.row.header > .btn-link{
     color: #fff;
 }
 

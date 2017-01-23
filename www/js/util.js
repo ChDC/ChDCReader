@@ -30,6 +30,9 @@ define(["jquery"], function($){
             },
             hasItem: function(keyName) {
                 return keyName in localStorage;
+            },
+            removeItem: function(keyName) {
+                return localStorage.removeItem(keyName);
             }
         },
         /**
@@ -44,6 +47,9 @@ define(["jquery"], function($){
             },
             hasItem: function(keyName) {
                 return keyName in sessionStorage;
+            },
+            removeItem: function(keyName) {
+                return localStorage.removeItem(keyName);
             }
         },
         /*

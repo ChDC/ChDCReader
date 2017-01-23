@@ -69,7 +69,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "a75f82a484a75abd7d322d21b7e5744f"
+    "hash": "7f3080d9e87706f3bd22792668102ef5"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -141,15 +141,15 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "ab638ac146d246cbce8d48b3657a47ca"
+    "hash": "9edff0c29287d756d02030055d26fd62"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "8d9a426619f53fc44620a4626fc10743"
+    "hash": "6dc33f1beb16b95480287871cfb75e7a"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "adb86f3b90f71ea23829ff2a73b69ea6"
+    "hash": "d03f31afa4dd208bdcbf07748f3ee01f"
   },
   {
     "file": "page/readbook.page.css",
