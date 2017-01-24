@@ -7,7 +7,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
      * 3xx 设置源错误
      * 4xx 书籍错误
      * 5xx 目录错误
-     * 6xx 书源错误 TODO
+     * 6xx 书源错误
      */
     BookSourceManager.getError = function(errorCode){
         var bookErrorCode = {
@@ -43,7 +43,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
     BookSourceManager.prototype.sources = undefined;
     BookSourceManager.prototype.settings = undefined;
 
-    // 修复属性用的工具函数 TODO
+    // 修复属性用的工具函数
     BookSourceManager.fixer = {
         fixChapterContent: function(html){
             // 从 HTML 文本中获取格式化的正文
@@ -415,11 +415,39 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
 
 
     // 检查源是否正确
-    BookSourceManager.prototype.checkBookSources = function(configFile, finish){
-        $.getJSON(configFile, function(data){
-            // TODO
-            self.sources = data;
-            if(finish)finish();
+    BookSourceManager.prototype.checkBookSources = function(testFile, finish){
+        var self = this;
+
+        function log(msg){
+            outputMsg += msg + '\n';
+        }
+
+        function error(msg){
+            outputMsg += 'Error: ' + msg + '\n';
+        }
+
+        function check(bsid, book, success, fail){
+            self.getBook(bsid, book.name, book.author,
+                function(){
+
+                }, fail);
+        }
+
+        var outputMsg = "";
+        $.getJSON(testFile, function(data){
+
+            for(var sk in data.sources){
+                var bs = data.sources[sk];
+                $(bs).each(function(){
+                    if(!(this in data.books)){
+                        error("没有在测试配置文件中找到书籍：" + this);
+                        return;
+                    }
+                    check(sk, data.books[this]);
+                });
+            }
+
+            if(finish)finish(outputMsg);
         });
     };
 

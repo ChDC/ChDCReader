@@ -11,7 +11,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
      * 3xx 设置源错误
      * 4xx 书籍错误
      * 5xx 目录错误
-     * 6xx 书源错误 TODO
+     * 6xx 书源错误
      */
     Book.getError = function(errorCode){
         var bookErrorCode = {
