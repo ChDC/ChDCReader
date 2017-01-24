@@ -233,10 +233,26 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
     // 获取书籍目录
     BookSourceManager.prototype.getBookCatalog = function(bsid, catalogLink, success, fail){
         var self = this;
-        util.getDOM(catalogLink, {}, s, fail);
+        var bsm = self.sources[bsid];
+        if(!bsm)return;
+        var info = bsm.catalog.info;
+        var type = bsm.catalog.type.toLowerCase();
+        var catalog = [];
 
-        function s(html){
-            var catalog = self.__getBookCatalogFromHTML(bsid, html, catalogLink);
+        switch(type){
+            case 'html':
+                util.getDOM(catalogLink, {}, getChaptersFromHTML, fail);
+                break;
+            case 'json':
+                $.getJSON(catalogLink, {}, getChaptersFromJSON, fail);
+                break;
+            default:
+                util.getDOM(catalogLink, {}, getChaptersFromHTML, fail);
+                break;
+        }
+
+        function finish(){
+            catalog = catalog.filter(function(e){return e});
             if(catalog.length <= 0){
                 if(fail)fail(BookSourceManager.getError(601));
             }
@@ -244,62 +260,47 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
                 if(success)success(catalog);
             }
         };
-    };
 
-    // 从 HTML 中获取书籍章节目录
-    BookSourceManager.prototype.__getBookCatalogFromHTML = function(bsid, html, htmlLink){
-        var self = this;
-        var bsm = self.sources[bsid];
-        if(!bsm)return;
+        function getChaptersFromJSON(json){
+            try{
+                // var json = JSON.parse(data);
+                var chapters = util.getDataFromObject(json, info.chapter);
+                $(chapters).each(function(){
+                    var chapter = new Chapter();
+                    var name = util.getDataFromObject(this, info.name);
+                    var linkid = util.getDataFromObject(this, info.linkid);
+                    chapter.title = name;
+                    var vip = util.getDataFromObject(this, info.vip);
+                    var locals = {
+                            name: name,
+                            linkid: linkid,
+                            vip: vip
+                        };
 
-        var info = bsm.catalog.info;
-        var type = bsm.catalog.type.toLowerCase();
-        var catalog = [];
-
-        switch(type){
-            case 'html':
-                getChaptersFromHTML();
-                break;
-            case 'json':
-                getChaptersFromJSON();
-                break;
-            default:
-                getChaptersFromHTML();
-                break;
-        }
-        function getChaptersFromJSON(){
-            var json = JSON.parse(html);
-            var chapters = util.getDataFromObject(json, info.chapter);
-            $(chapters).each(function(){
-                var chapter = new Chapter();
-                var name = util.getDataFromObject(this, info.name);
-                var linkid = util.getDataFromObject(this, info.linkid);
-                chapter.title = name;
-                var vip = util.getDataFromObject(this, info.vip);
-                var locals = {
-                        name: name,
-                        linkid: linkid,
-                        vip: vip
-                    };
-
-                var vipLinkPattern = util.format(info.vipLinkPattern, locals);
-                if(eval(vipLinkPattern)){
-                    chapter.link = null;
-                }
-                else{
-                    chapter.link = util.format(info.link, locals);
-                }
-                catalog.push(chapter);
-            })
+                    var vipLinkPattern = util.format(info.vipLinkPattern, locals);
+                    if(eval(vipLinkPattern)){
+                        chapter.link = null;
+                    }
+                    else{
+                        chapter.link = util.format(info.link, locals);
+                    }
+                    catalog.push(chapter);
+                })
+                finish();
+            }
+            catch(e){
+                util.error(e);
+                finish();
+            }
         }
 
-        function getChaptersFromHTML(){
+        function getChaptersFromHTML(html){
             html = $(html);
             var chapters = html.find(info.link);
             chapters.each(function(){
                 var element = $(this);
                 var chapter = new Chapter();
-                chapter.link = util.fixurl(element.attr('href'), htmlLink);
+                chapter.link = util.fixurl(element.attr('href'), catalogLink);
                 if(info.vipLinkPattern && chapter.link.match(info.vipLinkPattern)){
                    chapter.link = null;
                 }
@@ -314,9 +315,9 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
                 // }
                 catalog.push(chapter);
             });
+            finish();
         }
 
-        return catalog.filter(function(e){return e});
     };
 
     // 从网络上获取章节内容
@@ -385,7 +386,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
     };
 
     BookSourceManager.prototype.qidian = {
-        csrfToken: "a3EgyIqD8ErQ0uXQ9Yu419ATIeEO83L1xBDI8qWG",
+        csrfToken: "",
         getCSRToken: function(){
             var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
             if(typeof cordovaHTTP != 'undefined'){
@@ -413,14 +414,14 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
 
 
     // 检查源是否正确
-    BookSourceManager.prototype.checkBookSources = function(testFile, finish){
+    BookSourceManager.prototype.checkBookSources = function(testFile, log, error, finish){
 
-        function log(msg){
+        var log = log || function(msg){
             console.log(msg);
         }
 
-        function error(msg, error){
-            msg += "(" + error.id + ", " + error.message + ')\n';
+        var error = error || function(msg, error){
+            msg += "(" + error.id + ", " + error.message + ')';
             console.error(msg);
         }
 
@@ -439,7 +440,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
 
                         for(var ik in testBook){
                             if(ik.match(/^test_/)){
-                                var testProperty = ik.substr(5);
+                                var testProperty = ik.substring(5);
                                 if(book[testProperty].match(testBook[ik])){
                                     log(getInfo() + " -> 测试属性：" + testProperty + " OK")
                                 }

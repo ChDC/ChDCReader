@@ -195,7 +195,7 @@ define(["jquery"], function($){
             };
             var s = function(data){
                 var html = filterHtmlContent(data);
-                success(html);
+                success("<div>" + html + "</div>");
             }
             this.get(url, params, s, failure);
         },
@@ -255,7 +255,8 @@ define(["jquery"], function($){
         },
         // 修复抓取的 URL
         fixurl: function(url, host){
-            if(!url)return url;
+            if(!url || url.match("^http://"))
+                return url;
             if(url.match("^//")){
                 url = "http:" + url;
             }
@@ -267,6 +268,17 @@ define(["jquery"], function($){
                 if(i >= 0){
                     url = host.substring(0, i + 1) + url;
                 }
+            }
+            else{
+                var i = host.lastIndexOf("?");
+                if(i >= 0){
+                    host = host.substring(0, i);
+                }
+                i = host.lastIndexOf("/");
+                if(i >= 0){
+                    host = host.substring(0, i+1);
+                }
+                url = host + url;
             }
             return url;
         },

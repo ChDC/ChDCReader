@@ -8,7 +8,7 @@
       <button type="button" class="btn btn-link dropdown-toggle btnSettings " data-toggle="dropdown">:</button>
       <ul class="dropdown-menu dropdown-menu-right" role="menu">
         <li id="btnCheckUpdate"><a>检查更新</a></li>
-        <li id="btnCheckBookSources"><a>书源查错</a></li>
+        <li id="btnCheckBookSources" data-toggle="modal" data-target="#modalCheckBookSource"><a>书源查错</a></li>
         <li id="btnTest"><a>Test</a></li>
 
         <li class="divider"></li>
@@ -22,6 +22,23 @@
 
   </div>
 
+  <!-- Modal 更换内容源 -->
+  <div class="modal fade" id="modalCheckBookSource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">书籍来源-检查错误</h4>
+        </div>
+        <div class="modal-body">
+          <div id="output"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <!-- <button type="button" class="btn btn-primary">确定</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="template">
     <div class="media book">

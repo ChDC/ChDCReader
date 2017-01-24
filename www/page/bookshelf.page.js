@@ -57,15 +57,18 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
             app.chekcUpdate(true, true);
         });
         $("#btnCheckBookSources").click(function(){
+            $('#output').empty();
             app.bookSourceManager.checkBookSources("data/booksourcesTest.json",
-                function(status, sources){
-                    // TODO
-                    util.showMessageDialog('检查结果', "test", function(){
-                        debugger;
-                        util.showMessage('确定');
-                    }, function(){
-                        util.showMessage('取消');
-                    });
+                function(msg){
+                    $('#output').append($('<p>').text(msg));
+                },
+                function(msg, error){
+                    if(error)
+                        msg += "(" + error.id + ", " + error.message + ')\n';
+                    $('#output').append($('<p class="error">').text(msg));
+                },
+                function(){
+                    $('#output').append($('<p>').text("完成！"));
                 });
         });
         $(".btnSearch").click(function(){

@@ -38,6 +38,14 @@
 
 /*********** Color ***************/
 
+.error{
+    color: red;
+    font-weight: bold;
+}
+
+.modal-dialog{
+    height: 80%;
+}
 .row.header > .btn-link{
     color: #fff;
 }
