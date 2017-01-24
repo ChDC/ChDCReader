@@ -3,7 +3,7 @@ define(["jquery"], function($){
 
     // init
     $.ajaxSetup({
-        timeout : 3000 //超时时间设置，单位毫秒
+        timeout : 8000 //超时时间设置，单位毫秒
     });
 
     // if (typeof cordovaHTTP != "undefined") {
