@@ -277,6 +277,9 @@ define(["jquery"], function($){
                 html = html.replace(new RegExp(pattern, 'gi'), replaceString);
                 return html;
             };
+            if(!html)
+                return '';
+
             // 替换转义字符
             html = html.replace(/&nbsp;/gi, ' ');
 
@@ -662,7 +665,6 @@ define(["jquery"], function($){
             window.requestFileSystem(fileSystem, 0, function (fs) {
 
                 fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                        debugger;
                         fileEntry.remove(success, fail);
                     }, fail);
 

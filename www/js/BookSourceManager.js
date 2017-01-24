@@ -320,7 +320,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
     };
 
     // 从网络上获取章节内容
-    BookSourceManager.prototype.getChapterContent = function(bsid, chapterLink, success, fail){
+    BookSourceManager.prototype.getChapter = function(bsid, chapterLink, success, fail){
         if(!chapterLink){
             if(fail)fail(BookSourceManager.getError(206));
             return;
@@ -336,8 +336,6 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
         function getChapterFromHtml(html){
             html = $(html);
             var chapter = new Chapter();
-            debugger;
-            // TODO: 创世获取章节内容
             chapter.content = BookSourceManager.fixer.fixChapterContent(html.find(info.content).html());
             if(!chapter.content){
                 // 没有章节内容就返回错误
@@ -416,26 +414,104 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
 
     // 检查源是否正确
     BookSourceManager.prototype.checkBookSources = function(testFile, finish){
-        var self = this;
 
         function log(msg){
-            outputMsg += msg + '\n';
+            console.log(msg);
         }
 
-        function error(msg){
-            outputMsg += 'Error: ' + msg + '\n';
+        function error(msg, error){
+            msg += "(" + error.id + ", " + error.message + ')\n';
+            console.error(msg);
         }
 
-        function check(bsid, book, success, fail){
-            self.getBook(bsid, book.name, book.author,
-                function(){
+        function check(bsid, testBook, done){
+            function getInfo(){
+                return self.sources[bsid].name;
+            }
 
-                }, fail);
+            function checkBookInfo(bs, book, done){
+                // 测试获取书籍信息
+                bs.getBookInfo(self, book,
+                    function(book){
+                        // self.catagory = book.catagory;  // 分类
+                        // self.cover = book.cover;  // 封面
+                        // self.complete = book.complete;  // 是否完结
+
+                        for(var ik in testBook){
+                            if(ik.match(/^test_/)){
+                                var testProperty = ik.substr(5);
+                                if(book[testProperty].match(testBook[ik])){
+                                    log(getInfo() + " -> 测试属性：" + testProperty + " OK")
+                                }
+                                else{
+                                    error(getInfo() + " -> 测试属性：" + testProperty + " Wrong!")
+                                }
+                            }
+                        }
+                        if(done)done();
+                    },
+                    function(e){
+                        error(getInfo() + " -> 获取书籍信息失败：", e);
+                        if(done)done();
+                    });
+            }
+
+            function checkCatalog(bs, book, done){
+                bs.getCatalog(self, book, true,
+                    function(catalog){
+                        if(catalog.length > 0 && catalog[0].title){
+                            log(getInfo() + " -> 测试目录 OK");
+
+                            // 测试获取章节
+                            bs.getChapter(self, catalog[0], false,
+                                function(chapter){
+                                    if(chapter.title == catalog[0].title && chapter.content.length > 0)
+                                    {
+                                        log(getInfo() + " -> 测试章节 OK");
+                                    }
+                                    else{
+                                        error(getInfo() + " -> 测试章节 Wrong!");
+                                    }
+                                    if(done)done();
+                                },
+                                function(e){
+                                    error(getInfo() + " -> 测试章节错误：", e);
+                                    if(done)done();
+                                });
+                        }
+                        else{
+                            error(getInfo() + " -> 测试目录 Wrong!");
+                            if(done)done();
+                        }
+                    },
+                    function(e){
+                        error(getInfo() + " -> 测试目录 Wrong!", e);
+                        if(done)done();
+                    });
+            }
+
+
+            log(getInfo() + " -> 测试书籍：" + testBook.name + " by " + testBook.author);
+            self.getBook(bsid, testBook.name, testBook.author,
+                function(book){
+                    log(getInfo() + " -> 测试项目：获取书籍 OK");
+                    var bs = book.sources[bsid];
+
+                    // 测试获取书籍信息
+                    checkBookInfo(bs, book, function(){
+                        // 测试获取目录
+                        checkCatalog(bs, book, done);
+                    });
+                },
+                function(e){
+                    error(getInfo() + " -> 获取书籍失败：", e);
+                    if(done)done();
+                });
         }
 
-        var outputMsg = "";
+        var self = this;
         $.getJSON(testFile, function(data){
-
+            var taskQueue = [];
             for(var sk in data.sources){
                 var bs = data.sources[sk];
                 $(bs).each(function(){
@@ -443,11 +519,23 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
                         error("没有在测试配置文件中找到书籍：" + this);
                         return;
                     }
-                    check(sk, data.books[this]);
+                    taskQueue.push([sk, data.books[this]]);
                 });
             }
-
-            if(finish)finish(outputMsg);
+            // start to work
+            next();
+            function next(){
+                var d = taskQueue.shift();
+                if(!d){
+                    if(finish)finish();
+                    return;
+                }
+                log("测试书源：" + self.sources[d[0]].name);
+                check(d[0], d[1],
+                    function(){
+                        next();
+                    });
+            }
         });
     };
 

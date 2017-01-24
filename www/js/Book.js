@@ -141,14 +141,12 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
 
         self.getBookSource(function(bs, bsid){
 
-            bs.__getBookSourceDetailLink(options.bookSourceManager, self, function(detailLink, bsid, bs){
-                options.bookSourceManager.getBookInfo(bsid, detailLink,
-                    function(book){
-                        self.catagory = book.catagory;  // 分类
-                        self.cover = book.cover;  // 封面
-                        self.complete = book.complete;  // 是否完结
-                        self.introduce = book.introduce;  // 简介
-                    }, fail);
+            bs.getBookInfo(options.bookSourceManager, self,
+               function(book){
+                self.catagory = book.catagory;  // 分类
+                self.cover = book.cover;  // 封面
+                self.complete = book.complete;  // 是否完结
+                self.introduce = book.introduce;  // 简介
             },
             fail);
 
@@ -444,14 +442,25 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
 
                 self.fuzzySearch(opts.bookSourceId, index,
                     function(chapterBB, indexB, catalogB, sourceB){
-                        self.__getChapterContent(chapterBB, indexB,
-                            function(chapterB){
-                                // 找到了章节
-                                addChapterToResult(chapterB, indexB, sourceB);
-                                count--;
-                                next();
+                        self.getBookSource(function(bs){
+                            bs.getChapter(opts.bookSourceManager, chapterBB, opts.onlyCacheNoLoad,
+                                function(chapterB){
+                                    // 找到了章节
+                                    addChapterToResult(chapterB, indexB, sourceB);
+                                    count--;
+                                    next();
+                                },
+                                failToNext);
                             },
                             failToNext, opts);
+                        // self.__getChapter(chapterBB, indexB,
+                        //     function(chapterB){
+                        //         // 找到了章节
+                        //         addChapterToResult(chapterB, indexB, sourceB);
+                        //         count--;
+                        //         next();
+                        //     },
+                        //     failToNext, opts);
                     }
                     , failToNext, options);
             }
@@ -481,20 +490,37 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
             self.index(contentSourceChapterIndex,
                 function(chapterB, indexB, catalogB){
                 if(Chapter.equalTitle(chapterA, chapterB)){
-                    self.__getChapterContent(chapterB, contentSourceChapterIndex,
-                        function(chapterB){
-                            // 找到了章节
-                            addChapterToResult(chapterB, contentSourceChapterIndex, contentSourceId);
-                            count--;
-                            if(count > 0){
-                                debugger;
-                                handleWithNormalMethod();
-                            }
-                            else{
-                                submitResult();
-                            }
+                    self.getBookSource(function(bs){
+                        bs.getChapter(opts.bookSourceManager, chapterB, opts.onlyCacheNoLoad,
+                            function(chapterB){
+                                // 找到了章节
+                                addChapterToResult(chapterB, contentSourceChapterIndex, contentSourceId);
+                                count--;
+                                if(count > 0){
+                                    debugger;
+                                    handleWithNormalMethod();
+                                }
+                                else{
+                                    submitResult();
+                                }
+                            },
+                            handleWithNormalMethod);
                         },
                         handleWithNormalMethod, opts);
+                    // self.__getChapter(chapterB, contentSourceChapterIndex,
+                    //     function(chapterB){
+                    //         // 找到了章节
+                    //         addChapterToResult(chapterB, contentSourceChapterIndex, contentSourceId);
+                    //         count--;
+                    //         if(count > 0){
+                    //             debugger;
+                    //             handleWithNormalMethod();
+                    //         }
+                    //         else{
+                    //             submitResult();
+                    //         }
+                    //     },
+                    //     handleWithNormalMethod, opts);
                 }
                 else{
                     // 不相等，则按正常方式获取
@@ -505,103 +531,103 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
         }
     }
 
-    // 从本地或网络上获取章节内容
-    // * cacheDir 缓存章节的目录
-    // * onlyCacheNoLoad 只缓存章节，不加载章节
-    // success(chapter)
-    Book.prototype.__getChapterContent = function(chapter, index, success, fail, options){
-        var self = this;
-        options = $.extend(true, {}, options);
-        // 默认从主要内容源中获取章节
-        options.bookSourceId = options.bookSourceId || self.mainSourceId;
+    // // 从本地或网络上获取章节内容
+    // // * cacheDir 缓存章节的目录
+    // // * onlyCacheNoLoad 只缓存章节，不加载章节
+    // // success(chapter)
+    // Book.prototype.__getChapter = function(chapter, index, success, fail, options){
+    //     var self = this;
+    //     options = $.extend(true, {}, options);
+    //     // 默认从主要内容源中获取章节
+    //     options.bookSourceId = options.bookSourceId || self.mainSourceId;
 
-        // 从缓存中获取章节内容
-        self.__getCacheChapter(index,
-            function(c){
-                if(success)success(options.onlyCacheNoLoad? chapter: c);
-            },
-            function(error){
-                if(error.id == 207)
-                {
-                    // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
-                    options.bookSourceManager.getChapterContent(options.bookSourceId, chapter.link,
-                        function(chapter){
-                            // 获取章节成功
-                            if(success)success(chapter);
-                            // 缓存该章节
-                            self.__cacheChapter(index, chapter, null, null, options);
-                        }, fail);
-                }
-                else{
-                    if(fail)fail(error);
-                }
-            }, options);
-    }
+    //     // 从缓存中获取章节内容
+    //     self.__getCacheChapter(index,
+    //         function(c){
+    //             if(success)success(options.onlyCacheNoLoad? chapter: c);
+    //         },
+    //         function(error){
+    //             if(error.id == 207)
+    //             {
+    //                 // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
+    //                 options.bookSourceManager.getChapter(options.bookSourceId, chapter.link,
+    //                     function(chapter){
+    //                         // 获取章节成功
+    //                         if(success)success(chapter);
+    //                         // 缓存该章节
+    //                         self.__cacheChapter(index, chapter, null, null, options);
+    //                     }, fail);
+    //             }
+    //             else{
+    //                 if(fail)fail(error);
+    //             }
+    //         }, options);
+    // }
 
-    // 获取章节的缓存位置
-    // * cacheDir 缓存章节的目录
-    Book.prototype.__getCacheChapterLocation = function(index, options){
+    // // 获取章节的缓存位置
+    // // * cacheDir 缓存章节的目录
+    // Book.prototype.__getCacheChapterLocation = function(index, options){
 
-        var self = this;
-        var bookSourceId = options.bookSourceId || '';
-        var bid = self.name + '.' + self.author;
-        var chapterFileName = index + '.' + bookSourceId;
-        var cacheDir = options.cacheDir || "chapter";
-        var dest = cacheDir + "_" + bid + "_" + chapterFileName;
-        return dest;
-    }
+    //     var self = this;
+    //     var bookSourceId = options.bookSourceId || '';
+    //     var bid = self.name + '.' + self.author;
+    //     var chapterFileName = index + '.' + bookSourceId;
+    //     var cacheDir = options.cacheDir || "chapter";
+    //     var dest = cacheDir + "_" + bid + "_" + chapterFileName;
+    //     return dest;
+    // }
 
-    // 获取指定的章节
-    // * cacheDir 缓存章节的目录
-    // * onlyCacheNoLoad 只缓存章节，不加载章节
-    Book.prototype.__getCacheChapter = function(index, success, fail, options){
+    // // 获取指定的章节
+    // // * cacheDir 缓存章节的目录
+    // // * onlyCacheNoLoad 只缓存章节，不加载章节
+    // Book.prototype.__getCacheChapter = function(index, success, fail, options){
 
-        var self = this;
-        var dest = self.__getCacheChapterLocation(index, options);
+    //     var self = this;
+    //     var dest = self.__getCacheChapterLocation(index, options);
 
-        if(options.onlyCacheNoLoad){
-            util.dataExists(dest,
-                function(){
-                    if(success)success(null);
-                },
-                function(){
-                    // 章节不存在
-                    if(fail)fail(Book.getError(207));
-                }, true);
-            return;
-        }
-        else{
-            // 获取章节内容
-            util.loadData(dest,
-                function(data){
-                    // 章节存在
-                    if(data != null){
-                        if(success){
-                            var chapter = new Chapter();
-                            // 类型转换
-                            chapter = $.extend(true, chapter, data);
-                            success(chapter);
-                        }
-                    }
-                    else{
-                        if(fail)fail(Book.getError(207));
-                    }
-                },
-                function(){
-                    if(fail)fail(Book.getError(207));
-                }, true);
-        }
-    };
+    //     if(options.onlyCacheNoLoad){
+    //         util.dataExists(dest,
+    //             function(){
+    //                 if(success)success(null);
+    //             },
+    //             function(){
+    //                 // 章节不存在
+    //                 if(fail)fail(Book.getError(207));
+    //             }, true);
+    //         return;
+    //     }
+    //     else{
+    //         // 获取章节内容
+    //         util.loadData(dest,
+    //             function(data){
+    //                 // 章节存在
+    //                 if(data != null){
+    //                     if(success){
+    //                         var chapter = new Chapter();
+    //                         // 类型转换
+    //                         chapter = $.extend(true, chapter, data);
+    //                         success(chapter);
+    //                     }
+    //                 }
+    //                 else{
+    //                     if(fail)fail(Book.getError(207));
+    //                 }
+    //             },
+    //             function(){
+    //                 if(fail)fail(Book.getError(207));
+    //             }, true);
+    //     }
+    // };
 
-    // 缓存章节内容
-    // * cacheDir 缓存章节的目录
-    Book.prototype.__cacheChapter = function(index, chapter, success, fail, options){
+    // // 缓存章节内容
+    // // * cacheDir 缓存章节的目录
+    // Book.prototype.__cacheChapter = function(index, chapter, success, fail, options){
 
-        var self = this;
-        // 保存到文件中
-        var dest = self.__getCacheChapterLocation(index, options);
-        util.saveData(dest, chapter, success, fail, true); // 将 JSON 对象序列化到文件中
-    };
+    //     var self = this;
+    //     // 保存到文件中
+    //     var dest = self.__getCacheChapterLocation(index, options);
+    //     util.saveData(dest, chapter, success, fail, true); // 将 JSON 对象序列化到文件中
+    // };
 
     // 一次获取多个章节
     // chapterIndex 是从主要目录源中获取的章节索引

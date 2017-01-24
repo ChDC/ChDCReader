@@ -1,5 +1,52 @@
 {
-
+    "chuangshi": {
+        "id": "chuangshi",
+        "name": "创世中文网",
+        "contentSourceWeight": -10,
+        "mainSourceWeight": 10,
+        "search": {
+            "info": {
+                "book": "#searchResultList > li",
+                "detail": {
+                    "author": "div.search_r_info > p:nth-child(2) > b > a",
+                    "catagory": "div.search_r_info > p:nth-child(3) > a:nth-child(1)",
+                    "complete": "div.search_r_img > p > i",
+                    "cover": "div.search_r_img > a > img",
+                    "introduce": "div.search_r_info > p.search_i > em",
+                    "lastestChapter": "div.search_r_info > p:nth-child(5) > a",
+                    "link": "div.search_r_info > h1 > a",
+                    "name": "div.search_r_info > h1 > a"
+                }
+            },
+            "url": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
+        },
+        "detail": {
+            "info": {
+                "catalogLink": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
+                "author": "div.mainbox > div.autherinfo > div.au_name > p:nth-child(2) > a",
+                "catagory": "div.mainbox > div.main2 > div.left > div.title > a:nth-child(2)",
+                "complete": "div.mainbox > div.main1 > div.title > i:nth-child(3)",
+                "cover": "div.mainbox > div.main2 > div.left > div.cover > a > img",
+                "introduce": "div.mainbox > div.main2 > div.left > div.info",
+                "lastestChapter": "#newChapterList > div.chaptername > b > a",
+                "name": "div.mainbox > div.main1 > div.title > a > b"
+            }
+        },
+        "catalog": {
+            "link": "{catalogLink}",
+            "type": "html",
+            "info": {
+                "link": "div.indexbox ul > li > a"
+            }
+        },
+        "chapter": {
+            "info": {
+                "content": ".bookreadercontent",
+                "modifyTime": "#chaptercontainer > div > div.story_title > p > span:nth-child(3)",
+                "title": "#chaptercontainer > div > div.story_title > h1"
+            }
+        }
+    },
     "biquge": {
         "catalog": {
             "link": "{detailLink}",

@@ -5,11 +5,11 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "7e02ecef0c2ef4f22ee723fb9f8ba0fe"
+    "hash": "b906564c5ed72cbb9a48ed1d253900a1"
   },
   {
     "file": "data/booksourcesTest.json",
-    "hash": "252a944f16c1e93bc7b0edc87b236b30"
+    "hash": "a7e52c157456b7c2f29320deffe3ee3e"
   },
   {
     "file": "img/book_cover.png",
@@ -33,7 +33,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "d99567b0e50319603fcc91d61df2bc8a"
+    "hash": "771b0e013226ebf16d6a36cfc8428c71"
   },
   {
     "file": "js/BookShelf.js",
@@ -41,11 +41,11 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "522cd91408dcb685276104eb4ec93827"
+    "hash": "ecad72d3219b65c62b53805e54de62be"
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "16a764b565f82273b942c4f73f3ea8aa"
+    "hash": "e6c40333da37320216c8c28819ba2ce1"
   },
   {
     "file": "js/Chapter.js",
@@ -69,7 +69,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "4c4c211a62275af5c7c31e1343953bf6"
+    "hash": "8e21b9bbd7a3315942670aa5fb8ba93b"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
