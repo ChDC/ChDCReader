@@ -2,9 +2,9 @@ define(["jquery"], function($){
     "use strict"
 
     // init
-    $.ajaxSetup({
-        timeout : 8000 //超时时间设置，单位毫秒
-    });
+    // $.ajaxSetup({
+    //     timeout : 8000 //超时时间设置，单位毫秒
+    // });
 
     // if (typeof cordovaHTTP != "undefined") {
     //     console.log("Set HTTP Header!");
