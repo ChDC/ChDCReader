@@ -67,6 +67,12 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             // $('#modalCatalog').modal('show');
             loadCatalog();
         });
+        $("#btnToggleNight").click(function(e){
+            app.settings.night = !app.settings.night;
+            app.saveSettings();
+            $("#labelNight").text(app.settings.night? "白天": "夜间");
+            page.setTheme(app.settings.night ? app.settings.nighttheme : app.settings.daytheme);
+        });
         $("#btnBadChapter").click(function(){
             chapterList.emptyList();
             app.showLoading();

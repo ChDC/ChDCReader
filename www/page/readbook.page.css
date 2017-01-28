@@ -112,15 +112,8 @@
     /*color: white;*/
 }
 
-.yellowTheme{
+.mainView{
     background-image: url(../img/readbg1.jpg);
-}
-
-.nightTheme{
-    background-color: #252526;
-    background-image: none;
-    /*color: #3399ff;*/
-    /*color: #f1f1cf;*/
 }
 
 .toolbar .btn{

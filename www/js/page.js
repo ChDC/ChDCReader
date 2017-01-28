@@ -24,7 +24,7 @@ define(["jquery", "util"], function($, util){
                 // 刷新当前页面的 CSS
                 var urls = self.getURLs(self.currentPage);
                 var pageContainer = $(self.container);
-                var cssthemeelemnt = pageContainer.find(".csstheme");
+                var cssthemeelemnt = pageContainer.find(".page-content-container .csstheme");
                 var newcssthemeurl = urls.cssthemeurl;
                 cssthemeelemnt.attr('href', newcssthemeurl);
             }

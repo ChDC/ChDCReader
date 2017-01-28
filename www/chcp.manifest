@@ -57,11 +57,11 @@
   },
   {
     "file": "js/main.js",
-    "hash": "d570c59bf7135c2df8117eaf3258bfb0"
+    "hash": "63518390cdc0eed45df851aa085ea6fe"
   },
   {
     "file": "js/page.js",
-    "hash": "abd2e5854f8be18079f97394a7b6d30b"
+    "hash": "33ae6bba6536c49ec42a45125abbe5fa"
   },
   {
     "file": "js/ReadingRecord.js",
@@ -153,15 +153,23 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "f8e8f7f9bfdc5b68cc1cd0ae41e1e482"
+    "hash": "7e548f012d257f83ef5b73ddc22e4a0d"
+  },
+  {
+    "file": "page/readbook.page.day1.css",
+    "hash": "ff317393ba3da7d231ff8e42a5083f02"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "5539dce52ce0de72c42d923ecf1f6ffb"
+    "hash": "73be2f1f7fffc322a8461aea070704f6"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "9ef9d1e1c6a9cd15fdae2985ae23b349"
+    "hash": "6f31d1c9976f43c5cbf613dbd0e6a7bd"
+  },
+  {
+    "file": "page/readbook.page.night1.css",
+    "hash": "126303fc797ec3aeb212d175c56e3ba6"
   },
   {
     "file": "page/search.page.css",

@@ -1,0 +1,32 @@
+/*********** Color ***************/
+.toolbar{
+    /*background-color: #181818;*/
+    /*color: white;*/
+}
+
+.mainView{
+    background-color: #252526;
+    background-image: none;
+    /*color: #3399ff;*/
+    color: #f1f1cf;
+}
+
+.toolbar .btn{
+    /*color: #cacaca;*/
+}
+
+.lastAndNextChapter{
+    background-color: transparent;
+}
+
+.btnNext, .btnLast{
+    background-color: #ccc;
+}
+
+.mainViewHeader{
+    color: gray;
+}
+
+.mainViewFooter{
+    color: #eee;
+}

@@ -8,7 +8,9 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
         // chapterIndexOffset: 1,  // 当前章节的偏移值
         // chapterCount: 3,   // 每次加载的章节数目
-        theme: "", // 主题
+        nighttheme: "night1", // 夜间主题
+        daytheme: "", // 白天主题
+        night: false
     };
 
     var app = {
@@ -101,7 +103,9 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
             this.bookShelf = new BookShelf();
             page.init();
-            page.setTheme(self.settings.theme);
+            // 设置主题
+            page.setTheme(self.settings.night ? self.settings.nighttheme : self.settings.daytheme);
+
             page.showPage("bookshelf");
             this.chekcUpdate(true);
         },

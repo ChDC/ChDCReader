@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="mainView yellowTheme">
+  <div class="mainView">
     <div class="mainViewHeader">
       <span class="labelChapterTitle float-left"></span>
       <span class="labelContentSource float-right"></span>
@@ -40,8 +40,8 @@
           <td>
             <button class="toolbar-button btn btn-link"   data-toggle="modal" data-target="#modalSettings"><i class="glyphicon glyphicon-bookmark"></i><br/>设置</button>
           </td>
-          <td>
-            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-certificate"></i><br/>夜间</button>
+          <td id="btnToggleNight">
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-certificate"></i><br/><span id="labelNight">夜间</span></button>
           </td>
           <td id="btnCatalog">
             <button class="toolbar-button btn btn-link"  data-toggle="modal" data-target="#modalCatalog"><i class="glyphicon glyphicon-list"></i><br/>目录</button>
