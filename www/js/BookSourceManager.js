@@ -244,7 +244,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
                 util.getDOM(catalogLink, {}, getChaptersFromHTML, fail);
                 break;
             case 'json':
-                $.getJSON(catalogLink, {}, getChaptersFromJSON, fail);
+                util.get(catalogLink, {}, getChaptersFromJSON, fail);
                 break;
             default:
                 util.getDOM(catalogLink, {}, getChaptersFromHTML, fail);
@@ -261,9 +261,9 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
             }
         };
 
-        function getChaptersFromJSON(json){
+        function getChaptersFromJSON(data){
             try{
-                // var json = JSON.parse(data);
+                var json = JSON.parse(data);
                 var chapters = util.getDataFromObject(json, info.chapter);
                 $(chapters).each(function(){
                     var chapter = new Chapter();

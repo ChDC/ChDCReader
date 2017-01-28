@@ -59,7 +59,7 @@
     "chuangshi": {
         "id": "chuangshi",
         "name": "创世中文网",
-        "contentSourceWeight": -10,
+        "contentSourceWeight": -100,
         "mainSourceWeight": 10,
         "host": "http://chuangshi.qq.com/",
         "search": {
@@ -301,7 +301,7 @@
     "daizhuzai": {
         "id": "daizhuzai",
         "name": "大主宰小说网",
-        "contentSourceWeight": 10,
+        "contentSourceWeight": -10,
         "mainSourceWeight": -10,
         "host": "http://www.daizhuzai.com/",
         "search": {

@@ -241,10 +241,10 @@ define(["jquery", "util", 'Book', 'Chapter'], function($, util, Book, Chapter) {
     // * cacheDir 缓存章节的目录
     // * onlyCacheNoLoad 只缓存章节，不加载章节
     // success(chapter)
-    BookSource.prototype.getChapter = function(bookSourceManager, chapter, onlyCacheNoLoad, success, fail){
+    BookSource.prototype.getChapter = function(bookSourceManager, book, chapter, onlyCacheNoLoad, success, fail){
         var self = this;
         // 从缓存中获取章节内容
-        self.__getCacheChapter(chapter.title, onlyCacheNoLoad,
+        self.__getCacheChapter(book, chapter.title, onlyCacheNoLoad,
             function(c){
                 if(success)success(onlyCacheNoLoad? chapter: c);
             },
@@ -257,7 +257,7 @@ define(["jquery", "util", 'Book', 'Chapter'], function($, util, Book, Chapter) {
                             // 获取章节成功
                             if(success)success(chapter);
                             // 缓存该章节
-                            self.__cacheChapter(chapter, null, null);
+                            self.__cacheChapter(book, chapter, null, null);
                         }, fail);
                 }
                 else{
@@ -268,10 +268,9 @@ define(["jquery", "util", 'Book', 'Chapter'], function($, util, Book, Chapter) {
 
     // 获取章节的缓存位置
     // * cacheDir 缓存章节的目录
-    BookSource.prototype.__getCacheChapterLocation = function(id){
-
+    BookSource.prototype.__getCacheChapterLocation = function(book, id){
         var self = this;
-        var bid = self.name + '.' + self.author;
+        var bid = book.name + '.' + book.author;
         var chapterFileName = id + '.' + self.id;
         var dest = "chapter_" + bid + "_" + chapterFileName;
         return dest;
@@ -280,10 +279,10 @@ define(["jquery", "util", 'Book', 'Chapter'], function($, util, Book, Chapter) {
     // 获取指定的章节
     // * cacheDir 缓存章节的目录
     // * onlyCacheNoLoad 只缓存章节，不加载章节
-    BookSource.prototype.__getCacheChapter = function(title, onlyCacheNoLoad, success, fail){
+    BookSource.prototype.__getCacheChapter = function(book, title, onlyCacheNoLoad, success, fail){
 
         var self = this;
-        var dest = self.__getCacheChapterLocation(title);
+        var dest = self.__getCacheChapterLocation(book, title);
 
         if(onlyCacheNoLoad){
             util.dataExists(dest,
@@ -321,11 +320,11 @@ define(["jquery", "util", 'Book', 'Chapter'], function($, util, Book, Chapter) {
 
     // 缓存章节内容
     // * cacheDir 缓存章节的目录
-    BookSource.prototype.__cacheChapter = function(chapter, success, fail){
+    BookSource.prototype.__cacheChapter = function(book, chapter, success, fail){
 
         var self = this;
         // 保存到文件中
-        var dest = self.__getCacheChapterLocation(chapter.title);
+        var dest = self.__getCacheChapterLocation(book, chapter.title);
         util.saveData(dest, chapter, success, fail, true); // 将 JSON 对象序列化到文件中
     };
 

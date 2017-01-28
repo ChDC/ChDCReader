@@ -143,7 +143,6 @@ define(["jquery"], function($){
             this.log("Get:" + url + "&" + this.__getParamsString(params));
             url = encodeURI(url);
             var self = this;
-            // TODO: 设置重试的次数
             function handleNetworkError(data) {
                 self.error("Fail to get: " + url + ", 网络错误");
                 // self.showError("网络错误！");

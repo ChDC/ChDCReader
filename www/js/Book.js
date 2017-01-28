@@ -217,6 +217,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
         options = $.extend(true, {}, options);
         options.bookSourceId = options.bookSourceId || self.mainSourceId;
 
+
         if(options.bookSourceId == sourceB){
         // 两源相同
             self.index(index, function(chapter, chapterIndex, catalog){
@@ -233,64 +234,50 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                 }
                 // 获取源B 的目录
                 options.bookSourceId = sourceB;
-                self.getCatalog(function(catalogB){
-                    if(!catalogB || catalogB.length <= 0){
-                        if(fail)fail(Book.getError(501));
-                        return;
-                    }
-                    var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
+                fuzzySearchWhenNotEqual(catalog);
+            },
+            fail, options);
+        }
+
+        function fuzzySearchWhenNotEqual(catalog, stop){
+
+            self.getCatalog(function(catalogB){
+
+                if(!catalogB || catalogB.length <= 0){
+                    if(fail)fail(Book.getError(501));
+                    return;
+                }
+
+                var matchs = [
+                    [util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],
+                    [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)],
+                    //[util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],
+                ];
+                for(var i = 0; i < matchs.length; i++){
+                    var match = matchs[i];
+                    var indexB = match[0](catalog, catalogB, index, match[1]);
                     if(indexB >= 0){
                         // 找到了
                         if(success){
                             var chapterB = catalogB[indexB];
                             success(chapterB, indexB, catalogB, sourceB);
+                            return;
                         }
                     }
                     else{
-                        // 没找到
-                        // 可能是 equalFunction 不完善
-                        // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
-                        var indexB = util.listMatchWithNeighbour(catalog, catalogB, index, Chapter.equalTitle);
-                        if(indexB >= 0){
-                            // 找到了
-                            if(success){
-                                var chapterB = catalogB[indexB];
-                                success(chapterB, indexB, catalogB, sourceB);
-                            }
-                            return;
-                        }
-                        // 更新章节目录然后重新查找
-                        options.forceRefresh = true;
-                        self.getCatalog(function(catalogB){
-                            if(!catalogB || catalogB.length <= 0){
-                                if(fail)fail(Book.getError(501));
-                                return;
-                            }
-                            var indexB = util.listMatch(catalog, catalogB, index, Chapter.equalTitle);
-                            if(indexB >= 0){
-                                // 找到了
-                                if(success){
-                                    var chapterB = catalogB[indexB];
-                                    success(chapterB, indexB, catalogB, sourceB);
-                                }
-                            }
-                            else{
-                                var indexB = util.listMatchWithNeighbour(catalog, catalogB, index, Chapter.equalTitle);
-                                if(indexB >= 0){
-                                    // 找到了
-                                    if(success){
-                                        var chapterB = catalogB[indexB];
-                                        success(chapterB, indexB, catalogB, sourceB);
-                                    }
-                                    return;
-                                }
-                                if(fail)fail(Book.getError(201));
-                            }
-                        },
-                        fail, options);
+                        continue;
                     }
-                },
-                fail, options);
+                }
+                // 一个也没找到
+                if(stop){
+                    debugger;
+                    if(fail)fail(Book.getError(201));
+                    return;
+                }
+                debugger;
+                // 更新章节目录然后重新查找
+                options.forceRefresh = true;
+                fuzzySearchWhenNotEqual(catalog, true);
             },
             fail, options);
         }
@@ -443,7 +430,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                 self.fuzzySearch(opts.bookSourceId, index,
                     function(chapterBB, indexB, catalogB, sourceB){
                         self.getBookSource(function(bs){
-                            bs.getChapter(opts.bookSourceManager, chapterBB, opts.onlyCacheNoLoad,
+                            bs.getChapter(opts.bookSourceManager, self, chapterBB, opts.onlyCacheNoLoad,
                                 function(chapterB){
                                     // 找到了章节
                                     addChapterToResult(chapterB, indexB, sourceB);
@@ -491,7 +478,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                 function(chapterB, indexB, catalogB){
                 if(Chapter.equalTitle(chapterA, chapterB)){
                     self.getBookSource(function(bs){
-                        bs.getChapter(opts.bookSourceManager, chapterB, opts.onlyCacheNoLoad,
+                        bs.getChapter(opts.bookSourceManager, self, chapterB, opts.onlyCacheNoLoad,
                             function(chapterB){
                                 // 找到了章节
                                 addChapterToResult(chapterB, contentSourceChapterIndex, contentSourceId);

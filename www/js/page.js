@@ -10,7 +10,7 @@ define(["jquery", "util"], function($, util){
             var self = this;
             options = options || {};
 
-            util.log("showPage", baseurl);
+            // util.log("showPage", baseurl);
             var pageContainer = $(self.container);
 
             // 如果栈中有该页则从栈中加载
@@ -38,7 +38,7 @@ define(["jquery", "util"], function($, util){
 
             // 获取页面
             $.get(htmlurl, function(content){
-                util.log("Gotten page", name);
+                // util.log("Gotten page", name);
                 // Load page content
                 var contentContainer = '<div class="page-content-container"></div>';
                 content = $(contentContainer).wrapInner(content);

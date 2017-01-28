@@ -6,8 +6,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         var bs = $(id);
         var b = $(".template .book");
         bs.empty();
-        for(var i =0; i < books.length; i++){
-            var book = books[i];
+        $(books).each(function(){
+            var book = this;
             var nb = b.clone();
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
@@ -26,23 +26,21 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
                     page.showPage("bookdetail", params);
                 };
             }(book);
-            var bookAddBookShelfEvent = function(book){
-                return function(){
-                    app.bookShelf.addBook(book, function(){
-                        util.showMessage("添加成功！");
-                    });
-                };
-            }(book);
-            // nb.click(bookDetailEvent);
+
             if(app.bookShelf.hasBook(book)){
                 nb.find(".btnAddToBookshelf").attr('disabled', 'disabled');
             }
             else{
-                nb.find(".btnAddToBookshelf").click(bookAddBookShelfEvent);
+                nb.find(".btnAddToBookshelf").click(function(event){
+                    app.bookShelf.addBook(book, function(){
+                        util.showMessage("添加成功！");
+                        $(event.currentTarget).attr("disabled", "disabled");
+                    });
+                });
             }
             nb.find(".btnDetail").click(bookDetailEvent);
             bs.append(nb);
-        };
+        })
     };
 
     function search(){
