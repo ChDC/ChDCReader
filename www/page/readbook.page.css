@@ -1,9 +1,36 @@
 /*********** Location ***************/
 
-.chapterContainer{
+.mainView{
     padding: 0;
     position: absolute;
     height: 100%;
+    width: 100%;
+    /*overflow: auto;*/
+    word-wrap: break-word;
+}
+
+.mainViewHeader{
+    height: 25px;
+    color: gray;
+    font-size: 0.8em;
+}
+
+.mainViewHeader span{
+    margin: 5px;
+}
+
+.mainViewFooter{
+    height: 25px;
+    color: #eee;
+    font-size: 0.8em;
+}
+
+.chapterContainer{
+    padding: 0;
+    position: absolute;
+    /*height: 100%;*/
+    top: 25px;
+    bottom: 25px;
     width: 100%;
     overflow: auto;
     word-wrap: break-word;

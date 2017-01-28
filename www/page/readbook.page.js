@@ -208,6 +208,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             readingRecord.pageScrollTop = chapterList.getPageScorllTop();
             app.bookShelf.save();
             $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
+            $(".labelChapterTitle").text(title);
             app.hideLoading();
         }
     }
@@ -229,8 +230,8 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         }
 
         book.getChapter(chapterIndex,
-            function(chapter, index, options){
-                var newItem = buildChapter(chapter, index, options);
+            function(chapter, title, index, options){
+                var newItem = buildChapter(chapter, title, index, options);
                 success(newItem);
                 if(!be && lastSavePageScrollTop){
                     var cs = $('.chapterContainer').scrollTop();
@@ -251,12 +252,14 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
     }
 
-    function buildChapter(chapter, index, options){
+    function buildChapter(chapter, title, index, options){
         var nc = $('.template .chapter').clone();
         nc.find(".chapter-title").text(chapter.title);
         nc.find(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
+        // nc.find(".chapter-source").text(app.bookSourceManager.sources[options.contentSourceId].name);
+
         nc.data('chapterIndex', index);
-        nc.data('chapterTitle', chapter.title);
+        nc.data('chapterTitle', title);
         nc.data('options', options);
         return nc;
     }

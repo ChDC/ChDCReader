@@ -33,7 +33,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "6156ed30f24e3dc564876a591d013031"
+    "hash": "22c3e6181d51021913fce297471f5db2"
   },
   {
     "file": "js/BookShelf.js",
@@ -49,7 +49,7 @@
   },
   {
     "file": "js/Chapter.js",
-    "hash": "00a777addabeaaec669ff0524841627d"
+    "hash": "5507223a3ea05d793c69afe474b971e7"
   },
   {
     "file": "js/infinitelist.js",
@@ -153,15 +153,15 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "602beebd99bd7205f38176fcdba8e72e"
+    "hash": "b7c5939fe797f39ac96b8d4f03295317"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "1272f20bb556064265774b14be3d07dc"
+    "hash": "5539dce52ce0de72c42d923ecf1f6ffb"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "f21bb243477550252700efd255621361"
+    "hash": "9ef9d1e1c6a9cd15fdae2985ae23b349"
   },
   {
     "file": "page/search.page.css",

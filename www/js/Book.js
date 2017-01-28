@@ -251,7 +251,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                 var matchs = [
                     [util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],
                     [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)],
-                    //[util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],
+                    [util.listMatchWithNeighbour.bind(util), Chapter.equalTitleWithoutNum.bind(Chapter)],
                 ];
                 for(var i = 0; i < matchs.length; i++){
                     var match = matchs[i];
@@ -270,11 +270,9 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                 }
                 // 一个也没找到
                 if(stop){
-                    debugger;
                     if(fail)fail(Book.getError(201));
                     return;
                 }
-                debugger;
                 // 更新章节目录然后重新查找
                 options.forceRefresh = true;
                 fuzzySearchWhenNotEqual(catalog, true);
@@ -357,11 +355,12 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
         function addChapterToResult(chapterB, indexB, source){
             if(!options.noInfluenceWeight)
                 self.sources[source].weight += FOUND_WEIGHT;
-            var chapter = new Chapter();
-            chapter.title = chapterA.title;
-            chapter.content = chapterB.content;
+            // var chapter = new Chapter();
+            // chapter.title = chapterA.title;
+            // chapter.content = chapterB.content;
             result.push({
-                chapter: chapter,
+                chapter: chapterB,
+                title: chapterA.title,
                 index: index,
                 options: {
                     contentSourceId: source,
@@ -382,7 +381,7 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                         success(result);
                     else{
                         var r = result[0];
-                        success(r.chapter, r.index, r.options);
+                        success(r.chapter, r.title, r.index, r.options);
                     }
                 }
             }
@@ -662,7 +661,6 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                     }
                 },
                 function(error){
-                    debugger;
                     if(error.id == 202 && direction >= 0 || // 后面没有章节了
                        error.id == 203 && direction < 0){ // 前面没有章节了
                         // 当没有更新的章节时，直接退出
@@ -672,7 +670,6 @@ define(["jquery", "util", "Chapter", "BookSource"], function($, util, Chapter, B
                     }
                     else if(error.id == 203 && direction >= 0 ||
                         error.id == 202 && direction < 0){
-                        debugger;
                         if(success(null, chapterIndex, options))
                             next();
                         else{
