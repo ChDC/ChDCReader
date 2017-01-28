@@ -97,17 +97,19 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
         onDeviceReady: function() {
             var self = this;
-            this.__loadSettings();
-            this.bookSourceManager = new BookSourceManager("data/booksources.json");
-            this.bookSourceManager.init();
+            self.__loadSettings(function(){
+                self.bookSourceManager = new BookSourceManager("data/booksources.json");
+                self.bookSourceManager.init();
 
-            this.bookShelf = new BookShelf();
-            page.init();
-            // 设置主题
-            page.setTheme(self.settings.night ? self.settings.nighttheme : self.settings.daytheme);
+                self.bookShelf = new BookShelf();
+                page.init();
+                // 设置主题
+                page.setTheme(self.settings.night ? self.settings.nighttheme : self.settings.daytheme);
 
-            page.showPage("bookshelf");
-            this.chekcUpdate(true);
+                page.showPage("bookshelf");
+                self.chekcUpdate(true);
+            });
+
         },
         onUpdateInstalled: function(){
             util.showMessage("资源更新成功！");
@@ -116,11 +118,14 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         saveSettings: function(){
             util.saveData('settings', this.settings);
         },
-        __loadSettings: function(){
+        __loadSettings: function(success){
             var self = this;
             util.loadData('settings', function(data){
                 if(data)
                     self.settings = data;
+                if(success)success();
+            }, function(){
+                if(success)success();
             })
 
         }
