@@ -8,6 +8,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
         // chapterIndexOffset: 1,  // 当前章节的偏移值
         // chapterCount: 3,   // 每次加载的章节数目
+        theme: "", // 主题
     };
 
     var app = {
@@ -19,6 +20,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         // 书架
         bookShelf: null,
         util: util,
+        page: page,
         init: function(){
             if(typeof cordova != 'undefined'){
                 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -99,6 +101,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
             this.bookShelf = new BookShelf();
             page.init();
+            page.setTheme(self.settings.theme);
             page.showPage("bookshelf");
             this.chekcUpdate(true);
         },

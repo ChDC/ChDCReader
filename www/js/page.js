@@ -4,6 +4,43 @@ define(["jquery", "util"], function($, util){
         baseurl: "page",    // 页面存储的默认目录名
         pageStack: [],  // 页面存储栈
         currentPage: undefined,  // 当前页面信息
+        theme: "", // 页面的 CSS 主题
+
+        // 重载当前页面
+        reload: function(){
+            // TODO
+
+        },
+
+        // 设置主题
+        setTheme: function(theme){
+            var self = this;
+            if(this.theme != theme){
+                this.theme = theme;
+
+                if(!self.currentPage)
+                    return;
+
+                // 刷新当前页面的 CSS
+                var urls = self.getURLs(self.currentPage);
+                var pageContainer = $(self.container);
+                var cssthemeelemnt = pageContainer.find(".csstheme");
+                var newcssthemeurl = urls.cssthemeurl;
+                cssthemeelemnt.attr('href', newcssthemeurl);
+            }
+        },
+
+        getURLs: function(name){
+            var self = this;
+            var baseurl = self.baseurl + "/" + name + ".page";
+            return {
+                baseurl: baseurl,
+                htmlurl: baseurl + ".html",
+                cssurl: baseurl + ".css",
+                cssthemeurl: self.theme ? baseurl + "." + self.theme + ".css" : "",
+                jsurl: baseurl + ".js"
+            };
+        },
 
         // 显示指定的页面
         showPage: function(name, params, options){
@@ -15,14 +52,14 @@ define(["jquery", "util"], function($, util){
 
             // 如果栈中有该页则从栈中加载
             var i = util.arrayLastIndex(self.pageStack, name, function(element, name){
-                return element.page.name == name;
+                return element.page == name;
             });
             if(i>=0){
                 debugger;
                 pageContainer.children().detach();
                 self.__closePage(self.currentPage);
                 var popPage = null;
-                while((popPage = self.pageStack.pop()) != null && popPage.page.name != name){
+                while((popPage = self.pageStack.pop()) != null && popPage.page != name){
                     self.__closePage(popPage.page);
                 }
                 self.pageStack.push(popPage);
@@ -31,19 +68,18 @@ define(["jquery", "util"], function($, util){
             }
 
             // 拼接 URL
-            var baseurl = self.baseurl + "/" + name + ".page";
-            var htmlurl = baseurl + ".html";
-            var cssurl = baseurl + ".css";
-            var jsurl = baseurl + ".js";
+            var urls = self.getURLs(name);
 
             // 获取页面
-            $.get(htmlurl, function(content){
+            $.get(urls.htmlurl, function(content){
                 // util.log("Gotten page", name);
                 // Load page content
                 var contentContainer = '<div class="page-content-container"></div>';
                 content = $(contentContainer).wrapInner(content);
                 // Load page css
-                content.append($('<link rel="stylesheet" type="text/css" href="' + cssurl + '">'));
+                content.append($('<link rel="stylesheet" type="text/css" href="' + urls.cssurl + '">'));
+                // Load page theme css
+                content.append($('<link class="csstheme" rel="stylesheet" type="text/css" href="' + urls.cssthemeurl + '">'));
 
                 if(options.clear === true){
                     debugger;
@@ -66,7 +102,7 @@ define(["jquery", "util"], function($, util){
                             content: currentContentContainer
                         });
                         // 触发之前页面的暂停事件
-                        require([self.currentPage.jsurl], function(page){
+                        require([self.getURLs(self.currentPage).jsurl], function(page){
                             if(page.onpause)
                                 page.onpause();
                             __showPage();
@@ -81,17 +117,11 @@ define(["jquery", "util"], function($, util){
                     pageContainer.children().detach();
                     pageContainer.append(content);
 
-                    self.currentPage = {
-                        name: name,
-                        htmlurl: htmlurl,
-                        cssurl: cssurl,
-                        jsurl: jsurl
-                    };
-
+                    self.currentPage = name;
                     self.__saveState(name, params);
 
                     // Load page js
-                    require([jsurl], function(page){
+                    require([urls.jsurl], function(page){
                         if(page.onload)
                             page.onload(params);
                         if(page.onresume)
@@ -105,8 +135,9 @@ define(["jquery", "util"], function($, util){
         __closePage: function(p, params, success){
             var self = this;
             // 触发当前页面的关闭事件
-            var jsurl = p.jsurl;
-            var executeOnPause = jsurl == self.currentPage.jsurl;
+            var urls = self.getURLs(p);
+            var jsurl = urls.jsurl;
+            var executeOnPause = jsurl == self.getURLs(self.currentPage).jsurl;
             require([jsurl], function(page){
                 if(executeOnPause && page.onpause)
                     page.onpause();
@@ -123,10 +154,19 @@ define(["jquery", "util"], function($, util){
             if(p){
                 var pageContainer = $(self.container);
                 self.currentPage = p.page;
+                var urls = self.getURLs(self.currentPage);
+                // Load Theme CSS
+                var cssthemeelemnt = p.content.find(".csstheme");
+                var newcssthemeurl = urls.cssthemeurl;
+                if(cssthemeelemnt.attr('href') != newcssthemeurl){
+                    cssthemeelemnt.attr('href', newcssthemeurl);
+                }
+
                 pageContainer.children().detach();
                 pageContainer.append(p.content);
+
                 // 触发弹出页面的恢复事件
-                require([self.currentPage.jsurl], function(page){
+                require([urls.jsurl], function(page){
                     if(page.onresume)
                         page.onresume();
                     if(success)success();
