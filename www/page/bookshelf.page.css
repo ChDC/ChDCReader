@@ -6,7 +6,6 @@
 
 .header{
     width:100%;
-    background-color: #EE0000;
     margin:0;
 }
 
@@ -28,7 +27,6 @@
     padding: 10px 10px;
     border-style: solid;
     border-width: 0 0 1px 0;
-    border-color: #aaa;
 }
 
 .btnSettings{
@@ -36,17 +34,29 @@
     width: 100%;
 }
 
-/*********** Color ***************/
-
-.error{
-    color: red;
-    font-weight: bold;
-}
-
 .modal-dialog{
     height: 80%;
 }
+
+.error{
+    font-weight: bold;
+}
+
+
+/*********** Color ***************/
+
+.header{
+    background-color: #EE0000;
+}
+
+.error{
+    font-weight: bold;
+}
+
 .row.header > .btn-link{
     color: #fff;
 }
 
+.bookshelf .book{
+    border-color: #aaa;
+}

@@ -1,0 +1,24 @@
+/*********** Color ***************/
+
+body{
+    background-color: #252526;
+    background-image: none;
+    /*color: #3399ff;*/
+    color: #f1f1cf;
+}
+
+.header{
+    background-color: #EE0000;
+}
+
+.error{
+    font-weight: bold;
+}
+
+.row.header > .btn-link{
+    color: #fff;
+}
+
+.bookshelf .book{
+    border-color: #aaa;
+}
