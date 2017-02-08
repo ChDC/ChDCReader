@@ -1,0 +1,108 @@
+h1, h2, h3, h4, h5, h6{
+    font-family: "黑体";
+}
+
+p{
+    font-family: "微软雅黑", "宋体";
+}
+
+.page-content-container{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.list{
+
+}
+
+ul.list, .list ul {
+    padding: 0 10px;
+    position: relative;
+    list-style-type: none
+}
+
+.list li {
+    border-top: 1px solid #e1e1e1;
+    padding: 1em 0;
+}
+
+.message-box-container{
+    position: fixed;
+    width: 100%;
+    top:30%;
+    display: none;
+    z-index: 10000000;
+}
+
+.message-box-container .message-box{
+    background-color: #333;
+    color: #fff;
+    margin:0 auto;
+    width: 300px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 14px;
+    padding: 15px;
+}
+
+.toolbar{
+    background-color: #f7f7f7;
+    position: fixed;
+    width: 100%;
+    height: 58px;
+    line-height: 58px;
+    overflow: hidden;
+/*    border-bottom-color: rgb(204, 204, 204);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;*/
+}
+
+.toolbar-button{
+    font-size: 14px;
+}
+
+.toolbar-button i{
+    font-size: 18px;
+}
+
+.toolbar-table{
+    width: 100%;
+    height: 100%;
+}
+
+.toolbar-table td{
+    text-align: center;
+}
+.float-left{
+    float: left;
+}
+
+.float-right{
+    float: right;
+}
+
+.top{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+.bottom{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+}
+
+.template{
+    display: none;
+}
+
+#dialogLoading .modal-dialog{
+    margin: auto;
+    position: relative;
+    top: 50%;
+    text-align: center;
+}

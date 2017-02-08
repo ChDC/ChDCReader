@@ -1,0 +1,63 @@
+<div class="container">
+  <div class="row header">
+    <button class="btn btn-link col-xs-3 btnBookShelf">书架</button>
+    <button class="btn btn-link col-xs-3 btnFind">发现</button>
+    <button class="btn btn-link col-xs-3 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+
+    <div class="btn-group col-xs-3">
+      <button type="button" class="btn btn-link dropdown-toggle btnSettings " data-toggle="dropdown">:</button>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li id="btnCheckUpdate"><a>检查更新</a></li>
+        <li id="btnCheckBookSources" data-toggle="modal" data-target="#modalCheckBookSource"><a>书源查错</a></li>
+        <li id="btnTest"><a>Test</a></li>
+
+        <li class="divider"></li>
+        <li><a>设置</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="bookshelf">
+
+  </div>
+
+  <!-- Modal 更换内容源 -->
+  <div class="modal fade" id="modalCheckBookSource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">书籍来源-检查错误</h4>
+        </div>
+        <div class="modal-body">
+          <div id="output"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <!-- <button type="button" class="btn btn-primary">确定</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="template">
+    <div class="media book">
+      <div class="media-left">
+        <img class="book-cover media-left" src="img/book_cover.png" alt="">
+      </div>
+      <div class="media-body">
+        <div class="btn-group float-right">
+          <button type="button" class="btn btn-link btnBookMenu" data-toggle="dropdown">:</button>
+          <ul class="dropdown-menu dropdown-menu-right " role="menu">
+            <li class="btnRemoveBook"><a>删除本书</a></li>
+            <li class="btnTopMost"><a>置顶</a></li>
+            <!-- <li class="divider"></li> -->
+          </ul>
+        </div>
+        <h4 class="book-name">书籍标题</h4>
+        <p class="book-lastestchapter">最新章节</p>
+        <p class="book-readingchapter">读到</p>
+      </div>
+    </div>
+  </div>
+<div>

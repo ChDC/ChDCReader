@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"> -->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta charset="UTF-8">
+
+
+        <!-- CSS -->
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/index.css">
+
+        <!-- Scripts -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <title>ChDCNovelReader</title>
+    </head>
+    <body>
+<!--         <div class="page-header">
+            <h1>ChDCNovelReader</h1>
+        </div> -->
+        <div data-page-container>
+            <!-- 在这里会动态添加页面 -->
+        </div>
+
+        <div class="modal" id="dialogLoading">
+          <div class="modal-dialog">
+            <img src="img/loading.gif" alt="">
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <script data-main="js/app" src="lib/require.js"></script>
+    </body>
+
+
+</html>

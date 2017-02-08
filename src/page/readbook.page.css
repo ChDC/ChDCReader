@@ -1,0 +1,137 @@
+/*********** Location ***************/
+
+.mainView{
+    padding: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    /*overflow: auto;*/
+    word-wrap: break-word;
+}
+
+.mainViewHeader{
+    height: 25px;
+    font-size: 0.8em;
+}
+
+.mainViewHeader span{
+    margin: 5px;
+}
+
+.mainViewFooter{
+    height: 25px;
+    font-size: 0.8em;
+}
+
+.chapterContainer{
+    padding: 0;
+    position: absolute;
+    /*height: 100%;*/
+    top: 25px;
+    bottom: 25px;
+    width: 100%;
+    overflow: auto;
+    word-wrap: break-word;
+}
+
+
+.chapters{
+    position: relative;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+}
+
+.chapter{
+    padding: 15px;
+    word-wrap: break-word;
+}
+
+.container{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    overflow: auto;
+}
+
+.chapter-title{
+    text-align: center;
+    font-size: 21.06px;
+    font-weight: bold;
+    margin: 0px;
+    padding: 5px 5px 10px 5px;
+}
+
+.chapter-content p{
+    text-indent: 2em;
+    font-size: 18px;
+    line-height: 32px;
+    margin-top: 15px 0 0 0;
+    padding: 0px;
+}
+
+
+
+.toolbar{
+    display: none;
+}
+
+#listCatalogContainer{
+    /*position: relative;*/
+    width: 100%;
+    /*position: absolute;*/
+    overflow: auto;
+}
+
+
+.toolbar.top .btn{
+    padding: 6px 6px;
+}
+
+.lastAndNextChapter{
+    bottom: 78px;
+    position: fixed;
+    width: 100%;
+    height: 78px;
+    line-height: 58px;
+    left: 0px;
+}
+
+.btnNext, .btnLast{
+    margin: 10px 20px;
+    height: 60px;
+    border-radius: 100px;
+    /*position: fixed;*/
+    /*top: -30px;*/
+}
+
+/*********** Color ***************/
+.toolbar{
+    /*background-color: #181818;*/
+    /*color: white;*/
+}
+
+.mainView{
+    background-image: url(../img/readbg1.jpg);
+}
+
+.toolbar .btn{
+    /*color: #cacaca;*/
+}
+
+.lastAndNextChapter{
+    background-color: transparent;
+}
+
+.btnNext, .btnLast{
+    background-color: #ccc;
+}
+
+.mainViewHeader{
+    color: gray;
+}
+
+.mainViewFooter{
+    color: #eee;
+}
