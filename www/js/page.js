@@ -87,7 +87,7 @@ define(["jquery", "util"], function ($, util) {
                             content: currentContentContainer
                         });
 
-                        require([self.getURLs(self.currentPage).jsurl], function (page) {
+                        requirejs([self.getURLs(self.currentPage).jsurl], function (page) {
                             if (page.onpause) page.onpause();
                             __showPage();
                         });
@@ -103,7 +103,7 @@ define(["jquery", "util"], function ($, util) {
                     self.currentPage = name;
                     self.__saveState(name, params);
 
-                    require([urls.jsurl], function (page) {
+                    requirejs([urls.jsurl], function (page) {
                         if (page.onload) page.onload(params);
                         if (page.onresume) page.onresume();
                     });
@@ -117,7 +117,7 @@ define(["jquery", "util"], function ($, util) {
             var urls = self.getURLs(p);
             var jsurl = urls.jsurl;
             var executeOnPause = jsurl == self.getURLs(self.currentPage).jsurl;
-            require([jsurl], function (page) {
+            requirejs([jsurl], function (page) {
                 if (executeOnPause && page.onpause) page.onpause();
                 if (page.onclose) page.onclose(params);
                 requirejs.undef(jsurl);
@@ -142,7 +142,7 @@ define(["jquery", "util"], function ($, util) {
                 pageContainer.children().detach();
                 pageContainer.append(p.content);
 
-                require([urls.jsurl], function (page) {
+                requirejs([urls.jsurl], function (page) {
                     if (page.onresume) page.onresume();
                     if (success) success();
                 });
