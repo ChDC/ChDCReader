@@ -143,8 +143,8 @@ define(["jquery", "util"], function($, util){
                     page.onpause();
                 if(page.onclose)
                     page.onclose(params);
-                requirejs.undef(jsurl);
                 if(success)success();
+                requirejs.undef(jsurl);
             });
         },
         // 从页面栈中弹出页面

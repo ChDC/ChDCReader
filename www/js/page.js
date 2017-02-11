@@ -120,8 +120,8 @@ define(["jquery", "util"], function ($, util) {
             requirejs([jsurl], function (page) {
                 if (executeOnPause && page.onpause) page.onpause();
                 if (page.onclose) page.onclose(params);
-                requirejs.undef(jsurl);
                 if (success) success();
+                requirejs.undef(jsurl);
             });
         },
 

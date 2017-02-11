@@ -3,7 +3,7 @@
     "babel-cli": "^6.0.0"
   },
   "scripts": {
-    "build": "babel --no-comments -Dd www src",
+    "build": "babel --no-comments --presets es2015 --ignore src/lib/ -Dd www src",
     "watch": "babel --no-comments -wDd www src",
     "update": "tools/UpdateResources",
     "release": "cordova build android"
