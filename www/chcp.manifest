@@ -109,15 +109,15 @@
   },
   {
     "file": "lib/bootstrap-3.3.7/js/bootstrap.min.js",
-    "hash": "f6ab91400cb860c110b40d2cc7113185"
+    "hash": "5869c96cc8f19086aee625d670d741f9"
   },
   {
     "file": "lib/bootstrap-3.3.7/js/npm.js",
-    "hash": "74e063b0a38225636d2aba7ab9d21f0c"
+    "hash": "ccb7f3909e30b1eb8f65a24393c6e12b"
   },
   {
     "file": "lib/jquery-3.1.1/jquery.min.js",
-    "hash": "d66e8a49898fbbf505326d1c76543065"
+    "hash": "e071abda8fe61194711cfc2ab99fe104"
   },
   {
     "file": "lib/jquery-3.1.1/jquery.min.map",
@@ -125,7 +125,7 @@
   },
   {
     "file": "lib/require.js",
-    "hash": "e9fed8a26f38b97a44c09c14e69c098d"
+    "hash": "2842d0ca2a86ca59639ffe99308bdf3f"
   },
   {
     "file": "page/bookdetail.page.css",
