@@ -102,7 +102,7 @@ define(["jquery", "util"], function($, util){
                             content: currentContentContainer
                         });
                         // 触发之前页面的暂停事件
-                        require([self.getURLs(self.currentPage).jsurl], function(page){
+                        requirejs([self.getURLs(self.currentPage).jsurl], function(page){
                             if(page.onpause)
                                 page.onpause();
                             __showPage();
@@ -121,7 +121,7 @@ define(["jquery", "util"], function($, util){
                     self.__saveState(name, params);
 
                     // Load page js
-                    require([urls.jsurl], function(page){
+                    requirejs([urls.jsurl], function(page){
                         if(page.onload)
                             page.onload(params);
                         if(page.onresume)
@@ -138,7 +138,7 @@ define(["jquery", "util"], function($, util){
             let urls = self.getURLs(p);
             let jsurl = urls.jsurl;
             let executeOnPause = jsurl == self.getURLs(self.currentPage).jsurl;
-            require([jsurl], function(page){
+            requirejs([jsurl], function(page){
                 if(executeOnPause && page.onpause)
                     page.onpause();
                 if(page.onclose)
@@ -166,7 +166,7 @@ define(["jquery", "util"], function($, util){
                 pageContainer.append(p.content);
 
                 // 触发弹出页面的恢复事件
-                require([urls.jsurl], function(page){
+                requirejs([urls.jsurl], function(page){
                     if(page.onresume)
                         page.onresume();
                     if(success)success();
