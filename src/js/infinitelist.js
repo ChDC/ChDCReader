@@ -155,7 +155,8 @@ define(["jquery", "util"], function($, util) {
             return;
         }
         let cis = self.computeCurrentItems();
-        let i = util.arrayIndex(cis, self.currentItem, Infinitelist.__itemEqual);
+
+        let i = cis.findIndex(e => Infinitelist.__itemEqual(e, self.currentItem));
         if(i < 0){
             self.setCurrentItem(cis[0]);
         }

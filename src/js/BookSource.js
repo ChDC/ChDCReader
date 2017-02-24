@@ -109,7 +109,7 @@ define(["jquery", "util", 'Book', 'Chapter'], function($, util, Book, Chapter) {
             if(bsm.detail.info.catalogLink){
                 self.__getBookSourceDetailLink(bookSourceManager, book,
                     function(detailLink){
-                        util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
+                        util.getDOM(detailLink).then(getBookDetailFromHtml).catch(fail);
 
                         function getBookDetailFromHtml(html){
                             html = $(html);

@@ -20,16 +20,16 @@ define(["jquery"], function($){
          * 存储
          */
         storage: {
-            getItem: function(keyName) {
+            getItem(keyName) {
                 return JSON.parse(localStorage.getItem(keyName));
             },
-            setItem: function(keyName, keyValue) {
+            setItem(keyName, keyValue) {
                 return localStorage.setItem(keyName, JSON.stringify(keyValue));
             },
-            hasItem: function(keyName) {
+            hasItem(keyName) {
                 return keyName in localStorage;
             },
-            removeItem: function(keyName) {
+            removeItem(keyName) {
                 return localStorage.removeItem(keyName);
             }
         },
@@ -37,42 +37,44 @@ define(["jquery"], function($){
          * 临时存储
          */
         cacheStorage: {
-            getItem: function(keyName) {
+            getItem(keyName) {
                 return JSON.parse(sessionStorage.getItem(keyName));
             },
-            setItem: function(keyName, keyValue) {
+            setItem(keyName, keyValue) {
                 return sessionStorage.setItem(keyName, JSON.stringify(keyValue));
             },
-            hasItem: function(keyName) {
+            hasItem(keyName) {
                 return keyName in sessionStorage;
             },
-            removeItem: function(keyName) {
+            removeItem(keyName) {
                 return localStorage.removeItem(keyName);
             }
         },
         /*
         * 输出log 信息
         */
-        log: function(content, content2) {
+        log(content, content2) {
             let msg = "[" + (new Date()).toLocaleString() + "] " + content;
             if(content2)
                 msg += ": " + content2;
             console.log(msg);
         },
-        error: function(content) {
+        error(content) {
             console.error("[" + (new Date()).toLocaleString() + "] " + content);
         },
-        __getParamsString: function(params){
+        /*
+        * 获取 URL 的参数字符串
+        */
+        __getParamsString(params){
           if(!params)
             return "";
           let r = "";
           for(let k in params){r+= k + "=" + params[k] + "&"};
           return r.substring(0, r.length-1);
         },
-        showMessage: function(msg, delay, level){
+        showMessage(msg, delay=1000, level=null){
             if(!msg)
                 return;
-            delay = delay || 1000;
             let msgBoxContainer = $('<div class="message-box-container"></div>')
             let msgBox = $('<div class="message-box"></div>');
             switch(level){
@@ -89,14 +91,14 @@ define(["jquery"], function($){
             msgBox.text(msg);
             msgBoxContainer.append(msgBox);
             $('body').append(msgBoxContainer);
-            msgBoxContainer.fadeIn().delay(delay).fadeOut("", function(){$(this).remove();});
+            msgBoxContainer.fadeIn().delay(delay).fadeOut("", () => msgBoxContainer.remove());
         },
-        showError: function(msg, delay){
+        showError(msg, delay){
             if(msg)
                 this.showMessage(msg, delay, 'error');
         },
 
-        showMessageDialog: function(title, msg, ok, cancel){
+        showMessageDialog(title, msg, ok, cancel){
             let dialog = $(
     '<div class="modal fade" id="modalMessage">'
 + '    <div class="modal-dialog">'
@@ -134,40 +136,39 @@ define(["jquery"], function($){
         * 原始的获取 JSON url: 完整的 URL params: 参数 success: 成功调用的函数，第一个参数为 data 参数
         * failure: 失败调用的函数
         */
-        get: function(url, params, success, failure) {
-            if(url == null){
-                if(failure)
-                    failure('null');
-                return;
-            }
-            this.log("Get:" + url + "&" + this.__getParamsString(params));
-            url = encodeURI(url);
-            let self = this;
-            function handleNetworkError(data) {
-                self.error("Fail to get: " + url + ", 网络错误");
-                // self.showError("网络错误！");
-                if (failure) failure(data);
-            }
-            // if (typeof cordovaHTTP != "undefined") {
-            //     this.log("HTTP with Cordova");
-            //     let s = function(data) {
-            //         if (data.status != 200) {
-            //             handleNetworkError(data);
-            //         } else {
-            //             success(data.data);
-            //         }
-            //     };
-            //     return cordovaHTTP.get(url, params, {},
-            //     s, handleNetworkError);
-            // } else {
-                // this.log("HTTP with jQuery");
-                return $.get(url, params, success).fail(handleNetworkError);
-            // }
+        get(url, params) {
+            return new Promise((resolve, reject) => {
+                if(url == null){
+                    reject('null');
+                    return;
+                }
+                this.log("Get:" + url + "&" + this.__getParamsString(params));
+                url = encodeURI(url);
+                let handleNetworkError = data => {
+                    this.error("Fail to get: " + url + ", 网络错误");
+                    // self.showError("网络错误！");
+                    reject(data);
+                }
+                // if (typeof cordovaHTTP != "undefined") {
+                //     this.log("HTTP with Cordova");
+                //     let s = function(data) {
+                //         if (data.status != 200) {
+                //             handleNetworkError(data);
+                //         } else {
+                //             success(data.data);
+                //         }
+                //     };
+                //     return cordovaHTTP.get(url, params, {},
+                //     s, handleNetworkError);
+                // } else {
+                    // this.log("HTTP with jQuery");
+                    return $.get(url, params).fail(handleNetworkError).done(resolve);
+                // }
+            });
         },
 
         // 过滤某些标签
-        __filterElement: function(html, element, endElement){
-            endElement = endElement || element;
+        __filterElement(html, element, endElement=element){
             let pattern = '<' + element + '( [^>]*?)?>[\\s\\S]*?</' + endElement  + '>';
             html = html.replace(new RegExp(pattern, 'gi'), '');
             // 去除单标签
@@ -175,31 +176,33 @@ define(["jquery"], function($){
             html = html.replace(new RegExp(pattern, 'gi'), '');
             return html;
         },
-        getDOM: function(url, params, success, failure){
-            let self = this;
-            function filterHtmlContent(html){
+        getDOM(url, params){
+            let filterHtmlContent = html => {
                 // 只要 body
                 let m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
                 if(m && m.length >= 2)
                     html = m[1];
                 // 去掉 script 标签
-                html = self.__filterElement(html, "script");
-                html = self.__filterElement(html, "iframe");
-                html = self.__filterElement(html, "link");
-                html = self.__filterElement(html, "meta");
+                html = this.__filterElement(html, "script");
+                html = this.__filterElement(html, "iframe");
+                html = this.__filterElement(html, "link");
+                html = this.__filterElement(html, "meta");
 
                 // 图片的 src 属性转换成 data-src 属性
                 html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
                 return html;
             };
-            let s = function(data){
-                let html = filterHtmlContent(data);
-                success("<div>" + html + "</div>");
-            }
-            this.get(url, params, s, failure);
+
+            return new Promise((resolve, reject) => {
+                let s = data => {
+                    resolve("<div>" + filterHtmlContent(data) + "</div>");
+                }
+                this.get(url, params).then(s).catch(reject);
+            });
+
         },
         // 从 URL 字符串中获取参数对象
-        getParamsFromURL: function(url){
+        getParamsFromURL(url){
             if(!url)return {};
             let i = url.indexOf("?");
             if(i < 0)return {};
@@ -220,15 +223,14 @@ define(["jquery"], function($){
             return params;
         },
         // 字符串格式化，类似于 Python 的 string.format
-        format: function(string, object){
-            let result = string.replace(/{(\w+)}/g, function(p0, p1){
-                if(p1 in object)
-                    return object[p1];
-            })
+        format(string, object){
+            let result = string.replace(/{(\w+)}/g, (p0, p1) =>
+                    p1 in object ? object[p1] : ""
+                )
             return result;
         },
         // 从 Object 中获取数据
-        getDataFromObject: function(obj, key){
+        getDataFromObject(obj, key){
             let keys = key.split(/\./);
             let result = obj;
             for(let i = 0; i < keys.length; i++){
@@ -253,7 +255,7 @@ define(["jquery"], function($){
             return result
         },
         // 修复抓取的 URL
-        fixurl: function(url, host){
+        fixurl(url, host){
             if(!url || url.match("^https?://"))
                 return url;
             if(url.match("^//")){
@@ -282,7 +284,7 @@ define(["jquery"], function($){
             return url;
         },
 
-        html2text: function(html){
+        html2text(html){
             function replaceElement(html, element, replaceString){
                 let pattern = '<' + element + '(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</' + element + '>';
                 html = html.replace(new RegExp(pattern, 'gi'), replaceString);
@@ -308,27 +310,25 @@ define(["jquery"], function($){
             html = this.__filterElement(html, "(\\w+)", "$1");
             return html.trim();
         },
-        text2html: function(text, className){
+        text2html(text, className){
             // 将每一行都加上 p 标签
             let html = "";
             let pStart = className? '<p class="' + className + '">' : '<p>';
             let lines = text.split("\n");
 
-            for(let i = 0; i < lines.length; i++){
-                let line = lines[i];
+            lines.forEach((line)=>{
                 line = line.replace(/ /g, '&nbsp;');
-
                 html += pStart + line + '</p>';
-            }
+            });
             return html;
         },
         // 将数组中的每个成员的类型都转换为执行的类
-        objectCast: function(obj, ClassFunction){
+        objectCast(obj, ClassFunction){
             let nc = new ClassFunction();
             $.extend(true, nc, obj);
             return nc;
         },
-        arrayIndex: function(array, item, compareFuntion, startIndex){
+        __arrayIndex(array, item, compareFuntion, startIndex){
             startIndex = startIndex || 0;
             compareFuntion = compareFuntion || function(i1, i2){
                 return i1 == i2;
@@ -340,11 +340,10 @@ define(["jquery"], function($){
             }
             return -1;
         },
-        arrayLastIndex: function(array, item, compareFuntion, startIndex){
-            startIndex = startIndex || array.length - 1;
-            compareFuntion = compareFuntion || function(i1, i2){
-                return i1 == i2;
-            }
+        arrayLastIndex(array, item,
+            compareFuntion = (i1, i2) => i1 == i2,
+            startIndex = array.length - 1){
+
             for(let i = startIndex; i >= 0; i--){
                 if(compareFuntion(array[i], item))
                     return i;
@@ -352,19 +351,15 @@ define(["jquery"], function($){
             return -1;
         },
         // 将数组中的每个成员的类型都转换为执行的类
-        arrayCast: function(array, ClassFunction){
-            for(let i = 0; i < array.length; i++){
+        arrayCast(array, ClassFunction){
+            array.forEach((v, i, arr) => {
                 let nc = new ClassFunction();
                 $.extend(true, nc, array[i]);
-                array[i] = nc;
-            }
+                arr[i] = nc;
+            });
         },
         // 返回数组中值最大的索引的集合
-        arrayMaxIndex: function(array, compareFuntion){
-            compareFuntion = compareFuntion || function(a, b){
-                return a - b;
-            }
-
+        arrayMaxIndex(array, compareFuntion=(i1, i2) => i1 - i2){
             let result = [0];
             if(!array || array.length <= 0)
                 return result;
@@ -383,10 +378,7 @@ define(["jquery"], function($){
             return result;
         },
         // 返回数组中值最小的索引的集合
-        arrayMinIndex: function(array, compareFuntion){
-            compareFuntion = compareFuntion || function(a, b){
-                return b - a;
-            }
+        arrayMinIndex(array, compareFuntion=(a,b)=>b-a){
 
             let result = [0];
             if(!array || array.length <= 0)
@@ -405,7 +397,7 @@ define(["jquery"], function($){
             }
             return result;
         },
-        arrayRemove: function(array, index){
+        arrayRemove(array, index){
             if(i < 0)
                 return array;
             for(let i = index; i < array.length - 1; i++){
@@ -415,12 +407,11 @@ define(["jquery"], function($){
             return array;
         },
         // 从副列表中匹配查询主列表的元素的索引
-        listMatch: function(listA, listB, indexA, equalFunction, startIndexB){
-            equalFunction = equalFunction || function(i1, i2){return i1==i2;};
+        listMatch(listA, listB, indexA,
+            equalFunction=(i1,i2)=>i1-i2, startIndexB=0){
 
             if(listA == listB)
                 return indexA;
-            startIndexB = startIndexB || 0;
 
             // 比较前、后 n 个邻居
             function compareNeighbor(indexB, offset){
@@ -449,7 +440,7 @@ define(["jquery"], function($){
 
             while(true)
             {
-                i = this.arrayIndex(listB, itemA, equalFunction, i+1);
+                i = this.__arrayIndex(listB, itemA, equalFunction, i+1);
                 if(i < 0){
                     // 没找到结果
                     // 返回结果集合中的一个最优结果
@@ -492,7 +483,7 @@ define(["jquery"], function($){
             }
         },
         // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
-        listMatchWithNeighbour: function(listA, listB, indexA, equalFunction, indexB){
+        listMatchWithNeighbour(listA, listB, indexA, equalFunction, indexB){
             if(listA == listB)
                 return indexA;
             equalFunction = equalFunction || function(i1, i2){return i1==i2;};
@@ -533,7 +524,7 @@ define(["jquery"], function($){
             // 如果提供了 indexB 则使用
             while(true)
             {
-                i = this.arrayIndex(listB, itemALeft, equalFunction, i+1);
+                i = this.__arrayIndex(listB, itemALeft, equalFunction, i+1);
                 if(i < 0){
                     // 没找到结果
                     // 从前一个匹配不成功，表示listB 中没有匹配的前一个对象
@@ -558,9 +549,9 @@ define(["jquery"], function($){
                 }
             }
         },
-
+        // TODO: 改写到此处
         // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
-        objectSortedKey: function(object, getFunctionOrObjectKeyName){
+        objectSortedKey(object, getFunctionOrObjectKeyName){
             if($.type(getFunctionOrObjectKeyName) == 'string'){
                 let objectKeyName = getFunctionOrObjectKeyName;
                 getFunctionOrObjectKeyName = function(item){
@@ -733,13 +724,3 @@ define(["jquery"], function($){
     };
 
 });
-
-
-
-
-
-
-
-
-
-

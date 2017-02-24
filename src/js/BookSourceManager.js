@@ -120,12 +120,11 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
             // 通过当前书名和作者名搜索添加源
             self.searchBook(bsid, bookName,
                 function(books, keyword, bsid){
-                    let i = util.arrayIndex(books, null, function(e){
+                    let book = books.find(e =>{
                         return e.name == bookName && e.author == bookAuthor;
                     });
-                    if(i >= 0){
+                    if(book){
                         // 找到书籍了
-                        let book = books[i];
                         success(book, bsid);
                     }
                     else{
@@ -155,7 +154,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
 
         let search = bs.search;
         let searchLink = util.format(search.url, {keyword: keyword});
-        util.getDOM(searchLink, {}, getBookFromHtml, fail);
+        util.getDOM(searchLink).then(getBookFromHtml).catch(fail);
 
         function getBookIdFromHtml(bookElement, bookid, bss){
             let bidElement = bookElement.find(bookid.element);
@@ -215,7 +214,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
         let detail = bsm.detail;
         let info = detail.info;
 
-        util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
+        util.getDOM(detailLink).then(getBookDetailFromHtml).catch(fail);
 
         function getBookDetailFromHtml(html){
             html = $(html);
@@ -241,13 +240,13 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
 
         switch(type){
             case 'html':
-                util.getDOM(catalogLink, {}, getChaptersFromHTML, fail);
+                util.getDOM(catalogLink).then(getChaptersFromHTML).catch(fail);
                 break;
             case 'json':
-                util.get(catalogLink, {}, getChaptersFromJSON, fail);
+                util.get(catalogLink).then(getChaptersFromJSON).catch(fail);
                 break;
             default:
-                util.getDOM(catalogLink, {}, getChaptersFromHTML, fail);
+                util.getDOM(catalogLink).then(getChaptersFromHTML).catch(fail);
                 break;
         }
 
@@ -332,7 +331,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
         let self = this;
         let bsm = self.sources[bsid];
         let info = bsm.chapter.info;
-        util.getDOM(chapterLink, {}, getChapterFromHtml, fail);
+        util.getDOM(chapterLink).then(getChapterFromHtml).catch(fail);
 
         function getChapterFromHtml(html){
             html = $(html);
@@ -357,7 +356,7 @@ define(["jquery", "util", "Book", "BookSource", "Chapter"], function($, util, Bo
         let detail = bsm.detail;
         let info = detail.info;
 
-        util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
+        util.getDOM(detailLink).then(getBookDetailFromHtml).catch(fail);
 
         function getBookDetailFromHtml(html){
             html = $(html);

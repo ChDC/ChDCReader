@@ -134,14 +134,10 @@ define(["jquery", "util", 'Book', "BookSource", "ReadingRecord"], function($, ut
 
     // 判断书架中是否有某书
     BookShelf.prototype.hasBook = function(book){
-        let i = util.arrayIndex(this.books, book, function(e1, e2){
-            let b = e1.book;
-            return b.name == e2.name && b.author == e2.author && b.mainSourceId == e2.mainSourceId;
+        return this.books.find(e => {
+            let b = e.book;
+            return b.name == book.name && b.author == book.author && b.mainSourceId == book.mainSourceId;
         });
-        if(i >= 0)
-            return this.books[i];
-        else
-            return null;
     };
 
     // 判断书架中是否有某书
