@@ -42,7 +42,8 @@ def main():
     md5File = 'www/chcp.manifest'
     with open(md5File) as fh:
         md5s = json.load(fh)
-    md5s = {os.path.join(wwwDir, m['file']): m['hash'] for m in md5s}
+    md5s = {os.path.join(wwwDir, m['file']).replace('/', os.sep): m['hash'] for m in md5s}
+
     if not os.path.exists(wwwDir):
         log.error('WWW dir doesn\'t exist!')
         return
