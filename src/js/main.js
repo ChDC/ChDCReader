@@ -2,21 +2,34 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
     "use strict"
 
-    let settings = {
-        cacheChapterCount: 3, // 缓存后面章节的数目
-        cacheCountEachChapter: 1, // 默认情况下每章缓存的源章节数目
-        cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
-        // chapterIndexOffset: 1,  // 当前章节的偏移值
-        // chapterCount: 3,   // 每次加载的章节数目
-        nighttheme: "night1", // 夜间主题
-        daytheme: "", // 白天主题
-        night: false
-    };
-
-
     let app = {
         /**************** 全局变量 *******************/
-        settings: settings,
+        settings: {
+            settings: {
+                cacheChapterCount: 3, // 缓存后面章节的数目
+                cacheCountEachChapter: 1, // 默认情况下每章缓存的源章节数目
+                cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
+                // chapterIndexOffset: 1,  // 当前章节的偏移值
+                // chapterCount: 3,   // 每次加载的章节数目
+                nighttheme: "night1", // 夜间主题
+                daytheme: "", // 白天主题
+                night: false
+            },
+
+            load(){
+                return util.loadData('settings')
+                    .then(data => {
+                        if(data)
+                            this.settings = data;
+                        return data;
+                    })
+                    .catch(e => e);
+            },
+
+            save(){
+                util.saveData('settings', this.settings);
+            }
+        },
         // 书籍来源管理器
         bookSourceManager: null,
 
@@ -24,7 +37,20 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         bookShelf: null,
         util: util,
         page: page,
-        init: function(){
+        error: {
+            __error: {},
+            load(file){
+                return util.getJSON(file)
+                    .then(data => {
+                        this.__error = data;
+                    });
+            },
+
+            getMessage(id){
+                return this.__error[id];
+            }
+        },
+        init(){
             if(typeof cordova != 'undefined'){
                 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
                 document.addEventListener("chcp_updateInstalled", this.onUpdateInstalled.bind(this), false);
@@ -32,10 +58,11 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             else{
                 $(this.onDeviceReady.bind(this));
             }
+            this.loadingbar = new util.LoadingBar('./img/loading.gif');
         },
         // 检查资源更新
         // * isInstanceInstall 下载好资源后是否立即进行安装
-        chekcUpdate: function(isInstanceInstall, showMessage){
+        chekcUpdate(isInstanceInstall, showMessage){
 
             if(!window.chcp)
                 return;
@@ -75,7 +102,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             }
 
             // 查看本地是否有尚未安装的更新
-            chcp.isUpdateAvailableForInstallation(function(error, data) {
+            chcp.isUpdateAvailableForInstallation((error, data) => {
                 if (error) {
                     if(showMessage)
                         util.showMessage('开始检查资源更新。。。');
@@ -89,46 +116,38 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             });
         },
 
-        showLoading: function(){
-            $("#dialogLoading").modal('show');
+        loadingbar: null,
+        showLoading(){
+            this.loadingbar.show();
+            // $("#dialogLoading").modal('show');
         },
-        hideLoading: function(){
-            $("#dialogLoading").modal('hide');
+        hideLoading(){
+            this.loadingbar.hide();
+            // $("#dialogLoading").modal('hide');
         },
 
-        onDeviceReady: function() {
-            let self = this;
-            self.__loadSettings(function(){
-                self.bookSourceManager = new BookSourceManager("data/booksources.json");
-                self.bookSourceManager.init();
+        onDeviceReady() {
+            this.error.load("data/errorCode.json");
+            this.settings.load()
+                .then(() => {
+                    this.bookSourceManager = new BookSourceManager("data/booksources.json");
+                    this.bookSourceManager.init();
 
-                self.bookShelf = new BookShelf();
-                page.init();
-                // 设置主题
-                page.setTheme(self.settings.night ? self.settings.nighttheme : self.settings.daytheme);
+                    this.bookShelf = new BookShelf();
+                    page.init();
+                    // 设置主题
+                    page.setTheme(this.settings.settings.night ? this.settings.settings.nighttheme : this.settings.settings.daytheme);
 
-                page.showPage("bookshelf");
-                self.chekcUpdate(true);
-            });
-
+                    page.showPage("bookshelf");
+                    this.chekcUpdate(true);
+                });
+            document.addEventListener("pause", () => {
+                    app.bookShelf.save();
+                }, false);
         },
-        onUpdateInstalled: function(){
+        onUpdateInstalled(){
             util.showMessage("资源更新成功！");
             // location.reload();
-        },
-        saveSettings: function(){
-            util.saveData('settings', this.settings);
-        },
-        __loadSettings: function(success){
-            let self = this;
-            util.loadData('settings', function(data){
-                if(data)
-                    self.settings = data;
-                if(success)success();
-            }, function(){
-                if(success)success();
-            })
-
         }
     };
 

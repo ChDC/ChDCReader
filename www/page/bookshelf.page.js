@@ -1,5 +1,7 @@
 "use strict";
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, util, Chapter) {
 
     function isReadingLastestChapter(lastestChapter, readingRecord) {
@@ -9,9 +11,8 @@ define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, ut
     function removeBook(event) {
         var target = $(event.currentTarget);
         var i = target.data('book-index');
-        app.bookShelf.removeBook(i, function () {
-            loadBooks(".bookshelf", app.bookShelf);
-        });
+        app.bookShelf.removeBook(i);
+        loadBooks(".bookshelf", app.bookShelf);
         return false;
     }
 
@@ -21,7 +22,8 @@ define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, ut
         bs.empty();
         var b = $(".template .book");
         $(books).each(function (i) {
-            var self = this;
+            var _this = this;
+
             var readingRecord = this.readingRecord;
             var book = this.book;
 
@@ -30,12 +32,15 @@ define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, ut
             nb.find(".book-name").text(book.name);
             nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
-            book.getLastestChapter(function (lastestChapter) {
+            book.getLastestChapter({ bookSourceManager: app.bookSourceManager }).then(function (_ref) {
+                var _ref2 = _slicedToArray(_ref, 1),
+                    lastestChapter = _ref2[0];
+
                 nb.find(".book-lastestchapter").text("最新章节：" + (lastestChapter ? lastestChapter : "无")).css('color', isReadingLastestChapter(lastestChapter, readingRecord) ? 'black' : 'red');
-            }, null, { bookSourceManager: app.bookSourceManager });
+            });
 
             nb.click(function () {
-                page.showPage("readbook", self);
+                return page.showPage("readbook", _this);
             });
 
             nb.find('.btnBookMenu').click(function (event) {
@@ -49,26 +54,26 @@ define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, ut
     };
 
     function loadView() {
-        $("#btnCheckUpdate").click(function () {
-            app.chekcUpdate(true, true);
+        $("#btnCheckUpdate").click(function (e) {
+            return app.chekcUpdate(true, true);
         });
-        $("#btnCheckBookSources").click(function () {
+        $("#btnCheckBookSources").click(function (e) {
             $('#output').empty();
             app.bookSourceManager.checkBookSources("data/booksourcesTest.json", function (msg) {
-                $('#output').append($('<p>').text(msg));
+                return $('#output').append($('<p>').text(msg));
             }, function (msg, error) {
-                if (error) msg += "(" + error.id + ", " + error.message + ')\n';
+                if (error) msg += "(" + error + ", " + app.error.getMessage(error) + ")\n";
                 $('#output').append($('<p class="error">').text(msg));
-            }, function () {
-                $('#output').append($('<p>').text("完成！"));
+            }).then(function () {
+                return $('#output').append($('<p>').text("完成！"));
             });
         });
-        $(".btnSearch").click(function () {
-            page.showPage("search");
+        $(".btnSearch").click(function (e) {
+            return page.showPage("search");
         });
 
-        $("#btnTest").click(function () {
-            app.bookSourceManager.qidian.init();
+        $("#btnTest").click(function (e) {
+            return app.bookSourceManager.qidian.init();
         });
     }
 
@@ -80,8 +85,8 @@ define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, ut
             if (app.bookShelf.loaded) {
                 loadBooks(".bookshelf", app.bookShelf);
             } else {
-                app.bookShelf.load(function () {
-                    loadBooks(".bookshelf", app.bookShelf);
+                app.bookShelf.load().then(function () {
+                    return loadBooks(".bookshelf", app.bookShelf);
                 });
             }
         },

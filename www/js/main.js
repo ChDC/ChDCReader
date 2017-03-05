@@ -4,23 +4,50 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
     "use strict";
 
-    var settings = {
-        cacheChapterCount: 3,
-        cacheCountEachChapter: 1,
-        cacheCountEachChapterWithWifi: 3,
-        nighttheme: "night1",
-        daytheme: "",
-        night: false
-    };
-
     var app = {
-        settings: settings,
+        settings: {
+            settings: {
+                cacheChapterCount: 3,
+                cacheCountEachChapter: 1,
+                cacheCountEachChapterWithWifi: 3,
+                nighttheme: "night1",
+                daytheme: "",
+                night: false
+            },
+
+            load: function load() {
+                var _this = this;
+
+                return util.loadData('settings').then(function (data) {
+                    if (data) _this.settings = data;
+                    return data;
+                }).catch(function (e) {
+                    return e;
+                });
+            },
+            save: function save() {
+                util.saveData('settings', this.settings);
+            }
+        },
 
         bookSourceManager: null,
 
         bookShelf: null,
         util: util,
         page: page,
+        error: {
+            __error: {},
+            load: function load(file) {
+                var _this2 = this;
+
+                return util.getJSON(file).then(function (data) {
+                    _this2.__error = data;
+                });
+            },
+            getMessage: function getMessage(id) {
+                return this.__error[id];
+            }
+        },
         init: function init() {
             if (typeof cordova != 'undefined') {
                 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -28,8 +55,8 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             } else {
                 $(this.onDeviceReady.bind(this));
             }
+            this.loadingbar = new util.LoadingBar('./img/loading.gif');
         },
-
         chekcUpdate: function chekcUpdate(isInstanceInstall, showMessage) {
 
             if (!window.chcp) return;
@@ -74,42 +101,36 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             });
         },
 
+
+        loadingbar: null,
         showLoading: function showLoading() {
-            $("#dialogLoading").modal('show');
+            this.loadingbar.show();
         },
         hideLoading: function hideLoading() {
-            $("#dialogLoading").modal('hide');
+            this.loadingbar.hide();
         },
-
         onDeviceReady: function onDeviceReady() {
-            var self = this;
-            self.__loadSettings(function () {
-                self.bookSourceManager = new BookSourceManager("data/booksources.json");
-                self.bookSourceManager.init();
+            var _this3 = this;
 
-                self.bookShelf = new BookShelf();
+            this.error.load("data/errorCode.json");
+            this.settings.load().then(function () {
+                _this3.bookSourceManager = new BookSourceManager("data/booksources.json");
+                _this3.bookSourceManager.init();
+
+                _this3.bookShelf = new BookShelf();
                 page.init();
 
-                page.setTheme(self.settings.night ? self.settings.nighttheme : self.settings.daytheme);
+                page.setTheme(_this3.settings.settings.night ? _this3.settings.settings.nighttheme : _this3.settings.settings.daytheme);
 
                 page.showPage("bookshelf");
-                self.chekcUpdate(true);
+                _this3.chekcUpdate(true);
             });
+            document.addEventListener("pause", function () {
+                app.bookShelf.save();
+            }, false);
         },
         onUpdateInstalled: function onUpdateInstalled() {
             util.showMessage("资源更新成功！");
-        },
-        saveSettings: function saveSettings() {
-            util.saveData('settings', this.settings);
-        },
-        __loadSettings: function __loadSettings(success) {
-            var self = this;
-            util.loadData('settings', function (data) {
-                if (data) self.settings = data;
-                if (success) success();
-            }, function () {
-                if (success) success();
-            });
         }
     };
 

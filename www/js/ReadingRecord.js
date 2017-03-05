@@ -1,32 +1,41 @@
 "use strict";
 
-define(["jquery", "util", 'Book'], function ($, util, Book) {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+define(['Book'], function (Book) {
     "use strict";
 
-    function ReadingRecord() {
-        this.chapterIndex = 0;
-        this.pageScrollTop = 0;
-        this.chapterTitle = "";
-        this.options = {};
-    };
+    var ReadingRecord = function () {
+        function ReadingRecord() {
+            _classCallCheck(this, ReadingRecord);
 
-    ReadingRecord.prototype.chapterIndex = undefined;
-    ReadingRecord.prototype.chapterTitle = undefined;
-    ReadingRecord.prototype.pageScrollTop = undefined;
-    ReadingRecord.prototype.options = undefined;
-    ReadingRecord.prototype.reset = function () {
-        this.chapterIndex = 0;
-        this.chapterTitle = "";
-        this.pageScrollTop = 0;
-        this.options = {};
-    };
+            this.chapterIndex = 0;
+            this.pageScrollTop = 0;
+            this.chapterTitle = "";
+            this.options = {};
+        }
 
-    ReadingRecord.prototype.setReadingRecord = function (chapterIndex, chapterTitle, options) {
-        var self = this;
-        self.chapterIndex = chapterIndex;
-        self.chapterTitle = chapterTitle;
-        self.options = options;
-    };
+        _createClass(ReadingRecord, [{
+            key: "reset",
+            value: function reset() {
+                this.chapterIndex = 0;
+                this.chapterTitle = "";
+                this.pageScrollTop = 0;
+                this.options = {};
+            }
+        }, {
+            key: "setReadingRecord",
+            value: function setReadingRecord(chapterIndex, chapterTitle, options) {
+                this.chapterIndex = chapterIndex;
+                this.chapterTitle = chapterTitle;
+                this.options = options;
+            }
+        }]);
+
+        return ReadingRecord;
+    }();
 
     return ReadingRecord;
 });

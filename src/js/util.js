@@ -53,14 +53,13 @@ define(["jquery"], function($){
         /*
         * 输出log 信息
         */
-        log(content, content2) {
-            let msg = "[" + (new Date()).toLocaleString() + "] " + content;
-            if(content2)
-                msg += ": " + content2;
+        log(content, detailContent) {
+            let msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
             console.log(msg);
         },
-        error(content) {
-            console.error("[" + (new Date()).toLocaleString() + "] " + content);
+        error(content, detailContent) {
+            let msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
+            console.error(msg);
         },
         /*
         * 获取 URL 的参数字符串
@@ -133,49 +132,65 @@ define(["jquery"], function($){
         },
 
         /*
-        * 原始的获取 JSON url: 完整的 URL params: 参数 success: 成功调用的函数，第一个参数为 data 参数
-        * failure: 失败调用的函数
+        * 原始的获取 JSON
+        * url: 完整的 URL
+        * params: 参数
         */
-        get(url, params) {
-            return new Promise((resolve, reject) => {
-                if(url == null){
-                    reject('null');
-                    return;
-                }
-                this.log("Get:" + url + "&" + this.__getParamsString(params));
+        get(url, params, dataType, {timeout=5}={}) {
+            if(url == null){
+                return Promise.reject();
+            }
+
+            this.log("Get:" + url + "&" + this.__getParamsString(params));
+
+            let getPromise = new Promise((resolve, reject) => {
                 url = encodeURI(url);
-                let handleNetworkError = data => {
-                    this.error("Fail to get: " + url + ", 网络错误");
-                    // self.showError("网络错误！");
-                    reject(data);
-                }
-                // if (typeof cordovaHTTP != "undefined") {
-                //     this.log("HTTP with Cordova");
-                //     let s = function(data) {
-                //         if (data.status != 200) {
-                //             handleNetworkError(data);
-                //         } else {
-                //             success(data.data);
-                //         }
-                //     };
-                //     return cordovaHTTP.get(url, params, {},
-                //     s, handleNetworkError);
-                // } else {
-                    // this.log("HTTP with jQuery");
-                    return $.get(url, params).fail(handleNetworkError).done(resolve);
-                // }
+                $.get(url, params, resolve, dataType)
+                    .fail(data => reject(data));
             });
+
+            if(timeout <= 0)
+                return getPromise;
+
+            let timeoutPromise = new Promise((resolve, reject) => {
+                setTimeout(reject, timeout*1000);
+            });
+
+            return Promise.race([getPromise, timeoutPromise])
+                .catch(error => {
+                    this.error("Fail to get: " + url + ", 网络错误");
+                    throw error;
+                });
+
+            // if (typeof cordovaHTTP != "undefined") {
+            //     this.log("HTTP with Cordova");
+            //     let s = function(data) {
+            //         if (data.status != 200) {
+            //             handleNetworkError(data);
+            //         } else {
+            //             success(data.data);
+            //         }
+            //     };
+            //     return cordovaHTTP.get(url, params, {},
+            //     s, handleNetworkError);
+            // }
+        },
+
+        // 获取 JSON 格式
+        getJSON(url, params){
+            return this.get(url, params, "json");
         },
 
         // 过滤某些标签
         __filterElement(html, element, endElement=element){
-            let pattern = '<' + element + '( [^>]*?)?>[\\s\\S]*?</' + endElement  + '>';
+            let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${endElement}>`;
             html = html.replace(new RegExp(pattern, 'gi'), '');
             // 去除单标签
-            pattern = '<' + element + '( [^>]*?)?>';
+            pattern = `<${element}( [^>]*?)?>`;
             html = html.replace(new RegExp(pattern, 'gi'), '');
             return html;
         },
+
         getDOM(url, params){
             let filterHtmlContent = html => {
                 // 只要 body
@@ -193,14 +208,12 @@ define(["jquery"], function($){
                 return html;
             };
 
-            return new Promise((resolve, reject) => {
-                let s = data => {
-                    resolve("<div>" + filterHtmlContent(data) + "</div>");
-                }
-                this.get(url, params).then(s).catch(reject);
-            });
+
+            return this.get(url, params)
+                    .then(data => `<div>${filterHtmlContent(data)}</div>`);
 
         },
+
         // 从 URL 字符串中获取参数对象
         getParamsFromURL(url){
             if(!url)return {};
@@ -222,6 +235,7 @@ define(["jquery"], function($){
             }
             return params;
         },
+
         // 字符串格式化，类似于 Python 的 string.format
         format(string, object){
             let result = string.replace(/{(\w+)}/g, (p0, p1) =>
@@ -229,6 +243,7 @@ define(["jquery"], function($){
                 )
             return result;
         },
+
         // 从 Object 中获取数据
         getDataFromObject(obj, key){
             let keys = key.split(/\./);
@@ -254,6 +269,7 @@ define(["jquery"], function($){
             }
             return result
         },
+
         // 修复抓取的 URL
         fixurl(url, host){
             if(!url || url.match("^https?://"))
@@ -286,7 +302,7 @@ define(["jquery"], function($){
 
         html2text(html){
             function replaceElement(html, element, replaceString){
-                let pattern = '<' + element + '(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</' + element + '>';
+                let pattern = `<${element}(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</${element}>`;
                 html = html.replace(new RegExp(pattern, 'gi'), replaceString);
                 return html;
             };
@@ -310,10 +326,11 @@ define(["jquery"], function($){
             html = this.__filterElement(html, "(\\w+)", "$1");
             return html.trim();
         },
+
         text2html(text, className){
             // 将每一行都加上 p 标签
             let html = "";
-            let pStart = className? '<p class="' + className + '">' : '<p>';
+            let pStart = className? `<p class="${className}">` : '<p>';
             let lines = text.split("\n");
 
             lines.forEach((line)=>{
@@ -322,17 +339,16 @@ define(["jquery"], function($){
             });
             return html;
         },
+
         // 将数组中的每个成员的类型都转换为执行的类
         objectCast(obj, ClassFunction){
             let nc = new ClassFunction();
             $.extend(true, nc, obj);
             return nc;
         },
-        __arrayIndex(array, item, compareFuntion, startIndex){
+
+        __arrayIndex(array, item, compareFuntion=(i1, i2) => i1 == i2, startIndex){
             startIndex = startIndex || 0;
-            compareFuntion = compareFuntion || function(i1, i2){
-                return i1 == i2;
-            }
 
             for(let i = startIndex; i < array.length; i++){
                 if(compareFuntion(array[i], item))
@@ -340,6 +356,7 @@ define(["jquery"], function($){
             }
             return -1;
         },
+
         arrayLastIndex(array, item,
             compareFuntion = (i1, i2) => i1 == i2,
             startIndex = array.length - 1){
@@ -350,6 +367,7 @@ define(["jquery"], function($){
             }
             return -1;
         },
+
         // 将数组中的每个成员的类型都转换为执行的类
         arrayCast(array, ClassFunction){
             array.forEach((v, i, arr) => {
@@ -358,6 +376,7 @@ define(["jquery"], function($){
                 arr[i] = nc;
             });
         },
+
         // 返回数组中值最大的索引的集合
         arrayMaxIndex(array, compareFuntion=(i1, i2) => i1 - i2){
             let result = [0];
@@ -377,6 +396,7 @@ define(["jquery"], function($){
             }
             return result;
         },
+
         // 返回数组中值最小的索引的集合
         arrayMinIndex(array, compareFuntion=(a,b)=>b-a){
 
@@ -397,8 +417,9 @@ define(["jquery"], function($){
             }
             return result;
         },
+
         arrayRemove(array, index){
-            if(i < 0)
+            if(index < 0)
                 return array;
             for(let i = index; i < array.length - 1; i++){
                 array[i] = array[i+1];
@@ -406,6 +427,7 @@ define(["jquery"], function($){
             array.length--;
             return array;
         },
+
         // 从副列表中匹配查询主列表的元素的索引
         listMatch(listA, listB, indexA,
             equalFunction=(i1,i2)=>i1-i2, startIndexB=0){
@@ -450,14 +472,12 @@ define(["jquery"], function($){
                         // 一个结果也没有
                         return -1;
                     }
-                    let rr = this.arrayMaxIndex(result, function(a, b){
-                        return a.weight - b.weight;
-                    });
+                    let rr = this.arrayMaxIndex(result, (a, b) => a.weight - b.weight);
                     if(rr.length <= 1){
                         return result[rr[0]].index;
                     }
                     else{
-                        return result[this.arrayMinIndex(rr, function(a, b){
+                        return result[this.arrayMinIndex(rr, (a, b) => {
                             let ia = result[a].index;
                             let ib = result[b].index;
                             return Math.abs(ia-indexA) - Math.abs(ib-indexA);
@@ -482,11 +502,11 @@ define(["jquery"], function($){
                 }
             }
         },
+
         // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
-        listMatchWithNeighbour(listA, listB, indexA, equalFunction, indexB){
+        listMatchWithNeighbour(listA, listB, indexA, equalFunction=(i1, i2)=>i1==i2, indexB){
             if(listA == listB)
                 return indexA;
-            equalFunction = equalFunction || function(i1, i2){return i1==i2;};
 
             if(indexA < 0 || indexA >= listA.length || listB.length < 2 || listA.length < 2)
                 return -1;
@@ -549,23 +569,20 @@ define(["jquery"], function($){
                 }
             }
         },
+
         // TODO: 改写到此处
         // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
-        objectSortedKey(object, getFunctionOrObjectKeyName){
+        objectSortedKey(object, getFunctionOrObjectKeyName=i=>i){
             if($.type(getFunctionOrObjectKeyName) == 'string'){
                 let objectKeyName = getFunctionOrObjectKeyName;
-                getFunctionOrObjectKeyName = function(item){
-                    return item[objectKeyName];
-                }
+                getFunctionOrObjectKeyName = item => item[objectKeyName];
             }
-            getFunctionOrObjectKeyName = getFunctionOrObjectKeyName || function(item){
-                return item;
-            }
+
             let arr = [];
             for(let k in object){
                 arr.push([k, getFunctionOrObjectKeyName(object[k])]);
             }
-            arr.sort(function(e1, e2){return e1[1] - e2[1]});
+            arr.sort((e1, e2) => e1[1] - e2[1]);
             let result = [];
             for(let i = 0; i < arr.length; i++){
                 result[i] = arr[i][0];
@@ -574,152 +591,195 @@ define(["jquery"], function($){
         },
 
         // 保存 JSON 对象到文件中
-        __saveJSONToFile: function(file, data, success, fail, isCacheDir){
-            //创建并写入文件
-            function createAndWriteFile(){
-                let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-                //持久化数据保存
-                window.requestFileSystem(fileSystem, 0,
-                    function (fs) {
-                        fs.root.getFile(file + ".json", { create: true, exclusive: false },
-                            function (fileEntry) {
-                                //文件内容
-                                let dataObj = new Blob([data], { type: 'text/plain' });
-                                //写入文件
-                                writeFile(fileEntry, dataObj);
+        __saveJSONToFile(file, data, isCacheDir=false){
+            return new Promise((resolve, reject) => {
+                // 创建并写入文件
+                function createAndWriteFile(){
+                    let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                    //持久化数据保存
+                    window.requestFileSystem(fileSystem, 0,
+                        fs => {
+                            fs.root.getFile(file + ".json", { create: true, exclusive: false },
+                                fileEntry => {
+                                    //文件内容
+                                    let dataObj = new Blob([data], { type: 'text/plain' });
+                                    //写入文件
+                                    writeFile(fileEntry, dataObj);
 
-                            }, fail);
+                                }, reject);
 
-                    }, fail);
-            }
+                        }, reject);
+                }
 
-            //将内容数据写入到文件中
-            function writeFile(fileEntry, dataObj) {
-                //创建一个写入对象
-                fileEntry.createWriter(function (fileWriter) {
+                //将内容数据写入到文件中
+                function writeFile(fileEntry, dataObj) {
+                    //创建一个写入对象
+                    fileEntry.createWriter(fileWriter => {
 
-                    //文件写入成功
-                    fileWriter.onwriteend = function() {
-                    };
+                        //文件写入成功
+                        fileWriter.onwriteend = () => { };
 
-                    //文件写入失败
-                    fileWriter.onerror = function (e) {
-                    };
+                        //文件写入失败
+                        fileWriter.onerror = e => {};
 
-                    //写入文件
-                    fileWriter.write(dataObj);
-                    if(success)success();
-                });
-            }
+                        //写入文件
+                        fileWriter.write(dataObj);
+                        resolve();
+                    });
+                }
 
-            data = JSON.stringify(data);
-            createAndWriteFile();
+                data = JSON.stringify(data);
+                createAndWriteFile();
+            });
         },
 
         // 从文件中获取 JSON 对象
-        __loadJSONFromFile: function(file, success, fail, isCacheDir){
-            function readFile(){
-                let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-                //持久化数据保存
-                window.requestFileSystem(fileSystem, 0,
-                    function (fs) {
-                        fs.root.getFile(file + ".json", { create: false, exclusive: false },
-                            function (fileEntry) {
-                                fileEntry.file(function (file) {
-                                    let reader = new FileReader();
+        __loadJSONFromFile(file, isCacheDir=false){
+            return new Promise((resolve, reject) => {
+                function readFile(){
+                    let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                    //持久化数据保存
+                    window.requestFileSystem(fileSystem, 0,
+                        fs => {
+                            fs.root.getFile(file + ".json", { create: false, exclusive: false },
+                                fileEntry => {
+                                    fileEntry.file(file => {
+                                        let reader = new FileReader();
 
-                                    reader.onloadend = function() {
-                                        let data = JSON.parse(this.result);
-                                        if(success)success(data);
-                                    };
+                                        reader.onloadend = function(){
+                                            let data = JSON.parse(this.result);
+                                            resolve(data);
+                                        };
 
-                                    reader.readAsText(file);
+                                        reader.readAsText(file);
 
-                                }, fail);
-                            }, fail);
+                                    }, reject);
+                                }, reject);
 
-                    }, fail);
-            }
+                        }, reject);
+                }
 
-            readFile();
+                readFile();
+            })
         },
 
         // 检查文件是否存在
-        __fileExists: function(file, exist, notExist, isCacheDir){
-            let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-            window.requestFileSystem(fileSystem, 0, function (fs) {
+        __fileExists(file, isCacheDir=false){
+            return new Promise((resolve, reject) => {
+                let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                window.requestFileSystem(fileSystem, 0, fs => {
 
-                fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                        if(fileEntry.isFile){
-                            if(exist)exist();
-                        }
-                        else{
-                            if(notExist)notExist();
-                        }
-                    }, notExist);
+                    fs.root.getFile(file + ".json", { create: false, exclusive: false },
+                        fileEntry => {
+                            resolve(fileEntry.isFile ? true : false);
+                        }, () => resolve(false));
 
-            }, notExist);
+                }, () => resolve(false));
+            })
         },
+
         // 删除文件
-        __removeFile: function(file, success, fail, isCacheDir){
-            // TODO
-            let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-            window.requestFileSystem(fileSystem, 0, function (fs) {
+        __removeFile(file, isCacheDir=false){
+            return new Promise((resolve, reject) => {
+                // TODO
+                let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                window.requestFileSystem(fileSystem, 0, fs => {
 
-                fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                        fileEntry.remove(success, fail);
-                    }, fail);
-
-            }, fail);
+                    fs.root.getFile(file + ".json", { create: false, exclusive: false },
+                            fileEntry => fileEntry.remove(resolve, reject)
+                            , reject);
+                }, reject);
+            })
         },
+
         // 保存数据
-        saveData: function(key, data, success, fail, onlyCache){
+        saveData(key, data, onlyCache=false){
             if(window.requestFileSystem){
-                this.__saveJSONToFile(key, data, success, fail, onlyCache);
+                return this.__saveJSONToFile(key, data, onlyCache);
             }
             else{
                 let s = onlyCache? this.cacheStorage : this.storage;
                 s.setItem(key, data);
-                if(success)success();
+                return Promise.resolve();
             }
         },
 
         // 加载数据
-        loadData: function(key, success, fail, onlyCache){
+        loadData(key, onlyCache=false){
             if(window.requestFileSystem){
-                this.__loadJSONFromFile(key, success, fail, onlyCache);
+                return this.__loadJSONFromFile(key, onlyCache);
             }
             else{
                 let s = onlyCache? this.cacheStorage : this.storage;
                 let data = s.getItem(key);
-                if(success)success(data);
+                return Promise.resolve(data);
             }
         },
+
         // 删除数据
-        removeData: function(key, success, fail, onlyCache){
+        removeData(key, onlyCache=false){
             if(window.requestFileSystem){
-                this.__removeFile(key, success, fail, onlyCache);
+                return this.__removeFile(key, onlyCache);
             }
             else{
                 let s = onlyCache? this.cacheStorage : this.storage;
                 let data = s.removeItem(key);
-                if(success)success();
+                return Promise.resolve();
             }
         },
+
         // 数据是否存在
-        dataExists: function(key, exist, notExist, onlyCache){
+        dataExists(key, onlyCache=false){
             if(window.requestFileSystem){
-                this.__fileExists(key, exist, notExist, onlyCache);
+                return this.__fileExists(key, onlyCache);
             }
             else{
                 let s = onlyCache? this.cacheStorage : this.storage;
-                if(s.hasItem(key)){
-                    if(exist)exist();
-                }
-                else{
-                    if(notExist)notExist();
-                }
+                return Promise.resolve(s.hasItem(key) ? true : false);
             }
+        },
+
+        // 比较去掉所有空格和标点符号之后的所有符号
+        stripString(str){
+            // 去除括号括起来的文字
+            str = str.replace(/（.*?）/g, '');
+            str = str.replace(/\(.*?\)/g, '');
+            str = str.replace(/【.*?】/g, '');
+
+            // 去除英文字符串
+            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
+            // 去除中文字符串
+            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+
+            // 去除空白字符
+            str = str.replace(/\s/g, '');
+            return str;
+        },
+
+        // 加载进度条
+        LoadingBar: function(img='img/loadingm.gif', container='body'){
+            this.__loadingbar = null;
+            this.__img = img;
+            this.container = container;
+
+            // 显示加载进度条
+            this.show = () => {
+                var loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>')
+                var img = $('<img src="' + this.__img + '" style="position:relative;opacity:1;"/>');
+                loadingBg.append(img);
+
+                loadingBg.click((event) => {
+                    this.hide();
+                });
+                this.__loadingbar = loadingBg;
+                $(this.container).append(loadingBg);
+                img.css('top', ($(window).height() - img.height()) / 2);
+            };
+
+            // 隐藏加载进度条
+            this.hide = () => {
+                this.__loadingbar.remove();
+            };
         }
     };
 

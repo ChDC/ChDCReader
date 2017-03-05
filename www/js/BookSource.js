@@ -1,253 +1,323 @@
 "use strict";
 
-define(["jquery", "util", 'Book', 'Chapter'], function ($, util, Book, Chapter) {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+define(["jquery", 'co', "util", 'Chapter'], function ($, co, util, Chapter) {
     "use strict";
 
-    function BookSource(id, weight) {
-        this.id = id;
-        this.needSaveCatalog = false;
-        this.updatedCatalogTime = 0;
-        this.updatedLastestChapterTime = 0;
-        this.disable = false;
-        this.weight = weight || 0;
-        this.searched = false;
-    };
+    var BookSource = function () {
+        function BookSource(id) {
+            var weight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-    BookSource.getError = function (errorCode) {
-        var bookErrorCode = {
-            207: "未从缓存中发现该章节",
+            _classCallCheck(this, BookSource);
 
-            400: "不能频繁更新书籍目录",
-            402: "不能频繁更新最新章节",
+            this.id = id;
+            this.disable = false;
+            this.weight = weight;
+            this.searched = false;
 
-            404: "未在当前的源中找到该书！"
-
-        };
-        return {
-            id: errorCode,
-            message: bookErrorCode[errorCode]
-        };
-    };
-
-    BookSource.prototype.id = null;
-    BookSource.prototype.detailLink = null;
-    BookSource.prototype.catalogLink = null;
-    BookSource.prototype.bookid = null;
-    BookSource.prototype.catalog = null;
-    BookSource.prototype.weight = 0;
-    BookSource.prototype.updatedCatalogTime = 0;
-    BookSource.prototype.updatedLastestChapterTime = 0;
-    BookSource.prototype.needSaveCatalog = false;
-    BookSource.prototype.disable = false;
-    BookSource.prototype.lastestChapter = undefined;
-    BookSource.prototype.searched = false;
-    BookSource.prototype.getBook = function (bookSourceManager, book, success, fail) {
-        var self = this;
-
-        if (self.disable) {
-            if (fail) fail(BookSource.getError(404));
-            return;
-        }
-        bookSourceManager.getBook(self.id, book.name, book.author, function (book, bsid) {
-            $.extend(self, book.sources[bsid]);
-            if (success) success(bsid, self);
-        }, function (error) {
-            if (error.id == 404) {
-                self.disable = true;
-                self.searched = true;
-            }
-            if (fail) fail(error);
-        });
-    };
-
-    BookSource.prototype.__getBookSourceDetailLink = function (bookSourceManager, book, success, fail) {
-        var self = this;
-        if (!self.searched) {
-            self.getBook(bookSourceManager, book, function (bsid, bs) {
-                success(bs.detailLink, bsid, bs);
-            }, fail);
-        } else {
-            if (self.disable) {
-                if (fail) fail(BookSource.getError(404));
-            } else {
-                success(self.detailLink, self.id, self);
-            }
-        }
-    };
-
-    BookSource.prototype.__getBookSourceCatalogLink = function (bookSourceManager, book, success, fail) {
-        var self = this;
-        function computeCatalogLink(bss, success) {
-            var bsm = bookSourceManager.sources[self.id];
-            if (!bsm) return;
-            if (bsm.detail.info.catalogLink) {
-                self.__getBookSourceDetailLink(bookSourceManager, book, function (detailLink) {
-                    util.getDOM(detailLink, {}, getBookDetailFromHtml, fail);
-
-                    function getBookDetailFromHtml(html) {
-                        html = $(html);
-                        var link = html.find(bsm.detail.info.catalogLink).attr('href');
-                        if (success) success(link);
-                    };
-                }, fail);
-
-                return;
-            }
-
-            var catalogLink = bsm.catalog.link;
-            var o = $.extend({}, bss, bookSourceManager[self.id]);
-            var link = util.format(catalogLink, o);
-            if (success) success(link);
+            this.detailLink = null;
+            this.catalogLink = null;
+            this.bookid = null;
+            this.catalog = null;
+            this.updatedCatalogTime = 0;
+            this.updatedLastestChapterTime = 0;
+            this.needSaveCatalog = false;
+            this.lastestChapter = undefined;
         }
 
-        if (!self.searched) {
-            self.getBook(bookSourceManager, book, function (bsid, bs) {
-                computeCatalogLink(self, function (link) {
-                    self.catalogLink = link;
-                    success(self.catalogLink, self.id, self);
+        _createClass(BookSource, [{
+            key: "getBookSource",
+            value: function getBookSource(bookSourceManager, book) {
+                var _this = this;
+
+                if (this.disable) return Promise.reject(404);
+
+                return bookSourceManager.getBook(this.id, book.name, book.author).then(function (book) {
+                    $.extend(_this, book.sources[_this.id]);
+                    return _this;
+                }).catch(function (error) {
+                    if (error == 404) {
+                        _this.disable = true;
+                        _this.searched = true;
+                    }
+                    return Promise.reject(error);
                 });
-            }, fail);
-        } else {
-            if (self.disable) {
-                if (fail) fail(BookSource.getError(404));
-            } else {
-                if (!self.catalogLink) {
-                    computeCatalogLink(self, function (link) {
-                        self.catalogLink = link;
-                        success(self.catalogLink, self.id, self);
-                    });
-                } else {
-                    success(self.catalogLink, self.id, self);
-                }
             }
-        }
-    };
-
-    BookSource.prototype.__refreshCatalog = function (bookSourceManager, book, success, fail) {
-
-        var self = this;
-        if (new Date().getTime() - self.updatedCatalogTime < bookSourceManager.settings.refreshCatalogInterval * 1000) {
-            if (fail) fail(BookSource.getError(400));
-        } else {
-            util.log('Refresh Catalog!');
-            self.__getBookSourceCatalogLink(bookSourceManager, book, function (catalogLink, bsid, bs) {
-                bookSourceManager.getBookCatalog(self.id, catalogLink, function (catalog) {
-                    self.catalog = catalog;
-                    self.updatedCatalogTime = new Date().getTime();
-                    self.needSaveCatalog = true;
-                    if (success) success(catalog);
-                }, fail);
-            }, fail);
-        }
-    };
-
-    BookSource.prototype.getBookInfo = function (bookSourceManager, book, success, fail) {
-        var self = this;
-        self.__getBookSourceDetailLink(bookSourceManager, book, function (detailLink, bsid, bs) {
-            bookSourceManager.getBookInfo(bsid, detailLink, success, fail);
-        }, fail);
-    };
-
-    BookSource.prototype.getCatalog = function (bookSourceManager, book, forceRefresh, success, fail) {
-        var self = this;
-        if (!forceRefresh && self.catalog) {
-            if (success) success(self.catalog);
-        } else {
-            self.__refreshCatalog(bookSourceManager, book, success, function (error) {
-                if (error.id == 400) {
-                    if (success) success(self.catalog);
-                } else {
-                    if (fail) fail(error);
+        }, {
+            key: "__getBookSourceDetailLink",
+            value: function __getBookSourceDetailLink(bookSourceManager, book) {
+                if (!this.searched) {
+                    return this.getBookSource(bookSourceManager, book).then(function (bs) {
+                        return bs.detailLink;
+                    });
                 }
-            });
-        }
-    };
 
-    BookSource.prototype.refreshLastestChapter = function (bookSourceManager, book, success, fail) {
-        var self = this;
-        if (new Date().getTime() - self.updatedLastestChapterTime < bookSourceManager.settings.refreshLastestChapterInterval * 1000) {
-            if (fail) fail(BookSource.getError(402));
-        } else {
-            util.log('Refresh LastestChapter!');
+                if (this.disable) {
+                    return Promise.reject(404);
+                }
 
-            self.__getBookSourceDetailLink(bookSourceManager, book, function (detailLink, bsid, bs) {
+                return Promise.resolve(this.detailLink);
+            }
+        }, {
+            key: "__getBookSourceCatalogLink",
+            value: regeneratorRuntime.mark(function __getBookSourceCatalogLink(bookSourceManager, book) {
+                var bsm, detailLink, html, link, catalogLink, o, _link;
 
-                bookSourceManager.getLastestChapter(bsid, detailLink, function (lastestChapter) {
-                    bs.updatedLastestChapterTime = new Date().getTime();
+                return regeneratorRuntime.wrap(function __getBookSourceCatalogLink$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                if (this.searched) {
+                                    _context.next = 3;
+                                    break;
+                                }
+
+                                _context.next = 3;
+                                return this.getBookSource(bookSourceManager, book);
+
+                            case 3:
+                                if (!this.disable) {
+                                    _context.next = 5;
+                                    break;
+                                }
+
+                                return _context.abrupt("return", Promise.reject(404));
+
+                            case 5:
+                                if (this.catalogLink) {
+                                    _context.next = 25;
+                                    break;
+                                }
+
+                                bsm = bookSourceManager.sources[this.id];
+
+                                if (bsm) {
+                                    _context.next = 9;
+                                    break;
+                                }
+
+                                return _context.abrupt("return");
+
+                            case 9:
+                                if (!bsm.detail.info.catalogLink) {
+                                    _context.next = 21;
+                                    break;
+                                }
+
+                                _context.next = 12;
+                                return this.__getBookSourceDetailLink(bookSourceManager, book);
+
+                            case 12:
+                                detailLink = _context.sent;
+                                _context.next = 15;
+                                return util.getDOM(detailLink);
+
+                            case 15:
+                                html = _context.sent;
+
+                                html = $(html);
+                                link = html.find(bsm.detail.info.catalogLink).attr('href');
+
+                                this.catalogLink = link;
+                                _context.next = 25;
+                                break;
+
+                            case 21:
+                                catalogLink = bsm.catalog.link;
+                                o = $.extend({}, this, bookSourceManager[this.id]);
+                                _link = util.format(catalogLink, o);
+
+                                this.catalogLink = _link;
+
+                            case 25:
+                                return _context.abrupt("return", this.catalogLink);
+
+                            case 26:
+                            case "end":
+                                return _context.stop();
+                        }
+                    }
+                }, __getBookSourceCatalogLink, this);
+            })
+        }, {
+            key: "__refreshCatalog",
+            value: regeneratorRuntime.mark(function __refreshCatalog(bookSourceManager, book) {
+                var catalogLink, catalog;
+                return regeneratorRuntime.wrap(function __refreshCatalog$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                if (!(new Date().getTime() - this.updatedCatalogTime < bookSourceManager.settings.refreshCatalogInterval * 1000)) {
+                                    _context2.next = 2;
+                                    break;
+                                }
+
+                                return _context2.abrupt("return", Promise.reject(400));
+
+                            case 2:
+
+                                util.log('Refresh Catalog!');
+                                _context2.next = 5;
+                                return this.__getBookSourceCatalogLink(bookSourceManager, book);
+
+                            case 5:
+                                catalogLink = _context2.sent;
+                                _context2.next = 8;
+                                return bookSourceManager.getBookCatalog(this.id, catalogLink);
+
+                            case 8:
+                                catalog = _context2.sent;
+
+                                this.catalog = catalog;
+                                this.updatedCatalogTime = new Date().getTime();
+                                this.needSaveCatalog = true;
+                                return _context2.abrupt("return", catalog);
+
+                            case 13:
+                            case "end":
+                                return _context2.stop();
+                        }
+                    }
+                }, __refreshCatalog, this);
+            })
+        }, {
+            key: "getBookInfo",
+            value: function getBookInfo(bookSourceManager, book) {
+                var _this2 = this;
+
+                return this.__getBookSourceDetailLink(bookSourceManager, book).then(function (detailLink) {
+                    return bookSourceManager.getBookInfo(_this2.id, detailLink);
+                });
+            }
+        }, {
+            key: "getCatalog",
+            value: function getCatalog(bookSourceManager, book, forceRefresh) {
+                var _this3 = this;
+
+                if (!forceRefresh && this.catalog) {
+                    return Promise.resolve(this.catalog);
+                }
+                return co(this.__refreshCatalog(bookSourceManager, book)).catch(function (error) {
+                    if (error == 400) {
+                        return _this3.catalog;
+                    } else {
+                        throw error;
+                    }
+                });
+            }
+        }, {
+            key: "refreshLastestChapter",
+            value: function refreshLastestChapter(bookSourceManager, book) {
+                var _this4 = this;
+
+                if (new Date().getTime() - this.updatedLastestChapterTime < bookSourceManager.settings.refreshLastestChapterInterval * 1000) {
+                    return Promise.reject(402);
+                }
+
+                util.log('Refresh LastestChapter!');
+
+                return this.__getBookSourceDetailLink(bookSourceManager, book).then(function (detailLink) {
+                    return bookSourceManager.getLastestChapter(_this4.id, detailLink);
+                }).then(function (lastestChapter) {
+                    _this4.updatedLastestChapterTime = new Date().getTime();
                     var lastestChapterUpdated = false;
-                    if (bs.lastestChapter != lastestChapter) {
-                        bs.lastestChapter = lastestChapter;
+                    if (_this4.lastestChapter != lastestChapter) {
+                        _this4.lastestChapter = lastestChapter;
                         lastestChapterUpdated = true;
                     }
-                    if (success) success(lastestChapter, lastestChapterUpdated);
-                }, fail);
-            }, fail);
-        }
-    };
-
-    BookSource.prototype.getChapter = function (bookSourceManager, book, chapter, onlyCacheNoLoad, success, fail) {
-        var self = this;
-
-        self.__getCacheChapter(book, chapter.title, onlyCacheNoLoad, function (c) {
-            if (success) success(onlyCacheNoLoad ? chapter : c);
-        }, function (error) {
-            if (error.id == 207) {
-                bookSourceManager.getChapter(self.id, chapter.link, function (chapter) {
-                    if (success) success(chapter);
-
-                    self.__cacheChapter(book, chapter, null, null);
-                }, fail);
-            } else {
-                if (fail) fail(error);
+                    return [lastestChapter, lastestChapterUpdated];
+                });
             }
-        });
-    };
+        }, {
+            key: "getChapter",
+            value: function getChapter(bookSourceManager, book, chapter, onlyCacheNoLoad) {
+                var _this5 = this;
 
-    BookSource.prototype.__getCacheChapterLocation = function (book, id) {
-        var self = this;
-        var bid = book.name + '.' + book.author;
-        var chapterFileName = id + '.' + self.id;
-        var dest = "chapter_" + bid + "_" + chapterFileName;
-        return dest;
-    };
+                return co(this.__getCacheChapter(book, chapter.title, onlyCacheNoLoad)).then(function (c) {
+                    return onlyCacheNoLoad ? chapter : c;
+                }).catch(function (error) {
+                    if (error != 207) throw error;
 
-    BookSource.prototype.__getCacheChapter = function (book, title, onlyCacheNoLoad, success, fail) {
+                    return bookSourceManager.getChapter(_this5.id, chapter.link).then(function (chapter) {
+                        return _this5.__cacheChapter(book, chapter);
+                    });
+                });
+            }
+        }, {
+            key: "__getCacheChapterLocation",
+            value: function __getCacheChapterLocation(book, id) {
+                return "chapter_" + book.name + "." + book.author + "_" + id + "." + this.id;
+            }
+        }, {
+            key: "__getCacheChapter",
+            value: regeneratorRuntime.mark(function __getCacheChapter(book, title, onlyCacheNoLoad) {
+                var dest, exists, data, chapter;
+                return regeneratorRuntime.wrap(function __getCacheChapter$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                dest = this.__getCacheChapterLocation(book, title);
 
-        var self = this;
-        var dest = self.__getCacheChapterLocation(book, title);
+                                if (!onlyCacheNoLoad) {
+                                    _context3.next = 6;
+                                    break;
+                                }
 
-        if (onlyCacheNoLoad) {
-            util.dataExists(dest, function () {
-                if (success) success(null);
-            }, function () {
-                if (fail) fail(BookSource.getError(207));
-            }, true);
-            return;
-        } else {
-            util.loadData(dest, function (data) {
-                if (data != null) {
-                    if (success) {
-                        var chapter = new Chapter();
+                                _context3.next = 4;
+                                return util.dataExists(dest, true);
 
-                        chapter = $.extend(true, chapter, data);
-                        success(chapter);
+                            case 4:
+                                exists = _context3.sent;
+                                return _context3.abrupt("return", exists ? null : Promise.reject(207));
+
+                            case 6:
+                                _context3.prev = 6;
+                                _context3.next = 9;
+                                return util.loadData(dest, true);
+
+                            case 9:
+                                data = _context3.sent;
+
+                                if (data) {
+                                    _context3.next = 12;
+                                    break;
+                                }
+
+                                return _context3.abrupt("return", Promise.reject(207));
+
+                            case 12:
+                                chapter = new Chapter();
+
+                                chapter = $.extend(true, chapter, data);
+                                return _context3.abrupt("return", chapter);
+
+                            case 17:
+                                _context3.prev = 17;
+                                _context3.t0 = _context3["catch"](6);
+                                return _context3.abrupt("return", Promise.reject(207));
+
+                            case 20:
+                            case "end":
+                                return _context3.stop();
+                        }
                     }
-                } else {
-                    if (fail) fail(BookSource.getError(207));
-                }
-            }, function () {
-                if (fail) fail(BookSource.getError(207));
-            }, true);
-        }
-    };
+                }, __getCacheChapter, this, [[6, 17]]);
+            })
+        }, {
+            key: "__cacheChapter",
+            value: function __cacheChapter(book, chapter) {
+                var dest = this.__getCacheChapterLocation(book, chapter.title);
+                return util.saveData(dest, chapter, true).then(function () {
+                    return chapter;
+                });
+            }
+        }]);
 
-    BookSource.prototype.__cacheChapter = function (book, chapter, success, fail) {
-
-        var self = this;
-
-        var dest = self.__getCacheChapterLocation(book, chapter.title);
-        util.saveData(dest, chapter, success, fail, true);
-    };
+        return BookSource;
+    }();
 
     return BookSource;
 });

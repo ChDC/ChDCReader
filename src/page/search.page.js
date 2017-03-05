@@ -3,12 +3,11 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     // 加载结果列表
     function loadBooks(id, books, bookSourceId){
-        var bs = $(id);
-        var b = $(".template .book");
+        let bs = $(id);
+        let b = $(".template .book");
         bs.empty();
-        $(books).each(function(){
-            var book = this;
-            var nb = b.clone();
+        for(let book of books){
+            let nb = b.clone();
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
             nb.find(".book-name").text(book.name);
@@ -17,84 +16,77 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             nb.find(".book-catagory").text(book.catagory);
             nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
             nb.find(".book-introduce").text(book.introduce);
-            var bookDetailEvent = function(book){
-                return function(){
-                    var params = {
-                        bookSourceId: bookSourceId,
-                        book: book
-                    };
-                    page.showPage("bookdetail", params);
-                };
-            }(book);
 
             if(app.bookShelf.hasBook(book)){
                 nb.find(".btnAddToBookshelf").attr('disabled', 'disabled');
             }
             else{
-                nb.find(".btnAddToBookshelf").click(function(event){
-                    app.bookShelf.addBook(book, function(){
-                        util.showMessage("添加成功！");
-                        $(event.currentTarget).attr("disabled", "disabled");
-                    });
+                nb.find(".btnAddToBookshelf").click(event => {
+                    app.bookShelf.addBook(book);
+                    util.showMessage("添加成功！");
+
+                    book.checkBookSources(app.bookSourceManager);
+                    // 缓存
+                    book.cacheChapter(0, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager})
+                    $(event.currentTarget).attr("disabled", "disabled");
                 });
             }
-            nb.find(".btnDetail").click(bookDetailEvent);
+            nb.find(".btnDetail").click(e => page.showPage("bookdetail", {
+                        bookSourceId: bookSourceId,
+                        book: book
+                    }));
             bs.append(nb);
-        })
+        }
     };
 
     function search(){
         app.showLoading();
-        var keyword = $(".keyword").val();
-        var bookSourceId = $(".bookSource").val();
+        let keyword = $(".keyword").val();
+        let bookSourceId = $(".bookSource").val();
         $('.result').empty();
-        if(keyword && bookSourceId){
-            app.bookSourceManager.searchBook(bookSourceId, keyword,
-                    function(books){
-                        loadBooks(".result", books, bookSourceId);
-                        app.hideLoading();
-                    },
-                    function(error){
-                        util.showError(error.message);
-                        app.hideLoading();
-                    });
+        if(!keyword || !bookSourceId){
+            util.showError("请输入要搜索的关键字");
+            return;
         }
+
+        app.bookSourceManager.searchBook(bookSourceId, keyword)
+            .then(books => {
+                app.hideLoading();
+                loadBooks(".result", books, bookSourceId);
+            })
+            .catch(error => {
+                app.hideLoading();
+                util.showError(app.error.getMessage(error));
+            });
     }
 
     function loadView(){
         // 添加选项
-        var bookSource = $(".bookSource");
-        var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
-        for(var i = 0; i < keys.length; i++)
+        let bookSource = $(".bookSource");
+        let keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
+        for(let bskey of keys)
         {
-            var bskey = keys[i];
-            var bs = app.bookSourceManager.sources[bskey];
-            var newOption = '<option value ="'+ bskey + '">' + bs.name + '</option>';
+            let bs = app.bookSourceManager.sources[bskey];
+            let newOption = `<option value ="${bskey}">${bs.name}</option>`;
             bookSource.append(newOption);
         }
-        $("#btnClose").click(function(){page.closePage();});
+        $("#btnClose").click(e => page.closePage());
         $(".btnSearch").click(search);
-        $(".keyword").on('keydown', function(event){
-            if(event.keyCode==13){
-                search();
-            }
-        });
-        $(".keyword").on('focus', function(event){
-            event.currentTarget.select();
-        });
+        $(".keyword").on('keydown', event => event.keyCode==13 && search());
+        $(".keyword").on('focus', event => event.currentTarget.select());
     }
 
     return {
-        onload: function(params, baseurl){
+        onload(params, baseurl){
             loadView();
         },
-        onresume: function(){
+        onresume(){
 
         },
-        onpause: function(){
+        onpause(){
 
         },
-        onclose: function(params){
+        onclose(params){
 
         }
     };

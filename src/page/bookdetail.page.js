@@ -1,13 +1,9 @@
 "use strict"
 define(["jquery", "main", "page", "util"], function($, app, page, util){
 
-    function fail(error){
-        util.showError(error.message);
-    }
-
     // 加载书籍详情
     function loadBookDetail(id, book, bookSourceId){
-        var nb = $(id);
+        let nb = $(id);
         if(book.cover)
             nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
@@ -17,23 +13,18 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
         nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
         nb.find(".book-introduce").text(book.introduce);
 
-        nb.find(".btnRead").click(function(){
-            debugger;
-            var params = {
+        nb.find(".btnRead").click( e => page.showPage("readbook", {
                 bookSourceId: bookSourceId,
                 book: book
-            };
-            page.showPage("readbook", params);
-        });
+            }));
 
         if(app.bookShelf.hasBook(book)){
             nb.find(".btnAddToBookshelf").hide();
         }
         else{
-            nb.find(".btnAddToBookshelf").click(function(){
-                app.bookShelf.addBook(book, function(){
-                    util.showMessage("添加成功！");
-                });
+            nb.find(".btnAddToBookshelf").click(e => {
+                app.bookShelf.addBook(book);
+                util.showMessage("添加成功！");
             });
         }
     };
@@ -41,24 +32,23 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     // 加载章节列表
     function loadBookChapters(id, book, bookSourceId){
 
-        var bookChapter = $(id);
-        var c = $(".template .book-chapter");
+        let bookChapter = $(id);
+        let c = $(".template .book-chapter");
         bookChapter.empty();
-        book.getCatalog(loadBookChaptersToView, fail, {
-                                                    bookSourceManager: app.bookSourceManager,
-                                                    bookSourceId: bookSourceId
-                                                });
-        function loadBookChaptersToView(catalog){
-            $(catalog).each(function(){
-                var nc = c.clone();
-                nc.text(this.title);
-                var self = this;
-                nc.click(function(){
-                    // TODO: 打开阅读页面
-                });
-                bookChapter.append(nc);
-            });
-        }
+        book.getCatalog({bookSourceManager: app.bookSourceManager,
+                            bookSourceId: bookSourceId
+                        })
+            .then(catalog => {
+                for(let chapter of catalog){
+                    let nc = c.clone();
+                    nc.text(chapter.title);
+                    nc.click(e => {
+                        // TODO: 打开阅读页面
+                    });
+                    bookChapter.append(nc);
+                };
+            })
+            .catch(error => util.showError(app.error.getMessage(error)));
     };
 
     function loadView(params){
@@ -68,16 +58,16 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     }
 
     return {
-        onload: function(params, p){
+        onload(params, p){
             loadView(params);
         },
-        onresume: function(){
+        onresume(){
 
         },
-        onpause: function(){
+        onpause(){
 
         },
-        onclose: function(params){
+        onclose(params){
 
         }
     };

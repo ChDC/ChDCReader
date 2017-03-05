@@ -6,43 +6,40 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
     }
 
     function removeBook(event){
-        var target = $(event.currentTarget);
-        var i = target.data('book-index');
-        app.bookShelf.removeBook(i, function(){
-            loadBooks(".bookshelf", app.bookShelf);
-        });
+        let target = $(event.currentTarget);
+        let i = target.data('book-index');
+        app.bookShelf.removeBook(i);
+        loadBooks(".bookshelf", app.bookShelf);
         return false;
     }
 
     // 加载书架列表
     function loadBooks(id, bookShelf){
-        var books = bookShelf.books;
-        var bs = $(id);
+        let books = bookShelf.books;
+        let bs = $(id);
         bs.empty();
-        var b = $(".template .book");
+        let b = $(".template .book");
         $(books).each(function(i){
-            var self = this;
-            var readingRecord = this.readingRecord;
-            var book = this.book;
+            let readingRecord = this.readingRecord;
+            let book = this.book;
 
-            var nb = b.clone();
+            let nb = b.clone();
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
             nb.find(".book-name").text(book.name);
             nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
             // 刷新最新章节
-            book.getLastestChapter(function(lastestChapter){
-                nb.find(".book-lastestchapter")
-                    .text("最新章节：" + (lastestChapter? lastestChapter : "无"))
-                    .css('color', isReadingLastestChapter(lastestChapter, readingRecord)? 'black' : 'red');
-            }, null, {bookSourceManager: app.bookSourceManager});
+            book.getLastestChapter({bookSourceManager: app.bookSourceManager})
+                .then(([lastestChapter]) => {
+                    nb.find(".book-lastestchapter")
+                        .text("最新章节：" + (lastestChapter? lastestChapter : "无"))
+                        .css('color', isReadingLastestChapter(lastestChapter, readingRecord)? 'black' : 'red');
+                });
 
-            nb.click(function(){
-                page.showPage("readbook", self);
-            });
+            nb.click(() => page.showPage("readbook", this));
 
-            nb.find('.btnBookMenu').click(function(event){
+            nb.find('.btnBookMenu').click(event => {
                 $(event.currentTarget).dropdown();
                 return false;
             }).dropdown();
@@ -53,51 +50,40 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
     };
 
     function loadView(){
-        $("#btnCheckUpdate").click(function(){
-            app.chekcUpdate(true, true);
-        });
-        $("#btnCheckBookSources").click(function(){
+        $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
+        $("#btnCheckBookSources").click(e => {
             $('#output').empty();
             app.bookSourceManager.checkBookSources("data/booksourcesTest.json",
-                function(msg){
-                    $('#output').append($('<p>').text(msg));
-                },
-                function(msg, error){
+                msg => $('#output').append($('<p>').text(msg)),
+                (msg, error) => {
                     if(error)
-                        msg += "(" + error.id + ", " + error.message + ')\n';
+                        msg += `(${error}, ${app.error.getMessage(error)})\n`;
                     $('#output').append($('<p class="error">').text(msg));
-                },
-                function(){
-                    $('#output').append($('<p>').text("完成！"));
-                });
+                })
+                .then(() => $('#output').append($('<p>').text("完成！")));
         });
-        $(".btnSearch").click(function(){
-            page.showPage("search");
-        });
+        $(".btnSearch").click(e => page.showPage("search"));
 
-        $("#btnTest").click(function(){
-            app.bookSourceManager.qidian.init();
-        });
+        $("#btnTest").click(e => app.bookSourceManager.qidian.init());
     }
 
     return {
-        onload: function(params){
+        onload(params){
             loadView();
         },
-        onresume: function(){
+        onresume(){
             if(app.bookShelf.loaded){
                 loadBooks(".bookshelf", app.bookShelf);
             }
             else{
-                app.bookShelf.load(function(){
-                    loadBooks(".bookshelf", app.bookShelf);
-                });
+                app.bookShelf.load()
+                    .then(() => loadBooks(".bookshelf", app.bookShelf));
             }
         },
-        onpause: function(){
+        onpause(){
 
         },
-        onclose: function(params){
+        onclose(params){
 
         }
     };

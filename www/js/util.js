@@ -35,14 +35,13 @@ define(["jquery"], function ($) {
                 return localStorage.removeItem(keyName);
             }
         },
-
-        log: function log(content, content2) {
-            var msg = "[" + new Date().toLocaleString() + "] " + content;
-            if (content2) msg += ": " + content2;
+        log: function log(content, detailContent) {
+            var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
             console.log(msg);
         },
-        error: function error(content) {
-            console.error("[" + new Date().toLocaleString() + "] " + content);
+        error: function error(content, detailContent) {
+            var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
+            console.error(msg);
         },
         __getParamsString: function __getParamsString(params) {
             if (!params) return "";
@@ -52,9 +51,11 @@ define(["jquery"], function ($) {
             };
             return r.substring(0, r.length - 1);
         },
-        showMessage: function showMessage(msg, delay, level) {
+        showMessage: function showMessage(msg) {
+            var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
+            var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
             if (!msg) return;
-            delay = delay || 1000;
             var msgBoxContainer = $('<div class="message-box-container"></div>');
             var msgBox = $('<div class="message-box"></div>');
             switch (level) {
@@ -72,13 +73,12 @@ define(["jquery"], function ($) {
             msgBoxContainer.append(msgBox);
             $('body').append(msgBoxContainer);
             msgBoxContainer.fadeIn().delay(delay).fadeOut("", function () {
-                $(this).remove();
+                return msgBoxContainer.remove();
             });
         },
         showError: function showError(msg, delay) {
             if (msg) this.showMessage(msg, delay, 'error');
         },
-
         showMessageDialog: function showMessageDialog(title, msg, ok, cancel) {
             var dialog = $('<div class="modal fade" id="modalMessage">' + '    <div class="modal-dialog">' + '      <div class="modal-content">' + '        <div class="modal-header">' + '          <h4 class="modal-title">' + '          </h4>' + '        </div>' + '        <div class="modal-body">' + '          <p class="modal-message"></p>' + '        </div>' + '        <div class="modal-footer">' + '          <button type="button" class="btn btn-default" btnCancel data-dismiss="modal">' + '            取消' + '          </button>' + '          <button type="button" class="btn btn-primary btnOK" data-dismiss="modal">' + '          确定' + '          </button>' + '        </div>' + '      </div>' + '    </div>' + '  </div>');
             debugger;
@@ -90,54 +90,70 @@ define(["jquery"], function ($) {
             dialog.find('.modal-message').text(msg);
             dialog.modal('show');
         },
+        get: function get(url, params, dataType) {
+            var _this = this;
 
-        get: function get(url, params, success, failure) {
+            var _ref = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {},
+                _ref$timeout = _ref.timeout,
+                timeout = _ref$timeout === undefined ? 5 : _ref$timeout;
+
             if (url == null) {
-                if (failure) failure('null');
-                return;
+                return Promise.reject();
             }
+
             this.log("Get:" + url + "&" + this.__getParamsString(params));
-            url = encodeURI(url);
-            var self = this;
-            function handleNetworkError(data) {
-                self.error("Fail to get: " + url + ", 网络错误");
 
-                if (failure) failure(data);
-            }
+            var getPromise = new Promise(function (resolve, reject) {
+                url = encodeURI(url);
+                $.get(url, params, resolve, dataType).fail(function (data) {
+                    return reject(data);
+                });
+            });
 
-            return $.get(url, params, success).fail(handleNetworkError);
+            if (timeout <= 0) return getPromise;
+
+            var timeoutPromise = new Promise(function (resolve, reject) {
+                setTimeout(reject, timeout * 1000);
+            });
+
+            return Promise.race([getPromise, timeoutPromise]).catch(function (error) {
+                _this.error("Fail to get: " + url + ", 网络错误");
+                throw error;
+            });
         },
+        getJSON: function getJSON(url, params) {
+            return this.get(url, params, "json");
+        },
+        __filterElement: function __filterElement(html, element) {
+            var endElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : element;
 
-        __filterElement: function __filterElement(html, element, endElement) {
-            endElement = endElement || element;
-            var pattern = '<' + element + '( [^>]*?)?>[\\s\\S]*?</' + endElement + '>';
+            var pattern = "<" + element + "( [^>]*?)?>[\\s\\S]*?</" + endElement + ">";
             html = html.replace(new RegExp(pattern, 'gi'), '');
 
-            pattern = '<' + element + '( [^>]*?)?>';
+            pattern = "<" + element + "( [^>]*?)?>";
             html = html.replace(new RegExp(pattern, 'gi'), '');
             return html;
         },
-        getDOM: function getDOM(url, params, success, failure) {
-            var self = this;
-            function filterHtmlContent(html) {
+        getDOM: function getDOM(url, params) {
+            var _this2 = this;
+
+            var filterHtmlContent = function filterHtmlContent(html) {
                 var m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
                 if (m && m.length >= 2) html = m[1];
 
-                html = self.__filterElement(html, "script");
-                html = self.__filterElement(html, "iframe");
-                html = self.__filterElement(html, "link");
-                html = self.__filterElement(html, "meta");
+                html = _this2.__filterElement(html, "script");
+                html = _this2.__filterElement(html, "iframe");
+                html = _this2.__filterElement(html, "link");
+                html = _this2.__filterElement(html, "meta");
 
                 html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
                 return html;
             };
-            var s = function s(data) {
-                var html = filterHtmlContent(data);
-                success("<div>" + html + "</div>");
-            };
-            this.get(url, params, s, failure);
-        },
 
+            return this.get(url, params).then(function (data) {
+                return "<div>" + filterHtmlContent(data) + "</div>";
+            });
+        },
         getParamsFromURL: function getParamsFromURL(url) {
             if (!url) return {};
             var i = url.indexOf("?");
@@ -156,19 +172,17 @@ define(["jquery"], function ($) {
             }
             return params;
         },
-
         format: function format(string, object) {
             var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-                if (p1 in object) return object[p1];
+                return p1 in object ? object[p1] : "";
             });
             return result;
         },
-
         getDataFromObject: function getDataFromObject(obj, key) {
             var keys = key.split(/\./);
             var result = obj;
-            for (var _i = 0; _i < keys.length; _i++) {
-                var k = keys[_i];
+            for (var i = 0; i < keys.length; i++) {
+                var k = keys[i];
                 if ($.type(result) == 'array') {
                     var tmp = [];
                     for (var j = 0; j < result.length; j++) {
@@ -186,7 +200,6 @@ define(["jquery"], function ($) {
             }
             return result;
         },
-
         fixurl: function fixurl(url, host) {
             if (!url || url.match("^https?://")) return url;
             if (url.match("^//")) {
@@ -194,27 +207,26 @@ define(["jquery"], function ($) {
             } else if (url.match("^javascript:")) {
                 url = "";
             } else if (url.match("^/")) {
-                var _i2 = host.search(/[^\/]\/[^\/]/);
-                if (_i2 >= 0) {
-                    url = host.substring(0, _i2 + 1) + url;
+                var i = host.search(/[^\/]\/[^\/]/);
+                if (i >= 0) {
+                    url = host.substring(0, i + 1) + url;
                 }
             } else {
-                var _i3 = host.lastIndexOf("?");
-                if (_i3 >= 0) {
-                    host = host.substring(0, _i3);
+                var _i = host.lastIndexOf("?");
+                if (_i >= 0) {
+                    host = host.substring(0, _i);
                 }
-                _i3 = host.lastIndexOf("/");
-                if (_i3 >= 0) {
-                    host = host.substring(0, _i3 + 1);
+                _i = host.lastIndexOf("/");
+                if (_i >= 0) {
+                    host = host.substring(0, _i + 1);
                 }
                 url = host + url;
             }
             return url;
         },
-
         html2text: function html2text(html) {
             function replaceElement(html, element, replaceString) {
-                var pattern = '<' + element + '(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</' + element + '>';
+                var pattern = "<" + element + "(?: [^>]*?)?>[s\u3000]*([\\s\\S]*?)[s\u3000]*</" + element + ">";
                 html = html.replace(new RegExp(pattern, 'gi'), replaceString);
                 return html;
             };
@@ -233,110 +245,109 @@ define(["jquery"], function ($) {
         },
         text2html: function text2html(text, className) {
             var html = "";
-            var pStart = className ? '<p class="' + className + '">' : '<p>';
+            var pStart = className ? "<p class=\"" + className + "\">" : '<p>';
             var lines = text.split("\n");
 
-            for (var _i4 = 0; _i4 < lines.length; _i4++) {
-                var line = lines[_i4];
+            lines.forEach(function (line) {
                 line = line.replace(/ /g, '&nbsp;');
-
                 html += pStart + line + '</p>';
-            }
+            });
             return html;
         },
-
         objectCast: function objectCast(obj, ClassFunction) {
             var nc = new ClassFunction();
             $.extend(true, nc, obj);
             return nc;
         },
-        arrayIndex: function arrayIndex(array, item, compareFuntion, startIndex) {
+        __arrayIndex: function __arrayIndex(array, item) {
+            var compareFuntion = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (i1, i2) {
+                return i1 == i2;
+            };
+            var startIndex = arguments[3];
+
             startIndex = startIndex || 0;
-            compareFuntion = compareFuntion || function (i1, i2) {
-                return i1 == i2;
-            };
 
-            for (var _i5 = startIndex; _i5 < array.length; _i5++) {
-                if (compareFuntion(array[_i5], item)) return _i5;
+            for (var i = startIndex; i < array.length; i++) {
+                if (compareFuntion(array[i], item)) return i;
             }
             return -1;
         },
-        arrayLastIndex: function arrayLastIndex(array, item, compareFuntion, startIndex) {
-            startIndex = startIndex || array.length - 1;
-            compareFuntion = compareFuntion || function (i1, i2) {
+        arrayLastIndex: function arrayLastIndex(array, item) {
+            var compareFuntion = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (i1, i2) {
                 return i1 == i2;
             };
-            for (var _i6 = startIndex; _i6 >= 0; _i6--) {
-                if (compareFuntion(array[_i6], item)) return _i6;
+            var startIndex = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : array.length - 1;
+
+
+            for (var i = startIndex; i >= 0; i--) {
+                if (compareFuntion(array[i], item)) return i;
             }
             return -1;
         },
-
         arrayCast: function arrayCast(array, ClassFunction) {
-            for (var _i7 = 0; _i7 < array.length; _i7++) {
+            array.forEach(function (v, i, arr) {
                 var nc = new ClassFunction();
-                $.extend(true, nc, array[_i7]);
-                array[_i7] = nc;
-            }
+                $.extend(true, nc, array[i]);
+                arr[i] = nc;
+            });
         },
-
-        arrayMaxIndex: function arrayMaxIndex(array, compareFuntion) {
-            compareFuntion = compareFuntion || function (a, b) {
-                return a - b;
+        arrayMaxIndex: function arrayMaxIndex(array) {
+            var compareFuntion = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (i1, i2) {
+                return i1 - i2;
             };
 
             var result = [0];
             if (!array || array.length <= 0) return result;
             var max = array[0];
-            for (var _i8 = 1; _i8 < array.length; _i8++) {
-                var r = compareFuntion(array[_i8], max);
+            for (var i = 1; i < array.length; i++) {
+                var r = compareFuntion(array[i], max);
                 if (r > 0) {
                     result.length = 0;
-                    result.push(_i8);
-                    max = array[_i8];
+                    result.push(i);
+                    max = array[i];
                 } else if (r == 0) {
-                    result.push(_i8);
+                    result.push(i);
                 }
             }
             return result;
         },
-
-        arrayMinIndex: function arrayMinIndex(array, compareFuntion) {
-            compareFuntion = compareFuntion || function (a, b) {
+        arrayMinIndex: function arrayMinIndex(array) {
+            var compareFuntion = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (a, b) {
                 return b - a;
             };
+
 
             var result = [0];
             if (!array || array.length <= 0) return result;
             var min = array[0];
-            for (var _i9 = 1; _i9 < array.length; _i9++) {
-                var r = compareFuntion(array[_i9], min);
+            for (var i = 1; i < array.length; i++) {
+                var r = compareFuntion(array[i], min);
                 if (r < 0) {
                     result.length = 0;
-                    result.push(_i9);
-                    min = array[_i9];
+                    result.push(i);
+                    min = array[i];
                 } else if (r == 0) {
-                    result.push(_i9);
+                    result.push(i);
                 }
             }
             return result;
         },
         arrayRemove: function arrayRemove(array, index) {
-            if (i < 0) return array;
-            for (var _i10 = index; _i10 < array.length - 1; _i10++) {
-                array[_i10] = array[_i10 + 1];
+            if (index < 0) return array;
+            for (var i = index; i < array.length - 1; i++) {
+                array[i] = array[i + 1];
             }
             array.length--;
             return array;
         },
-
-        listMatch: function listMatch(listA, listB, indexA, equalFunction, startIndexB) {
-            equalFunction = equalFunction || function (i1, i2) {
-                return i1 == i2;
+        listMatch: function listMatch(listA, listB, indexA) {
+            var equalFunction = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (i1, i2) {
+                return i1 - i2;
             };
+            var startIndexB = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+
 
             if (listA == listB) return indexA;
-            startIndexB = startIndexB || 0;
 
             function compareNeighbor(indexB, offset) {
                 var nia = indexA + offset;
@@ -352,7 +363,7 @@ define(["jquery"], function ($) {
             var itemA = listA[indexA];
 
             while (true) {
-                i = this.arrayIndex(listB, itemA, equalFunction, i + 1);
+                i = this.__arrayIndex(listB, itemA, equalFunction, i + 1);
                 if (i < 0) {
                     if (result.length == 0) {
                         return -1;
@@ -385,12 +396,13 @@ define(["jquery"], function ($) {
                 }
             }
         },
-
-        listMatchWithNeighbour: function listMatchWithNeighbour(listA, listB, indexA, equalFunction, indexB) {
-            if (listA == listB) return indexA;
-            equalFunction = equalFunction || function (i1, i2) {
+        listMatchWithNeighbour: function listMatchWithNeighbour(listA, listB, indexA) {
+            var equalFunction = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (i1, i2) {
                 return i1 == i2;
             };
+            var indexB = arguments[4];
+
+            if (listA == listB) return indexA;
 
             if (indexA < 0 || indexA >= listA.length || listB.length < 2 || listA.length < 2) return -1;
 
@@ -425,7 +437,7 @@ define(["jquery"], function ($) {
 
             var i = -1;
             while (true) {
-                i = this.arrayIndex(listB, itemALeft, equalFunction, i + 1);
+                i = this.__arrayIndex(listB, itemALeft, equalFunction, i + 1);
                 if (i < 0) {
                     _indexBRight = 1;
                     itemBRight = listB[_indexBRight];
@@ -444,8 +456,11 @@ define(["jquery"], function ($) {
                 }
             }
         },
+        objectSortedKey: function objectSortedKey(object) {
+            var getFunctionOrObjectKeyName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (i) {
+                return i;
+            };
 
-        objectSortedKey: function objectSortedKey(object, getFunctionOrObjectKeyName) {
             if ($.type(getFunctionOrObjectKeyName) == 'string') {
                 (function () {
                     var objectKeyName = getFunctionOrObjectKeyName;
@@ -454,9 +469,7 @@ define(["jquery"], function ($) {
                     };
                 })();
             }
-            getFunctionOrObjectKeyName = getFunctionOrObjectKeyName || function (item) {
-                return item;
-            };
+
             var arr = [];
             for (var k in object) {
                 arr.push([k, getFunctionOrObjectKeyName(object[k])]);
@@ -465,128 +478,180 @@ define(["jquery"], function ($) {
                 return e1[1] - e2[1];
             });
             var result = [];
-            for (var _i11 = 0; _i11 < arr.length; _i11++) {
-                result[_i11] = arr[_i11][0];
+            for (var i = 0; i < arr.length; i++) {
+                result[i] = arr[i][0];
             }
             return result;
         },
+        __saveJSONToFile: function __saveJSONToFile(file, data) {
+            var isCacheDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-        __saveJSONToFile: function __saveJSONToFile(file, data, success, fail, isCacheDir) {
-            function createAndWriteFile() {
-                var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
+            return new Promise(function (resolve, reject) {
+                function createAndWriteFile() {
+                    var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
 
-                window.requestFileSystem(fileSystem, 0, function (fs) {
-                    fs.root.getFile(file + ".json", { create: true, exclusive: false }, function (fileEntry) {
-                        var dataObj = new Blob([data], { type: 'text/plain' });
+                    window.requestFileSystem(fileSystem, 0, function (fs) {
+                        fs.root.getFile(file + ".json", { create: true, exclusive: false }, function (fileEntry) {
+                            var dataObj = new Blob([data], { type: 'text/plain' });
 
-                        writeFile(fileEntry, dataObj);
-                    }, fail);
-                }, fail);
-            }
+                            writeFile(fileEntry, dataObj);
+                        }, reject);
+                    }, reject);
+                }
 
-            function writeFile(fileEntry, dataObj) {
-                fileEntry.createWriter(function (fileWriter) {
-                    fileWriter.onwriteend = function () {};
+                function writeFile(fileEntry, dataObj) {
+                    fileEntry.createWriter(function (fileWriter) {
+                        fileWriter.onwriteend = function () {};
 
-                    fileWriter.onerror = function (e) {};
+                        fileWriter.onerror = function (e) {};
 
-                    fileWriter.write(dataObj);
-                    if (success) success();
-                });
-            }
+                        fileWriter.write(dataObj);
+                        resolve();
+                    });
+                }
 
-            data = JSON.stringify(data);
-            createAndWriteFile();
+                data = JSON.stringify(data);
+                createAndWriteFile();
+            });
         },
+        __loadJSONFromFile: function __loadJSONFromFile(file) {
+            var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-        __loadJSONFromFile: function __loadJSONFromFile(file, success, fail, isCacheDir) {
-            function readFile() {
+            return new Promise(function (resolve, reject) {
+                function readFile() {
+                    var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
+
+                    window.requestFileSystem(fileSystem, 0, function (fs) {
+                        fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
+                            fileEntry.file(function (file) {
+                                var reader = new FileReader();
+
+                                reader.onloadend = function () {
+                                    var data = JSON.parse(this.result);
+                                    resolve(data);
+                                };
+
+                                reader.readAsText(file);
+                            }, reject);
+                        }, reject);
+                    }, reject);
+                }
+
+                readFile();
+            });
+        },
+        __fileExists: function __fileExists(file) {
+            var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+            return new Promise(function (resolve, reject) {
                 var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-
                 window.requestFileSystem(fileSystem, 0, function (fs) {
+
                     fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                        fileEntry.file(function (file) {
-                            var reader = new FileReader();
-
-                            reader.onloadend = function () {
-                                var data = JSON.parse(this.result);
-                                if (success) success(data);
-                            };
-
-                            reader.readAsText(file);
-                        }, fail);
-                    }, fail);
-                }, fail);
-            }
-
-            readFile();
+                        resolve(fileEntry.isFile ? true : false);
+                    }, function () {
+                        return resolve(false);
+                    });
+                }, function () {
+                    return resolve(false);
+                });
+            });
         },
+        __removeFile: function __removeFile(file) {
+            var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-        __fileExists: function __fileExists(file, exist, notExist, isCacheDir) {
-            var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-            window.requestFileSystem(fileSystem, 0, function (fs) {
+            return new Promise(function (resolve, reject) {
+                var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
+                window.requestFileSystem(fileSystem, 0, function (fs) {
 
-                fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                    if (fileEntry.isFile) {
-                        if (exist) exist();
-                    } else {
-                        if (notExist) notExist();
-                    }
-                }, notExist);
-            }, notExist);
+                    fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
+                        return fileEntry.remove(resolve, reject);
+                    }, reject);
+                }, reject);
+            });
         },
+        saveData: function saveData(key, data) {
+            var onlyCache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-        __removeFile: function __removeFile(file, success, fail, isCacheDir) {
-            var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-            window.requestFileSystem(fileSystem, 0, function (fs) {
-
-                fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-                    fileEntry.remove(success, fail);
-                }, fail);
-            }, fail);
-        },
-
-        saveData: function saveData(key, data, success, fail, onlyCache) {
             if (window.requestFileSystem) {
-                this.__saveJSONToFile(key, data, success, fail, onlyCache);
+                return this.__saveJSONToFile(key, data, onlyCache);
             } else {
                 var s = onlyCache ? this.cacheStorage : this.storage;
                 s.setItem(key, data);
-                if (success) success();
+                return Promise.resolve();
             }
         },
+        loadData: function loadData(key) {
+            var onlyCache = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-        loadData: function loadData(key, success, fail, onlyCache) {
             if (window.requestFileSystem) {
-                this.__loadJSONFromFile(key, success, fail, onlyCache);
+                return this.__loadJSONFromFile(key, onlyCache);
             } else {
                 var s = onlyCache ? this.cacheStorage : this.storage;
                 var data = s.getItem(key);
-                if (success) success(data);
+                return Promise.resolve(data);
             }
         },
+        removeData: function removeData(key) {
+            var onlyCache = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-        removeData: function removeData(key, success, fail, onlyCache) {
             if (window.requestFileSystem) {
-                this.__removeFile(key, success, fail, onlyCache);
+                return this.__removeFile(key, onlyCache);
             } else {
                 var s = onlyCache ? this.cacheStorage : this.storage;
                 var data = s.removeItem(key);
-                if (success) success();
+                return Promise.resolve();
             }
         },
+        dataExists: function dataExists(key) {
+            var onlyCache = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-        dataExists: function dataExists(key, exist, notExist, onlyCache) {
             if (window.requestFileSystem) {
-                this.__fileExists(key, exist, notExist, onlyCache);
+                return this.__fileExists(key, onlyCache);
             } else {
                 var s = onlyCache ? this.cacheStorage : this.storage;
-                if (s.hasItem(key)) {
-                    if (exist) exist();
-                } else {
-                    if (notExist) notExist();
-                }
+                return Promise.resolve(s.hasItem(key) ? true : false);
             }
+        },
+        stripString: function stripString(str) {
+            str = str.replace(/（.*?）/g, '');
+            str = str.replace(/\(.*?\)/g, '');
+            str = str.replace(/【.*?】/g, '');
+
+            str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
+
+            str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+
+            str = str.replace(/\s/g, '');
+            return str;
+        },
+
+        LoadingBar: function LoadingBar() {
+            var _this3 = this;
+
+            var img = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'img/loadingm.gif';
+            var container = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'body';
+
+            this.__loadingbar = null;
+            this.__img = img;
+            this.container = container;
+
+            this.show = function () {
+                var loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>');
+                var img = $('<img src="' + _this3.__img + '" style="position:relative;opacity:1;"/>');
+                loadingBg.append(img);
+
+                loadingBg.click(function (event) {
+                    _this3.hide();
+                });
+                _this3.__loadingbar = loadingBg;
+                $(_this3.container).append(loadingBg);
+                img.css('top', ($(window).height() - img.height()) / 2);
+            };
+
+            this.hide = function () {
+                _this3.__loadingbar.remove();
+            };
         }
     };
 });
