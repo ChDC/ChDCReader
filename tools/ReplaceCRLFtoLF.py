@@ -25,7 +25,7 @@ def replaceCRLFtoLF(wwwDir):
     for root, dirs, files in os.walk(wwwDir):
         for file in files:
             if os.path.splitext(file)[1] not in (
-                '.js', '.html', '.css', '.json', '.map'
+                '.js', '.html', '.css', '.json', '.map', '.svg'
             ):
                 continue
             file = os.path.join(root, file)
