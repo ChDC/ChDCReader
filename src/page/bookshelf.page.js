@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, util, Chapter){
+define(["jquery", "main", "page", "util", 'Chapter', 'sortablejs'], function($, app, page, util, Chapter, sortablejs){
 
     function isReadingLastestChapter(lastestChapter, readingRecord){
         return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
@@ -47,12 +47,37 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
                 return false;
             }).dropdown();
 
+            nb.data('book-index', i);
+
             nb.find('.btnRemoveBook').click(removeBook).data('book-index', i);
             bs.append(nb);
         });
     };
 
+    // 重新给所有书籍排序
+    function sortBooksByElementOrde(){
+        let newBooks = [];
+        let elements = $(".bookshelf").children();
+        let length = elements.length;
+
+        for(let i = 0; i < length; i++){
+            newBooks[i] = app.bookShelf.books[$(elements[i]).data('book-index')];
+        }
+        if(newBooks.length == app.bookShelf.books.length)
+            app.bookShelf.books = newBooks;
+    }
+
     function loadView(){
+        sortablejs.create($(".bookshelf")[0],
+                        {
+                            handle: ".btnBookMenu",
+                            animation: 150,
+                            // Changed sorting within list
+                            onUpdate: function (event) {
+                                // 更新并保存顺序
+                                sortBooksByElementOrde();
+                            },
+                        });
         $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
         $("#btnCheckBookSources").click(e => {
             $('#output').empty();

@@ -33,7 +33,7 @@
   },
   {
     "file": "js/app.js",
-    "hash": "65c444a0050e76fc778b66c1f6ed5088"
+    "hash": "d60736b6acbc72cee13370a3bd530cb5"
   },
   {
     "file": "js/Book.js",
@@ -54,6 +54,10 @@
   {
     "file": "js/Chapter.js",
     "hash": "a684da9a007e652191134925f03c78de"
+  },
+  {
+    "file": "js/draggable.js",
+    "hash": "5e543256c480ac577d30f76f9120eb74"
   },
   {
     "file": "js/infinitelist.js",
@@ -132,6 +136,78 @@
     "hash": "5fdc2e1b3fed81a837570703204c2a8e"
   },
   {
+    "file": "lib/jquery-ui-1.12.1/AUTHORS.txt",
+    "hash": "403511fc6c430ea6179ebcb4a9983eec"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/external/jquery/jquery.js",
+    "hash": "fb2d334dabf4902825df4fe6c2298b4b"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/images/ui-icons_444444_256x240.png",
+    "hash": "d10bc07005bb2d604f4905183690ac04"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/images/ui-icons_555555_256x240.png",
+    "hash": "00dd0ec0a16a1085e714c7906ff8fb06"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/images/ui-icons_777620_256x240.png",
+    "hash": "4e7e3e142f3939883cd0a7e00cabdaef"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/images/ui-icons_777777_256x240.png",
+    "hash": "40bf25799e4fec8079c7775083de09df"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/images/ui-icons_cc0000_256x240.png",
+    "hash": "093a819138276b446611d1d2a45b98a2"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/images/ui-icons_ffffff_256x240.png",
+    "hash": "ea4ebe072be75fbbea002631916836de"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/index.html",
+    "hash": "11f31c348968868d4ada89d6162c640e"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.css",
+    "hash": "6fd5a6e8197041971d02cf62d06f4b14"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.js",
+    "hash": "ab5284de5e3d221e53647fd348e5644b"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.min.css",
+    "hash": "0b5729a931d113be34b6fac13bcf5b29"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.min.js",
+    "hash": "c15b1008dec3c8967ea657a7bb4baaec"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.structure.css",
+    "hash": "b75d9919ded1b610c51a4727dd4b9720"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.structure.min.css",
+    "hash": "5581d20aa5062ed5c0b6048f68e76055"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.theme.css",
+    "hash": "c4679db4adb3f9b8089213c6c396e2ee"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/jquery-ui.theme.min.css",
+    "hash": "c12cac44216cf877fd0c6903f3794407"
+  },
+  {
+    "file": "lib/jquery-ui-1.12.1/LICENSE.txt",
+    "hash": "e0c0d3d883e83f19efa64feb54d5f63d"
+  },
+  {
     "file": "lib/polyfill.js",
     "hash": "73a7d09afa40a0d59148f75a4ecde47d"
   },
@@ -142,6 +218,14 @@
   {
     "file": "lib/require.js",
     "hash": "2842d0ca2a86ca59639ffe99308bdf3f"
+  },
+  {
+    "file": "lib/sortablejs-1.5.1/Sortable.js",
+    "hash": "2f26e401705ff2d9d1486f81dc54a1d4"
+  },
+  {
+    "file": "lib/sortablejs-1.5.1/Sortable.min.js",
+    "hash": "8b78d27b3de815cb5dcab5fb9d0afb91"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -165,7 +249,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "eb9c52676353f7a691d94840a189c66d"
+    "hash": "4413aaa981ee469c95d595a789e5352b"
   },
   {
     "file": "page/bookshelf.page.night1.css",

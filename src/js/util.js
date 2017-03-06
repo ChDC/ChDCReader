@@ -764,8 +764,8 @@ define(["jquery"], function($){
 
             // 显示加载进度条
             this.show = () => {
-                var loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>')
-                var img = $('<img src="' + this.__img + '" style="position:relative;opacity:1;"/>');
+                let loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>')
+                let img = $('<img src="' + this.__img + '" style="position:relative;opacity:1;"/>');
                 loadingBg.append(img);
 
                 loadingBg.click((event) => {

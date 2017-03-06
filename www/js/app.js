@@ -9,6 +9,7 @@ requirejs.config({
     "paths": {
         "lib": "../lib",
         "jquery": "../lib/jquery-3.1.1/jquery.min",
+
         "co": "../lib/co",
         "bootstrap": "../lib/bootstrap-3.3.7/js/bootstrap.min",
         "polyfill": "../lib/polyfill.min",
