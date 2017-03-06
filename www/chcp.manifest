@@ -49,7 +49,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "87740a279b5bbf099e21b525eb49cd80"
+    "hash": "65bd0f7a1e35aa13bf7a829a5dd3f502"
   },
   {
     "file": "js/Chapter.js",
@@ -161,11 +161,11 @@
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "f1aec89a7bb81342cbb29c04f4bd665b"
+    "hash": "76bfb89c1687a4518363817ed7d00d44"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "f40f3c75ad725c9a15cecfbaed388236"
+    "hash": "eb9c52676353f7a691d94840a189c66d"
   },
   {
     "file": "page/bookshelf.page.night1.css",

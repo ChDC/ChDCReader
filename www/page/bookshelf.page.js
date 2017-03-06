@@ -36,10 +36,12 @@ define(["jquery", "main", "page", "util", 'Chapter'], function ($, app, page, ut
                 var _ref2 = _slicedToArray(_ref, 1),
                     lastestChapter = _ref2[0];
 
-                nb.find(".book-lastestchapter").text("最新章节：" + (lastestChapter ? lastestChapter : "无")).css('color', isReadingLastestChapter(lastestChapter, readingRecord) ? 'black' : 'red');
+                nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).css('color', isReadingLastestChapter(lastestChapter, readingRecord) ? 'black' : 'red');
+
+                book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { bookSourceManager: app.bookSourceManager });
             });
 
-            nb.click(function () {
+            nb.find('.book-cover, .book-info').click(function () {
                 return page.showPage("readbook", _this);
             });
 

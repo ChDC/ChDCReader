@@ -337,7 +337,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                     log(getInfo() + " -> 测试目录 OK");
 
                     // 测试获取章节
-                    let chapter = bs.getChapter(self, book, catalog[0], false)
+                    let chapter = yield bs.getChapter(self, book, catalog[0], false)
                         .catch(e => {
                             error(getInfo() + " -> 测试章节错误：", e);
                             throw e;
@@ -387,7 +387,13 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                 while(taskQueue.length > 0){
                     let [bsid, book] = taskQueue.shift();
                     log("测试书源：" + self.sources[bsid].name);
-                    yield check(bsid, book);
+                    try{
+                        yield check(bsid, book);
+                    }
+                    catch(e)
+                    {
+
+                    }
                 }
             }());
 

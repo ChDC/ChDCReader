@@ -33,11 +33,14 @@ define(["jquery", "main", "page", "util", 'Chapter'], function($, app, page, uti
             book.getLastestChapter({bookSourceManager: app.bookSourceManager})
                 .then(([lastestChapter]) => {
                     nb.find(".book-lastestchapter")
-                        .text("最新章节：" + (lastestChapter? lastestChapter : "无"))
+                        .text("最新：" + (lastestChapter? lastestChapter : "无"))
                         .css('color', isReadingLastestChapter(lastestChapter, readingRecord)? 'black' : 'red');
+
+                    // 缓存后面章节内容
+                    book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager});
                 });
 
-            nb.click(() => page.showPage("readbook", this));
+            nb.find('.book-cover, .book-info').click(() => page.showPage("readbook", this));
 
             nb.find('.btnBookMenu').click(event => {
                 $(event.currentTarget).dropdown();

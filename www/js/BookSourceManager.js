@@ -417,10 +417,14 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
 
                                         log(getInfo() + " -> 测试目录 OK");
 
-                                        chapter = bs.getChapter(self, book, catalog[0], false).catch(function (e) {
+                                        _context2.next = 9;
+                                        return bs.getChapter(self, book, catalog[0], false).catch(function (e) {
                                             error(getInfo() + " -> 测试章节错误：", e);
                                             throw e;
                                         });
+
+                                    case 9:
+                                        chapter = _context2.sent;
 
 
                                         if (chapter.title == catalog[0].title && chapter.content.length > 0) {
@@ -429,7 +433,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                                             error(getInfo() + " -> 测试章节 Wrong!");
                                         }
 
-                                    case 9:
+                                    case 11:
                                     case "end":
                                         return _context2.stop();
                                 }
@@ -546,26 +550,35 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
 
                                 case 29:
                                     if (!(taskQueue.length > 0)) {
-                                        _context4.next = 36;
+                                        _context4.next = 41;
                                         break;
                                     }
 
                                     _taskQueue$shift = taskQueue.shift(), _taskQueue$shift2 = _slicedToArray(_taskQueue$shift, 2), bsid = _taskQueue$shift2[0], _book = _taskQueue$shift2[1];
 
                                     log("测试书源：" + self.sources[bsid].name);
-                                    _context4.next = 34;
+                                    _context4.prev = 32;
+                                    _context4.next = 35;
                                     return check(bsid, _book);
 
-                                case 34:
+                                case 35:
+                                    _context4.next = 39;
+                                    break;
+
+                                case 37:
+                                    _context4.prev = 37;
+                                    _context4.t3 = _context4["catch"](32);
+
+                                case 39:
                                     _context4.next = 29;
                                     break;
 
-                                case 36:
+                                case 41:
                                 case "end":
                                     return _context4.stop();
                             }
                         }
-                    }, _callee2, this, [[11, 15, 19, 27], [20,, 22, 26]]);
+                    }, _callee2, this, [[11, 15, 19, 27], [20,, 22, 26], [32, 37]]);
                 })());
             }
         }]);
