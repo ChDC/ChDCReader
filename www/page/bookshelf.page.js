@@ -2,7 +2,7 @@
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-define(["jquery", "main", "page", "util", 'Chapter', 'draggable'], function ($, app, page, util, Chapter, draggable) {
+define(["jquery", "main", "page", "util", 'Chapter', 'sortablejs'], function ($, app, page, util, Chapter, sortablejs) {
 
     function isReadingLastestChapter(lastestChapter, readingRecord) {
         return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
@@ -50,14 +50,33 @@ define(["jquery", "main", "page", "util", 'Chapter', 'draggable'], function ($, 
                 return false;
             }).dropdown();
 
+            nb.data('book-index', i);
+
             nb.find('.btnRemoveBook').click(removeBook).data('book-index', i);
             bs.append(nb);
-
-            draggable.enable(nb.find(".btnSettings"), nb);
         });
     };
 
+    function sortBooksByElementOrde() {
+        var newBooks = [];
+        var elements = $(".bookshelf").children();
+        var length = elements.length;
+
+        for (var i = 0; i < length; i++) {
+            newBooks[i] = app.bookShelf.books[$(elements[i]).data('book-index')];
+        }
+        if (newBooks.length == app.bookShelf.books.length) app.bookShelf.books = newBooks;
+    }
+
     function loadView() {
+        sortablejs.create($(".bookshelf")[0], {
+            handle: ".btnBookMenu",
+            animation: 150,
+
+            onUpdate: function onUpdate(event) {
+                sortBooksByElementOrde();
+            }
+        });
         $("#btnCheckUpdate").click(function (e) {
             return app.chekcUpdate(true, true);
         });

@@ -33,7 +33,7 @@
   },
   {
     "file": "js/app.js",
-    "hash": "d60736b6acbc72cee13370a3bd530cb5"
+    "hash": "fa66958b7f9cbaa84b275e5a36e3b3ff"
   },
   {
     "file": "js/Book.js",
@@ -57,7 +57,7 @@
   },
   {
     "file": "js/draggable.js",
-    "hash": "5e543256c480ac577d30f76f9120eb74"
+    "hash": "97f0d7fc08cfb3f85b55ede93f46a19a"
   },
   {
     "file": "js/infinitelist.js",
@@ -249,7 +249,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "4413aaa981ee469c95d595a789e5352b"
+    "hash": "22b05d9efe5175753a411092cef42d21"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -285,6 +285,6 @@
   },
   {
     "file": "test.html",
-    "hash": "ba74e289befa6d535d0818428ef62d54"
+    "hash": "956c3c319fcb66e9a36fe10674314e05"
   }
 ]
