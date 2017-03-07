@@ -261,6 +261,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function ($, app, pag
         onpause: function onpause() {
             readingRecord.pageScrollTop = chapterList.getPageScorllTop();
             document.removeEventListener("pause", onPause, false);
+            app.bookShelf.save();
         },
         onclose: function onclose(params) {}
     };

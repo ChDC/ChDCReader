@@ -23,12 +23,18 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
             else{
                 nb.find(".btnAddToBookshelf").click(event => {
                     app.bookShelf.addBook(book);
-                    util.showMessage("添加成功！");
 
-                    book.checkBookSources(app.bookSourceManager);
-                    // 缓存
-                    book.cacheChapter(0, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager})
                     $(event.currentTarget).attr("disabled", "disabled");
+                    app.bookShelf.save()
+                        .then(()=>{
+                            util.showMessage("添加成功！");
+                            book.checkBookSources(app.bookSourceManager);
+                            // 缓存
+                            book.cacheChapter(0, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager});
+                        })
+                        .catch(error => {
+                            $(event.currentTarget).removeAttr("disabled");
+                        });
                 });
             }
             nb.find(".btnDetail").click(e => page.showPage("bookdetail", {

@@ -27,12 +27,16 @@ define(["jquery", "main", "page", "util"], function ($, app, page, util) {
                 } else {
                     nb.find(".btnAddToBookshelf").click(function (event) {
                         app.bookShelf.addBook(book);
-                        util.showMessage("添加成功！");
 
-                        book.checkBookSources(app.bookSourceManager);
-
-                        book.cacheChapter(0, app.settings.settings.cacheChapterCount, { bookSourceManager: app.bookSourceManager });
                         $(event.currentTarget).attr("disabled", "disabled");
+                        app.bookShelf.save().then(function () {
+                            util.showMessage("添加成功！");
+                            book.checkBookSources(app.bookSourceManager);
+
+                            book.cacheChapter(0, app.settings.settings.cacheChapterCount, { bookSourceManager: app.bookSourceManager });
+                        }).catch(function (error) {
+                            $(event.currentTarget).removeAttr("disabled");
+                        });
                     });
                 }
                 nb.find(".btnDetail").click(function (e) {

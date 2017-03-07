@@ -9,7 +9,15 @@ define(["jquery", "main", "page", "util", 'Chapter', 'sortablejs'], function($, 
         let target = $(event.currentTarget);
         let i = target.data('book-index');
         app.bookShelf.removeBook(i);
-        loadBooks(".bookshelf", app.bookShelf);
+        app.bookShelf.save()
+            .then(() => {
+                util.showMessage("删除成功！");
+                loadBooks(".bookshelf", app.bookShelf);
+            })
+            .catch(error => {
+                util.showError("删除失败！");
+                loadBooks(".bookshelf", app.bookShelf);
+            });
         return false;
     }
 
