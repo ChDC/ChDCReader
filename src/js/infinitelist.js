@@ -285,8 +285,8 @@ define(["jquery", "co"], function($, co) {
                     self.itemList.append(newItem);
                 }
                 else{
-                    self.itemList.prepend(newItem);
                     let cs = self.container.scrollTop();
+                    self.itemList.prepend(newItem);
                     self.container.scrollTop(cs + newItem.outerHeight(true));
                 }
                 if(self.onNewListItemFinished)

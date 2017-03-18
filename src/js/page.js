@@ -1,7 +1,7 @@
 define(["jquery", "util"], function($, util){
     let pageManager = {
 
-        container: "[data-page-container]",  // 页面容器的选择器
+        container: null,  // 页面容器的选择器
         baseurl: "page",    // 页面存储的默认目录名
         pageStack: [],  // 页面存储栈
         currentPage: undefined,  // 当前页面信息
@@ -23,10 +23,18 @@ define(["jquery", "util"], function($, util){
 
                 // 刷新当前页面的 CSS
                 let urls = this.getURLs(this.currentPage);
-                let pageContainer = $(this.container);
-                let cssthemeelemnt = pageContainer.find(".page-content-container .csstheme");
-                let newcssthemeurl = urls.cssthemeurl;
-                cssthemeelemnt.attr('href', newcssthemeurl);
+                this.__changeThemeContent(urls.cssthemeurl);
+            }
+        },
+        __changeThemeContent(cssThemeUrl){
+            // Load page theme css
+            let cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
+            if(cssThemeUrl){
+                $.get(cssThemeUrl, cssContent => cssthemeelemnt.text(cssContent).data('url', cssThemeUrl))
+                    .fail(() => cssthemeelemnt.text("").data('url', cssThemeUrl));
+            }
+            else{
+                cssthemeelemnt.text("").data('url', "");
             }
         },
 
@@ -46,7 +54,7 @@ define(["jquery", "util"], function($, util){
             options = options || {};
 
             // util.log("showPage", baseurl);
-            let pageContainer = $(this.container);
+            let pageContainer = this.container;
 
             // 如果栈中有该页则从栈中加载
             let i = util.arrayLastIndex(this.pageStack, name, (element, name) =>
@@ -72,7 +80,7 @@ define(["jquery", "util"], function($, util){
 
                 let __showPage = () => {
                     pageContainer.children().detach();
-                    pageContainer.append(content);
+                    pageContainer.append(contentContainer);
 
                     this.currentPage = name;
                     this.__saveState(name, params);
@@ -87,13 +95,21 @@ define(["jquery", "util"], function($, util){
                 }
 
                 // util.log("Gotten page", name);
-                // Load page content
-                let contentContainer = '<div class="page-content-container"></div>';
-                content = $(contentContainer).wrapInner(content);
+                let contentContainer = $('<div class="page-content-container"></div>');
+                // load page content
+                contentContainer.append(content);
                 // Load page css
-                content.append($('<link rel="stylesheet" type="text/css" href="' + urls.cssurl + '">'));
-                // Load page theme css
-                content.append($('<link class="csstheme" rel="stylesheet" type="text/css" href="' + urls.cssthemeurl + '">'));
+                $.get(urls.cssurl, cssContent => {
+                    contentContainer.append($("<style>").text(cssContent));
+
+                    contentContainer.append($('<style class="csstheme">').data('url', urls.cssthemeurl));
+                    // Load page theme css
+                    if(urls.cssthemeurl){
+                        $.get(urls.cssthemeurl, cssContent => {
+                            contentContainer.find('style.csstheme').text(cssContent);
+                        });
+                    }
+                });
 
                 if(options.clear === true){
                     debugger;
@@ -152,14 +168,15 @@ define(["jquery", "util"], function($, util){
             return new Promise((resolve, reject) => {
                 let p = this.pageStack.pop();
                 if(p){
-                    let pageContainer = $(this.container);
+                    let pageContainer = this.container;
                     this.currentPage = p.page;
                     let urls = this.getURLs(this.currentPage);
                     // Load Theme CSS
-                    let cssthemeelemnt = p.content.find(".csstheme");
+                    let cssthemeelemnt = p.content.find("style.csstheme");
                     let newcssthemeurl = urls.cssthemeurl;
-                    if(cssthemeelemnt.attr('href') != newcssthemeurl){
-                        cssthemeelemnt.attr('href', newcssthemeurl);
+                    if(cssthemeelemnt.data('url') != newcssthemeurl){
+                        // cssthemeelemnt.data('url', newcssthemeurl);
+                        this.__changeThemeContent(newcssthemeurl);
                     }
 
                     pageContainer.children().detach();
@@ -201,6 +218,7 @@ define(["jquery", "util"], function($, util){
         // 初始化页面管理器
         init(){
             window.onpopstate = this.__popState.bind(this);
+            this.container = $("[data-page-container]");
         }
     };
     return pageManager;

@@ -74,6 +74,7 @@ define(["jquery"], function($){
         showMessage(msg, delay=1000, level=null){
             if(!msg)
                 return;
+
             let msgBoxContainer = $('<div class="message-box-container"></div>')
             let msgBox = $('<div class="message-box"></div>');
             switch(level){
@@ -89,7 +90,7 @@ define(["jquery"], function($){
             }
             msgBox.text(msg);
             msgBoxContainer.append(msgBox);
-            $('body').append(msgBoxContainer);
+            $(document.body).append(msgBoxContainer);
             msgBoxContainer.fadeIn().delay(delay).fadeOut("", () => msgBoxContainer.remove());
         },
         showError(msg, delay){
@@ -123,7 +124,7 @@ define(["jquery"], function($){
             debugger;
             // TODO 失效后销毁
             // dialog.remove();
-            $('body').append(dialog);
+            $(document.body).append(dialog);
             dialog.find('.btnOk').click(ok);
             dialog.find('.btnCancel').click(cancel);
             dialog.find('.modal-title').text(title);
@@ -343,7 +344,7 @@ define(["jquery"], function($){
         // 将数组中的每个成员的类型都转换为执行的类
         objectCast(obj, ClassFunction){
             let nc = new ClassFunction();
-            $.extend(true, nc, obj);
+            Object.assign(nc, obj);
             return nc;
         },
 
@@ -372,7 +373,7 @@ define(["jquery"], function($){
         arrayCast(array, ClassFunction){
             array.forEach((v, i, arr) => {
                 let nc = new ClassFunction();
-                $.extend(true, nc, array[i]);
+                Object.assign(nc, array[i]);
                 arr[i] = nc;
             });
         },
@@ -573,7 +574,7 @@ define(["jquery"], function($){
         // TODO: 改写到此处
         // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
         objectSortedKey(object, getFunctionOrObjectKeyName=i=>i){
-            if($.type(getFunctionOrObjectKeyName) == 'string'){
+            if(typeof getFunctionOrObjectKeyName == 'string'){
                 let objectKeyName = getFunctionOrObjectKeyName;
                 getFunctionOrObjectKeyName = item => item[objectKeyName];
             }

@@ -56,6 +56,7 @@ define(["jquery"], function ($) {
             var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
             if (!msg) return;
+
             var msgBoxContainer = $('<div class="message-box-container"></div>');
             var msgBox = $('<div class="message-box"></div>');
             switch (level) {
@@ -71,7 +72,7 @@ define(["jquery"], function ($) {
             }
             msgBox.text(msg);
             msgBoxContainer.append(msgBox);
-            $('body').append(msgBoxContainer);
+            $(document.body).append(msgBoxContainer);
             msgBoxContainer.fadeIn().delay(delay).fadeOut("", function () {
                 return msgBoxContainer.remove();
             });
@@ -83,7 +84,7 @@ define(["jquery"], function ($) {
             var dialog = $('<div class="modal fade" id="modalMessage">' + '    <div class="modal-dialog">' + '      <div class="modal-content">' + '        <div class="modal-header">' + '          <h4 class="modal-title">' + '          </h4>' + '        </div>' + '        <div class="modal-body">' + '          <p class="modal-message"></p>' + '        </div>' + '        <div class="modal-footer">' + '          <button type="button" class="btn btn-default" btnCancel data-dismiss="modal">' + '            取消' + '          </button>' + '          <button type="button" class="btn btn-primary btnOK" data-dismiss="modal">' + '          确定' + '          </button>' + '        </div>' + '      </div>' + '    </div>' + '  </div>');
             debugger;
 
-            $('body').append(dialog);
+            $(document.body).append(dialog);
             dialog.find('.btnOk').click(ok);
             dialog.find('.btnCancel').click(cancel);
             dialog.find('.modal-title').text(title);
@@ -256,7 +257,7 @@ define(["jquery"], function ($) {
         },
         objectCast: function objectCast(obj, ClassFunction) {
             var nc = new ClassFunction();
-            $.extend(true, nc, obj);
+            Object.assign(nc, obj);
             return nc;
         },
         __arrayIndex: function __arrayIndex(array, item) {
@@ -287,7 +288,7 @@ define(["jquery"], function ($) {
         arrayCast: function arrayCast(array, ClassFunction) {
             array.forEach(function (v, i, arr) {
                 var nc = new ClassFunction();
-                $.extend(true, nc, array[i]);
+                Object.assign(nc, array[i]);
                 arr[i] = nc;
             });
         },
@@ -461,7 +462,7 @@ define(["jquery"], function ($) {
                 return i;
             };
 
-            if ($.type(getFunctionOrObjectKeyName) == 'string') {
+            if (typeof getFunctionOrObjectKeyName == 'string') {
                 (function () {
                     var objectKeyName = getFunctionOrObjectKeyName;
                     getFunctionOrObjectKeyName = function getFunctionOrObjectKeyName(item) {

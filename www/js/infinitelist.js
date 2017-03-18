@@ -280,9 +280,9 @@ define(["jquery", "co"], function ($, co) {
                                 if (direction >= 0) {
                                     self.itemList.append(newItem);
                                 } else {
-                                    self.itemList.prepend(newItem);
                                     cs = self.container.scrollTop();
 
+                                    self.itemList.prepend(newItem);
                                     self.container.scrollTop(cs + newItem.outerHeight(true));
                                 }
                                 if (self.onNewListItemFinished) self.onNewListItemFinished(self, be, direction);

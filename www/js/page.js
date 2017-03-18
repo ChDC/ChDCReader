@@ -3,7 +3,7 @@
 define(["jquery", "util"], function ($, util) {
     var pageManager = {
 
-        container: "[data-page-container]",
+        container: null,
         baseurl: "page",
         pageStack: [],
         currentPage: undefined,
@@ -15,10 +15,19 @@ define(["jquery", "util"], function ($, util) {
                 if (!this.currentPage) return;
 
                 var urls = this.getURLs(this.currentPage);
-                var pageContainer = $(this.container);
-                var cssthemeelemnt = pageContainer.find(".page-content-container .csstheme");
-                var newcssthemeurl = urls.cssthemeurl;
-                cssthemeelemnt.attr('href', newcssthemeurl);
+                this.__changeThemeContent(urls.cssthemeurl);
+            }
+        },
+        __changeThemeContent: function __changeThemeContent(cssThemeUrl) {
+            var cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
+            if (cssThemeUrl) {
+                $.get(cssThemeUrl, function (cssContent) {
+                    return cssthemeelemnt.text(cssContent).data('url', cssThemeUrl);
+                }).fail(function () {
+                    return cssthemeelemnt.text("").data('url', cssThemeUrl);
+                });
+            } else {
+                cssthemeelemnt.text("").data('url', "");
             }
         },
         getURLs: function getURLs(name) {
@@ -36,7 +45,7 @@ define(["jquery", "util"], function ($, util) {
 
             options = options || {};
 
-            var pageContainer = $(this.container);
+            var pageContainer = this.container;
 
             var i = util.arrayLastIndex(this.pageStack, name, function (element, name) {
                 return element.page == name;
@@ -60,7 +69,7 @@ define(["jquery", "util"], function ($, util) {
 
                 var __showPage = function __showPage() {
                     pageContainer.children().detach();
-                    pageContainer.append(content);
+                    pageContainer.append(contentContainer);
 
                     _this.currentPage = name;
                     _this.__saveState(name, params);
@@ -71,12 +80,21 @@ define(["jquery", "util"], function ($, util) {
                     });
                 };
 
-                var contentContainer = '<div class="page-content-container"></div>';
-                content = $(contentContainer).wrapInner(content);
+                var contentContainer = $('<div class="page-content-container"></div>');
 
-                content.append($('<link rel="stylesheet" type="text/css" href="' + urls.cssurl + '">'));
+                contentContainer.append(content);
 
-                content.append($('<link class="csstheme" rel="stylesheet" type="text/css" href="' + urls.cssthemeurl + '">'));
+                $.get(urls.cssurl, function (cssContent) {
+                    contentContainer.append($("<style>").text(cssContent));
+
+                    contentContainer.append($('<style class="csstheme">').data('url', urls.cssthemeurl));
+
+                    if (urls.cssthemeurl) {
+                        $.get(urls.cssthemeurl, function (cssContent) {
+                            contentContainer.find('style.csstheme').text(cssContent);
+                        });
+                    }
+                });
 
                 if (options.clear === true) {
                     debugger;
@@ -128,14 +146,14 @@ define(["jquery", "util"], function ($, util) {
             return new Promise(function (resolve, reject) {
                 var p = _this3.pageStack.pop();
                 if (p) {
-                    var pageContainer = $(_this3.container);
+                    var pageContainer = _this3.container;
                     _this3.currentPage = p.page;
                     var urls = _this3.getURLs(_this3.currentPage);
 
-                    var cssthemeelemnt = p.content.find(".csstheme");
+                    var cssthemeelemnt = p.content.find("style.csstheme");
                     var newcssthemeurl = urls.cssthemeurl;
-                    if (cssthemeelemnt.attr('href') != newcssthemeurl) {
-                        cssthemeelemnt.attr('href', newcssthemeurl);
+                    if (cssthemeelemnt.data('url') != newcssthemeurl) {
+                        _this3.__changeThemeContent(newcssthemeurl);
                     }
 
                     pageContainer.children().detach();
@@ -169,6 +187,7 @@ define(["jquery", "util"], function ($, util) {
         },
         init: function init() {
             window.onpopstate = this.__popState.bind(this);
+            this.container = $("[data-page-container]");
         }
     };
     return pageManager;

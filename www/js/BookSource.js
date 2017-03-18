@@ -36,7 +36,7 @@ define(["jquery", 'co', "util", 'Chapter'], function ($, co, util, Chapter) {
                 if (this.disable) return Promise.reject(404);
 
                 return bookSourceManager.getBook(this.id, book.name, book.author).then(function (book) {
-                    $.extend(_this, book.sources[_this.id]);
+                    Object.assign(_this, book.sources[_this.id]);
                     return _this;
                 }).catch(function (error) {
                     if (error == 404) {
@@ -127,7 +127,7 @@ define(["jquery", 'co', "util", 'Chapter'], function ($, co, util, Chapter) {
 
                             case 21:
                                 catalogLink = bsm.catalog.link;
-                                o = $.extend({}, this, bookSourceManager[this.id]);
+                                o = Object.assign({}, this, bookSourceManager[this.id]);
                                 _link = util.format(catalogLink, o);
 
                                 this.catalogLink = _link;
@@ -291,7 +291,7 @@ define(["jquery", 'co', "util", 'Chapter'], function ($, co, util, Chapter) {
                             case 12:
                                 chapter = new Chapter();
 
-                                chapter = $.extend(true, chapter, data);
+                                chapter = Object.assign(chapter, data);
                                 return _context3.abrupt("return", chapter);
 
                             case 17:

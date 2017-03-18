@@ -31,7 +31,7 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
             return bookSourceManager.getBook(this.id, book.name, book.author)
                 .then(book => {
                     // 找到书籍了
-                    $.extend(this, book.sources[this.id]);
+                    Object.assign(this, book.sources[this.id]);
                     return this;
                 })
                 .catch(error => {
@@ -83,7 +83,7 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
                 }
                 else{
                     let catalogLink = bsm.catalog.link;
-                    let o = $.extend({}, this, bookSourceManager[this.id]);
+                    let o = Object.assign({}, this, bookSourceManager[this.id]);
                     let link = util.format(catalogLink, o);
                     this.catalogLink = link;
                 }
@@ -200,7 +200,7 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
 
                 let chapter = new Chapter();
                 // 类型转换
-                chapter = $.extend(true, chapter, data);
+                chapter = Object.assign(chapter, data);
                 return chapter;
             }
             catch(e){

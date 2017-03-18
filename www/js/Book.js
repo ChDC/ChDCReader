@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util, Chapter, BookSource) {
+define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, BookSource) {
     "use strict";
 
     var Book = function () {
@@ -109,7 +109,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
         }, {
             key: "index",
             value: function index(chapterIndex, options) {
-                if ($.type(chapterIndex) != "number") {
+                if (typeof chapterIndex != "number") {
                     return Promise.reject(205);
                 }
 
@@ -189,7 +189,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
             key: "fuzzySearch",
             value: function fuzzySearch(sourceB, index, options) {
 
-                options = $.extend(true, {}, options);
+                options = Object.assign({}, options);
                 options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
                 if (options.bookSourceId == sourceB) {
@@ -336,7 +336,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
                     return Promise.reject(203);;
                 }
 
-                options = $.extend(true, {}, options);
+                options = Object.assign({}, options);
                 options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
                 return this.index(chapterIndex, options).then(function (_ref3) {
@@ -362,7 +362,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
                                         while (1) {
                                             switch (_context4.prev = _context4.next) {
                                                 case 0:
-                                                    opts = $.extend(true, {}, options);
+                                                    opts = Object.assign({}, options);
 
                                                     opts.bookSourceId = contentSourceId;
                                                     if (!options.noInfluenceWeight) self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
@@ -428,7 +428,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
                                         while (1) {
                                             switch (_context3.prev = _context3.next) {
                                                 case 0:
-                                                    opts = $.extend(true, {}, options);
+                                                    opts = Object.assign({}, options);
                                                     contentSources = util.objectSortedKey(self.sources, 'weight');
 
                                                     if (!options.excludes) {
@@ -580,7 +580,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
 
                                 _marked = [getChapterFromContentSources2, getChapterFromSelectBookSourceAndSelectSourceChapterIndex].map(regeneratorRuntime.mark);
 
-                                options = $.extend(true, {}, options);
+                                options = Object.assign({}, options);
                                 options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
                                 chapterA = catalog[index];
@@ -594,7 +594,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
 
                                 if (options.excludes && options.excludes.indexOf(options.contentSourceId) >= 0) options.contentSourceId = null;
 
-                                if (!(options.contentSourceId && $.type(options.contentSourceChapterIndex) == 'number')) {
+                                if (!(options.contentSourceId && typeof options.contentSourceChapterIndex == 'number')) {
                                     _context5.next = 21;
                                     break;
                                 }
@@ -628,7 +628,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
 
                             case 2:
 
-                                options = $.extend(true, {}, options);
+                                options = Object.assign({}, options);
                                 options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
                                 i = 0;
@@ -662,7 +662,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
             key: "cacheChapter",
             value: function cacheChapter(chapterIndex, nextCount, options) {
 
-                options = $.extend(true, {}, options);
+                options = Object.assign({}, options);
                 options.bookSourceId = options.bookSourceId || this.mainSourceId;
                 options.noInfluenceWeight = true;
                 options.onlyCacheNoLoad = true;
@@ -674,7 +674,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
             value: function getLastestChapter(options) {
                 var _this6 = this;
 
-                options = $.extend(true, {}, options);
+                options = Object.assign({}, options);
                 options.bookSourceId = options.bookSourceId || this.mainSourceId;
                 var bss = null;
                 return this.getBookSource(options).then(function (bs) {
@@ -695,11 +695,11 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function ($, co, util,
 
     Book.Cast = function (obj) {
         var nb = new Book();
-        $.extend(true, nb, obj);
+        Object.assign(nb, obj);
 
         for (var bsid in nb.sources) {
             var nbs = new BookSource(bsid);
-            $.extend(nbs, nb.sources[bsid]);
+            Object.assign(nbs, nb.sources[bsid]);
             nb.sources[bsid] = nbs;
         }
         return nb;

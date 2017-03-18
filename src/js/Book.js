@@ -1,4 +1,4 @@
-define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, Chapter, BookSource) {
+define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, BookSource) {
     "use strict"
 
     // ****** Book ****
@@ -96,7 +96,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
 
         // 获取指定源的指定索引的章节
         index(chapterIndex, options){
-            if($.type(chapterIndex) != "number"){
+            if(typeof chapterIndex != "number"){
                 return Promise.reject(205);
             }
 
@@ -143,7 +143,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
         // TODO: 参数修复
         fuzzySearch(sourceB, index, options){
 
-            options = $.extend(true, {}, options);
+            options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
 
@@ -214,7 +214,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
                 return Promise.reject(203);;
             }
 
-            options = $.extend(true, {}, options);
+            options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
             return this.index(chapterIndex, options)
@@ -233,7 +233,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
         // * onlyCacheNoLoad 只缓存章节，不加载章节
         // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
         *__getChapterFromContentSources(catalog, index, options){
-            options = $.extend(true, {}, options);
+            options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
             let chapterA = catalog[index];
@@ -254,7 +254,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
                 options.contentSourceId = null;
 
             // 如果选项中有 contentSourceId 和 contentSourceChapterIndex，则比对指定的索引
-            if(options.contentSourceId && $.type(options.contentSourceChapterIndex) == 'number'){
+            if(options.contentSourceId && typeof options.contentSourceChapterIndex == 'number'){
                 return co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(options.contentSourceId, options.contentSourceChapterIndex))
                     .catch(handleWithNormalMethod);
             }
@@ -296,7 +296,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
 
             function* getChapterFromContentSources2(includeSource){
 
-                let opts = $.extend(true, {}, options);
+                let opts = Object.assign({}, options);
 
                 let contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
                 // 去掉要排除的源
@@ -352,7 +352,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
             // 从指定的源和索引中获取章节
             function* getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex){
 
-                let opts = $.extend(true, {}, options);
+                let opts = Object.assign({}, options);
                 opts.bookSourceId = contentSourceId;
                 if(!options.noInfluenceWeight)
                     self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
@@ -404,7 +404,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
         //     }
 
         //     let self = this;
-        //     options = $.extend(true, {}, options);
+        //     options = Object.assign({}, options);
         //     options.bookSourceId = options.bookSourceId || self.mainSourceId;
 
         //     chapterIndex += (direction >= 0? -1 : 1);
@@ -417,7 +417,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
 
         //         self.getChapter(chapterIndex,
         //             function(chapter, index, opts){
-        //                 options = $.extend(true, options, opts);
+        //                 options = Object.assign({}, opts);
 
         //                 if(success(chapter, index, opts))
         //                     next();
@@ -475,7 +475,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
                 return;
             }
 
-            options = $.extend(true, {}, options);
+            options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
             for(let i = 0; i < nextCount; i++){
@@ -497,7 +497,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
         // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
         cacheChapter(chapterIndex, nextCount, options){
 
-            options = $.extend(true, {}, options);
+            options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
             options.noInfluenceWeight = true;
             options.onlyCacheNoLoad = true;
@@ -509,7 +509,7 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
         // 获取最新章节
         // 缺省强制更新
         getLastestChapter(options){
-            options = $.extend(true, {}, options);
+            options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
             let bss = null;
             return this.getBookSource(options)
@@ -531,11 +531,11 @@ define(["jquery", "co", "util", "Chapter", "BookSource"], function($, co, util, 
 
     Book.Cast = function(obj){
         let nb = new Book();
-        $.extend(true, nb, obj);
+        Object.assign(nb, obj);
 
         for(let bsid in nb.sources){
             let nbs = new BookSource(bsid);
-            $.extend(nbs, nb.sources[bsid]);
+            Object.assign(nbs, nb.sources[bsid]);
             nb.sources[bsid] = nbs;
         }
         return nb;

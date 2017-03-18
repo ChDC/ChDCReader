@@ -13,7 +13,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
             this.settings.refreshCatalogInterval = 600; // 单位秒
             this.settings.refreshLastestChapterInterval = 600; // 单位秒
 
-            if($.type(configFileOrConfig) == 'string'){
+            if(typeof configFileOrConfig == 'string'){
                 util.getJSON(configFileOrConfig)
                     .then(data => this.sources = data);
             }
@@ -282,7 +282,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
         init(){
             for(let key in this){
                 let value = this[key];
-                if($.type(value) == 'object' && 'init' in value){
+                if(typeof value == 'object' && 'init' in value){
                     value.init();
                 }
             }

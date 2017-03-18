@@ -124,7 +124,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
                     // 更新源之后
                     $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSourceId].name);
                     if(readingRecord.chapterIndex){
-                        let opts = $.extend(true, {}, options);
+                        let opts = Object.assign({}, options);
                         opts.bookSourceId = oldMainSource;
                         book.fuzzySearch(book.mainSourceId, readingRecord.chapterIndex, opts)
                             .then(({chapter, index}) => {
@@ -216,18 +216,18 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
     function onNewChapterItem(event, be, direction){
 
-        let opts = $.extend(true, {}, options, tmpOptions);
+        let opts = Object.assign({}, options, tmpOptions);
         tmpOptions = null;
         let chapterIndex = 0;
         if(be){
-            $.extend(opts, be.data('options'));
+            Object.assign(opts, be.data('options'));
             chapterIndex = be.data('chapterIndex') + (direction >= 0? 1 : -1);
             if('contentSourceChapterIndex' in opts){
                 opts.contentSourceChapterIndex += direction >= 0? 1 : -1;
             }
         }
         else{
-            $.extend(opts, readingRecord.options);
+            Object.assign(opts, readingRecord.options);
             chapterIndex = readingRecord.chapterIndex;
         }
 
