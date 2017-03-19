@@ -54,11 +54,11 @@ define(["jquery"], function($){
         * 输出log 信息
         */
         log(content, detailContent) {
-            let msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
+            const msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
             console.log(msg);
         },
         error(content, detailContent) {
-            let msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
+            const msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
             console.error(msg);
         },
         /*
@@ -68,15 +68,15 @@ define(["jquery"], function($){
           if(!params)
             return "";
           let r = "";
-          for(let k in params){r+= k + "=" + params[k] + "&"};
+          for(const k in params){r += k + "=" + params[k] + "&"};
           return r.substring(0, r.length-1);
         },
         showMessage(msg, delay=1000, level=null){
             if(!msg)
                 return;
 
-            let msgBoxContainer = $('<div class="message-box-container"></div>')
-            let msgBox = $('<div class="message-box"></div>');
+            const msgBoxContainer = $('<div class="message-box-container"></div>')
+            const msgBox = $('<div class="message-box"></div>');
             switch(level){
                 case "error":
                     msgBox.css("color", "red");
@@ -99,7 +99,7 @@ define(["jquery"], function($){
         },
 
         showMessageDialog(title, msg, ok, cancel){
-            let dialog = $(
+            const dialog = $(
     '<div class="modal fade" id="modalMessage">'
 + '    <div class="modal-dialog">'
 + '      <div class="modal-content">'
@@ -144,7 +144,7 @@ define(["jquery"], function($){
 
             this.log("Get:" + url + "&" + this.__getParamsString(params));
 
-            let getPromise = new Promise((resolve, reject) => {
+            const getPromise = new Promise((resolve, reject) => {
                 url = encodeURI(url);
                 $.get(url, params, resolve, dataType)
                     .fail(data => reject(data));
@@ -153,7 +153,7 @@ define(["jquery"], function($){
             if(timeout <= 0)
                 return getPromise;
 
-            let timeoutPromise = new Promise((resolve, reject) => {
+            const timeoutPromise = new Promise((resolve, reject) => {
                 setTimeout(reject, timeout*1000);
             });
 
@@ -165,7 +165,7 @@ define(["jquery"], function($){
 
             // if (typeof cordovaHTTP != "undefined") {
             //     this.log("HTTP with Cordova");
-            //     let s = function(data) {
+            //     const s = function(data) {
             //         if (data.status != 200) {
             //             handleNetworkError(data);
             //         } else {
@@ -193,9 +193,9 @@ define(["jquery"], function($){
         },
 
         getDOM(url, params){
-            let filterHtmlContent = html => {
+            const filterHtmlContent = html => {
                 // 只要 body
-                let m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
+                const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
                 if(m && m.length >= 2)
                     html = m[1];
                 // 去掉 script 标签
@@ -221,16 +221,16 @@ define(["jquery"], function($){
             let i = url.indexOf("?");
             if(i < 0)return {};
             url = url.slice(i+1);
-            let params = {};
-            let pa = url.split("&");
+            const params = {};
+            const pa = url.split("&");
             for(let j=0; j < pa.length; j++){
-                let p = pa[j];
+                const p = pa[j];
                 i = p.indexOf("=");
                 if(i < 0)
                     params[p] = undefined;
                 else{
-                    let key = p.slice(0, i);
-                    let value = p.slice(i+1);
+                    const key = p.slice(0, i);
+                    const value = p.slice(i+1);
                     params[key] = value;
                 }
             }
@@ -239,7 +239,7 @@ define(["jquery"], function($){
 
         // 字符串格式化，类似于 Python 的 string.format
         format(string, object){
-            let result = string.replace(/{(\w+)}/g, (p0, p1) =>
+            const result = string.replace(/{(\w+)}/g, (p0, p1) =>
                     p1 in object ? object[p1] : ""
                 )
             return result;
@@ -247,14 +247,14 @@ define(["jquery"], function($){
 
         // 从 Object 中获取数据
         getDataFromObject(obj, key){
-            let keys = key.split(/\./);
+            const keys = key.split(/\./);
             let result = obj;
             for(let i = 0; i < keys.length; i++){
-                let k = keys[i];
+                const k = keys[i];
                 if($.type(result) == 'array'){
                     let tmp = [];
                     for(let j = 0; j < result.length; j++){
-                        let tt = result[j][k];
+                        const tt = result[j][k];
                         if($.type(tt) == 'array'){
                             tmp = tmp.concat(tt);
                         }
@@ -282,7 +282,7 @@ define(["jquery"], function($){
                 url = "";
             }
             else if(url.match("^/")){
-                let i = host.search(/[^\/]\/[^\/]/);
+                const i = host.search(/[^\/]\/[^\/]/);
                 if(i >= 0){
                     url = host.substring(0, i + 1) + url;
                 }
@@ -303,7 +303,7 @@ define(["jquery"], function($){
 
         html2text(html){
             function replaceElement(html, element, replaceString){
-                let pattern = `<${element}(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</${element}>`;
+                const pattern = `<${element}(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</${element}>`;
                 html = html.replace(new RegExp(pattern, 'gi'), replaceString);
                 return html;
             };
@@ -314,7 +314,7 @@ define(["jquery"], function($){
             html = html.replace(/&nbsp;/gi, ' ');
 
             // 解决用双 <br> 标签换行的问题
-            let temp = html.replace(/\s*(<br ?\/?>\s*){2,}/gi, '\n');
+            const temp = html.replace(/\s*(<br ?\/?>\s*){2,}/gi, '\n');
             if(temp.search(/\s*<br ?\/?>\s*/) >= 0)
                 html = html.replace(/\s*<br ?\/?>\s*/gi, '\n');
             else
@@ -331,8 +331,8 @@ define(["jquery"], function($){
         text2html(text, className){
             // 将每一行都加上 p 标签
             let html = "";
-            let pStart = className? `<p class="${className}">` : '<p>';
-            let lines = text.split("\n");
+            const pStart = className? `<p class="${className}">` : '<p>';
+            const lines = text.split("\n");
 
             lines.forEach((line)=>{
                 line = line.replace(/ /g, '&nbsp;');
@@ -343,7 +343,7 @@ define(["jquery"], function($){
 
         // 将数组中的每个成员的类型都转换为执行的类
         objectCast(obj, ClassFunction){
-            let nc = new ClassFunction();
+            const nc = new ClassFunction();
             Object.assign(nc, obj);
             return nc;
         },
@@ -372,7 +372,7 @@ define(["jquery"], function($){
         // 将数组中的每个成员的类型都转换为执行的类
         arrayCast(array, ClassFunction){
             array.forEach((v, i, arr) => {
-                let nc = new ClassFunction();
+                const nc = new ClassFunction();
                 Object.assign(nc, array[i]);
                 arr[i] = nc;
             });
@@ -380,12 +380,12 @@ define(["jquery"], function($){
 
         // 返回数组中值最大的索引的集合
         arrayMaxIndex(array, compareFuntion=(i1, i2) => i1 - i2){
-            let result = [0];
+            const result = [0];
             if(!array || array.length <= 0)
                 return result;
             let max = array[0];
             for(let i = 1; i < array.length; i++){
-                let r = compareFuntion(array[i], max);
+                const r = compareFuntion(array[i], max);
                 if(r > 0){
                     result.length = 0;
                     result.push(i);
@@ -401,12 +401,12 @@ define(["jquery"], function($){
         // 返回数组中值最小的索引的集合
         arrayMinIndex(array, compareFuntion=(a,b)=>b-a){
 
-            let result = [0];
+            const result = [0];
             if(!array || array.length <= 0)
                 return result;
             let min = array[0];
             for(let i = 1; i < array.length; i++){
-                let r = compareFuntion(array[i], min);
+                const r = compareFuntion(array[i], min);
                 if(r < 0){
                     result.length = 0;
                     result.push(i);
@@ -438,8 +438,8 @@ define(["jquery"], function($){
 
             // 比较前、后 n 个邻居
             function compareNeighbor(indexB, offset){
-                let nia = indexA + offset;
-                let nib = indexB + offset;
+                const nia = indexA + offset;
+                const nib = indexB + offset;
                 let equal = 0;
                 if(nia < 0 || nia >= listA.length)
                     // 如果 indexA 越界，则返回 2
@@ -456,10 +456,10 @@ define(["jquery"], function($){
 
             // 提供最优结果
             // 最终从所有结果中选出一个最好的
-            let result = [];
+            const result = [];
             let i = startIndexB - 1; //, j, r;
 
-            let itemA = listA[indexA];
+            const itemA = listA[indexA];
 
             while(true)
             {
@@ -473,14 +473,14 @@ define(["jquery"], function($){
                         // 一个结果也没有
                         return -1;
                     }
-                    let rr = this.arrayMaxIndex(result, (a, b) => a.weight - b.weight);
+                    const rr = this.arrayMaxIndex(result, (a, b) => a.weight - b.weight);
                     if(rr.length <= 1){
                         return result[rr[0]].index;
                     }
                     else{
                         return result[this.arrayMinIndex(rr, (a, b) => {
-                            let ia = result[a].index;
-                            let ib = result[b].index;
+                            const ia = result[a].index;
+                            const ib = result[b].index;
                             return Math.abs(ia-indexA) - Math.abs(ib-indexA);
                         })[0]].index;
                     }
@@ -488,9 +488,9 @@ define(["jquery"], function($){
                 }
                 // 找到结果，开始分析
                 // 比对前邻和后邻是否相同
-                let leftEqual = compareNeighbor(i, -1) + 0.5; // 前面的权重大
-                let rightEqual = compareNeighbor(i, 1);
-                let weight = leftEqual + rightEqual;
+                const leftEqual = compareNeighbor(i, -1) + 0.5; // 前面的权重大
+                const rightEqual = compareNeighbor(i, 1);
+                const weight = leftEqual + rightEqual;
                 if(weight == 6.5){
                     // 前后两个邻居都相等
                     return i;
@@ -557,7 +557,7 @@ define(["jquery"], function($){
 
                 // 找到结果，开始分析
                 // 比较后面第二个是否相同
-                let indexBRight = i + 2;
+                indexBRight = i + 2;
 
                 if(indexBRight >= listB.length){
                     // B 到底部了，直接返回
@@ -575,16 +575,16 @@ define(["jquery"], function($){
         // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
         objectSortedKey(object, getFunctionOrObjectKeyName=i=>i){
             if(typeof getFunctionOrObjectKeyName == 'string'){
-                let objectKeyName = getFunctionOrObjectKeyName;
+                const objectKeyName = getFunctionOrObjectKeyName;
                 getFunctionOrObjectKeyName = item => item[objectKeyName];
             }
 
-            let arr = [];
-            for(let k in object){
+            const arr = [];
+            for(const k in object){
                 arr.push([k, getFunctionOrObjectKeyName(object[k])]);
             }
             arr.sort((e1, e2) => e1[1] - e2[1]);
-            let result = [];
+            const result = [];
             for(let i = 0; i < arr.length; i++){
                 result[i] = arr[i][0];
             }
@@ -596,14 +596,14 @@ define(["jquery"], function($){
             return new Promise((resolve, reject) => {
                 // 创建并写入文件
                 function createAndWriteFile(){
-                    let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                    const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                     //持久化数据保存
                     window.requestFileSystem(fileSystem, 0,
                         fs => {
                             fs.root.getFile(file + ".json", { create: true, exclusive: false },
                                 fileEntry => {
                                     //文件内容
-                                    let dataObj = new Blob([data], { type: 'text/plain' });
+                                    const dataObj = new Blob([data], { type: 'text/plain' });
                                     //写入文件
                                     writeFile(fileEntry, dataObj);
 
@@ -638,17 +638,17 @@ define(["jquery"], function($){
         __loadJSONFromFile(file, isCacheDir=false){
             return new Promise((resolve, reject) => {
                 function readFile(){
-                    let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                    const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                     //持久化数据保存
                     window.requestFileSystem(fileSystem, 0,
                         fs => {
                             fs.root.getFile(file + ".json", { create: false, exclusive: false },
                                 fileEntry => {
                                     fileEntry.file(file => {
-                                        let reader = new FileReader();
+                                        const reader = new FileReader();
 
                                         reader.onloadend = function(){
-                                            let data = JSON.parse(this.result);
+                                            const data = JSON.parse(this.result);
                                             resolve(data);
                                         };
 
@@ -667,7 +667,7 @@ define(["jquery"], function($){
         // 检查文件是否存在
         __fileExists(file, isCacheDir=false){
             return new Promise((resolve, reject) => {
-                let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 window.requestFileSystem(fileSystem, 0, fs => {
 
                     fs.root.getFile(file + ".json", { create: false, exclusive: false },
@@ -683,7 +683,7 @@ define(["jquery"], function($){
         __removeFile(file, isCacheDir=false){
             return new Promise((resolve, reject) => {
                 // TODO
-                let fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
+                const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 window.requestFileSystem(fileSystem, 0, fs => {
 
                     fs.root.getFile(file + ".json", { create: false, exclusive: false },
@@ -699,7 +699,7 @@ define(["jquery"], function($){
                 return this.__saveJSONToFile(key, data, onlyCache);
             }
             else{
-                let s = onlyCache? this.cacheStorage : this.storage;
+                const s = onlyCache? this.cacheStorage : this.storage;
                 s.setItem(key, data);
                 return Promise.resolve();
             }
@@ -711,8 +711,8 @@ define(["jquery"], function($){
                 return this.__loadJSONFromFile(key, onlyCache);
             }
             else{
-                let s = onlyCache? this.cacheStorage : this.storage;
-                let data = s.getItem(key);
+                const s = onlyCache? this.cacheStorage : this.storage;
+                const data = s.getItem(key);
                 return Promise.resolve(data);
             }
         },
@@ -723,8 +723,8 @@ define(["jquery"], function($){
                 return this.__removeFile(key, onlyCache);
             }
             else{
-                let s = onlyCache? this.cacheStorage : this.storage;
-                let data = s.removeItem(key);
+                const s = onlyCache? this.cacheStorage : this.storage;
+                const data = s.removeItem(key);
                 return Promise.resolve();
             }
         },
@@ -735,7 +735,7 @@ define(["jquery"], function($){
                 return this.__fileExists(key, onlyCache);
             }
             else{
-                let s = onlyCache? this.cacheStorage : this.storage;
+                const s = onlyCache? this.cacheStorage : this.storage;
                 return Promise.resolve(s.hasItem(key) ? true : false);
             }
         },
@@ -765,8 +765,8 @@ define(["jquery"], function($){
 
             // 显示加载进度条
             this.show = () => {
-                let loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>')
-                let img = $('<img src="' + this.__img + '" style="position:relative;opacity:1;"/>');
+                const loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>')
+                const img = $('<img src="' + this.__img + '" style="position:relative;opacity:1;"/>');
                 loadingBg.append(img);
 
                 loadingBg.click((event) => {

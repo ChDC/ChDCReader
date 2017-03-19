@@ -69,22 +69,22 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
             if(!this.catalogLink){
 
                 // computeCatalogLink
-                let bsm = bookSourceManager.sources[this.id];
+                const bsm = bookSourceManager.sources[this.id];
                 if(!bsm)
                     return;
                 if(bsm.detail.info.catalogLink){
                     // 从详细页获取目录链接
-                    let detailLink = yield this.__getBookSourceDetailLink(bookSourceManager, book);
+                    const detailLink = yield this.__getBookSourceDetailLink(bookSourceManager, book);
 
                     let html = yield util.getDOM(detailLink);
                     html = $(html);
-                    let link = html.find(bsm.detail.info.catalogLink).attr('href');
+                    const link = html.find(bsm.detail.info.catalogLink).attr('href');
                     this.catalogLink = link;
                 }
                 else{
-                    let catalogLink = bsm.catalog.link;
-                    let o = Object.assign({}, this, bookSourceManager[this.id]);
-                    let link = util.format(catalogLink, o);
+                    const catalogLink = bsm.catalog.link;
+                    const o = Object.assign({}, this, bookSourceManager[this.id]);
+                    const link = util.format(catalogLink, o);
                     this.catalogLink = link;
                 }
             }
@@ -99,8 +99,8 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
             }
 
             util.log('Refresh Catalog!');
-            let catalogLink = yield this.__getBookSourceCatalogLink(bookSourceManager, book);
-            let catalog = yield bookSourceManager.getBookCatalog(this.id, catalogLink);
+            const catalogLink = yield this.__getBookSourceCatalogLink(bookSourceManager, book);
+            const catalog = yield bookSourceManager.getBookCatalog(this.id, catalogLink);
             this.catalog = catalog;
             this.updatedCatalogTime = (new Date()).getTime();
             this.needSaveCatalog = true;
@@ -184,23 +184,22 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
         // * onlyCacheNoLoad 只缓存章节，不加载章节
         *__getCacheChapter(book, title, onlyCacheNoLoad){
 
-            let dest = this.__getCacheChapterLocation(book, title);
+            const dest = this.__getCacheChapterLocation(book, title);
 
             if(onlyCacheNoLoad){
-                let exists = yield util.dataExists(dest, true);
+                const exists = yield util.dataExists(dest, true);
                 return exists ? null : Promise.reject(207);
             }
 
             // 获取章节内容
             try{
-                let data = yield util.loadData(dest, true);
+                const data = yield util.loadData(dest, true);
                 // 章节存在
                 if(!data)
                     return Promise.reject(207);
 
-                let chapter = new Chapter();
                 // 类型转换
-                chapter = Object.assign(chapter, data);
+                const chapter = Object.assign(new Chapter(), data);
                 return chapter;
             }
             catch(e){
@@ -213,7 +212,7 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
         __cacheChapter(book, chapter){
 
             // 保存到文件中
-            let dest = this.__getCacheChapterLocation(book, chapter.title);
+            const dest = this.__getCacheChapterLocation(book, chapter.title);
             return util.saveData(dest, chapter, true).then(() => chapter); // 将 JSON 对象序列化到文件中
         }
 

@@ -1,5 +1,5 @@
 define(["jquery", "util"], function($, util){
-    let pageManager = {
+    const pageManager = {
 
         container: null,  // 页面容器的选择器
         baseurl: "page",    // 页面存储的默认目录名
@@ -22,16 +22,18 @@ define(["jquery", "util"], function($, util){
                     return;
 
                 // 刷新当前页面的 CSS
-                let urls = this.getURLs(this.currentPage);
-                this.__changeThemeContent(urls.cssthemeurl);
+                const urls = this.getURLs(this.currentPage);
+                const cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
+                this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
             }
         },
-        __changeThemeContent(cssThemeUrl){
+        __changeThemeContent(cssthemeelemnt, cssThemeUrl){
             // Load page theme css
-            let cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
+
             if(cssThemeUrl){
-                $.get(cssThemeUrl, cssContent => cssthemeelemnt.text(cssContent).data('url', cssThemeUrl))
-                    .fail(() => cssthemeelemnt.text("").data('url', cssThemeUrl));
+                cssthemeelemnt.data('url', cssThemeUrl);
+                $.get(cssThemeUrl, cssContent => cssthemeelemnt.text(cssContent))
+                    .fail(() => cssthemeelemnt.text(""));
             }
             else{
                 cssthemeelemnt.text("").data('url', "");
@@ -39,7 +41,7 @@ define(["jquery", "util"], function($, util){
         },
 
         getURLs(name){
-            let baseurl = `${this.baseurl}/${name}.page`;
+            const baseurl = `${this.baseurl}/${name}.page`;
             return {
                 baseurl: baseurl,
                 htmlurl: baseurl + ".html",
@@ -54,10 +56,10 @@ define(["jquery", "util"], function($, util){
             options = options || {};
 
             // util.log("showPage", baseurl);
-            let pageContainer = this.container;
+            const pageContainer = this.container;
 
             // 如果栈中有该页则从栈中加载
-            let i = util.arrayLastIndex(this.pageStack, name, (element, name) =>
+            const i = util.arrayLastIndex(this.pageStack, name, (element, name) =>
                 element.page == name);
             if(i>=0){
                 debugger;
@@ -73,12 +75,12 @@ define(["jquery", "util"], function($, util){
             }
 
             // 拼接 URL
-            let urls = this.getURLs(name);
+            const urls = this.getURLs(name);
 
             // 获取页面
             $.get(urls.htmlurl, content => {
 
-                let __showPage = () => {
+                const __showPage = () => {
                     pageContainer.children().detach();
                     pageContainer.append(contentContainer);
 
@@ -95,7 +97,7 @@ define(["jquery", "util"], function($, util){
                 }
 
                 // util.log("Gotten page", name);
-                let contentContainer = $('<div class="page-content-container"></div>');
+                const contentContainer = $('<div class="page-content-container"></div>');
                 // load page content
                 contentContainer.append(content);
                 // Load page css
@@ -124,7 +126,7 @@ define(["jquery", "util"], function($, util){
                 }
                 else{
                     // 将之前的页面存储起来
-                    let currentContentContainer = pageContainer.children();
+                    const currentContentContainer = pageContainer.children();
                     if(currentContentContainer.length > 0){
                         this.pageStack.push({
                             page: this.currentPage,
@@ -149,9 +151,9 @@ define(["jquery", "util"], function($, util){
         __closePage(p, params){
             return new Promise((resolve, reject) => {
                 // 触发当前页面的关闭事件
-                let urls = this.getURLs(p);
-                let jsurl = urls.jsurl;
-                let executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
+                const urls = this.getURLs(p);
+                const jsurl = urls.jsurl;
+                const executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
                 requirejs([jsurl], page => {
                     if(executeOnPause && page.onpause)
                         page.onpause();
@@ -166,17 +168,17 @@ define(["jquery", "util"], function($, util){
         // 从页面栈中弹出页面
         __popPage(){
             return new Promise((resolve, reject) => {
-                let p = this.pageStack.pop();
+                const p = this.pageStack.pop();
                 if(p){
-                    let pageContainer = this.container;
+                    const pageContainer = this.container;
                     this.currentPage = p.page;
-                    let urls = this.getURLs(this.currentPage);
+                    const urls = this.getURLs(this.currentPage);
                     // Load Theme CSS
-                    let cssthemeelemnt = p.content.find("style.csstheme");
-                    let newcssthemeurl = urls.cssthemeurl;
+                    const cssthemeelemnt = p.content.find("style.csstheme");
+                    const newcssthemeurl = urls.cssthemeurl;
                     if(cssthemeelemnt.data('url') != newcssthemeurl){
                         // cssthemeelemnt.data('url', newcssthemeurl);
-                        this.__changeThemeContent(newcssthemeurl);
+                        this.__changeThemeContent(cssthemeelemnt, newcssthemeurl);
                     }
 
                     pageContainer.children().detach();
@@ -201,15 +203,15 @@ define(["jquery", "util"], function($, util){
                 .then(() => this.__popPage());
         },
         __saveState(name, params){
-            // let state = {
+            // const state = {
             //     page: name,
             //     params: params
             // };
-            let hash = "#page=" + name;
+            const hash = "#page=" + name;
             window.history.pushState(true, "", hash);
         },
         __popState(event){
-            let state = event.state;
+            const state = event.state;
             if(state){
                 this.closePage();
             }

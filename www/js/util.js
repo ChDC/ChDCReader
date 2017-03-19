@@ -440,18 +440,18 @@ define(["jquery"], function ($) {
             while (true) {
                 i = this.__arrayIndex(listB, itemALeft, equalFunction, i + 1);
                 if (i < 0) {
-                    _indexBRight = 1;
-                    itemBRight = listB[_indexBRight];
-                    return equalFunction(itemARight, itemBRight) ? _indexBRight - 1 : -1;
+                    indexBRight = 1;
+                    itemBRight = listB[indexBRight];
+                    return equalFunction(itemARight, itemBRight) ? indexBRight - 1 : -1;
                 }
 
-                var _indexBRight = i + 2;
+                indexBRight = i + 2;
 
-                if (_indexBRight >= listB.length) {
+                if (indexBRight >= listB.length) {
                     return i + 1 < listB.length ? i + 1 : -1;
                 }
 
-                itemBRight = listB[_indexBRight];
+                itemBRight = listB[indexBRight];
                 if (equalFunction(itemARight, itemBRight)) {
                     return i + 1;
                 }

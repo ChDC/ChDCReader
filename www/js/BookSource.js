@@ -289,22 +289,20 @@ define(["jquery", 'co', "util", 'Chapter'], function ($, co, util, Chapter) {
                                 return _context3.abrupt("return", Promise.reject(207));
 
                             case 12:
-                                chapter = new Chapter();
-
-                                chapter = Object.assign(chapter, data);
+                                chapter = Object.assign(new Chapter(), data);
                                 return _context3.abrupt("return", chapter);
 
-                            case 17:
-                                _context3.prev = 17;
+                            case 16:
+                                _context3.prev = 16;
                                 _context3.t0 = _context3["catch"](6);
                                 return _context3.abrupt("return", Promise.reject(207));
 
-                            case 20:
+                            case 19:
                             case "end":
                                 return _context3.stop();
                         }
                     }
-                }, __getCacheChapter, this, [[6, 17]]);
+                }, __getCacheChapter, this, [[6, 16]]);
             })
         }, {
             key: "__cacheChapter",

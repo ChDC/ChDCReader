@@ -19,15 +19,15 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
         // 获取当前书籍指定的目录源信息
         getBookSource({bookSourceManager, bookSourceId=this.mainSourceId}){
             return new Promise((resolve, reject) => {
-                let bs = this.sources[bookSourceId];
+                const bs = this.sources[bookSourceId];
                 if(bs){
                     resolve(bs);
                 }
                 else{
-                    let bsm = bookSourceManager.sources[bookSourceId];
+                    const bsm = bookSourceManager.sources[bookSourceId];
                     if(bsm)
                     {
-                        let bss = new BookSource(bookSourceId, bsm.contentSourceWeight);
+                        const bss = new BookSource(bookSourceId, bsm.contentSourceWeight);
                         this.sources[bookSourceId] = bss;
                         resolve(bss);
                     }
@@ -40,8 +40,8 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
 
         // 检查源是否有缺失
         checkBookSources(bookSourceManager){
-            let sources = bookSourceManager.sources;
-            for(let k in sources){
+            const sources = bookSourceManager.sources;
+            for(const k in sources){
                 if(!(k in this.sources)){
                     this.sources[k] = new BookSource(k, sources[k].contentSourceWeight);
                 }
@@ -107,11 +107,11 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
-            let self = this;
+            const self = this;
             return co(function*(){
 
                 for(let i = 0; i < 2; i++){
-                    let catalog = yield self.getCatalog(options);
+                    const catalog = yield self.getCatalog(options);
 
                     if(!catalog || catalog.length <= 0){
                         return Promise.reject(501);
@@ -152,10 +152,10 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
                 return this.index(index, options);
             }
 
-            let self = this;
+            const self = this;
             return co(function*(){
                 // 获取目录源的目录
-                let catalog = yield self.getCatalog(options);
+                const catalog = yield self.getCatalog(options);
 
                 if(!catalog || catalog.length <= 0){
                     return Promise.reject(501);
@@ -164,24 +164,24 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
                 options.bookSourceId = sourceB;
                 for(let i = 0; i < 2; i++){
 
-                    let catalogB = yield self.getCatalog(options);
+                    const catalogB = yield self.getCatalog(options);
 
                     if(!catalogB || catalogB.length <= 0){
                         return Promise.reject(501);
                     }
 
-                    let matchs = [
+                    const matchs = [
                         [util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],
                         [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)],
                         [util.listMatchWithNeighbour.bind(util), Chapter.equalTitleWithoutNum.bind(Chapter)],
                     ];
 
-                    for(let match of matchs){
-                        let [matchFunc, compareFunc] = match;
-                        let indexB = matchFunc(catalog, catalogB, index, compareFunc);
+                    for(const match of matchs){
+                        const [matchFunc, compareFunc] = match;
+                        const indexB = matchFunc(catalog, catalogB, index, compareFunc);
                         if(indexB >= 0){
                             // 找到了
-                            let chapterB = catalogB[indexB];
+                            const chapterB = catalogB[indexB];
                             return Promise.resolve({chapter: chapterB, index: indexB, catalog: catalogB});
                         }
                         else{
@@ -236,8 +236,8 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             options = Object.assign({}, options);
             options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
-            let chapterA = catalog[index];
-            let result = []; // 结果的集合，按权重排序
+            const chapterA = catalog[index];
+            const result = []; // 结果的集合，按权重排序
             let count = options.count || 1; // 想获取的数目
 
             // ***** 常量 ******
@@ -247,7 +247,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             const INCLUDE_WEIGHT = 0; // 指定的源
             // *****************
 
-            let self = this;
+            const self = this;
 
             // 如果指定的源是要排除的源，则清除之
             if(options.excludes && options.excludes.indexOf(options.contentSourceId) >= 0)
@@ -266,7 +266,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             function addChapterToResult(chapterB, indexB, source){
                 if(!options.noInfluenceWeight)
                     self.sources[source].weight += FOUND_WEIGHT;
-                // let chapter = new Chapter();
+                // const chapter = new Chapter();
                 // chapter.title = chapterA.title;
                 // chapter.content = chapterB.content;
                 result.push({
@@ -296,21 +296,21 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
 
             function* getChapterFromContentSources2(includeSource){
 
-                let opts = Object.assign({}, options);
+                const opts = Object.assign({}, options);
 
-                let contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
+                const contentSources = util.objectSortedKey(self.sources, 'weight'); // 按权重从小到大排序的数组
                 // 去掉要排除的源
                 if(options.excludes){
-                    for(let exclude of options.excludes)
+                    for(const exclude of options.excludes)
                     {
-                        let i = contentSources.indexOf(exclude);
+                        const i = contentSources.indexOf(exclude);
                         delete contentSources[i];
                         if(!options.noInfluenceWeight)
                             self.sources[exclude].weight += EXECLUDE_WEIGHT;
                     }
                 }
                 if(includeSource){
-                    let i = contentSources.indexOf(includeSource);
+                    const i = contentSources.indexOf(includeSource);
                     delete contentSources[i];
                     // 放到结尾处
                     contentSources.push(includeSource);
@@ -325,10 +325,10 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
                         continue;
                     try{
 
-                        let sourceB = opts.bookSourceId;
-                        let {chapter: chapterBB, index: indexB, catalog: catalogB} = yield self.fuzzySearch(sourceB, index, options);
-                        let bs = yield self.getBookSource(opts);
-                        let chapterB = yield bs.getChapter(opts.bookSourceManager, self, chapterBB, opts.onlyCacheNoLoad);
+                        const sourceB = opts.bookSourceId;
+                        const {chapter: chapterBB, index: indexB, catalog: catalogB} = yield self.fuzzySearch(sourceB, index, options);
+                        const bs = yield self.getBookSource(opts);
+                        const chapterB = yield bs.getChapter(opts.bookSourceManager, self, chapterBB, opts.onlyCacheNoLoad);
 
                         // 找到了章节
                         addChapterToResult(chapterB, indexB, sourceB);
@@ -352,18 +352,18 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             // 从指定的源和索引中获取章节
             function* getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex){
 
-                let opts = Object.assign({}, options);
+                const opts = Object.assign({}, options);
                 opts.bookSourceId = contentSourceId;
                 if(!options.noInfluenceWeight)
                     self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
 
-                let {chapter: chapterB, index:indexB, catalog: catalogB} = yield self.index(contentSourceChapterIndex, opts);
+                let {chapter: chapterB, index: indexB, catalog: catalogB} = yield self.index(contentSourceChapterIndex, opts);
 
                 if(!Chapter.equalTitle(chapterA, chapterB)){
                     throw new Error();
                 }
 
-                let bs = yield self.getBookSource(opts);
+                const bs = yield self.getBookSource(opts);
 
                 chapterB = yield bs.getChapter(opts.bookSourceManager, self, chapterB, opts.onlyCacheNoLoad);
 
@@ -403,7 +403,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
         //         chapterIndex = 0;
         //     }
 
-        //     let self = this;
+        //     const self = this;
         //     options = Object.assign({}, options);
         //     options.bookSourceId = options.bookSourceId || self.mainSourceId;
 
@@ -530,11 +530,11 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
     }
 
     Book.Cast = function(obj){
-        let nb = new Book();
+        const nb = new Book();
         Object.assign(nb, obj);
 
-        for(let bsid in nb.sources){
-            let nbs = new BookSource(bsid);
+        for(const bsid in nb.sources){
+            const nbs = new BookSource(bsid);
             Object.assign(nbs, nb.sources[bsid]);
             nb.sources[bsid] = nbs;
         }

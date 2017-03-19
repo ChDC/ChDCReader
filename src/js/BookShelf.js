@@ -20,7 +20,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
         load(){
 
             function loadCatalogs(resolve, reject){
-                let unfinished = [];
+                const unfinished = [];
                 if(self.books.length <= 0){
                     self.loaded = true;
                     resolve();
@@ -28,25 +28,25 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
                 }
 
                 // 初始化值
-                for(let bk in self.books){
+                for(const bk in self.books){
                     unfinished[bk] = {};
-                    let b = self.books[bk].book;
-                    for(let bsk in b.sources){
+                    const b = self.books[bk].book;
+                    for(const bsk in b.sources){
                         unfinished[bk][bsk] = true;
                     }
                 }
 
-                for(let bk in self.books){
-                    let b = self.books[bk].book;
-                    for(let bsk in b.sources){
+                for(const bk in self.books){
+                    const b = self.books[bk].book;
+                    for(const bsk in b.sources){
                         loadCatalog(bk, bsk);
                     }
                 }
 
                 function checkAllFinished(){
-                    for(let bk in self.books){
-                        let b = self.books[bk].book;
-                        for(let bsk in b.sources){
+                    for(const bk in self.books){
+                        const b = self.books[bk].book;
+                        for(const bsk in b.sources){
                             if(unfinished[bk][bsk]){
                                 return false;
                             }
@@ -56,8 +56,8 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
                 }
 
                 function loadCatalog(bk, bsk){
-                    let b = self.books[bk].book;
-                    let bs = b.sources[bsk];
+                    const b = self.books[bk].book;
+                    const bs = b.sources[bsk];
                     // 更新目录文件
                     util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
                         .then(data => {
@@ -80,12 +80,12 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
 
             }
 
-            let self = this;
+            const self = this;
             return util.loadData("bookshelf")
                 .then(data => {
-                    let bookShelf = data;
+                    const bookShelf = data;
                     Object.assign(this, bookShelf);
-                    for(let b of this.books){
+                    for(const b of this.books){
                         b.book = Book.Cast(b.book);
                         b.readingRecord = util.objectCast(b.readingRecord, ReadingRecord);
                     }
@@ -98,12 +98,12 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
         save(){
 
             // BUG 原因：没有深拷贝成功
-            let catalogs = []; // 用于临时存储移除的 Catalog
-            for(let bk in this.books){
+            const catalogs = []; // 用于临时存储移除的 Catalog
+            for(const bk in this.books){
                 catalogs[bk] = {};
-                let b = this.books[bk].book;
-                for(let bsk in b.sources){
-                    let bs = b.sources[bsk];
+                const b = this.books[bk].book;
+                for(const bsk in b.sources){
+                    const bs = b.sources[bsk];
                     if(bs.needSaveCatalog){
                         bs.needSaveCatalog = false;
                         // 更新目录文件
@@ -113,13 +113,13 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
                     bs.catalog = null; // 删除目录用于存储到本地
                 }
             }
-            let promise = util.saveData("bookshelf", this);
+            const promise = util.saveData("bookshelf", this);
 
             // 恢复删除的目录
-            for(let bk in this.books){
-                let b = this.books[bk].book;
-                for(let bsk in b.sources){
-                    let bs = b.sources[bsk];
+            for(const bk in this.books){
+                const b = this.books[bk].book;
+                for(const bsk in b.sources){
+                    const bs = b.sources[bsk];
                     bs.catalog = catalogs[bk][bsk];
                 }
             }
@@ -140,7 +140,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
         // 判断书架中是否有某书
         hasBook(book){
             return this.books.find(e => {
-                let b = e.book;
+                const b = e.book;
                 return b.name == book.name && b.author == book.author && b.mainSourceId == book.mainSourceId;
             });
         }
@@ -148,9 +148,9 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
         // 判断书架中是否有某书
         removeBook(index){
             // 清除目录
-            let b = this.books[index].book;
-            for(let bsk in b.sources){
-                let bs = b.sources[bsk];
+            const b = this.books[index].book;
+            for(const bsk in b.sources){
+                const bs = b.sources[bsk];
                 util.removeData(this.__getSaveCatalogLocation(b.name, b.author, bsk));
             }
 

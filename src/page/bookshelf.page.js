@@ -6,8 +6,8 @@ define(["jquery", "main", "page", "util", 'Chapter', 'sortablejs'], function($, 
     }
 
     function removeBook(event){
-        let target = $(event.currentTarget);
-        let i = target.data('book-index');
+        const target = $(event.currentTarget);
+        const i = target.data('book-index');
         app.bookShelf.removeBook(i);
         app.bookShelf.save()
             .then(() => {
@@ -23,15 +23,15 @@ define(["jquery", "main", "page", "util", 'Chapter', 'sortablejs'], function($, 
 
     // 加载书架列表
     function loadBooks(id, bookShelf){
-        let books = bookShelf.books;
-        let bs = $(id);
+        const books = bookShelf.books;
+        const bs = $(id);
         bs.empty();
-        let b = $(".template .book");
+        const b = $(".template .book");
         $(books).each(function(i){
-            let readingRecord = this.readingRecord;
-            let book = this.book;
+            const readingRecord = this.readingRecord;
+            const book = this.book;
 
-            let nb = b.clone();
+            const nb = b.clone();
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
             nb.find(".book-name").text(book.name);
@@ -64,9 +64,9 @@ define(["jquery", "main", "page", "util", 'Chapter', 'sortablejs'], function($, 
 
     // 重新给所有书籍排序
     function sortBooksByElementOrde(){
-        let newBooks = [];
-        let elements = $(".bookshelf").children();
-        let length = elements.length;
+        const newBooks = [];
+        const elements = $(".bookshelf").children();
+        const length = elements.length;
 
         for(let i = 0; i < length; i++){
             newBooks[i] = app.bookShelf.books[$(elements[i]).data('book-index')];

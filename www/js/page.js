@@ -15,16 +15,18 @@ define(["jquery", "util"], function ($, util) {
                 if (!this.currentPage) return;
 
                 var urls = this.getURLs(this.currentPage);
-                this.__changeThemeContent(urls.cssthemeurl);
+                var cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
+                this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
             }
         },
-        __changeThemeContent: function __changeThemeContent(cssThemeUrl) {
-            var cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
+        __changeThemeContent: function __changeThemeContent(cssthemeelemnt, cssThemeUrl) {
+
             if (cssThemeUrl) {
+                cssthemeelemnt.data('url', cssThemeUrl);
                 $.get(cssThemeUrl, function (cssContent) {
-                    return cssthemeelemnt.text(cssContent).data('url', cssThemeUrl);
+                    return cssthemeelemnt.text(cssContent);
                 }).fail(function () {
-                    return cssthemeelemnt.text("").data('url', cssThemeUrl);
+                    return cssthemeelemnt.text("");
                 });
             } else {
                 cssthemeelemnt.text("").data('url', "");
@@ -153,7 +155,7 @@ define(["jquery", "util"], function ($, util) {
                     var cssthemeelemnt = p.content.find("style.csstheme");
                     var newcssthemeurl = urls.cssthemeurl;
                     if (cssthemeelemnt.data('url') != newcssthemeurl) {
-                        _this3.__changeThemeContent(newcssthemeurl);
+                        _this3.__changeThemeContent(cssthemeelemnt, newcssthemeurl);
                     }
 
                     pageContainer.children().detach();

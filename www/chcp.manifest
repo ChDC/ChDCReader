@@ -49,11 +49,11 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "5ae56f1101fac120c706ba93f2410f47"
+    "hash": "af4c5b18c93aa94a1065d69671aaf847"
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "e3620bd96cc23793b86903ca999077aa"
+    "hash": "dca6dcc828d649df3e7ea71289fa4732"
   },
   {
     "file": "js/Chapter.js",
@@ -73,7 +73,7 @@
   },
   {
     "file": "js/page.js",
-    "hash": "7a8e41534ae00aca0517fb1072e8c3c2"
+    "hash": "eac1a9d7ae00977a4b7a12c31788350c"
   },
   {
     "file": "js/ReadingRecord.js",
@@ -81,7 +81,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "10207cae915d47aaea3d631d93d01d59"
+    "hash": "019d256a4c31c9e1a8359334cc60f220"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",

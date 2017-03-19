@@ -13,9 +13,9 @@ define(function(require) {
             //点击某物体时，用drag对象即可，move和up是全局区域，也就是整个文档通用，应该使用document对象而不是drag对象(否则，采用drag对象时物体只能往右方或下方移动)
             draggableTarget.onmousedown = function(e) {
                 //鼠标点击物体那一刻相对于物体左侧边框的距离=点击时的位置相对于浏览器最左边的距离-物体左边框相对于浏览器最左边的距离
-                let diffX = e.clientX - target.offsetLeft;
-                let diffY = e.clientY - target.offsetTop;
-                let oldPosition = draggableTarget.style.position;
+                const diffX = e.clientX - target.offsetLeft;
+                const diffY = e.clientY - target.offsetTop;
+                const oldPosition = draggableTarget.style.position;
                 draggableTarget.style.position = "relative";
 
                 draggableTarget.onmousemove = function(e) {

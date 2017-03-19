@@ -16,8 +16,8 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         $(".chapterContainer").on("click", event => {
             // function isClickInRegion(minHeight, maxHeight)
             // {
-            //     let clientHeight = $(window).height();
-            //     let y = event.clientY;
+            //     const clientHeight = $(window).height();
+            //     const y = event.clientY;
             //     minHeight *= clientHeight;
             //     maxHeight *= clientHeight;
             //     return y >= minHeight && y <= maxHeight;
@@ -32,14 +32,14 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             // {
             //     // 点击上半部分，向上滚动
             //     $('.toolbar').hide();
-            //     let cc = $('.chapterContainer');
+            //     const cc = $('.chapterContainer');
             //     cc.scrollTop(cc.scrollTop() - cc.height() / 2);
             // }
             // else if(isClickInRegion(0.66, 1))
             // {
             //     // 点击下半部分，向下滚动
             //     $('.toolbar').hide();
-            //     let cc = $('.chapterContainer');
+            //     const cc = $('.chapterContainer');
             //     cc.scrollTop(cc.scrollTop() + cc.height() / 2);
 
             // }
@@ -69,7 +69,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             chapterList.loadList();
         });
         $("#btnSortReversed").click((e) => {
-            let list = $('#listCatalog');
+            const list = $('#listCatalog');
             list.append(list.children().toArray().reverse());
         });
         // TODO: 修改内容源
@@ -82,8 +82,8 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             loadBookSource();
         });
         $('#modalCatalog').on('shown.bs.modal', e => {
-            let targetChapter = $('#listCatalog > [data-index=' + readingRecord.chapterIndex + ']');
-            let top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
+            const targetChapter = $('#listCatalog > [data-index=' + readingRecord.chapterIndex + ']');
+            const top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
             $('#listCatalogContainer').scrollTop(top);
             // $("#modalCatalog .modal-body").css("height", $());
         });
@@ -93,16 +93,16 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
     // 加载内容源列表
     function loadBookSource(){
-        let listBookSource = $("#listBookSource");
+        const listBookSource = $("#listBookSource");
         listBookSource.empty();
-        let listBookSourceEntry = $(".template .listBookSourceEntry");
-        for(let bsk in app.bookSourceManager.sources){
+        const listBookSourceEntry = $(".template .listBookSourceEntry");
+        for(const bsk in app.bookSourceManager.sources){
             if(bsk == book.mainSourceId)
                 continue;
-            let nlbse = listBookSourceEntry.clone();
-            let bs = app.bookSourceManager.sources[bsk];
+            const nlbse = listBookSourceEntry.clone();
+            const bs = app.bookSourceManager.sources[bsk];
             nlbse.find(".bookSourceTitle").text(bs.name);
-            let lastestChapter = "";
+            const lastestChapter = "";
             // TODO: 最新章节
             nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
             nlbse.data("bsid", bsk);
@@ -111,11 +111,11 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
         };
 
         function changeMainContentSourceClickEvent(event){
-            let target = event.currentTarget;
+            const target = event.currentTarget;
             if(!target)
                 return;
-            let bid = $(target).data('bsid');
-            let oldMainSource = book.mainSourceId;
+            const bid = $(target).data('bsid');
+            const oldMainSource = book.mainSourceId;
             book.setMainSourceId(bid, options)
                 .then(book => {
                     app.bookShelf.save();
@@ -124,7 +124,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
                     // 更新源之后
                     $(".labelMainSource").text(app.bookSourceManager.sources[book.mainSourceId].name);
                     if(readingRecord.chapterIndex){
-                        let opts = Object.assign({}, options);
+                        const opts = Object.assign({}, options);
                         opts.bookSourceId = oldMainSource;
                         book.fuzzySearch(book.mainSourceId, readingRecord.chapterIndex, opts)
                             .then(({chapter, index}) => {
@@ -158,7 +158,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
                 return;
 
             target = $(target);
-            let chapterIndex = parseInt(target.attr('data-index'));
+            const chapterIndex = parseInt(target.attr('data-index'));
             readingRecord.chapterIndex = chapterIndex;
             chapterList.emptyList();
             app.showLoading();
@@ -170,11 +170,11 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
         return book.getCatalog({bookSourceManager: app.bookSourceManager, forceRefresh:forceRefresh})
             .then(catalog => {
-                let listCatalog = $("#listCatalog");
-                let listCatalogEntry = $(".template .listCatalogEntry");
+                const listCatalog = $("#listCatalog");
+                const listCatalogEntry = $(".template .listCatalogEntry");
                 listCatalog.empty();
                 $(catalog).each(function(i){
-                    let lce = listCatalogEntry.clone();
+                    const lce = listCatalogEntry.clone();
                     lce.text(this.title);
                     // lce.data("index", i);
                     lce.attr("data-index", i);
@@ -202,9 +202,9 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
             onNewChapterItemFinished
         );
         chapterList.onCurrentItemChanged = (event, newValue, oldValue) => {
-            let index = newValue.data('chapterIndex');
-            let title = newValue.data('chapterTitle');
-            let options = newValue.data('options');
+            const index = newValue.data('chapterIndex');
+            const title = newValue.data('chapterTitle');
+            const options = newValue.data('options');
             readingRecord.setReadingRecord(index, title, options);
             readingRecord.pageScrollTop = chapterList.getPageScorllTop();
             // app.bookShelf.save();
@@ -216,7 +216,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
     function onNewChapterItem(event, be, direction){
 
-        let opts = Object.assign({}, options, tmpOptions);
+        const opts = Object.assign({}, options, tmpOptions);
         tmpOptions = null;
         let chapterIndex = 0;
         if(be){
@@ -233,7 +233,7 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
         return book.getChapter(chapterIndex, opts)
             .then(({chapter, title, index, options}) => {
-                let newItem = buildChapter(chapter, title, index, options);
+                const newItem = buildChapter(chapter, title, index, options);
                 return {newItem};
             })
             .catch(error => {
@@ -250,14 +250,14 @@ define(["jquery", "main", "page", "util", 'infinitelist'], function($, app, page
 
     function onNewChapterItemFinished(event, be, direction){
         if(!be && lastSavePageScrollTop){
-            let cs = $('.chapterContainer').scrollTop();
+            const cs = $('.chapterContainer').scrollTop();
             $('.chapterContainer').scrollTop(cs + lastSavePageScrollTop);
             lastSavePageScrollTop = 0;
         }
     }
 
     function buildChapter(chapter, title, index, options){
-        let nc = $('.template .chapter').clone();
+        const nc = $('.template .chapter').clone();
         nc.find(".chapter-title").text(chapter.title);
         nc.find(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
         // nc.find(".chapter-source").text(app.bookSourceManager.sources[options.contentSourceId].name);

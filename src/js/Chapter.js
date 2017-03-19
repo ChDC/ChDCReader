@@ -25,8 +25,8 @@ define(["util"], function(util) {
             return false;
 
         // TODO：模糊判等
-        let cA = util.stripString(chapterTitleA);
-        let cB = util.stripString(chapterTitleB);
+        const cA = util.stripString(chapterTitleA);
+        const cB = util.stripString(chapterTitleB);
         return cA == cB;
     }
 
@@ -38,11 +38,11 @@ define(["util"], function(util) {
         if(!chapterTitleA || !chapterTitleB)
             return false;
 
-        let numPattern = /第[零一二两三四五六七八九十百千万亿\d]+章/g;
+        const numPattern = /第[零一二两三四五六七八九十百千万亿\d]+章/g;
         chapterTitleA = chapterTitleA.replace(numPattern, '');
         chapterTitleB = chapterTitleB.replace(numPattern, '');
-        let cA = util.stripString(chapterTitleA);
-        let cB = util.stripString(chapterTitleB);
+        const cA = util.stripString(chapterTitleA);
+        const cB = util.stripString(chapterTitleB);
         return cA == cB;
     }
 

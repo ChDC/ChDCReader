@@ -44,10 +44,10 @@ define(["jquery", "co"], function($, co) {
             if(i < 0)
                 return;
 
-            let ics = this.itemList.children();
+            const ics = this.itemList.children();
             i++;
             if(i < ics.length){
-                let ni = ics.eq(i);
+                const ni = ics.eq(i);
                 this.container.scrollTop(ni.position().top);
             }
         }
@@ -58,10 +58,10 @@ define(["jquery", "co"], function($, co) {
             if(i < 0)
                 return;
 
-            let ics = this.itemList.children();
+            const ics = this.itemList.children();
             i--;
             if(i >= 0){
-                let ni = ics.eq(i);
+                const ni = ics.eq(i);
                 this.container.scrollTop(ni.position().top);
             }
         }
@@ -81,14 +81,14 @@ define(["jquery", "co"], function($, co) {
 
         // 清空列表数据
         computeCurrentItems(){
-            let wh = $(window).height();
-            let items = this.itemList.children();
-            let result = [];
+            const wh = $(window).height();
+            const items = this.itemList.children();
+            const result = [];
             for(let i = 0; i < items.length; i++)
             {
-                let item = items.eq(i);
-                let top = item.offset().top;
-                let height = item.outerHeight(true);
+                const item = items.eq(i);
+                const top = item.offset().top;
+                const height = item.outerHeight(true);
                 if(top + height <= 0.1 * wh){
                     continue;
                 }
@@ -106,20 +106,20 @@ define(["jquery", "co"], function($, co) {
         __getCurrentItemIndex(){
             if(!this.currentItem)
                 return -1;
-            let ics = this.itemList.children();
+            const ics = this.itemList.children();
             return Array.prototype.indexOf.bind(ics)(this.currentItem[0]);
         }
 
 
         // 容器的滚动事件
         __scrollEvent(event){
-            let scrollY = this.container.scrollTop();
+            const scrollY = this.container.scrollTop();
 
             if(this.__lastCurrentChangeCheckScrollY == null){
                 this.__checkCurrentItemChange();
             }
             else{
-                let wh = $(window).height();
+                const wh = $(window).height();
                 if(Math.abs(scrollY - this.__lastCurrentChangeCheckScrollY) > wh * this.CUTTENTITEM_CHECK_CHECK_SCROLL_THRESHOLD) {
                     this.__checkCurrentItemChange();
                 }
@@ -129,7 +129,7 @@ define(["jquery", "co"], function($, co) {
                 this.checkBoundary();
             }
             else{
-                let wh = $(window).height();
+                const wh = $(window).height();
                 if(Math.abs(scrollY - this.__lastCheckScrollY) > wh * this.CHECK_SCROLL_THRESHOLD) {
                     this.checkBoundary();
                 }
@@ -142,9 +142,9 @@ define(["jquery", "co"], function($, co) {
             if(!this.currentItem){
                 return;
             }
-            let cis = this.computeCurrentItems();
+            const cis = this.computeCurrentItems();
 
-            let i = cis.findIndex(e => Infinitelist.__itemEqual(e, this.currentItem));
+            const i = cis.findIndex(e => Infinitelist.__itemEqual(e, this.currentItem));
             if(i < 0){
                 this.setCurrentItem(cis[0]);
             }
@@ -153,7 +153,7 @@ define(["jquery", "co"], function($, co) {
 
         // 设置当前元素
         setCurrentItem(newCurrentItem){
-            let oldValue = this.currentItem;
+            const oldValue = this.currentItem;
             if(Infinitelist.__itemEqual(newCurrentItem, oldValue))
                 return;
 
@@ -171,7 +171,7 @@ define(["jquery", "co"], function($, co) {
             this.isCheckingBoundary = true;
             this.container.off('scroll', this.__scrollEvent.bind(this));
 
-            let curScrollY = this.container.scrollTop();
+            const curScrollY = this.container.scrollTop();
             let scrollDirection = 1;
             if(this.__lastCheckScrollY){
                 scrollDirection = curScrollY > this.__lastCheckScrollY ? 1 : -1;
@@ -191,7 +191,7 @@ define(["jquery", "co"], function($, co) {
         *__checkBoundary(direction, willClear){
 
             function isOutBoundary(item){
-                let wh = $(window).height();
+                const wh = $(window).height();
                 let result = false;
                 if(direction >= 0)
                     result = item.offset().top > (self.DOWN_THRESHOLD + 1) * wh;
@@ -201,7 +201,7 @@ define(["jquery", "co"], function($, co) {
             }
 
             function getBoundaryItem(){
-                let es = self.itemList.children();
+                const es = self.itemList.children();
                 if(es.length <= 0)
                     return null;
                 return direction >= 0 ? es.last() : es.first();
@@ -209,7 +209,7 @@ define(["jquery", "co"], function($, co) {
 
             function isBoundarySatisfied(){
                 function isOnBoundary(item){
-                    let wh = $(window).height();
+                    const wh = $(window).height();
                     let result = false;
                     if(direction >= 0)
                         result = item.offset().top + item.outerHeight(true) > (self.DOWN_THRESHOLD + 1) * wh;
@@ -218,34 +218,34 @@ define(["jquery", "co"], function($, co) {
                     return result;
                 }
 
-                let be = getBoundaryItem();
+                const be = getBoundaryItem();
                 if(!be)
                     return false;
                 // 边界元素被标记为端 或者 在边界内
-                let result = be.data(direction + 'end') ||
+                const result = be.data(direction + 'end') ||
                     !Infinitelist.__itemEqual(self.currentItem, be) && isOnBoundary(be);
                 return result;
             }
 
             function clearOutBoundary(){
-                let ies = self.itemList.children();
-                let cii = self.__getCurrentItemIndex();
+                const ies = self.itemList.children();
+                const cii = self.__getCurrentItemIndex();
                 if(direction < 0){
                     for(let i = 0; i < ies.length; i++){
-                        let item = ies.eq(i);
+                        const item = ies.eq(i);
                         if(!isOutBoundary(item))
                             break;
                         if(i >= cii - 1)
                             break;
-                        let itemHeight = item.outerHeight(true);
-                        let cs = self.container.scrollTop();
+                        const itemHeight = item.outerHeight(true);
+                        const cs = self.container.scrollTop();
                         item.remove();
                         self.container.scrollTop(cs - itemHeight);
                     }
                 }
                 else{
                     for(let i = ies.length - 1; i >= 0; i--){
-                        let item = ies.eq(i);
+                        const item = ies.eq(i);
                         if(!isOutBoundary(item))
                             break;
                         if(i <= cii + 1)
@@ -256,21 +256,21 @@ define(["jquery", "co"], function($, co) {
             }
 
 
-            let self = this;
+            const self = this;
             while(!isBoundarySatisfied()){
-                let es = self.itemList.children();
+                const es = self.itemList.children();
                 let be = null;
                 if(es.length > 0){
                     be = direction >= 0 ? es.last() : es.first();
                 }
 
-                let {newItem, type} = yield self.onNewListItem(self, be, direction);
+                const {newItem, type} = yield self.onNewListItem(self, be, direction);
 
                 if(!newItem){
                     if(type == 1){
                         // 该元素是边界
                         // 标记边界
-                        let bbe = getBoundaryItem();
+                        const bbe = getBoundaryItem();
                         if(bbe){
                             bbe.data(direction + 'end', true);
                         }
@@ -285,7 +285,7 @@ define(["jquery", "co"], function($, co) {
                     self.itemList.append(newItem);
                 }
                 else{
-                    let cs = self.container.scrollTop();
+                    const cs = self.container.scrollTop();
                     self.itemList.prepend(newItem);
                     self.container.scrollTop(cs + newItem.outerHeight(true));
                 }

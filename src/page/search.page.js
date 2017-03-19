@@ -3,11 +3,11 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     // 加载结果列表
     function loadBooks(id, books, bookSourceId){
-        let bs = $(id);
-        let b = $(".template .book");
+        const bs = $(id);
+        const b = $(".template .book");
         bs.empty();
-        for(let book of books){
-            let nb = b.clone();
+        for(const book of books){
+            const nb = b.clone();
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
             nb.find(".book-name").text(book.name);
@@ -47,8 +47,8 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     function search(){
         app.showLoading();
-        let keyword = $(".keyword").val();
-        let bookSourceId = $(".bookSource").val();
+        const keyword = $(".keyword").val();
+        const bookSourceId = $(".bookSource").val();
         $('.result').empty();
         if(!keyword || !bookSourceId){
             util.showError("请输入要搜索的关键字");
@@ -68,12 +68,12 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     function loadView(){
         // 添加选项
-        let bookSource = $(".bookSource");
-        let keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
-        for(let bskey of keys)
+        const bookSource = $(".bookSource");
+        const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
+        for(const bskey of keys)
         {
-            let bs = app.bookSourceManager.sources[bskey];
-            let newOption = `<option value ="${bskey}">${bs.name}</option>`;
+            const bs = app.bookSourceManager.sources[bskey];
+            const newOption = `<option value ="${bskey}">${bs.name}</option>`;
             bookSource.append(newOption);
         }
         $("#btnClose").click(e => page.closePage());

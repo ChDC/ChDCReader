@@ -2,7 +2,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
     "use strict"
 
-    let app = {
+    const app = {
         /**************** 全局变量 *******************/
         settings: {
             settings: {
@@ -73,7 +73,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
                             util.showMessage('没有更新');
                     }
                     else{
-                        let errMsg = error.description + "(" + error.code + ")";
+                        const errMsg = error.description + "(" + error.code + ")";
                         util.error('Fail to download update: ' + errMsg);
                         util.showError('更新下载失败！\n' + errMsg);
                     }
@@ -91,7 +91,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
             function installationCallback(error) {
                 if (error) {
-                    let errMsg = error.description + "(" + error.code + ")";
+                    const errMsg = error.description + "(" + error.code + ")";
                     util.error('Fail to install update: ' + errMsg);
                     util.showError('安装更新失败！\n' + errMsg);
                 }

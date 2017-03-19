@@ -3,7 +3,7 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
 
     // 加载书籍详情
     function loadBookDetail(id, book, bookSourceId){
-        let nb = $(id);
+        const nb = $(id);
         if(book.cover)
             nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
@@ -44,15 +44,15 @@ define(["jquery", "main", "page", "util"], function($, app, page, util){
     // 加载章节列表
     function loadBookChapters(id, book, bookSourceId){
 
-        let bookChapter = $(id);
-        let c = $(".template .book-chapter");
+        const bookChapter = $(id);
+        const c = $(".template .book-chapter");
         bookChapter.empty();
         book.getCatalog({bookSourceManager: app.bookSourceManager,
                             bookSourceId: bookSourceId
                         })
             .then(catalog => {
-                for(let chapter of catalog){
-                    let nc = c.clone();
+                for(const chapter of catalog){
+                    const nc = c.clone();
                     nc.text(chapter.title);
                     nc.click(e => {
                         // TODO: 打开阅读页面

@@ -41,11 +41,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                         var book = books.find(function (e) {
                             return e.name == bookName && e.author == bookAuthor;
                         });
-                        if (book) {
-                            return book;
-                        } else {
-                            return Promise.reject(404);
-                        }
+                        return book ? book : Promise.reject(404);
                     }).catch(function (error) {
                         return Promise.reject(error == 602 ? 404 : error);
                     });
@@ -125,11 +121,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                         }
                     }
 
-                    if (books.length <= 0) {
-                        return Promise.reject(602);
-                    } else {
-                        return Promise.resolve(books);
-                    }
+                    return books.length <= 0 ? Promise.reject(602) : Promise.resolve(books);
                 };
             }
         }, {

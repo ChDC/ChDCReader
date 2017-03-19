@@ -29,14 +29,8 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                 // 通过当前书名和作者名搜索添加源
                 return this.searchBook(bsid, bookName)
                     .then(books => {
-                        let book = books.find(e => e.name == bookName && e.author == bookAuthor );
-                        if(book){
-                            // 找到书籍了
-                            return book;
-                        }
-                        else{
-                            return Promise.reject(404);
-                        }
+                        const book = books.find(e => e.name == bookName && e.author == bookAuthor );
+                        return book ? book : Promise.reject(404);
                     })
                     .catch(error => {
                         return Promise.reject(error == 602 ? 404 : error);
@@ -49,20 +43,20 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
         // 搜索书籍
         searchBook(bsid, keyword){
-            let bs = this.sources[bsid];
+            const bs = this.sources[bsid];
             if(!bs)
                 return;
             util.log('Search Book from: ' + bsid);
 
-            let search = bs.search;
-            let searchLink = util.format(search.url, {keyword: keyword});
+            const search = bs.search;
+            const searchLink = util.format(search.url, {keyword: keyword});
             return util.getDOM(searchLink)
                 .then(getBookFromHtml);
 
             function getBookIdFromHtml(bookElement, bookid, bss){
-                let bidElement = bookElement.find(bookid.element);
+                const bidElement = bookElement.find(bookid.element);
                 if(bookid.attribute){
-                    let bid = bidElement.attr(bookid.attribute);
+                    const bid = bidElement.attr(bookid.attribute);
                     if(bid){
                         bss.bookid = bid;
                     }
@@ -71,13 +65,13 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
             function getBookFromHtml(html){
                 html = $(html);
-                let info = search.info;
-                let detail = info.detail;
-                let books = [];
-                let bookItems = html.find(info.book);
+                const info = search.info;
+                const detail = info.detail;
+                const books = [];
+                const bookItems = html.find(info.book);
                 for(let element of Array.from(bookItems)){
                     element = $(element);
-                    let book = new Book();
+                    const book = new Book();
                     book.name = BookSourceManager.fixer.fixName(element.find(detail.name).text());  // 书名
                     book.author = BookSourceManager.fixer.fixAuthor(element.find(detail.author).text());  // 作者
                     book.catagory = BookSourceManager.fixer.fixCatagory(element.find(detail.catagory).text());  // 分类
@@ -86,7 +80,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                     book.introduce = BookSourceManager.fixer.fixIntroduce(element.find(detail.introduce).text());  // 简介
 
                     book.sources = {}; // 内容来源
-                    let bss = new BookSource(bsid, bs.contentSourceWeight);
+                    const bss = new BookSource(bsid, bs.contentSourceWeight);
                     if(info.bookid){
                         getBookIdFromHtml(element, info.bookid, bss);
                     }
@@ -99,26 +93,22 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                     book.mainSourceId = bsid;  // 主要来源
                     books.push(book);
                 }
-                if(books.length <= 0){
-                    return Promise.reject(602);
-                }
-                else{
-                    return Promise.resolve(books);
-                }
+
+                return books.length <= 0 ? Promise.reject(602) : Promise.resolve(books);
             };
         }
 
         // 使用详情页链接刷新书籍信息
         // 前提：book.sources 中有详情链接
         getBookInfo(bsid, detailLink){
-            let bsm = this.sources[bsid];
-            let detail = bsm.detail;
-            let info = detail.info;
+            const bsm = this.sources[bsid];
+            const detail = bsm.detail;
+            const info = detail.info;
 
             return util.getDOM(detailLink)
                 .then(html => {
                     html = $(html);
-                    let book = {};
+                    const book = {};
                     // 更新信息的时候不更新书名和作者，因为换源的时候需要用到
                     book.catagory = BookSourceManager.fixer.fixCatagory(html.find(info.catagory).text());  // 分类
                     book.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);  // 封面
@@ -131,11 +121,11 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
         // 获取书籍目录
         getBookCatalog(bsid, catalogLink){
-            let bsm = this.sources[bsid];
+            const bsm = this.sources[bsid];
             if(!bsm)
                 return;
-            let info = bsm.catalog.info;
-            let type = bsm.catalog.type.toLowerCase();
+            const info = bsm.catalog.info;
+            const type = bsm.catalog.type.toLowerCase();
 
             let rp = null;
             switch(type){
@@ -164,23 +154,23 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
             });
 
             function getChaptersFromJSON(data){
-                let catalog = [];
+                const catalog = [];
                 try{
-                    let json = JSON.parse(data);
-                    let chapters = util.getDataFromObject(json, info.chapter);
-                    for(let c of chapters){
-                        let chapter = new Chapter();
-                        let name = util.getDataFromObject(c, info.name);
-                        let linkid = util.getDataFromObject(c, info.linkid);
+                    const json = JSON.parse(data);
+                    const chapters = util.getDataFromObject(json, info.chapter);
+                    for(const c of chapters){
+                        const chapter = new Chapter();
+                        const name = util.getDataFromObject(c, info.name);
+                        const linkid = util.getDataFromObject(c, info.linkid);
                         chapter.title = name;
-                        let vip = util.getDataFromObject(c, info.vip);
-                        let locals = {
+                        const vip = util.getDataFromObject(c, info.vip);
+                        const locals = {
                                 name: name,
                                 linkid: linkid,
                                 vip: vip
                             };
 
-                        let vipLinkPattern = util.format(info.vipLinkPattern, locals);
+                        const vipLinkPattern = util.format(info.vipLinkPattern, locals);
                         if(eval(vipLinkPattern)){
                             chapter.link = null;
                         }
@@ -199,12 +189,12 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
             }
 
             function getChaptersFromHTML(html){
-                let catalog = [];
+                const catalog = [];
                 html = $(html);
-                let chapters = html.find(info.link);
+                const chapters = html.find(info.link);
                 for(let element of Array.from(chapters)){
                     element = $(element);
-                    let chapter = new Chapter();
+                    const chapter = new Chapter();
                     chapter.link = util.fixurl(element.attr('href'), catalogLink);
                     if(info.vipLinkPattern && chapter.link.match(info.vipLinkPattern)){
                        chapter.link = null;
@@ -212,7 +202,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
                     chapter.title = BookSourceManager.fixer.fixChapterTitle(element.text());
                     // 去重复
-                    // let i = util.arrayIndex(catalog, null, function(e){
+                    // const i = util.arrayIndex(catalog, null, function(e){
                     //     return e && e.title == chapter.title;
                     // });
                     // if(i >= 0){
@@ -233,14 +223,14 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
             util.log('Load Chpater content from Book Source: ' + chapterLink);
 
-            let bsm = this.sources[bsid];
-            let info = bsm.chapter.info;
+            const bsm = this.sources[bsid];
+            const info = bsm.chapter.info;
             return util.getDOM(chapterLink)
                 .then(getChapterFromHtml);
 
             function getChapterFromHtml(html){
                 html = $(html);
-                let chapter = new Chapter();
+                const chapter = new Chapter();
                 chapter.content = BookSourceManager.fixer.fixChapterContent(html.find(info.content).html());
                 if(!chapter.content){
                     // 没有章节内容就返回错误
@@ -255,16 +245,16 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
         // 获取最新章节
         getLastestChapter(bsid, detailLink){
-            let bsm = this.sources[bsid];
-            let detail = bsm.detail;
-            let info = detail.info;
+            const bsm = this.sources[bsid];
+            const detail = bsm.detail;
+            const info = detail.info;
 
             return util.getDOM(detailLink)
                 .then(getBookDetailFromHtml);
 
             function getBookDetailFromHtml(html){
                 html = $(html);
-                let lastestChapter = BookSourceManager.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
+                const lastestChapter = BookSourceManager.fixer.fixLastestChapter(html.find(info.lastestChapter).text());  // 最新的章节
                 return lastestChapter;
             };
         }
@@ -280,8 +270,8 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
         }
 
         init(){
-            for(let key in this){
-                let value = this[key];
+            for(const key in this){
+                const value = this[key];
                 if(typeof value == 'object' && 'init' in value){
                     value.init();
                 }
@@ -309,9 +299,9 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                             throw e;
                         });
 
-                    for(let ik in testBook){
+                    for(const ik in testBook){
                         if(ik.match(/^test_/)){
-                            let testProperty = ik.substring(5);
+                            const testProperty = ik.substring(5);
                             if(book[testProperty].match(testBook[ik])){
                                 log(getInfo() + " -> 测试属性：" + testProperty + " OK")
                             }
@@ -323,7 +313,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                 }
 
                 function* checkCatalog(bs, book){
-                    let catalog = yield bs.getCatalog(self, book, true)
+                    const catalog = yield bs.getCatalog(self, book, true)
                         .catch(e => {
                             error(getInfo() + " -> 测试目录 Wrong!");
                             throw e;
@@ -337,7 +327,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                     log(getInfo() + " -> 测试目录 OK");
 
                     // 测试获取章节
-                    let chapter = yield bs.getChapter(self, book, catalog[0], false)
+                    const chapter = yield bs.getChapter(self, book, catalog[0], false)
                         .catch(e => {
                             error(getInfo() + " -> 测试章节错误：", e);
                             throw e;
@@ -354,11 +344,11 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
                 return co(function*(){
                     log(getInfo() + " -> 测试书籍：" + testBook.name + " by " + testBook.author);
-                    let book = yield self.getBook(bsid, testBook.name, testBook.author)
+                    const book = yield self.getBook(bsid, testBook.name, testBook.author)
                         .catch(e => {error(getInfo() + " -> 获取书籍失败：", e); throw e;});
 
                     log(getInfo() + " -> 测试项目：获取书籍 OK");
-                    let bs = book.sources[bsid];
+                    const bs = book.sources[bsid];
 
                     // 测试获取书籍信息
                     yield checkBookInfo(bs, book);
@@ -368,13 +358,13 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
 
             }
 
-            let self = this;
+            const self = this;
             return co(function*(){
-                let data = yield util.getJSON(testFile);
-                let taskQueue = [];
-                for(let sk in data.sources){
-                    let books = data.sources[sk];
-                    for(let book of books){
+                const data = yield util.getJSON(testFile);
+                const taskQueue = [];
+                for(const sk in data.sources){
+                    const books = data.sources[sk];
+                    for(const book of books){
                         if(!(book in data.books)){
                             error("没有在测试配置文件中找到书籍：" + book);
                         }
@@ -385,7 +375,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
                 // start to work
 
                 while(taskQueue.length > 0){
-                    let [bsid, book] = taskQueue.shift();
+                    const [bsid, book] = taskQueue.shift();
                     log("测试书源：" + self.sources[bsid].name);
                     try{
                         yield check(bsid, book);
@@ -473,7 +463,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
     BookSourceManager.prototype.qidian = {
         csrfToken: "",
         getCSRToken(){
-            let url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
+            const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
             if(typeof cordovaHTTP != 'undefined'){
                 cordovaHTTP.get(url, {}, {},
                     function(response){
@@ -488,7 +478,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function($, co
             //     if(json.code == 0){
             //         return;
             //     }
-            //     let cookies = xhr.getResponseHeader("Cookies");
+            //     const cookies = xhr.getResponseHeader("Cookies");
             //     debugger;
             // });
         },
