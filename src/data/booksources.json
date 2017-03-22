@@ -219,7 +219,7 @@
                     "complete": "",
                     "cover": "",
                     "introduce": "div.result-game-item-detail > p",
-                    "lastestChapter": "div.result-game-item-detail > div > p:nth-child(4) > a",
+                    "lastestChapter": "",
                     "link": "div.result-game-item-detail > h3 > a",
                     "name": "div.result-game-item-detail > h3 > a"
                 }
@@ -325,7 +325,7 @@
         "detail": {
             "info": {
                 "author": "#stats > i:nth-child(1) > a",
-                "catagory": "#stats > i:nth-child(2) > a",
+                "catagory": "#author > i:nth-child(2) > a",
                 "complete": "#stats > i:nth-child(3)",
                 "cover": "section > div:nth-child(2) > div.w-left > div > div.body.novel > div.novelinfo > div.novelinfo-r > a > img",
                 "introduce": "#intro",

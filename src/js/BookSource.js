@@ -1,4 +1,4 @@
-define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
+define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     "use strict"
 
 
@@ -47,6 +47,7 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
 
         // 获取当前书籍指定的目录源的相信信息链接
         __getBookSourceDetailLink(bookSourceManager, book){
+
             if(!this.searched){
                 return this.getBookSource(bookSourceManager, book)
                     .then(bs => bs.detailLink);
@@ -77,8 +78,12 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
                     const detailLink = yield this.__getBookSourceDetailLink(bookSourceManager, book);
 
                     let html = yield util.getDOM(detailLink);
-                    html = $(html);
-                    const link = html.find(bsm.detail.info.catalogLink).attr('href');
+
+                    let container = document.createElement('div');
+                    container.innerHTML = html;
+                    // html = $(html);
+                    // const link = container.find(bsm.detail.info.catalogLink).attr('href');
+                    const link = util.elementFind(container, bsm.detail.info.catalogLink).getAttribute("href");
                     this.catalogLink = link;
                 }
                 else{
@@ -98,8 +103,8 @@ define(["jquery", 'co', "util", 'Chapter'], function($, co, util, Chapter) {
                 return Promise.reject(400);
             }
 
-            util.log('Refresh Catalog!');
             const catalogLink = yield this.__getBookSourceCatalogLink(bookSourceManager, book);
+
             const catalog = yield bookSourceManager.getBookCatalog(this.id, catalogLink);
             this.catalog = catalog;
             this.updatedCatalogTime = (new Date()).getTime();

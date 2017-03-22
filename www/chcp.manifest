@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "cf596cef799a0e956a5d641194eb0178"
+    "hash": "279ced09f6646ff820ff97044814921b"
   },
   {
     "file": "data/booksourcesTest.json",
@@ -49,11 +49,11 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "af4c5b18c93aa94a1065d69671aaf847"
+    "hash": "ad3b876eb030d120e29ab31aeceb52fb"
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "dca6dcc828d649df3e7ea71289fa4732"
+    "hash": "88f563e0dc1dc9118435ec0728ac4cb7"
   },
   {
     "file": "js/Chapter.js",
@@ -69,11 +69,15 @@
   },
   {
     "file": "js/main.js",
-    "hash": "07e382db9c44aa408cb93193bfe34758"
+    "hash": "707558e4a42b9b7a9073de42df0617f3"
   },
   {
     "file": "js/page.js",
-    "hash": "eac1a9d7ae00977a4b7a12c31788350c"
+    "hash": "c0e3780b96354351bfe07ae5662fdfe7"
+  },
+  {
+    "file": "js/PageManager.js",
+    "hash": "056a0c9f30b38d2dc5d48d8b079c7b26"
   },
   {
     "file": "js/ReadingRecord.js",
@@ -81,7 +85,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "019d256a4c31c9e1a8359334cc60f220"
+    "hash": "a9e87ad11862316268cacfdff40498ac"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -241,7 +245,7 @@
   },
   {
     "file": "page/bookdetail.page.js",
-    "hash": "84490922b74752733af754746000fabb"
+    "hash": "0a047e35863370b12dabfa5e23cec85e"
   },
   {
     "file": "page/bookshelf.page.css",
@@ -253,7 +257,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "e04b754de973b3cdc6d842b2974db5d4"
+    "hash": "725a995ae70154e82a1b82cc82202e45"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -269,7 +273,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "15318d0ae4162ef50dd596cab11ea541"
+    "hash": "cc85e25f25a9c5016d3292a94be8d412"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -285,7 +289,7 @@
   },
   {
     "file": "page/search.page.js",
-    "hash": "7afc3ae4a9ac9b3ba7767c1604dbef2f"
+    "hash": "5d33507b4376561420781da25a422016"
   },
   {
     "file": "test.html",

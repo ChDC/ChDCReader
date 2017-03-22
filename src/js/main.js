@@ -1,4 +1,4 @@
-define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "bootstrap"], function($, util, Book, BookSourceManager, page, BookShelf) {
+define(["util", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"], function(util, Book, BookSourceManager, PageManager, BookShelf) {
 
     "use strict"
 
@@ -36,7 +36,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         // 书架
         bookShelf: null,
         util: util,
-        page: page,
+        page: null,
         error: {
             __error: {},
             load(file){
@@ -51,12 +51,15 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             }
         },
         init(){
+
             if(typeof cordova != 'undefined'){
                 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
                 document.addEventListener("chcp_updateInstalled", this.onUpdateInstalled.bind(this), false);
             }
             else{
+                // debugger;
                 $(this.onDeviceReady.bind(this));
+                // document.addEventListener("load", this.onDeviceReady.bind(this));
             }
             this.loadingbar = new util.LoadingBar('./img/loading.gif');
         },
@@ -119,14 +122,13 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         loadingbar: null,
         showLoading(){
             this.loadingbar.show();
-            // $("#dialogLoading").modal('show');
         },
         hideLoading(){
             this.loadingbar.hide();
-            // $("#dialogLoading").modal('hide');
         },
 
         onDeviceReady() {
+            this.page = new PageManager();
             this.error.load("data/errorCode.json");
             this.settings.load()
                 .then(() => {
@@ -134,11 +136,10 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
                     this.bookSourceManager.init();
 
                     this.bookShelf = new BookShelf();
-                    page.init();
                     // 设置主题
-                    page.setTheme(this.settings.settings.night ? this.settings.settings.nighttheme : this.settings.settings.daytheme);
+                    this.page.setTheme(this.settings.settings.night ? this.settings.settings.nighttheme : this.settings.settings.daytheme);
 
-                    page.showPage("bookshelf");
+                    this.page.showPage("bookshelf");
                     this.chekcUpdate(true);
                 });
             document.addEventListener("pause", () => {

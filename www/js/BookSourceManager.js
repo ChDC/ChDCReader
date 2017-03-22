@@ -8,7 +8,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, co, util, Book, BookSource, Chapter) {
+define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book, BookSource, Chapter) {
     "use strict";
 
     var BookSourceManager = function () {
@@ -52,6 +52,7 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
         }, {
             key: "searchBook",
             value: function searchBook(bsid, keyword) {
+
                 var bs = this.sources[bsid];
                 if (!bs) return;
                 util.log('Search Book from: ' + bsid);
@@ -61,21 +62,26 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                 return util.getDOM(searchLink).then(getBookFromHtml);
 
                 function getBookIdFromHtml(bookElement, bookid, bss) {
-                    var bidElement = bookElement.find(bookid.element);
+
+                    var bidElement = bookElement.querySelector(bookid.element);
                     if (bookid.attribute) {
-                        var bid = bidElement.attr(bookid.attribute);
+                        var bid = bidElement.getAttribute(bookid.attribute);
                         if (bid) {
                             bss.bookid = bid;
                         }
                     }
                 }
 
-                function getBookFromHtml(html) {
-                    html = $(html);
+                function getBookFromHtml(htmlContent) {
+
+                    var html = document.createElement("div");
+                    html.innerHTML = htmlContent;
+
                     var info = search.info;
                     var detail = info.detail;
                     var books = [];
-                    var bookItems = html.find(info.book);
+
+                    var bookItems = html.querySelectorAll(info.book);
                     var _iteratorNormalCompletion = true;
                     var _didIteratorError = false;
                     var _iteratorError = undefined;
@@ -84,22 +90,21 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                         for (var _iterator = Array.from(bookItems)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                             var element = _step.value;
 
-                            element = $(element);
                             var book = new Book();
-                            book.name = BookSourceManager.fixer.fixName(element.find(detail.name).text());
-                            book.author = BookSourceManager.fixer.fixAuthor(element.find(detail.author).text());
-                            book.catagory = BookSourceManager.fixer.fixCatagory(element.find(detail.catagory).text());
-                            book.cover = util.fixurl(element.find(detail.cover).attr("data-src"), searchLink);
-                            book.complete = BookSourceManager.fixer.fixComplete(element.find(detail.complete).text());
-                            book.introduce = BookSourceManager.fixer.fixIntroduce(element.find(detail.introduce).text());
+                            book.name = BookSourceManager.fixer.fixName(element.querySelector(detail.name).textContent);
+                            book.author = BookSourceManager.fixer.fixAuthor(element.querySelector(detail.author).textContent);
+                            book.catagory = BookSourceManager.fixer.fixCatagory(util.elementFind(element, detail.catagory).textContent);
+                            book.cover = util.fixurl(util.elementFind(element, detail.cover).getAttribute("data-src"), searchLink);
+                            book.complete = BookSourceManager.fixer.fixComplete(util.elementFind(element, detail.complete).textContent);
+                            book.introduce = BookSourceManager.fixer.fixIntroduce(util.elementFind(element, detail.introduce).textContent);
 
                             book.sources = {};
                             var bss = new BookSource(bsid, bs.contentSourceWeight);
                             if (info.bookid) {
                                 getBookIdFromHtml(element, info.bookid, bss);
                             }
-                            bss.detailLink = util.fixurl(element.find(detail.link).attr("href"), searchLink);
-                            bss.lastestChapter = BookSourceManager.fixer.fixLastestChapter(element.find(detail.lastestChapter).text());
+                            bss.detailLink = util.fixurl(util.elementFind(element, detail.link).getAttribute("href"), searchLink);
+                            bss.lastestChapter = BookSourceManager.fixer.fixLastestChapter(util.elementFind(element, detail.lastestChapter).textContent);
                             bss.searched = true;
                             book.sources[bsid] = bss;
 
@@ -131,14 +136,16 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                 var detail = bsm.detail;
                 var info = detail.info;
 
-                return util.getDOM(detailLink).then(function (html) {
-                    html = $(html);
+                return util.getDOM(detailLink).then(function (htmlContent) {
+                    var html = document.createElement("div");
+                    html.innerHTML = htmlContent;
+
                     var book = {};
 
-                    book.catagory = BookSourceManager.fixer.fixCatagory(html.find(info.catagory).text());
-                    book.cover = util.fixurl(html.find(info.cover).attr("data-src"), detailLink);
-                    book.complete = BookSourceManager.fixer.fixComplete(html.find(info.complete).text());
-                    book.introduce = BookSourceManager.fixer.fixIntroduce(html.find(info.introduce).text());
+                    book.catagory = BookSourceManager.fixer.fixCatagory(util.elementFind(html, info.catagory).textContent);
+                    book.cover = util.fixurl(util.elementFind(html, info.cover).getAttribute("data-src"), detailLink);
+                    book.complete = BookSourceManager.fixer.fixComplete(util.elementFind(html, info.complete).textContent);
+                    book.introduce = BookSourceManager.fixer.fixIntroduce(util.elementFind(html, info.introduce).textContent);
 
                     return book;
                 });
@@ -146,6 +153,8 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
         }, {
             key: "getBookCatalog",
             value: function getBookCatalog(bsid, catalogLink) {
+
+                util.log('Refresh Catalog!');
                 var bsm = this.sources[bsid];
                 if (!bsm) return;
                 var info = bsm.catalog.info;
@@ -228,10 +237,13 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                     }
                 }
 
-                function getChaptersFromHTML(html) {
+                function getChaptersFromHTML(htmlContent) {
                     var catalog = [];
-                    html = $(html);
-                    var chapters = html.find(info.link);
+
+                    var html = document.createElement("div");
+                    html.innerHTML = htmlContent;
+
+                    var chapters = html.querySelectorAll(info.link);
                     var _iteratorNormalCompletion3 = true;
                     var _didIteratorError3 = false;
                     var _iteratorError3 = undefined;
@@ -240,14 +252,13 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                         for (var _iterator3 = Array.from(chapters)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                             var element = _step3.value;
 
-                            element = $(element);
                             var chapter = new Chapter();
-                            chapter.link = util.fixurl(element.attr('href'), catalogLink);
+                            chapter.link = util.fixurl(element.getAttribute("href"), catalogLink);
                             if (info.vipLinkPattern && chapter.link.match(info.vipLinkPattern)) {
                                 chapter.link = null;
                             }
 
-                            chapter.title = BookSourceManager.fixer.fixChapterTitle(element.text());
+                            chapter.title = BookSourceManager.fixer.fixChapterTitle(element.textContent);
 
                             catalog.push(chapter);
                         }
@@ -282,15 +293,17 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
                 var info = bsm.chapter.info;
                 return util.getDOM(chapterLink).then(getChapterFromHtml);
 
-                function getChapterFromHtml(html) {
-                    html = $(html);
+                function getChapterFromHtml(htmlContent) {
+                    var html = document.createElement("div");
+                    html.innerHTML = htmlContent;
+
                     var chapter = new Chapter();
-                    chapter.content = BookSourceManager.fixer.fixChapterContent(html.find(info.content).html());
+                    chapter.content = BookSourceManager.fixer.fixChapterContent(html.querySelector(info.content).innerHTML);
                     if (!chapter.content) {
                         return Promise.reject(206);
                     }
                     chapter.link = chapterLink;
-                    chapter.title = BookSourceManager.fixer.fixChapterTitle(html.find(info.title).text());
+                    chapter.title = BookSourceManager.fixer.fixChapterTitle(html.querySelector(info.title).textContent);
 
                     return chapter;
                 }
@@ -298,15 +311,18 @@ define(["jquery", 'co', "util", "Book", "BookSource", "Chapter"], function ($, c
         }, {
             key: "getLastestChapter",
             value: function getLastestChapter(bsid, detailLink) {
+
                 var bsm = this.sources[bsid];
                 var detail = bsm.detail;
                 var info = detail.info;
 
                 return util.getDOM(detailLink).then(getBookDetailFromHtml);
 
-                function getBookDetailFromHtml(html) {
-                    html = $(html);
-                    var lastestChapter = BookSourceManager.fixer.fixLastestChapter(html.find(info.lastestChapter).text());
+                function getBookDetailFromHtml(htmlContent) {
+                    var html = document.createElement("div");
+                    html.innerHTML = htmlContent;
+
+                    var lastestChapter = BookSourceManager.fixer.fixLastestChapter(html.querySelector(info.lastestChapter).textContent);
                     return lastestChapter;
                 };
             }

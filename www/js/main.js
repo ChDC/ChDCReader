@@ -1,6 +1,6 @@
 "use strict";
 
-define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "bootstrap"], function ($, util, Book, BookSourceManager, page, BookShelf) {
+define(["util", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"], function (util, Book, BookSourceManager, PageManager, BookShelf) {
 
     "use strict";
 
@@ -34,7 +34,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
 
         bookShelf: null,
         util: util,
-        page: page,
+        page: null,
         error: {
             __error: {},
             load: function load(file) {
@@ -49,6 +49,7 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
             }
         },
         init: function init() {
+
             if (typeof cordova != 'undefined') {
                 document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
                 document.addEventListener("chcp_updateInstalled", this.onUpdateInstalled.bind(this), false);
@@ -112,17 +113,17 @@ define(["jquery", "util", "Book", "BookSourceManager", "page", "BookShelf", "boo
         onDeviceReady: function onDeviceReady() {
             var _this3 = this;
 
+            this.page = new PageManager();
             this.error.load("data/errorCode.json");
             this.settings.load().then(function () {
                 _this3.bookSourceManager = new BookSourceManager("data/booksources.json");
                 _this3.bookSourceManager.init();
 
                 _this3.bookShelf = new BookShelf();
-                page.init();
 
-                page.setTheme(_this3.settings.settings.night ? _this3.settings.settings.nighttheme : _this3.settings.settings.daytheme);
+                _this3.page.setTheme(_this3.settings.settings.night ? _this3.settings.settings.nighttheme : _this3.settings.settings.daytheme);
 
-                page.showPage("bookshelf");
+                _this3.page.showPage("bookshelf");
                 _this3.chekcUpdate(true);
             });
             document.addEventListener("pause", function () {

@@ -137,7 +137,7 @@ define(["jquery"], function($){
         * url: 完整的 URL
         * params: 参数
         */
-        get(url, params, dataType, {timeout=5}={}) {
+        get(url, params, dataType, {timeout=15}={}) {
             if(url == null){
                 return Promise.reject();
             }
@@ -781,6 +781,11 @@ define(["jquery"], function($){
             this.hide = () => {
                 this.__loadingbar.remove();
             };
+        },
+
+        elementFind(element, selector){
+            return selector && element.querySelector(selector) ||
+                { getAttribute: e=> "", textContent: "", html: ""};
         }
     };
 
