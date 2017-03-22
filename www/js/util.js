@@ -96,7 +96,7 @@ define(["jquery"], function ($) {
 
             var _ref = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {},
                 _ref$timeout = _ref.timeout,
-                timeout = _ref$timeout === undefined ? 15 : _ref$timeout;
+                timeout = _ref$timeout === undefined ? 5 : _ref$timeout;
 
             if (url == null) {
                 return Promise.reject();
