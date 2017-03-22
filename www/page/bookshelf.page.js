@@ -21,13 +21,13 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
         }
 
         _createClass(MyPage, [{
-            key: "onload",
-            value: function onload(params) {
+            key: "onLoad",
+            value: function onLoad(params) {
                 this.loadView();
             }
         }, {
-            key: "onresume",
-            value: function onresume() {
+            key: "onResume",
+            value: function onResume() {
                 var _this2 = this;
 
                 if (app.bookShelf.loaded) {
@@ -37,6 +37,12 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
                         return _this2.loadBooks(".bookshelf", app.bookShelf);
                     });
                 }
+            }
+        }, {
+            key: "onDeviceResume",
+            value: function onDeviceResume() {
+                console.log("Refresh bookshelf on DeviceResume");
+                this.onResume();
             }
         }, {
             key: "isReadingLastestChapter",

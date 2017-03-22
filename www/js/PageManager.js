@@ -130,7 +130,8 @@ define(["jquery", "util"], function ($, util) {
                             });
 
                             var page = _this.jsStorage[_this.currentPage];
-                            if (page.onpause) page.onpause();
+                            page.__onPause();
+                            if (page.onPause) page.onPause();
                         }
                     }
 
@@ -141,18 +142,21 @@ define(["jquery", "util"], function ($, util) {
                     _this.__saveState(name, params);
 
                     requirejs([urls.jsurl], function (Page) {
-                        var page = _this.__newPageFactory(Page);
+                        var page = _this.__newPageFactory(Page, name);
                         _this.jsStorage[name] = page;
-                        if (page.onload) page.onload(params);
-                        if (page.onresume) page.onresume();
+                        page.__onLoad();
+                        if (page.onLoad) page.onLoad(params);
+                        page.__onResume();
+                        if (page.onResume) page.onResume();
                     });
                 });
             }
         }, {
             key: "__newPageFactory",
-            value: function __newPageFactory(Page) {
+            value: function __newPageFactory(Page, name) {
                 var page = new Page();
                 page.pageManager = this;
+                page.name = name;
                 return page;
             }
         }, {
@@ -163,8 +167,12 @@ define(["jquery", "util"], function ($, util) {
                 var executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
                 var page = this.jsStorage[p];
 
-                if (executeOnPause && page.onpause) page.onpause();
-                if (page.onclose) page.onclose(params);
+                if (executeOnPause) page.__onPause();
+                if (executeOnPause && page.onPause) {
+                    page.onPause();
+                }
+                page.__onClose(params);
+                if (page.onClose) page.onClose(params);
 
                 delete this.jsStorage[p];
             }
@@ -187,7 +195,8 @@ define(["jquery", "util"], function ($, util) {
 
                 var page = this.jsStorage[this.currentPage];
 
-                if (page.onresume) page.onresume();
+                page.__onResume();
+                if (page.onResume) page.onResume();
             }
         }, {
             key: "closePage",

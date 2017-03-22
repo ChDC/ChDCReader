@@ -27,8 +27,8 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
         }
 
         _createClass(MyPage, [{
-            key: "onload",
-            value: function onload(params, p) {
+            key: "onLoad",
+            value: function onLoad(params, p) {
                 this.book = params.book;
                 this.book.checkBookSources(app.bookSourceManager);
                 this.readingRecord = params.readingRecord;
@@ -40,15 +40,9 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                 this.chapterList.loadList();
             }
         }, {
-            key: "onresume",
-            value: function onresume() {
-                document.addEventListener("pause", this.onDevicePause, false);
-            }
-        }, {
-            key: "onpause",
-            value: function onpause() {
+            key: "onPause",
+            value: function onPause() {
                 this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-                document.removeEventListener("pause", this.onDevicePause, false);
                 app.bookShelf.save();
             }
         }, {

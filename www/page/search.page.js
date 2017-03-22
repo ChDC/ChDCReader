@@ -19,8 +19,8 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
         }
 
         _createClass(MyPage, [{
-            key: "onload",
-            value: function onload(params, baseurl) {
+            key: "onLoad",
+            value: function onLoad(params, baseurl) {
                 this.loadView();
             }
         }, {

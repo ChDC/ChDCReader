@@ -11,18 +11,6 @@ define(["util"], function (util) {
         }
 
         _createClass(Page, [{
-            key: "onload",
-            value: function onload(params) {}
-        }, {
-            key: "onresume",
-            value: function onresume() {}
-        }, {
-            key: "onpause",
-            value: function onpause() {}
-        }, {
-            key: "onclose",
-            value: function onclose(params) {}
-        }, {
             key: "close",
             value: function close(params) {
                 return this.pageManager.closePage(params);
@@ -34,12 +22,47 @@ define(["util"], function (util) {
 
                 return this.pageManager.showPage(name, params, options);
             }
+        }, {
+            key: "__onLoad",
+            value: function __onLoad(params) {
+                console.error(this.name, "load");
+            }
+        }, {
+            key: "__onResume",
+            value: function __onResume() {
+                console.error(this.name, "resume");
+
+                if (this.onDevicePause) {
+                    this.__onDevicePause = this.onDevicePause.bind(this);
+                    document.addEventListener("pause", this.__onDevicePause, false);
+                }
+
+                if (this.onDeviceResume) {
+                    this.__onDeviceResume = this.onDeviceResume.bind(this);
+                    document.addEventListener("resume", this.__onDeviceResume, false);
+                }
+            }
+        }, {
+            key: "__onPause",
+            value: function __onPause() {
+                console.error(this.name, "pause");
+
+                if (this.__onDevicePause) document.removeEventListener("pause", this.__onDevicePause, false);
+
+                if (this.__onDeviceResume) document.removeEventListener("resume", this.__onDeviceResume, false);
+            }
+        }, {
+            key: "__onClose",
+            value: function __onClose(params) {
+                console.error(this.name, "close");
+            }
         }]);
 
         return Page;
     }();
 
     Page.prototype.pageManager = null;
+    Page.prototype.name = null;
 
     return Page;
 });

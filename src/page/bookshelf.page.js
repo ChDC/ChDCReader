@@ -2,11 +2,11 @@
 define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, app, Page, util, Chapter, sortablejs){
 
     class MyPage extends Page{
-        onload(params){
+        onLoad(params){
             this.loadView();
         }
 
-        onresume(){
+        onResume(){
             if(app.bookShelf.loaded){
                 this.loadBooks(".bookshelf", app.bookShelf);
             }
@@ -16,6 +16,10 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
             }
         }
 
+        onDeviceResume(){
+            console.log("Refresh bookshelf on DeviceResume");
+            this.onResume();
+        }
 
         isReadingLastestChapter(lastestChapter, readingRecord){
             return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);

@@ -14,7 +14,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             this.lastSavePageScrollTop = 0;
         }
 
-        onload(params, p){
+        onLoad(params, p){
             this.book = params.book;
             this.book.checkBookSources(app.bookSourceManager);
             this.readingRecord = params.readingRecord;
@@ -27,16 +27,10 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
 
         }
 
-        onresume(){
-            document.addEventListener("pause", this.onDevicePause, false);
-        }
-
-        onpause(){
+        onPause(){
             this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-            document.removeEventListener("pause", this.onDevicePause, false);
             app.bookShelf.save();
         }
-
 
         onDevicePause(){
             // 保存阅读进度

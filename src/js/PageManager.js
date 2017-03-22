@@ -104,10 +104,10 @@ define(["jquery", "util"], function($, util){
                 //     requirejs([urls.jsurl], Page => {
                 //         let page = new Page();
                 //         this.jsStorage[this.currentPage] = page;
-                //         if(page.onload)
-                //             page.onload(params);
-                //         if(page.onresume)
-                //             page.onresume();
+                //         if(page.onLoad)
+                //             page.onLoad(params);
+                //         if(page.onResume)
+                //             page.onResume();
                 //     });
                 // }
 
@@ -151,13 +151,14 @@ define(["jquery", "util"], function($, util){
 
                         // 触发之前页面的暂停事件
                         let page = this.jsStorage[this.currentPage];
-                        if(page.onpause)
-                            page.onpause();
+                        page.__onPause();
+                        if(page.onPause)
+                            page.onPause();
                         // __showPage();
                         // requirejs([this.getURLs(this.currentPage).jsurl],
                         //     page => {
-                        //         if(page.onpause)
-                        //             page.onpause();
+                        //         if(page.onPause)
+                        //             page.onPause();
                         //         __showPage();
                         //     });
                     }
@@ -175,19 +176,22 @@ define(["jquery", "util"], function($, util){
 
                 // Load page js
                 requirejs([urls.jsurl], Page => {
-                    let page = this.__newPageFactory(Page);
+                    let page = this.__newPageFactory(Page, name);
                     this.jsStorage[name] = page;
-                    if(page.onload)
-                        page.onload(params);
-                    if(page.onresume)
-                        page.onresume();
+                    page.__onLoad();
+                    if(page.onLoad)
+                        page.onLoad(params);
+                    page.__onResume();
+                    if(page.onResume)
+                        page.onResume();
                 });
             });
         }
 
-        __newPageFactory(Page){
+        __newPageFactory(Page, name){
             let page = new Page();
             page.pageManager = this;
+            page.name = name;
             return page;
         }
 
@@ -199,10 +203,13 @@ define(["jquery", "util"], function($, util){
             const executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
             let page = this.jsStorage[p];
 
-            if(executeOnPause && page.onpause)
-                page.onpause();
-            if(page.onclose)
-                page.onclose(params);
+            if(executeOnPause) page.__onPause();
+            if(executeOnPause && page.onPause){
+                page.onPause();
+            }
+            page.__onClose(params)
+            if(page.onClose)
+                page.onClose(params);
 
             delete this.jsStorage[p];
         }
@@ -227,8 +234,9 @@ define(["jquery", "util"], function($, util){
 
             let page = this.jsStorage[this.currentPage];
             // 触发弹出页面的恢复事件
-            if(page.onresume)
-                page.onresume();
+            page.__onResume();
+            if(page.onResume)
+                page.onResume();
         }
         // 关闭当前页面
         closePage(params){
