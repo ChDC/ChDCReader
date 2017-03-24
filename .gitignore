@@ -3,3 +3,6 @@ platforms/
 plugins/
 node_modules/
 bower_components/
+tools/
+.chcpenv
+chcpbuild.options
