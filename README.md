@@ -24,6 +24,10 @@
 
 本 App 不得用于商业用途。否则，后果自负。
 
+## 技术框架
+
+本项目基于 Corodva 框架实现。
+
 ## 截图
 
 ![阅读页面](Screenshot/Screenshot_2017-03-24-21-09-01-856_com.chdc.novelreader.png)
