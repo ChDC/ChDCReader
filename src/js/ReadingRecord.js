@@ -1,4 +1,4 @@
-define(['Book'], function(Book) {
+define(function() {
     "use strict"
 
 

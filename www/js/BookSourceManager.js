@@ -358,7 +358,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                 }
 
                 function check(bsid, testBook) {
-                    var _marked = [checkBookInfo, checkCatalog].map(regeneratorRuntime.mark);
+                    var _marked = [checkBookInfo, checkLastestChapter, checkCatalog].map(regeneratorRuntime.mark);
 
                     function getInfo() {
                         return self.sources[bsid].name;
@@ -400,41 +400,74 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                         }, _marked[0], this);
                     }
 
-                    function checkCatalog(bs, book) {
-                        var catalog, chapter;
-                        return regeneratorRuntime.wrap(function checkCatalog$(_context2) {
+                    function checkLastestChapter(bs, book) {
+                        var _ref, _ref2, lastestChapter, lastestChapterUpdated;
+
+                        return regeneratorRuntime.wrap(function checkLastestChapter$(_context2) {
                             while (1) {
                                 switch (_context2.prev = _context2.next) {
                                     case 0:
                                         _context2.next = 2;
+                                        return bs.refreshLastestChapter(self, book).catch(function (e) {
+                                            error(getInfo() + " -> 获取最新章节信息失败：", e);
+                                            throw e;
+                                        });
+
+                                    case 2:
+                                        _ref = _context2.sent;
+                                        _ref2 = _slicedToArray(_ref, 2);
+                                        lastestChapter = _ref2[0];
+                                        lastestChapterUpdated = _ref2[1];
+
+                                        if (lastestChapter.length > 0) {
+                                            log(getInfo() + " -> 获取最新章节信息：OK");
+                                        } else {
+                                            error(getInfo() + " -> 获取最新章节信息：Wrong!");
+                                        }
+
+                                    case 7:
+                                    case "end":
+                                        return _context2.stop();
+                                }
+                            }
+                        }, _marked[1], this);
+                    }
+
+                    function checkCatalog(bs, book) {
+                        var catalog, chapter;
+                        return regeneratorRuntime.wrap(function checkCatalog$(_context3) {
+                            while (1) {
+                                switch (_context3.prev = _context3.next) {
+                                    case 0:
+                                        _context3.next = 2;
                                         return bs.getCatalog(self, book, true).catch(function (e) {
                                             error(getInfo() + " -> 测试目录 Wrong!");
                                             throw e;
                                         });
 
                                     case 2:
-                                        catalog = _context2.sent;
+                                        catalog = _context3.sent;
 
                                         if (!(catalog.length <= 0 || !catalog[0].title)) {
-                                            _context2.next = 6;
+                                            _context3.next = 6;
                                             break;
                                         }
 
                                         error(getInfo() + " -> 测试目录 Wrong!");
-                                        return _context2.abrupt("return");
+                                        return _context3.abrupt("return");
 
                                     case 6:
 
                                         log(getInfo() + " -> 测试目录 OK");
 
-                                        _context2.next = 9;
+                                        _context3.next = 9;
                                         return bs.getChapter(self, book, catalog[0], false).catch(function (e) {
                                             error(getInfo() + " -> 测试章节错误：", e);
                                             throw e;
                                         });
 
                                     case 9:
-                                        chapter = _context2.sent;
+                                        chapter = _context3.sent;
 
 
                                         if (chapter.title == catalog[0].title && chapter.content.length > 0) {
@@ -445,40 +478,44 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
 
                                     case 11:
                                     case "end":
-                                        return _context2.stop();
+                                        return _context3.stop();
                                 }
                             }
-                        }, _marked[1], this);
+                        }, _marked[2], this);
                     }
 
                     return co(regeneratorRuntime.mark(function _callee() {
                         var book, bs;
-                        return regeneratorRuntime.wrap(function _callee$(_context3) {
+                        return regeneratorRuntime.wrap(function _callee$(_context4) {
                             while (1) {
-                                switch (_context3.prev = _context3.next) {
+                                switch (_context4.prev = _context4.next) {
                                     case 0:
                                         log(getInfo() + " -> 测试书籍：" + testBook.name + " by " + testBook.author);
-                                        _context3.next = 3;
+                                        _context4.next = 3;
                                         return self.getBook(bsid, testBook.name, testBook.author).catch(function (e) {
                                             error(getInfo() + " -> 获取书籍失败：", e);throw e;
                                         });
 
                                     case 3:
-                                        book = _context3.sent;
+                                        book = _context4.sent;
 
 
                                         log(getInfo() + " -> 测试项目：获取书籍 OK");
                                         bs = book.sources[bsid];
-                                        _context3.next = 8;
+                                        _context4.next = 8;
                                         return checkBookInfo(bs, book);
 
                                     case 8:
-                                        _context3.next = 10;
-                                        return checkCatalog(bs, book);
+                                        _context4.next = 10;
+                                        return checkLastestChapter(bs, book);
 
                                     case 10:
+                                        _context4.next = 12;
+                                        return checkCatalog(bs, book);
+
+                                    case 12:
                                     case "end":
-                                        return _context3.stop();
+                                        return _context4.stop();
                                 }
                             }
                         }, _callee, this);
@@ -489,30 +526,30 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                 return co(regeneratorRuntime.mark(function _callee2() {
                     var data, taskQueue, sk, books, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, book, _taskQueue$shift, _taskQueue$shift2, bsid, _book;
 
-                    return regeneratorRuntime.wrap(function _callee2$(_context4) {
+                    return regeneratorRuntime.wrap(function _callee2$(_context5) {
                         while (1) {
-                            switch (_context4.prev = _context4.next) {
+                            switch (_context5.prev = _context5.next) {
                                 case 0:
-                                    _context4.next = 2;
+                                    _context5.next = 2;
                                     return util.getJSON(testFile);
 
                                 case 2:
-                                    data = _context4.sent;
+                                    data = _context5.sent;
                                     taskQueue = [];
-                                    _context4.t0 = regeneratorRuntime.keys(data.sources);
+                                    _context5.t0 = regeneratorRuntime.keys(data.sources);
 
                                 case 5:
-                                    if ((_context4.t1 = _context4.t0()).done) {
-                                        _context4.next = 29;
+                                    if ((_context5.t1 = _context5.t0()).done) {
+                                        _context5.next = 29;
                                         break;
                                     }
 
-                                    sk = _context4.t1.value;
+                                    sk = _context5.t1.value;
                                     books = data.sources[sk];
                                     _iteratorNormalCompletion4 = true;
                                     _didIteratorError4 = false;
                                     _iteratorError4 = undefined;
-                                    _context4.prev = 11;
+                                    _context5.prev = 11;
 
                                     for (_iterator4 = books[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                                         book = _step4.value;
@@ -521,71 +558,71 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                                             error("没有在测试配置文件中找到书籍：" + book);
                                         } else taskQueue.push([sk, data.books[book]]);
                                     }
-                                    _context4.next = 19;
+                                    _context5.next = 19;
                                     break;
 
                                 case 15:
-                                    _context4.prev = 15;
-                                    _context4.t2 = _context4["catch"](11);
+                                    _context5.prev = 15;
+                                    _context5.t2 = _context5["catch"](11);
                                     _didIteratorError4 = true;
-                                    _iteratorError4 = _context4.t2;
+                                    _iteratorError4 = _context5.t2;
 
                                 case 19:
-                                    _context4.prev = 19;
-                                    _context4.prev = 20;
+                                    _context5.prev = 19;
+                                    _context5.prev = 20;
 
                                     if (!_iteratorNormalCompletion4 && _iterator4.return) {
                                         _iterator4.return();
                                     }
 
                                 case 22:
-                                    _context4.prev = 22;
+                                    _context5.prev = 22;
 
                                     if (!_didIteratorError4) {
-                                        _context4.next = 25;
+                                        _context5.next = 25;
                                         break;
                                     }
 
                                     throw _iteratorError4;
 
                                 case 25:
-                                    return _context4.finish(22);
+                                    return _context5.finish(22);
 
                                 case 26:
-                                    return _context4.finish(19);
+                                    return _context5.finish(19);
 
                                 case 27:
-                                    _context4.next = 5;
+                                    _context5.next = 5;
                                     break;
 
                                 case 29:
                                     if (!(taskQueue.length > 0)) {
-                                        _context4.next = 41;
+                                        _context5.next = 41;
                                         break;
                                     }
 
                                     _taskQueue$shift = taskQueue.shift(), _taskQueue$shift2 = _slicedToArray(_taskQueue$shift, 2), bsid = _taskQueue$shift2[0], _book = _taskQueue$shift2[1];
 
                                     log("测试书源：" + self.sources[bsid].name);
-                                    _context4.prev = 32;
-                                    _context4.next = 35;
+                                    _context5.prev = 32;
+                                    _context5.next = 35;
                                     return check(bsid, _book);
 
                                 case 35:
-                                    _context4.next = 39;
+                                    _context5.next = 39;
                                     break;
 
                                 case 37:
-                                    _context4.prev = 37;
-                                    _context4.t3 = _context4["catch"](32);
+                                    _context5.prev = 37;
+                                    _context5.t3 = _context5["catch"](32);
 
                                 case 39:
-                                    _context4.next = 29;
+                                    _context5.next = 29;
                                     break;
 
                                 case 41:
                                 case "end":
-                                    return _context4.stop();
+                                    return _context5.stop();
                             }
                         }
                     }, _callee2, this, [[11, 15, 19, 27], [20,, 22, 26], [32, 37]]);

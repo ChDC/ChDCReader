@@ -4,47 +4,77 @@ define(function (require) {
     "use strict";
 
     return {
-        enable: function enable(draggableTarget, target) {
-            var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-                _ref$xenable = _ref.xenable,
-                xenable = _ref$xenable === undefined ? true : _ref$xenable,
-                _ref$yenable = _ref.yenable,
-                yenable = _ref$yenable === undefined ? true : _ref$yenable,
-                _ref$touchenable = _ref.touchenable,
-                touchenable = _ref$touchenable === undefined ? true : _ref$touchenable;
+        drag: function drag(elementToDrag, event) {
+            switch (event.type) {
+                case "mousedown":
+                    var touchX = event.clientX,
+                        touchY = event.clientY;
+                    break;
+                case "touchstart":
+                    if (event.targetTouches.length != 1) return;
+                    var target = event.targetTouches[0];
 
-            draggableTarget.onmousedown = function (e) {
-                var diffX = e.clientX - target.offsetLeft;
-                var diffY = e.clientY - target.offsetTop;
-                var oldPosition = draggableTarget.style.position;
-                draggableTarget.style.position = "relative";
+                    var touchX = target.pageX,
+                        touchY = target.pageY;
+                    break;
+            }
 
-                draggableTarget.onmousemove = function (e) {
-                    var left = e.clientX - diffX;
-                    var top = e.clientY - diffY;
+            var startX = touchX + window.pageXOffset;
+            var startY = touchY + window.pageYOffset;
 
-                    if (left < 0) {
-                        left = 0;
-                    } else if (left > window.innerWidth - draggableTarget.offsetWidth) {
-                        left = window.innerWidth - draggableTarget.offsetWidth;
-                    }
+            var origX = elementToDrag.offsetLeft;
+            var origY = elementToDrag.offsetTop;
 
-                    if (top < 0) {
-                        top = 0;
-                    } else if (top > window.innerHeight - draggableTarget.offsetHeight) {
-                        top = window.innerHeight - draggableTarget.offsetHeight;
-                    }
+            var deltaX = startX - origX;
+            var deltaY = startY - origY;
 
-                    draggableTarget.style.left = left + 'px';
-                    draggableTarget.style.top = top + 'px';
-                };
+            switch (event.type) {
+                case "mousedown":
+                    document.addEventListener("mousemove", mousemoveHandler, true);
+                    document.addEventListener("mouseup", upHandler, true);
+                    break;
 
-                document.onmouseup = function (e) {
-                    draggableTarget.onmousemove = null;
-                    draggableTarget.onmouseup = null;
-                };
-            };
-        },
-        remove: function remove() {}
+                case "touchstart":
+                    document.addEventListener("touchmove", touchmoveHandler, true);
+                    document.addEventListener("touchend", upHandler, true);
+                    break;
+            }
+
+            event.stopPropagation();
+
+            event.preventDefault();
+
+            function mousemoveHandler(e) {
+                elementToDrag.style.left = e.clientX + window.pageXOffset - deltaX + "px";
+                elementToDrag.style.top = e.clientY + window.pageYOffset - deltaY + "px";
+
+                e.stopPropagation();
+            }
+
+            function touchmoveHandler(e) {
+                if (e.targetTouches.length != 1) return;
+                var touch = e.targetTouches[0];
+
+                elementToDrag.style.left = touch.pageX + window.pageXOffset - deltaX + "px";
+                elementToDrag.style.top = touch.pageY + window.pageYOffset - deltaY + "px";
+
+                e.stopPropagation();
+            }
+
+            function upHandler(e) {
+                switch (event.type) {
+                    case "mousedown":
+                        document.removeEventListener("mousemove", mousemoveHandler, true);
+                        document.removeEventListener("mouseup", upHandler, true);
+                        break;
+
+                    case "touchstart":
+                        document.removeEventListener("touchmove", touchmoveHandler, true);
+                        document.removeEventListener("touchend", upHandler, true);
+                        break;
+                }
+                e.stopPropagation();
+            }
+        }
     };
 });

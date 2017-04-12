@@ -12,6 +12,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             this.cover = "";  // 封面
             this.complete = undefined;  // 是否完结
             this.introduce = "";  // 简介
+
             this.sources = undefined;  // 内容来源
             this.mainSourceId = undefined;  // 当前来源
         }

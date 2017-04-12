@@ -19,6 +19,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
             this.cover = "";
             this.complete = undefined;
             this.introduce = "";
+
             this.sources = undefined;
             this.mainSourceId = undefined;
         }

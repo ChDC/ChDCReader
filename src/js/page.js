@@ -1,4 +1,4 @@
-define(["util"], function(util){
+define(function(){
     class Page{
 
         // 关闭当前页

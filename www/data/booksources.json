@@ -32,7 +32,7 @@
                 "complete": "div.book-info > p.tag > span:nth-child(1)",
                 "cover": "#bookImg > img",
                 "introduce": "div.book-intro > p",
-                "lastestChapter": "div.book-state > ul > li:nth-child(2) > a",
+                "lastestChapter": "div.book-info-detail > div.book-state li.update a",
                 "name": "div.book-info > h1 > em"
             }
         },

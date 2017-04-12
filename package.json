@@ -5,7 +5,7 @@
   "scripts": {
     "build": "babel --no-comments --presets es2015 --ignore src/lib/ -Dd www src",
     "watch": "babel --no-comments --presets es2015 --ignore src/lib/ -wDd www src",
-    "update": "tools/UpdateResources",
+    "update": "tools\\UpdateResources",
     "release": "cordova build android"
   },
   "dependencies": {

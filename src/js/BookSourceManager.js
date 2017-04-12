@@ -336,6 +336,21 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                     }
                 }
 
+                function* checkLastestChapter(bs, book){
+                    // 测试获取书籍信息
+                    let [lastestChapter, lastestChapterUpdated] = yield bs.refreshLastestChapter(self, book)
+                        .catch(e => {
+                            error(getInfo() + " -> 获取最新章节信息失败：", e);
+                            throw e;
+                        });
+                    if(lastestChapter.length > 0){
+                        log(getInfo() + " -> 获取最新章节信息：OK")
+                    }
+                    else{
+                        error(getInfo() + " -> 获取最新章节信息：Wrong!")
+                    }
+                }
+
                 function* checkCatalog(bs, book){
                     const catalog = yield bs.getCatalog(self, book, true)
                         .catch(e => {
@@ -376,6 +391,8 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
                     // 测试获取书籍信息
                     yield checkBookInfo(bs, book);
+                    // 测试最新章节信息
+                    yield checkLastestChapter(bs, book);
                     // 测试获取目录
                     yield checkCatalog(bs, book);
                 });
