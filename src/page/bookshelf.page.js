@@ -66,7 +66,7 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
                             .css('color', this.isReadingLastestChapter(lastestChapter, readingRecord)? 'black' : 'red');
 
                         // 缓存后面章节内容
-                        book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager});
+                        book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
                     });
 
                 nb.find('.book-cover, .book-info').click(() => app.page.showPage("readbook", value));
@@ -120,8 +120,6 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
                     .then(() => $('#output').append($('<p>').text("完成！")));
             });
             $(".btnSearch").click(e => app.page.showPage("search"));
-
-            $("#btnTest").click(e => app.bookSourceManager.qidian.init());
         }
 
     }

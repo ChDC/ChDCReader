@@ -11,11 +11,11 @@ define(function(){
         }
 
         __onLoad(params){
-            console.error(this.name, "load");
+            // console.error(this.name, "load");
         }
 
         __onResume(){
-            console.error(this.name, "resume");
+            // console.error(this.name, "resume");
 
             // add Device pause
             if(this.onDevicePause){
@@ -30,7 +30,7 @@ define(function(){
         }
 
         __onPause(){
-            console.error(this.name, "pause");
+            // console.error(this.name, "pause");
 
             if(this.__onDevicePause)
                 document.removeEventListener("pause", this.__onDevicePause, false);
@@ -40,7 +40,7 @@ define(function(){
         }
 
         __onClose(params){
-            console.error(this.name, "close");
+            // console.error(this.name, "close");
         }
 
 

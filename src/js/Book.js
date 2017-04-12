@@ -226,7 +226,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
                     bookSourceId = this.mainSourceId,
                     count = 1,
                     excludes,
-                    contentSourceId
+                    contentSourceId,
                     contentSourceChapterIndex,
                     onlyCacheNoLoad,
                     noInfluenceWeight = false,
@@ -430,7 +430,6 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
                             "introduce", "sources", "mainSourceId"];
 
     Book.Cast = function(obj, bookSourceManager){
-        debugger;
         const nb = new Book(bookSourceManager);
         Object.assign(nb, obj);
 

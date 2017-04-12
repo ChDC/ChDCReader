@@ -36,7 +36,7 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
                                 util.showMessage("添加成功！");
                                 book.checkBookSources();
                                 // 缓存
-                                book.cacheChapter(0, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager});
+                                book.cacheChapter(0, app.settings.settings.cacheChapterCount);
                             })
                             .catch(error => {
                                 $(event.currentTarget).removeAttr("disabled");

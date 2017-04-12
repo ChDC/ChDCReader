@@ -792,53 +792,56 @@ define(["jquery"], function($){
         },
 
         // 持久化数据
-        persistent(obj){
-            switch(typeof(obj)){
-                case "object":
-                    if(Array.prototype.isPrototypeOf(obj))
-                    {
-                        let children = [];
-                        for(let v of obj){
-                            let value = persistent(v);
-                            if(value != undefined)
-                                children.push(value);
+        persistent(o){
+            function __persistent(obj){
+                switch(typeof(obj)){
+                    case "object":
+                        if(Array.prototype.isPrototypeOf(obj))
+                        {
+                            let children = [];
+                            for(let v of obj){
+                                let value = __persistent(v);
+                                if(value != undefined)
+                                    children.push(value);
+                            }
+                            return '[' + children.join(",") + ']';
                         }
-                        return '[' + children.join(",") + ']';
-                    }
-                    else if(obj == null){
-                        return "null";
-                    }
-                    else{
-
-                        let persistentInclude = obj.constructor.persistentInclude;
-                        let keys = null;
-                        if(persistentInclude != undefined && Array.prototype.isPrototypeOf(persistentInclude)){
-                            keys = persistentInclude;
+                        else if(obj == null){
+                            return "null";
                         }
-                        else
-                            keys = Object.getOwnPropertyNames(obj);
+                        else{
 
-                        let children = [];
-                        for(let k of keys){
-                            let value = persistent(obj[k]);
-                            if(value != undefined)
-                                children.push(`"${k}":${value}`);
+                            let persistentInclude = obj.constructor.persistentInclude;
+                            let keys = null;
+                            if(persistentInclude != undefined && Array.prototype.isPrototypeOf(persistentInclude)){
+                                keys = persistentInclude;
+                            }
+                            else
+                                keys = Object.getOwnPropertyNames(obj);
+
+                            let children = [];
+                            for(let k of keys){
+                                let value = __persistent(obj[k]);
+                                if(value != undefined)
+                                    children.push(`"${k}":${value}`);
+                            }
+                            return '{' + children.join(",") + '}';
                         }
-                        return '{' + children.join(",") + '}';
-                    }
-                    break;
+                        break;
 
-                case "function":
-                    return undefined;
-                case "number":
-                    return obj;
-                case "undefined":
-                    return undefined;
-                case "boolean":
-                    return obj;
-                default:
-                    return `"${obj}"`;
+                    case "function":
+                        return undefined;
+                    case "number":
+                        return obj;
+                    case "undefined":
+                        return undefined;
+                    case "boolean":
+                        return obj;
+                    default:
+                        return `"${obj}"`;
+                }
             }
+            return __persistent(o);
         }
     };
 

@@ -329,7 +329,7 @@
                 "complete": "#stats > i:nth-child(3)",
                 "cover": "section > div:nth-child(2) > div.w-left > div > div.body.novel > div.novelinfo > div.novelinfo-r > a > img",
                 "introduce": "#intro",
-                "lastestChapter": "#stats > i:nth-child(2) > a",
+                "lastestChapter": "#intro > p:nth-child(3) > a",
                 "name": "section > div:nth-child(2) > div.w-left > div > div.header.line > h1"
             }
         },

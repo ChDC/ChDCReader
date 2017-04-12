@@ -8,10 +8,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             this.sources = undefined;
 
-            this.settings = {};
-            this.settings.refreshCatalogInterval = 600; // 单位秒
-            this.settings.refreshLastestChapterInterval = 600; // 单位秒
-
             if(typeof configFileOrConfig == 'string'){
                 util.getJSON(configFileOrConfig)
                     .then(data => this.sources = data);
@@ -144,7 +140,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             util.log(`BookSourceManager: Get BookCatalogLink from ${bsid} with options "${options}"`);
 
-            debugger;
             const self = this;
             const bsm = this.sources[bsid];
             if(!bsm) return Promise.reject();
@@ -154,7 +149,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                     // 从详细页获取目录链接
                     // const detailLink = yield this.__getBookSourceDetailLink();
 
-                    let html = yield util.getDOM(detailLink);
+                    let html = yield util.getDOM(options.detailLink);
 
                     let container = document.createElement('div');
                     container.innerHTML = html;
@@ -165,13 +160,12 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                 }
                 else{
                     const catalogLink = bsm.catalog.link;
-                    debugger;
                     const o = Object.assign({}, options, this[bsid]);
                     const link = util.format(catalogLink, o);
                     return Promise.resolve(link);
                 }
             });
-        },
+        }
 
         // 获取书籍目录
         getBookCatalog(bsid, catalogLink){
@@ -410,7 +404,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                     log(getInfo() + " -> 测试目录 OK");
 
                     // 测试获取章节
-                    const chapter = yield bs.getChapter(self, book, catalog[0], false)
+                    const chapter = yield bs.getChapter(catalog[0], false)
                         .catch(e => {
                             error(getInfo() + " -> 测试章节错误：", e);
                             throw e;

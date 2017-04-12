@@ -72,7 +72,6 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
             if(this.disable)
                 return Promise.reject(404);
 
-            debugger;
             return this.bookSourceManager.getBookCatalogLink(this.id, this);
 
             // if(!this.catalogLink){
@@ -107,7 +106,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
         // 刷新目录
         *__refreshCatalog(){
 
-            if((new Date()).getTime() - this.updatedCatalogTime < this.bookSourceManager.settings.refreshCatalogInterval * 1000)
+            if((new Date()).getTime() - this.updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
                 return this.catalog;
 
             const catalogLink = yield this.__getBookSourceCatalogLink();
@@ -139,7 +138,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
         // 获取书籍最新章节
         refreshLastestChapter(){
 
-            if((new Date()).getTime() - this.updatedLastestChapterTime < this.bookSourceManager.settings.refreshLastestChapterInterval * 1000)
+            if((new Date()).getTime() - this.updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
                 return [this.lastestChapter, false];
 
             util.log('Refresh LastestChapter!');
@@ -172,7 +171,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
                     // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
                     return this.bookSourceManager.getChapter(this.id, chapter.link)
                         .then(chapter => // 缓存该章节
-                            this.__cacheChapter(this.book, chapter));
+                            this.__cacheChapter(chapter));
                 });
         }
 
@@ -220,6 +219,11 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
         }
 
     }
+
+    BookSource.settings = {
+        refreshCatalogInterval: 600, // 单位秒
+        refreshLastestChapterInterval: 600 // 单位秒
+    };
 
     // 用于标记持久化的属性
     BookSource.persistentInclude = ["id", "disable", "weight", "searched", "detailLink",

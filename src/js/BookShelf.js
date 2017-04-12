@@ -96,11 +96,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
 
         // 保存数据
         save(){
-            debugger;
-            // BUG 原因：没有深拷贝成功
-            // const catalogs = []; // 用于临时存储移除的 Catalog
             for(const bk in this.books){
-                // catalogs[bk] = {};
                 const b = this.books[bk].book;
                 for(const bsk in b.sources){
                     const bs = b.sources[bsk];
@@ -109,21 +105,10 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
                         // 更新目录文件
                         util.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
                     }
-                    // catalogs[bk][bsk] = bs.catalog;
-                    // bs.catalog = null; // 删除目录用于存储到本地
                 }
             }
-            const promise = util.saveData("bookshelf", util.persistent(this));
 
-            // 恢复删除的目录
-            // for(const bk in this.books){
-            //     const b = this.books[bk].book;
-            //     for(const bsk in b.sources){
-            //         const bs = b.sources[bsk];
-            //         bs.catalog = catalogs[bk][bsk];
-            //     }
-            // }
-            return promise;
+            return util.saveData("bookshelf", util.persistent(this));
         }
 
         // 添加书籍到书架中
