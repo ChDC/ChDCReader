@@ -16,9 +16,9 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
 
         onLoad(params, p){
             this.book = params.book;
-            this.book.checkBookSources(app.bookSourceManager);
+            this.book.checkBookSources();
             this.readingRecord = params.readingRecord;
-            this.options = {bookSourceManager: app.bookSourceManager};
+            this.options = {};
 
             this.loadView();
             this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
@@ -127,7 +127,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
                     return;
                 const bid = $(target).data('bsid');
                 const oldMainSource = this.book.mainSourceId;
-                this.book.setMainSourceId(bid, this.options)
+                this.book.setMainSourceId(bid)
                     .then(book => {
                         app.bookShelf.save();
                         // 隐藏目录窗口
@@ -137,7 +137,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
                         if(this.readingRecord.chapterIndex){
                             const opts = Object.assign({}, this.options);
                             opts.bookSourceId = oldMainSource;
-                            this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, opts)
+                            this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, opts.forceRefresh, opts.bookSourceId)
                                 .then(({chapter, index}) => {
                                     this.readingRecord.chapterIndex = index;
                                     this.readingRecord.chapterTitle = chapter.title;
@@ -154,7 +154,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
                             this.chapterList.loadList();
                         }
                         // 更新书籍信息
-                        this.book.refreshBookInfo(this.options);
+                        this.book.refreshBookInfo();
                     })
                     .catch(error => util.showError(app.error.getMessage(error)));
             }
@@ -196,7 +196,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             app.showLoading();
             $('#listCatalogContainer').height($(window).height() * 0.5);
 
-            return this.book.getCatalog({bookSourceManager: app.bookSourceManager, forceRefresh:forceRefresh})
+            return this.book.getCatalog(forceRefresh)
                 .then(catalog => {
                     const listCatalog = $("#listCatalog");
                     const listCatalogEntry = $(".template .listCatalogEntry");

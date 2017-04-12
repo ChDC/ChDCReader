@@ -7,7 +7,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
         constructor(configFileOrConfig){
 
             this.sources = undefined;
-            this.settings = undefined;
 
             this.settings = {};
             this.settings.refreshCatalogInterval = 600; // 单位秒
@@ -20,34 +19,38 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
             else{
                 this.sources = configFileOrConfig;
             }
+
+            this.init();
         }
 
 
         // 通过书名字和目录搜索唯一的书籍
         getBook(bsid, bookName, bookAuthor){
-            if(bsid && bookName && bookAuthor && bsid in this.sources){
-                // 通过当前书名和作者名搜索添加源
-                return this.searchBook(bsid, bookName)
-                    .then(books => {
-                        const book = books.find(e => e.name == bookName && e.author == bookAuthor );
-                        return book ? book : Promise.reject(404);
-                    })
-                    .catch(error => {
-                        return Promise.reject(error == 602 ? 404 : error);
-                    });
-            }
-            else{
+            util.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
+
+            if(!bsid || !bookName || !bookAuthor || !(bsid in this.sources))
                 return Promise.reject(401);
-            }
+
+            // 通过当前书名和作者名搜索添加源
+            return this.searchBook(bsid, bookName)
+                .then(books => {
+                    const book = books.find(e => e.name == bookName && e.author == bookAuthor );
+                    return book ? book : Promise.reject(404);
+                })
+                .catch(error => {
+                    return Promise.reject(error == 602 ? 404 : error);
+                });
         }
 
         // 搜索书籍
         searchBook(bsid, keyword){
 
+            util.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
+
+
+            const self = this;
             const bs = this.sources[bsid];
-            if(!bs)
-                return;
-            util.log('Search Book from: ' + bsid);
+            if(!bs) return;
 
             const search = bs.search;
             const searchLink = util.format(search.url, {keyword: keyword});
@@ -69,31 +72,33 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
                 let html = document.createElement("div");
                 html.innerHTML = htmlContent;
-                // html = $(html);
+
                 const info = search.info;
                 const detail = info.detail;
                 const books = [];
+                const fixer = BookSourceManager.fixer;
 
                 // const bookItems = html.find(info.book);
                 const bookItems = html.querySelectorAll(info.book);
                 for(let element of Array.from(bookItems)){
-                    // element = $(element);
-                    const book = new Book();
-                    book.name = BookSourceManager.fixer.fixName(element.querySelector(detail.name).textContent);  // 书名
-                    book.author = BookSourceManager.fixer.fixAuthor(element.querySelector(detail.author).textContent);  // 作者
-                    book.catagory = BookSourceManager.fixer.fixCatagory(util.elementFind(element, detail.catagory).textContent);  // 分类
+                    const book = new Book(self);
+
+                    book.name = fixer.fixName(element.querySelector(detail.name).textContent);  // 书名
+                    book.author = fixer.fixAuthor(element.querySelector(detail.author).textContent);  // 作者
+                    book.catagory = fixer.fixCatagory(util.elementFind(element, detail.catagory).textContent);  // 分类
                     book.cover = util.fixurl(util.elementFind(element, detail.cover).getAttribute("data-src"), searchLink);  // 封面
-                    book.complete = BookSourceManager.fixer.fixComplete(util.elementFind(element, detail.complete).textContent);  // 是否完结
-                    book.introduce = BookSourceManager.fixer.fixIntroduce(util.elementFind(element, detail.introduce).textContent);  // 简介
+                    book.complete = fixer.fixComplete(util.elementFind(element, detail.complete).textContent);  // 是否完结
+                    book.introduce = fixer.fixIntroduce(util.elementFind(element, detail.introduce).textContent);  // 简介
 
                     book.sources = {}; // 内容来源
-                    const bss = new BookSource(bsid, bs.contentSourceWeight);
+                    const bss = new BookSource(book, self, bsid, bs.contentSourceWeight);
                     if(info.bookid){
                         getBookIdFromHtml(element, info.bookid, bss);
                     }
                     bss.detailLink = util.fixurl(util.elementFind(element, detail.link).getAttribute("href"), searchLink);
-                    bss.lastestChapter = BookSourceManager.fixer.fixLastestChapter(util.elementFind(element, detail.lastestChapter).textContent);  // 最新的章节
+                    bss.lastestChapter = fixer.fixLastestChapter(util.elementFind(element, detail.lastestChapter).textContent);  // 最新的章节
                     // bss.catalogLink = computeCatalogLink(bss);
+
                     bss.searched = true;
                     book.sources[bsid] = bss;
 
@@ -106,36 +111,76 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
         }
 
         // 使用详情页链接刷新书籍信息
-        // 前提：book.sources 中有详情链接
         getBookInfo(bsid, detailLink){
+
+            util.log(`BookSourceManager: Get Book Info from ${bsid} with link "${detailLink}"`);
+
             const bsm = this.sources[bsid];
             const detail = bsm.detail;
             const info = detail.info;
+            const fixer = BookSourceManager.fixer;
 
             return util.getDOM(detailLink)
                 .then(htmlContent => {
                     let html = document.createElement("div");
                     html.innerHTML = htmlContent;
 
-                    // html = $(html);
                     const book = {};
                     // 更新信息的时候不更新书名和作者，因为换源的时候需要用到
-                    book.catagory = BookSourceManager.fixer.fixCatagory(util.elementFind(html, info.catagory).textContent);  // 分类
+                    book.catagory = fixer.fixCatagory(util.elementFind(html, info.catagory).textContent);  // 分类
                     book.cover = util.fixurl(util.elementFind(html, info.cover).getAttribute("data-src"), detailLink);  // 封面
-                    book.complete = BookSourceManager.fixer.fixComplete(util.elementFind(html, info.complete).textContent);  // 是否完结
-                    book.introduce = BookSourceManager.fixer.fixIntroduce(util.elementFind(html, info.introduce).textContent);  // 简介
+                    book.complete = fixer.fixComplete(util.elementFind(html, info.complete).textContent);  // 是否完结
+                    book.introduce = fixer.fixIntroduce(util.elementFind(html, info.introduce).textContent);  // 简介
 
                     return book;
                 });
         }
 
+
+
+        // 获取目录链接
+        // {detailLink, bookid, catalogLink}
+        getBookCatalogLink(bsid, options={}){
+
+            util.log(`BookSourceManager: Get BookCatalogLink from ${bsid} with options "${options}"`);
+
+            debugger;
+            const self = this;
+            const bsm = this.sources[bsid];
+            if(!bsm) return Promise.reject();
+
+            return co(function*(){
+                if(bsm.detail.info.catalogLink){
+                    // 从详细页获取目录链接
+                    // const detailLink = yield this.__getBookSourceDetailLink();
+
+                    let html = yield util.getDOM(detailLink);
+
+                    let container = document.createElement('div');
+                    container.innerHTML = html;
+                    // html = $(html);
+                    // const link = container.find(bsm.detail.info.catalogLink).attr('href');
+                    const link = util.elementFind(container, bsm.detail.info.catalogLink).getAttribute("href");
+                    return Promise.resolve(link);
+                }
+                else{
+                    const catalogLink = bsm.catalog.link;
+                    debugger;
+                    const o = Object.assign({}, options, this[bsid]);
+                    const link = util.format(catalogLink, o);
+                    return Promise.resolve(link);
+                }
+            });
+        },
+
         // 获取书籍目录
         getBookCatalog(bsid, catalogLink){
 
-            util.log('Refresh Catalog!');
+            util.log(`BookSourceManager: Refresh Catalog from ${bsid} with link "${catalogLink}"`);
+
             const bsm = this.sources[bsid];
-            if(!bsm)
-                return;
+            if(!bsm) return;
+
             const info = bsm.catalog.info;
             const type = bsm.catalog.type.toLowerCase();
 
@@ -233,11 +278,10 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
         // 从网络上获取章节内容
         getChapter(bsid, chapterLink){
-            if(!chapterLink){
-                return Promise.reject(206);
-            }
 
-            util.log('Load Chpater content from Book Source: ' + chapterLink);
+            util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapterLink}"`);
+
+            if(!chapterLink) return Promise.reject(206);
 
             const bsm = this.sources[bsid];
             const info = bsm.chapter.info;
@@ -248,7 +292,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                 let html = document.createElement("div");
                 html.innerHTML = htmlContent;
 
-                // html = $(html);
                 const chapter = new Chapter();
                 chapter.content = BookSourceManager.fixer.fixChapterContent(html.querySelector(info.content).innerHTML);
                 if(!chapter.content){
@@ -257,13 +300,15 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                 }
                 chapter.link = chapterLink;
                 chapter.title = BookSourceManager.fixer.fixChapterTitle(html.querySelector(info.title).textContent);
-                // chapter.modifyTime = html.querySelector(info.modifyTime).textContent.trim();
+
                 return chapter;
             }
         }
 
         // 获取最新章节
         getLastestChapter(bsid, detailLink){
+
+            util.log(`BookSourceManager: Get Lastest Chapter from ${bsid} with link "${detailLink}"`);
 
             const bsm = this.sources[bsid];
             const detail = bsm.detail;
@@ -274,7 +319,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             function getBookDetailFromHtml(htmlContent){
 
-                // html = $(html);
                 let html = document.createElement("div");
                 html.innerHTML = htmlContent;
 

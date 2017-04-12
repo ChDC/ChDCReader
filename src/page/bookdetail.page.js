@@ -35,7 +35,7 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
                     app.bookShelf.save()
                         .then(() => {
                             util.showMessage("添加成功！");
-                            book.checkBookSources(app.bookSourceManager);
+                            book.checkBookSources();
                             // 缓存
                             book.cacheChapter(0, app.settings.settings.cacheChapterCount, {bookSourceManager: app.bookSourceManager});
                         })
@@ -53,9 +53,7 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
             const bookChapter = $(id);
             const c = $(".template .book-chapter");
             bookChapter.empty();
-            book.getCatalog({bookSourceManager: app.bookSourceManager,
-                                bookSourceId: bookSourceId
-                            })
+            book.getCatalog(false, bookSourceId)
                 .then(catalog => {
                     for(const chapter of catalog){
                         const nc = c.clone();

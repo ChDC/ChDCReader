@@ -133,7 +133,7 @@ define(["util", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootst
             this.settings.load()
                 .then(() => {
                     this.bookSourceManager = new BookSourceManager("data/booksources.json");
-                    this.bookSourceManager.init();
+                    // this.bookSourceManager.init();
 
                     this.bookShelf = new BookShelf();
                     // 设置主题

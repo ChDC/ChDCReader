@@ -11,7 +11,7 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
                 this.loadBooks(".bookshelf", app.bookShelf);
             }
             else{
-                app.bookShelf.load()
+                app.bookShelf.load(app.bookSourceManager)
                     .then(() => this.loadBooks(".bookshelf", app.bookShelf));
             }
         }
@@ -59,7 +59,7 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
                 nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
                 // 刷新最新章节
-                book.getLastestChapter({bookSourceManager: app.bookSourceManager})
+                book.getLastestChapter()
                     .then(([lastestChapter]) => {
                         nb.find(".book-lastestchapter")
                             .text("最新：" + (lastestChapter? lastestChapter : "无"))

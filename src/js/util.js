@@ -24,7 +24,8 @@ define(["jquery"], function($){
                 return JSON.parse(localStorage.getItem(keyName));
             },
             setItem(keyName, keyValue) {
-                return localStorage.setItem(keyName, JSON.stringify(keyValue));
+                return localStorage.setItem(keyName,
+                    typeof(keyValue) == "string" ? keyValue : JSON.stringify(keyValue));
             },
             hasItem(keyName) {
                 return keyName in localStorage;
@@ -629,7 +630,8 @@ define(["jquery"], function($){
                     });
                 }
 
-                data = JSON.stringify(data);
+                if(typeof(keyValue) != "string")
+                    data = JSON.stringify(data);
                 createAndWriteFile();
             });
         },
@@ -783,9 +785,60 @@ define(["jquery"], function($){
             };
         },
 
+        // 模拟 $.find 方法
         elementFind(element, selector){
             return selector && element.querySelector(selector) ||
                 { getAttribute: e=> "", textContent: "", html: ""};
+        },
+
+        // 持久化数据
+        persistent(obj){
+            switch(typeof(obj)){
+                case "object":
+                    if(Array.prototype.isPrototypeOf(obj))
+                    {
+                        let children = [];
+                        for(let v of obj){
+                            let value = persistent(v);
+                            if(value != undefined)
+                                children.push(value);
+                        }
+                        return '[' + children.join(",") + ']';
+                    }
+                    else if(obj == null){
+                        return "null";
+                    }
+                    else{
+
+                        let persistentInclude = obj.constructor.persistentInclude;
+                        let keys = null;
+                        if(persistentInclude != undefined && Array.prototype.isPrototypeOf(persistentInclude)){
+                            keys = persistentInclude;
+                        }
+                        else
+                            keys = Object.getOwnPropertyNames(obj);
+
+                        let children = [];
+                        for(let k of keys){
+                            let value = persistent(obj[k]);
+                            if(value != undefined)
+                                children.push(`"${k}":${value}`);
+                        }
+                        return '{' + children.join(",") + '}';
+                    }
+                    break;
+
+                case "function":
+                    return undefined;
+                case "number":
+                    return obj;
+                case "undefined":
+                    return undefined;
+                case "boolean":
+                    return obj;
+                default:
+                    return `"${obj}"`;
+            }
         }
     };
 
