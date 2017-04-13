@@ -605,8 +605,17 @@ define(["jquery"], function($){
             return result;
         },
 
+        // 确保文件名正确
+        __convertFileName(file){
+            return file.replace(/[\\:*?"<>|/]/g, "");
+        },
+
         // 保存 JSON 对象到文件中
         __saveJSONToFile(file, data, isCacheDir=false){
+            file = util.__convertFileName(file);
+            if(typeof(data) != "string")
+                data = JSON.stringify(data);
+
             return new Promise((resolve, reject) => {
                 // 创建并写入文件
                 function createAndWriteFile(){
@@ -642,15 +651,14 @@ define(["jquery"], function($){
                         resolve();
                     });
                 }
-
-                if(typeof(data) != "string")
-                    data = JSON.stringify(data);
                 createAndWriteFile();
             });
         },
 
         // 从文件中获取 JSON 对象
         __loadJSONFromFile(file, isCacheDir=false){
+            file = util.__convertFileName(file);
+
             return new Promise((resolve, reject) => {
                 function readFile(){
                     const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
@@ -681,6 +689,8 @@ define(["jquery"], function($){
 
         // 检查文件是否存在
         __fileExists(file, isCacheDir=false){
+            file = util.__convertFileName(file);
+
             return new Promise((resolve, reject) => {
                 const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
                 window.requestFileSystem(fileSystem, 0, fs => {

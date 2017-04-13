@@ -53,7 +53,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "ed78349d28c1f12411051db6ea294e51"
+    "hash": "0bc3c1593f371d011d6ba55fd7ff083a"
   },
   {
     "file": "js/Chapter.js",
@@ -85,7 +85,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "b95ae17578a45b188e2a137d473ba80e"
+    "hash": "e11652daf417dc14113dbd44487b1a52"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",

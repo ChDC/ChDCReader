@@ -71,6 +71,10 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                     }
                 }
 
+                function checkBook(book) {
+                    return true;
+                }
+
                 function getBookFromHtml(htmlContent) {
 
                     var html = document.createElement("div");
@@ -94,6 +98,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
 
                             book.name = fixer.fixName(element.querySelector(detail.name).textContent);
                             book.author = fixer.fixAuthor(element.querySelector(detail.author).textContent);
+                            if (!checkBook(book)) continue;
                             book.catagory = fixer.fixCatagory(util.elementFind(element, detail.catagory).textContent);
                             book.cover = util.fixurl(util.elementFind(element, detail.cover).getAttribute("data-src"), searchLink);
                             book.complete = fixer.fixComplete(util.elementFind(element, detail.complete).textContent);
