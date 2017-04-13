@@ -8,10 +8,13 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
     "use strict";
 
     var BookSource = function () {
-        function BookSource(id) {
-            var weight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        function BookSource(book, bookSourceManager, id) {
+            var weight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
             _classCallCheck(this, BookSource);
+
+            this.bookSourceManager = bookSourceManager;
+            this.book = book;
 
             this.id = id;
             this.disable = false;
@@ -22,6 +25,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
             this.catalogLink = null;
             this.bookid = null;
             this.catalog = null;
+
             this.updatedCatalogTime = 0;
             this.updatedLastestChapterTime = 0;
             this.needSaveCatalog = false;
@@ -29,13 +33,15 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
         }
 
         _createClass(BookSource, [{
-            key: 'getBookSource',
-            value: function getBookSource(bookSourceManager, book) {
+            key: '__getBookSource',
+            value: function __getBookSource() {
                 var _this = this;
+
+                util.log('BookSource: Get book source by searching book');
 
                 if (this.disable) return Promise.reject(404);
 
-                return bookSourceManager.getBook(this.id, book.name, book.author).then(function (book) {
+                return this.bookSourceManager.getBook(this.id, this.book.name, this.book.author).then(function (book) {
                     Object.assign(_this, book.sources[_this.id]);
                     return _this;
                 }).catch(function (error) {
@@ -48,25 +54,19 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
             }
         }, {
             key: '__getBookSourceDetailLink',
-            value: function __getBookSourceDetailLink(bookSourceManager, book) {
+            value: function __getBookSourceDetailLink() {
 
-                if (!this.searched) {
-                    return this.getBookSource(bookSourceManager, book).then(function (bs) {
-                        return bs.detailLink;
-                    });
-                }
+                if (!this.searched) return this.__getBookSource().then(function (bs) {
+                    return bs.detailLink;
+                });
 
-                if (this.disable) {
-                    return Promise.reject(404);
-                }
+                if (this.disable) return Promise.reject(404);
 
                 return Promise.resolve(this.detailLink);
             }
         }, {
             key: '__getBookSourceCatalogLink',
-            value: regeneratorRuntime.mark(function __getBookSourceCatalogLink(bookSourceManager, book) {
-                var bsm, detailLink, html, container, link, catalogLink, o, _link;
-
+            value: regeneratorRuntime.mark(function __getBookSourceCatalogLink() {
                 return regeneratorRuntime.wrap(function __getBookSourceCatalogLink$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
@@ -77,7 +77,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
                                 }
 
                                 _context.next = 3;
-                                return this.getBookSource(bookSourceManager, book);
+                                return this.__getBookSource();
 
                             case 3:
                                 if (!this.disable) {
@@ -88,56 +88,9 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
                                 return _context.abrupt('return', Promise.reject(404));
 
                             case 5:
-                                if (this.catalogLink) {
-                                    _context.next = 26;
-                                    break;
-                                }
+                                return _context.abrupt('return', this.bookSourceManager.getBookCatalogLink(this.id, this));
 
-                                bsm = bookSourceManager.sources[this.id];
-
-                                if (bsm) {
-                                    _context.next = 9;
-                                    break;
-                                }
-
-                                return _context.abrupt('return');
-
-                            case 9:
-                                if (!bsm.detail.info.catalogLink) {
-                                    _context.next = 22;
-                                    break;
-                                }
-
-                                _context.next = 12;
-                                return this.__getBookSourceDetailLink(bookSourceManager, book);
-
-                            case 12:
-                                detailLink = _context.sent;
-                                _context.next = 15;
-                                return util.getDOM(detailLink);
-
-                            case 15:
-                                html = _context.sent;
-                                container = document.createElement('div');
-
-                                container.innerHTML = html;
-                                link = util.elementFind(container, bsm.detail.info.catalogLink).getAttribute("href");
-
-                                this.catalogLink = link;
-                                _context.next = 26;
-                                break;
-
-                            case 22:
-                                catalogLink = bsm.catalog.link;
-                                o = Object.assign({}, this, bookSourceManager[this.id]);
-                                _link = util.format(catalogLink, o);
-
-                                this.catalogLink = _link;
-
-                            case 26:
-                                return _context.abrupt('return', this.catalogLink);
-
-                            case 27:
+                            case 6:
                             case 'end':
                                 return _context.stop();
                         }
@@ -146,27 +99,27 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
             })
         }, {
             key: '__refreshCatalog',
-            value: regeneratorRuntime.mark(function __refreshCatalog(bookSourceManager, book) {
+            value: regeneratorRuntime.mark(function __refreshCatalog() {
                 var catalogLink, catalog;
                 return regeneratorRuntime.wrap(function __refreshCatalog$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                if (!(new Date().getTime() - this.updatedCatalogTime < bookSourceManager.settings.refreshCatalogInterval * 1000)) {
+                                if (!(new Date().getTime() - this.updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
                                     _context2.next = 2;
                                     break;
                                 }
 
-                                return _context2.abrupt('return', Promise.reject(400));
+                                return _context2.abrupt('return', this.catalog);
 
                             case 2:
                                 _context2.next = 4;
-                                return this.__getBookSourceCatalogLink(bookSourceManager, book);
+                                return this.__getBookSourceCatalogLink();
 
                             case 4:
                                 catalogLink = _context2.sent;
                                 _context2.next = 7;
-                                return bookSourceManager.getBookCatalog(this.id, catalogLink);
+                                return this.bookSourceManager.getBookCatalog(this.id, catalogLink);
 
                             case 7:
                                 catalog = _context2.sent;
@@ -185,47 +138,36 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
             })
         }, {
             key: 'getBookInfo',
-            value: function getBookInfo(bookSourceManager, book) {
+            value: function getBookInfo() {
                 var _this2 = this;
 
-                return this.__getBookSourceDetailLink(bookSourceManager, book).then(function (detailLink) {
-                    return bookSourceManager.getBookInfo(_this2.id, detailLink);
+                return this.__getBookSourceDetailLink().then(function (detailLink) {
+                    return _this2.bookSourceManager.getBookInfo(_this2.id, detailLink);
                 });
             }
         }, {
             key: 'getCatalog',
-            value: function getCatalog(bookSourceManager, book, forceRefresh) {
-                var _this3 = this;
+            value: function getCatalog(forceRefresh) {
+                if (!forceRefresh && this.catalog) return Promise.resolve(this.catalog);
 
-                if (!forceRefresh && this.catalog) {
-                    return Promise.resolve(this.catalog);
-                }
-                return co(this.__refreshCatalog(bookSourceManager, book)).catch(function (error) {
-                    if (error == 400) {
-                        return _this3.catalog;
-                    } else {
-                        throw error;
-                    }
-                });
+                return co(this.__refreshCatalog());
             }
         }, {
             key: 'refreshLastestChapter',
-            value: function refreshLastestChapter(bookSourceManager, book) {
-                var _this4 = this;
+            value: function refreshLastestChapter() {
+                var _this3 = this;
 
-                if (new Date().getTime() - this.updatedLastestChapterTime < bookSourceManager.settings.refreshLastestChapterInterval * 1000) {
-                    return Promise.reject(402);
-                }
+                if (new Date().getTime() - this.updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000) return [this.lastestChapter, false];
 
                 util.log('Refresh LastestChapter!');
 
-                return this.__getBookSourceDetailLink(bookSourceManager, book).then(function (detailLink) {
-                    return bookSourceManager.getLastestChapter(_this4.id, detailLink);
+                return this.__getBookSourceDetailLink().then(function (detailLink) {
+                    return _this3.bookSourceManager.getLastestChapter(_this3.id, detailLink);
                 }).then(function (lastestChapter) {
-                    _this4.updatedLastestChapterTime = new Date().getTime();
+                    _this3.updatedLastestChapterTime = new Date().getTime();
                     var lastestChapterUpdated = false;
-                    if (_this4.lastestChapter != lastestChapter) {
-                        _this4.lastestChapter = lastestChapter;
+                    if (_this3.lastestChapter != lastestChapter) {
+                        _this3.lastestChapter = lastestChapter;
                         lastestChapterUpdated = true;
                     }
                     return [lastestChapter, lastestChapterUpdated];
@@ -233,33 +175,33 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
             }
         }, {
             key: 'getChapter',
-            value: function getChapter(bookSourceManager, book, chapter, onlyCacheNoLoad) {
-                var _this5 = this;
+            value: function getChapter(chapter, onlyCacheNoLoad) {
+                var _this4 = this;
 
-                return co(this.__getCacheChapter(book, chapter.title, onlyCacheNoLoad)).then(function (c) {
+                return co(this.__getCacheChapter(chapter.title, onlyCacheNoLoad)).then(function (c) {
                     return onlyCacheNoLoad ? chapter : c;
                 }).catch(function (error) {
                     if (error != 207) throw error;
 
-                    return bookSourceManager.getChapter(_this5.id, chapter.link).then(function (chapter) {
-                        return _this5.__cacheChapter(book, chapter);
+                    return _this4.bookSourceManager.getChapter(_this4.id, chapter.link).then(function (chapter) {
+                        return _this4.__cacheChapter(chapter);
                     });
                 });
             }
         }, {
             key: '__getCacheChapterLocation',
-            value: function __getCacheChapterLocation(book, id) {
-                return 'chapter_' + book.name + '.' + book.author + '_' + id + '.' + this.id;
+            value: function __getCacheChapterLocation(id) {
+                return 'chapter_' + this.book.name + '.' + this.book.author + '_' + id + '.' + this.id;
             }
         }, {
             key: '__getCacheChapter',
-            value: regeneratorRuntime.mark(function __getCacheChapter(book, title, onlyCacheNoLoad) {
+            value: regeneratorRuntime.mark(function __getCacheChapter(title, onlyCacheNoLoad) {
                 var dest, exists, data, chapter;
                 return regeneratorRuntime.wrap(function __getCacheChapter$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                dest = this.__getCacheChapterLocation(book, title);
+                                dest = this.__getCacheChapterLocation(title);
 
                                 if (!onlyCacheNoLoad) {
                                     _context3.next = 6;
@@ -306,8 +248,8 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
             })
         }, {
             key: '__cacheChapter',
-            value: function __cacheChapter(book, chapter) {
-                var dest = this.__getCacheChapterLocation(book, chapter.title);
+            value: function __cacheChapter(chapter) {
+                var dest = this.__getCacheChapterLocation(chapter.title);
                 return util.saveData(dest, chapter, true).then(function () {
                     return chapter;
                 });
@@ -316,6 +258,12 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
 
         return BookSource;
     }();
+
+    BookSource.settings = {
+        refreshCatalogInterval: 600,
+        refreshLastestChapterInterval: 600 };
+
+    BookSource.persistentInclude = ["id", "disable", "weight", "searched", "detailLink", "catalogLink", "bookid", "updatedCatalogTime", "updatedLastestChapterTime", "needSaveCatalog", "lastestChapter"];
 
     return BookSource;
 });

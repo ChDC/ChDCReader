@@ -51,9 +51,9 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                         $(event.currentTarget).attr("disabled", "disabled");
                         app.bookShelf.save().then(function () {
                             util.showMessage("添加成功！");
-                            book.checkBookSources(app.bookSourceManager);
+                            book.checkBookSources();
 
-                            book.cacheChapter(0, app.settings.settings.cacheChapterCount, { bookSourceManager: app.bookSourceManager });
+                            book.cacheChapter(0, app.settings.settings.cacheChapterCount);
                         }).catch(function (error) {
                             $(event.currentTarget).removeAttr("disabled");
                         });
@@ -67,9 +67,7 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                 var bookChapter = $(id);
                 var c = $(".template .book-chapter");
                 bookChapter.empty();
-                book.getCatalog({ bookSourceManager: app.bookSourceManager,
-                    bookSourceId: bookSourceId
-                }).then(function (catalog) {
+                book.getCatalog(false, bookSourceId).then(function (catalog) {
                     var _iteratorNormalCompletion = true;
                     var _didIteratorError = false;
                     var _iteratorError = undefined;

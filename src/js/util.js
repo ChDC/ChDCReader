@@ -572,7 +572,6 @@ define(["jquery"], function($){
             }
         },
 
-        // TODO: 改写到此处
         // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
         objectSortedKey(object, getFunctionOrObjectKeyName=i=>i){
             if(typeof getFunctionOrObjectKeyName == 'string'){

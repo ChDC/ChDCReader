@@ -30,9 +30,9 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
             key: "onLoad",
             value: function onLoad(params, p) {
                 this.book = params.book;
-                this.book.checkBookSources(app.bookSourceManager);
+                this.book.checkBookSources();
                 this.readingRecord = params.readingRecord;
-                this.options = { bookSourceManager: app.bookSourceManager };
+                this.options = {};
 
                 this.loadView();
                 this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
@@ -120,7 +120,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                     if (!target) return;
                     var bid = $(target).data('bsid');
                     var oldMainSource = _this3.book.mainSourceId;
-                    _this3.book.setMainSourceId(bid, _this3.options).then(function (book) {
+                    _this3.book.setMainSourceId(bid).then(function (book) {
                         app.bookShelf.save();
 
                         $("#modalCatalog").modal('hide');
@@ -129,7 +129,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                         if (_this3.readingRecord.chapterIndex) {
                             var opts = Object.assign({}, _this3.options);
                             opts.bookSourceId = oldMainSource;
-                            _this3.book.fuzzySearch(_this3.book.mainSourceId, _this3.readingRecord.chapterIndex, opts).then(function (_ref) {
+                            _this3.book.fuzzySearch(_this3.book.mainSourceId, _this3.readingRecord.chapterIndex, opts.forceRefresh, opts.bookSourceId).then(function (_ref) {
                                 var chapter = _ref.chapter,
                                     index = _ref.index;
 
@@ -146,7 +146,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                             _this3.chapterList.loadList();
                         }
 
-                        _this3.book.refreshBookInfo(_this3.options);
+                        _this3.book.refreshBookInfo();
                     }).catch(function (error) {
                         return util.showError(app.error.getMessage(error));
                     });
@@ -188,7 +188,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                 app.showLoading();
                 $('#listCatalogContainer').height($(window).height() * 0.5);
 
-                return this.book.getCatalog({ bookSourceManager: app.bookSourceManager, forceRefresh: forceRefresh }).then(function (catalog) {
+                return this.book.getCatalog(forceRefresh).then(function (catalog) {
                     var listCatalog = $("#listCatalog");
                     var listCatalogEntry = $(".template .listCatalogEntry");
                     listCatalog.empty();

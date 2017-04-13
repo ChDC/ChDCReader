@@ -19,68 +19,31 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
         // 加载书籍
         load(bookSourceManager){
 
-            function loadCatalogs(resolve, reject){
-                const unfinished = [];
-                if(self.books.length <= 0){
-                    self.loaded = true;
-                    resolve();
-                    return;
-                }
+            const self = this;
 
-                // 初始化值
-                for(const bk in self.books){
-                    unfinished[bk] = {};
-                    const b = self.books[bk].book;
-                    for(const bsk in b.sources){
-                        unfinished[bk][bsk] = true;
-                    }
-                }
+            function loadCatalog(bk, bsk){
 
-                for(const bk in self.books){
-                    const b = self.books[bk].book;
-                    for(const bsk in b.sources){
-                        loadCatalog(bk, bsk);
-                    }
-                }
-
-                function checkAllFinished(){
-                    for(const bk in self.books){
-                        const b = self.books[bk].book;
-                        for(const bsk in b.sources){
-                            if(unfinished[bk][bsk]){
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
-                }
-
-                function loadCatalog(bk, bsk){
-                    const b = self.books[bk].book;
-                    const bs = b.sources[bsk];
-                    // 更新目录文件
-                    util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
-                        .then(data => {
-                            bs.catalog = data;
-                            unfinished[bk][bsk] = false;
-                            if(checkAllFinished()){
-                                self.loaded = true;
-                                resolve();
-                            }
-                        })
-                        .catch(error => {
-                            unfinished[bk][bsk] = false;
-                            if(checkAllFinished()){
-                                self.loaded = true;
-                                resolve();
-                            }
-                        });
-                }
-
-
+                const b = self.books[bk].book;
+                const bs = b.sources[bsk];
+                // 更新目录文件
+                util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
+                    .then(data => {
+                        bs.catalog = data;
+                    })
+                    .catch(error => error); // 忽略错误
             }
 
-            const self = this;
+            function loadCatalogs(){
+                const tasks = [];
+                for(const bk in self.books){
+                    const b = self.books[bk].book;
+                    for(const bsk in b.sources){
+                        tasks.push(loadCatalog(bk, bsk));
+                    }
+                }
+                return Promise.all(tasks);
+            }
+
             return util.loadData("bookshelf")
                 .then(data => {
                     const bookShelf = data;
@@ -89,9 +52,8 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
                         b.book = Book.Cast(b.book, bookSourceManager);
                         b.readingRecord = util.objectCast(b.readingRecord, ReadingRecord);
                     }
-                    return new Promise(loadCatalogs);
-                })
-                .catch(e => e);
+                    return loadCatalogs();
+                });
         }
 
         // 保存数据

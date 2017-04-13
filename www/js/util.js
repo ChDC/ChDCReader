@@ -1,5 +1,7 @@
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 define(["jquery"], function ($) {
     "use strict";
 
@@ -11,7 +13,7 @@ define(["jquery"], function ($) {
                 return JSON.parse(localStorage.getItem(keyName));
             },
             setItem: function setItem(keyName, keyValue) {
-                return localStorage.setItem(keyName, JSON.stringify(keyValue));
+                return localStorage.setItem(keyName, typeof keyValue == "string" ? keyValue : JSON.stringify(keyValue));
             },
             hasItem: function hasItem(keyName) {
                 return keyName in localStorage;
@@ -511,7 +513,7 @@ define(["jquery"], function ($) {
                     });
                 }
 
-                data = JSON.stringify(data);
+                if (typeof keyValue != "string") data = JSON.stringify(data);
                 createAndWriteFile();
             });
         },
@@ -659,6 +661,94 @@ define(["jquery"], function ($) {
             return selector && element.querySelector(selector) || { getAttribute: function getAttribute(e) {
                     return "";
                 }, textContent: "", html: "" };
+        },
+        persistent: function persistent(o) {
+            function __persistent(obj) {
+                switch (typeof obj === "undefined" ? "undefined" : _typeof(obj)) {
+                    case "object":
+                        if (Array.prototype.isPrototypeOf(obj)) {
+                            var children = [];
+                            var _iteratorNormalCompletion = true;
+                            var _didIteratorError = false;
+                            var _iteratorError = undefined;
+
+                            try {
+                                for (var _iterator = obj[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                    var v = _step.value;
+
+                                    var value = __persistent(v);
+                                    if (value != undefined) children.push(value);
+                                }
+                            } catch (err) {
+                                _didIteratorError = true;
+                                _iteratorError = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion && _iterator.return) {
+                                        _iterator.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError) {
+                                        throw _iteratorError;
+                                    }
+                                }
+                            }
+
+                            return '[' + children.join(",") + ']';
+                        } else if (obj == null) {
+                            return "null";
+                        } else {
+
+                            var persistentInclude = obj.constructor.persistentInclude;
+                            var keys = null;
+                            if (persistentInclude != undefined && Array.prototype.isPrototypeOf(persistentInclude)) {
+                                keys = persistentInclude;
+                            } else keys = Object.getOwnPropertyNames(obj);
+
+                            var _children = [];
+                            var _iteratorNormalCompletion2 = true;
+                            var _didIteratorError2 = false;
+                            var _iteratorError2 = undefined;
+
+                            try {
+                                for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                    var k = _step2.value;
+
+                                    var _value = __persistent(obj[k]);
+                                    if (_value != undefined) _children.push("\"" + k + "\":" + _value);
+                                }
+                            } catch (err) {
+                                _didIteratorError2 = true;
+                                _iteratorError2 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                        _iterator2.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError2) {
+                                        throw _iteratorError2;
+                                    }
+                                }
+                            }
+
+                            return '{' + _children.join(",") + '}';
+                        }
+                        break;
+
+                    case "function":
+                        return undefined;
+                    case "number":
+                        return obj;
+                    case "undefined":
+                        return undefined;
+                    case "boolean":
+                        return obj;
+                    default:
+                        return "\"" + obj + "\"";
+                }
+            }
+            return __persistent(o);
         }
     };
 });

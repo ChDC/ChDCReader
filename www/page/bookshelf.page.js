@@ -33,7 +33,7 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
                 if (app.bookShelf.loaded) {
                     this.loadBooks(".bookshelf", app.bookShelf);
                 } else {
-                    app.bookShelf.load().then(function () {
+                    app.bookShelf.load(app.bookSourceManager).then(function () {
                         return _this2.loadBooks(".bookshelf", app.bookShelf);
                     });
                 }
@@ -85,13 +85,13 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
                     nb.find(".book-name").text(book.name);
                     nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
-                    book.getLastestChapter({ bookSourceManager: app.bookSourceManager }).then(function (_ref) {
+                    book.getLastestChapter().then(function (_ref) {
                         var _ref2 = _slicedToArray(_ref, 1),
                             lastestChapter = _ref2[0];
 
                         nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).css('color', _this4.isReadingLastestChapter(lastestChapter, readingRecord) ? 'black' : 'red');
 
-                        book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { bookSourceManager: app.bookSourceManager });
+                        book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
                     });
 
                     nb.find('.book-cover, .book-info').click(function () {
@@ -150,10 +150,6 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
                 });
                 $(".btnSearch").click(function (e) {
                     return app.page.showPage("search");
-                });
-
-                $("#btnTest").click(function (e) {
-                    return app.bookSourceManager.qidian.init();
                 });
             }
         }]);

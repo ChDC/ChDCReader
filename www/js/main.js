@@ -117,7 +117,7 @@ define(["util", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootst
             this.error.load("data/errorCode.json");
             this.settings.load().then(function () {
                 _this3.bookSourceManager = new BookSourceManager("data/booksources.json");
-                _this3.bookSourceManager.init();
+
 
                 _this3.bookShelf = new BookShelf();
 
