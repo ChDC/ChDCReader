@@ -41,7 +41,8 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
                         tasks.push(loadCatalog(bk, bsk));
                     }
                 }
-                return Promise.all(tasks);
+                return Promise.all(tasks)
+                    .then(()=>{self.loaded = true;});
             }
 
             return util.loadData("bookshelf")
