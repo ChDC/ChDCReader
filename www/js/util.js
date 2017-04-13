@@ -498,7 +498,7 @@ define(["jquery"], function ($) {
         __saveJSONToFile: function __saveJSONToFile(file, data) {
             var isCacheDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-            file = util.__convertFileName(file);
+            file = this.__convertFileName(file);
             if (typeof data != "string") data = JSON.stringify(data);
 
             return new Promise(function (resolve, reject) {
@@ -530,7 +530,7 @@ define(["jquery"], function ($) {
         __loadJSONFromFile: function __loadJSONFromFile(file) {
             var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-            file = util.__convertFileName(file);
+            file = this.__convertFileName(file);
 
             return new Promise(function (resolve, reject) {
                 function readFile() {
@@ -558,7 +558,7 @@ define(["jquery"], function ($) {
         __fileExists: function __fileExists(file) {
             var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-            file = util.__convertFileName(file);
+            file = this.__convertFileName(file);
 
             return new Promise(function (resolve, reject) {
                 var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;

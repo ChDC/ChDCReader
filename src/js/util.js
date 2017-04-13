@@ -612,7 +612,7 @@ define(["jquery"], function($){
 
         // 保存 JSON 对象到文件中
         __saveJSONToFile(file, data, isCacheDir=false){
-            file = util.__convertFileName(file);
+            file = this.__convertFileName(file);
             if(typeof(data) != "string")
                 data = JSON.stringify(data);
 
@@ -657,7 +657,7 @@ define(["jquery"], function($){
 
         // 从文件中获取 JSON 对象
         __loadJSONFromFile(file, isCacheDir=false){
-            file = util.__convertFileName(file);
+            file = this.__convertFileName(file);
 
             return new Promise((resolve, reject) => {
                 function readFile(){
@@ -689,7 +689,7 @@ define(["jquery"], function($){
 
         // 检查文件是否存在
         __fileExists(file, isCacheDir=false){
-            file = util.__convertFileName(file);
+            file = this.__convertFileName(file);
 
             return new Promise((resolve, reject) => {
                 const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
