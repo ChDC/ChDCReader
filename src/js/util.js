@@ -837,7 +837,7 @@ define(["jquery"], function($){
                     case "boolean":
                         return obj;
                     default:
-                        return `"${obj}"`;
+                        return JSON.stringify(obj);
                 }
             }
             return __persistent(o);
