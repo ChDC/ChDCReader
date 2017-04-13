@@ -42,6 +42,16 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             });
         }
 
+        // 按主源权重从大到小排序的数组
+        getSourcesKeysByMainSourceWeight(){
+            return this.bookSourceManager.getSourcesKeysByMainSourceWeight();
+        }
+
+        // 按内容源权重从大到小排序的数组
+        getSourcesKeysByContentSourceWeight(configFileOrConfig){
+            return util.objectSortedKey(this.sources, 'weight');
+        }
+
         // 检查源是否有缺失
         checkBookSources(){
             const sources = this.bookSourceManager.sources;

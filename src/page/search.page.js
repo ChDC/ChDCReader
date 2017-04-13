@@ -78,8 +78,8 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
             const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
             for(const bskey of keys)
             {
-                const bs = app.bookSourceManager.sources[bskey];
-                const newOption = `<option value ="${bskey}">${bs.name}</option>`;
+                const bsName = app.bookSourceManager.getBookSourceName(bskey);
+                const newOption = `<option value ="${bskey}">${bsName}</option>`;
                 bookSource.append(newOption);
             }
             $("#btnClose").click(e => this.close());

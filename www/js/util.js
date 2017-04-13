@@ -45,13 +45,18 @@ define(["jquery"], function ($) {
             var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
             console.error(msg);
         },
-        __getParamsString: function __getParamsString(params) {
-            if (!params) return "";
-            var r = "";
+        __urlJoin: function __urlJoin(url, params) {
+            if (!params || params == {}) return url;
+
+            debugger;
+            var r = [];
             for (var k in params) {
-                r += k + "=" + params[k] + "&";
+                r.push(k + "=" + params[k]);
             };
-            return r.substring(0, r.length - 1);
+            params = r.join("&");
+
+            var i = url.indexOf("?");
+            if (i == -1) return url + "?" + params;else if (i < url.length - 1) return url + "&" + params;else return "" + url + params;
         },
         showMessage: function showMessage(msg) {
             var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
@@ -104,7 +109,7 @@ define(["jquery"], function ($) {
                 return Promise.reject();
             }
 
-            this.log("Get:" + url + "&" + this.__getParamsString(params));
+            this.log("Get: " + this.__urlJoin(url, params));
 
             var getPromise = new Promise(function (resolve, reject) {
                 url = encodeURI(url);
@@ -148,6 +153,7 @@ define(["jquery"], function ($) {
                 html = _this2.__filterElement(html, "iframe");
                 html = _this2.__filterElement(html, "link");
                 html = _this2.__filterElement(html, "meta");
+                html = _this2.__filterElement(html, "style");
 
                 html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
                 return html;

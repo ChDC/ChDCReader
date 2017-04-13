@@ -65,13 +65,26 @@ define(["jquery"], function($){
         /*
         * 获取 URL 的参数字符串
         */
-        __getParamsString(params){
-          if(!params)
-            return "";
-          let r = "";
-          for(const k in params){r += k + "=" + params[k] + "&"};
-          return r.substring(0, r.length-1);
+        __urlJoin(url, params){
+            if(!params || params == {})
+                return url;
+
+            debugger;
+            let r = []
+            for(const k in params){
+                r.push(`${k}=${params[k]}`)
+            };
+            params = r.join("&");
+
+            let i = url.indexOf("?");
+            if(i == -1)
+                return `${url}?${params}`;
+            else if(i < url.length - 1)
+                return `${url}&${params}`;
+            else
+                return `${url}${params}`;
         },
+
         showMessage(msg, delay=1000, level=null){
             if(!msg)
                 return;
@@ -143,7 +156,7 @@ define(["jquery"], function($){
                 return Promise.reject();
             }
 
-            this.log("Get:" + url + "&" + this.__getParamsString(params));
+            this.log(`Get: ${this.__urlJoin(url, params)}`);
 
             const getPromise = new Promise((resolve, reject) => {
                 url = encodeURI(url);
@@ -204,6 +217,7 @@ define(["jquery"], function($){
                 html = this.__filterElement(html, "iframe");
                 html = this.__filterElement(html, "link");
                 html = this.__filterElement(html, "meta");
+                html = this.__filterElement(html, "style");
 
                 // 图片的 src 属性转换成 data-src 属性
                 html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");

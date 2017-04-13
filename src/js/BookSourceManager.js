@@ -320,14 +320,19 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
             };
         }
 
-        // 按主源权重从小到大排序的数组
+        // 按主源权重从大到小排序的数组
         getSourcesKeysByMainSourceWeight(){
-            return util.objectSortedKey(this.sources, 'mainSourceWeight'); // 按主源权重从小到大排序的数组
+            return util.objectSortedKey(this.sources, 'mainSourceWeight'); // 按主源权重从大到小排序的数组
         }
 
-        // 按内容源权重从小到大排序的数组
-        getSourcesKeysByContentSourceWeight(configFileOrConfig){
-            // TODO:
+        // 获取内容源的名字
+        getBookSourceName(bsid){
+            try{
+                return this.sources[bsid].name;
+            }
+            catch(e){
+                return "";
+            }
         }
 
         init(){

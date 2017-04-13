@@ -391,8 +391,14 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                 return util.objectSortedKey(this.sources, 'mainSourceWeight');
             }
         }, {
-            key: "getSourcesKeysByContentSourceWeight",
-            value: function getSourcesKeysByContentSourceWeight(configFileOrConfig) {}
+            key: "getBookSourceName",
+            value: function getBookSourceName(bsid) {
+                try {
+                    return this.sources[bsid].name;
+                } catch (e) {
+                    return "";
+                }
+            }
         }, {
             key: "init",
             value: function init() {

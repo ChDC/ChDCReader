@@ -51,6 +51,16 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                 });
             }
         }, {
+            key: "getSourcesKeysByMainSourceWeight",
+            value: function getSourcesKeysByMainSourceWeight() {
+                return this.bookSourceManager.getSourcesKeysByMainSourceWeight();
+            }
+        }, {
+            key: "getSourcesKeysByContentSourceWeight",
+            value: function getSourcesKeysByContentSourceWeight(configFileOrConfig) {
+                return util.objectSortedKey(this.sources, 'weight');
+            }
+        }, {
             key: "checkBookSources",
             value: function checkBookSources() {
                 var sources = this.bookSourceManager.sources;

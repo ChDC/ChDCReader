@@ -127,8 +127,8 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                     for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                         var bskey = _step2.value;
 
-                        var bs = app.bookSourceManager.sources[bskey];
-                        var newOption = "<option value =\"" + bskey + "\">" + bs.name + "</option>";
+                        var bsName = app.bookSourceManager.getBookSourceName(bskey);
+                        var newOption = "<option value =\"" + bskey + "\">" + bsName + "</option>";
                         bookSource.append(newOption);
                     }
                 } catch (err) {

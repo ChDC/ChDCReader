@@ -17,7 +17,6 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
 
             var _this = _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).call(this));
 
-            _this.options = null;
             _this.tmpOptions = null;
             _this.book = null;
             _this.readingRecord = null;
@@ -32,7 +31,6 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                 this.book = params.book;
                 this.book.checkBookSources();
                 this.readingRecord = params.readingRecord;
-                this.options = {};
 
                 this.loadView();
                 this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
@@ -105,7 +103,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                     var top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
                     $('#listCatalogContainer').scrollTop(top);
                 });
-                $(".labelMainSource").text(app.bookSourceManager.sources[this.book.mainSourceId].name);
+                $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
                 $("#btnRefreshCatalog").click(function () {
                     return _this2.loadCatalog(true);
                 });
@@ -125,11 +123,9 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
 
                         $("#modalCatalog").modal('hide');
 
-                        $(".labelMainSource").text(app.bookSourceManager.sources[_this3.book.mainSourceId].name);
+                        $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(_this3.book.mainSourceId));
                         if (_this3.readingRecord.chapterIndex) {
-                            var opts = Object.assign({}, _this3.options);
-                            opts.bookSourceId = oldMainSource;
-                            _this3.book.fuzzySearch(_this3.book.mainSourceId, _this3.readingRecord.chapterIndex, opts.forceRefresh, opts.bookSourceId).then(function (_ref) {
+                            _this3.book.fuzzySearch(_this3.book.mainSourceId, _this3.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
                                 var chapter = _ref.chapter,
                                     index = _ref.index;
 
@@ -155,18 +151,40 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                 var listBookSource = $("#listBookSource");
                 listBookSource.empty();
                 var listBookSourceEntry = $(".template .listBookSourceEntry");
-                for (var bsk in app.bookSourceManager.sources) {
-                    if (bsk == this.book.mainSourceId) continue;
-                    var nlbse = listBookSourceEntry.clone();
-                    var bs = app.bookSourceManager.sources[bsk];
-                    nlbse.find(".bookSourceTitle").text(bs.name);
-                    var lastestChapter = "";
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
 
-                    nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
-                    nlbse.data("bsid", bsk);
-                    nlbse.click(changeMainContentSourceClickEvent.bind(this));
-                    listBookSource.append(nlbse);
-                };
+                try {
+                    for (var _iterator = this.book.getSourcesKeysByContentSourceWeight()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var bsk = _step.value;
+
+                        if (bsk == this.book.mainSourceId) continue;
+                        var nlbse = listBookSourceEntry.clone();
+                        nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSourceName(bsk));
+                        var lastestChapter = "";
+
+                        nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
+                        nlbse.data("bsid", bsk);
+                        nlbse.click(changeMainContentSourceClickEvent.bind(this));
+                        listBookSource.append(nlbse);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                ;
             }
         }, {
             key: "loadCatalog",
@@ -222,7 +240,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                     _this5.readingRecord.setReadingRecord(index, title, options);
                     _this5.readingRecord.pageScrollTop = _this5.chapterList.getPageScorllTop();
 
-                    $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
+                    $(".labelContentSource").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
                     $(".labelChapterTitle").text(title);
                     app.hideLoading();
                 };
@@ -232,7 +250,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
             value: function onNewChapterItem(event, be, direction) {
                 var _this6 = this;
 
-                var opts = Object.assign({}, this.options, this.tmpOptions);
+                var opts = Object.assign({}, this.tmpOptions);
                 this.tmpOptions = null;
                 var chapterIndex = 0;
                 if (be) {

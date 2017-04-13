@@ -6,7 +6,6 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
         constructor(){
             super();
 
-            this.options = null;  // 默认传递的选项参数
             this.tmpOptions = null;  // 默认传递的选项参数
             this.book = null;
             this.readingRecord = null; // 正在读的记录
@@ -18,7 +17,6 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             this.book = params.book;
             this.book.checkBookSources();
             this.readingRecord = params.readingRecord;
-            this.options = {};
 
             this.loadView();
             this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
@@ -115,7 +113,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
                 $('#listCatalogContainer').scrollTop(top);
                 // $("#modalCatalog .modal-body").css("height", $());
             });
-            $(".labelMainSource").text(app.bookSourceManager.sources[this.book.mainSourceId].name);
+            $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
             $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
         };
 
@@ -133,11 +131,9 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
                         // 隐藏目录窗口
                         $("#modalCatalog").modal('hide');
                         // 更新源之后
-                        $(".labelMainSource").text(app.bookSourceManager.sources[this.book.mainSourceId].name);
+                        $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
                         if(this.readingRecord.chapterIndex){
-                            const opts = Object.assign({}, this.options);
-                            opts.bookSourceId = oldMainSource;
-                            this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, opts.forceRefresh, opts.bookSourceId)
+                            this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, undefined, oldMainSource)
                                 .then(({chapter, index}) => {
                                     this.readingRecord.chapterIndex = index;
                                     this.readingRecord.chapterTitle = chapter.title;
@@ -162,12 +158,11 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             const listBookSource = $("#listBookSource");
             listBookSource.empty();
             const listBookSourceEntry = $(".template .listBookSourceEntry");
-            for(const bsk in app.bookSourceManager.sources){
+            for(const bsk of this.book.getSourcesKeysByContentSourceWeight()){
                 if(bsk == this.book.mainSourceId)
                     continue;
                 const nlbse = listBookSourceEntry.clone();
-                const bs = app.bookSourceManager.sources[bsk];
-                nlbse.find(".bookSourceTitle").text(bs.name);
+                nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSourceName(bsk));
                 const lastestChapter = "";
                 // TODO: 最新章节
                 nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
@@ -236,7 +231,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
                 this.readingRecord.setReadingRecord(index, title, options);
                 this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
                 // app.bookShelf.save();
-                $(".labelContentSource").text(app.bookSourceManager.sources[options.contentSourceId].name);
+                $(".labelContentSource").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
                 $(".labelChapterTitle").text(title);
                 app.hideLoading();
             }
@@ -244,7 +239,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
 
         onNewChapterItem(event, be, direction){
 
-            const opts = Object.assign({}, this.options, this.tmpOptions);
+            const opts = Object.assign({}, this.tmpOptions);
             this.tmpOptions = null;
             let chapterIndex = 0;
             if(be){
@@ -288,7 +283,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             const nc = $('.template .chapter').clone();
             nc.find(".chapter-title").text(chapter.title);
             nc.find(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
-            // nc.find(".chapter-source").text(app.bookSourceManager.sources[options.contentSourceId].name);
+            // nc.find(".chapter-source").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
 
             nc.data('chapterIndex', index);
             nc.data('chapterTitle', title);
