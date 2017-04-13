@@ -629,7 +629,7 @@ define(["jquery"], function($){
                     });
                 }
 
-                if(typeof(keyValue) != "string")
+                if(typeof(data) != "string")
                     data = JSON.stringify(data);
                 createAndWriteFile();
             });

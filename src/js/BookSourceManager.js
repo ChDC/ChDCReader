@@ -43,7 +43,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             util.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
 
-
             const self = this;
             const bs = this.sources[bsid];
             if(!bs) return;

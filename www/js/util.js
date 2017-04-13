@@ -513,7 +513,7 @@ define(["jquery"], function ($) {
                     });
                 }
 
-                if (typeof keyValue != "string") data = JSON.stringify(data);
+                if (typeof data != "string") data = JSON.stringify(data);
                 createAndWriteFile();
             });
         },
