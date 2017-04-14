@@ -78,7 +78,7 @@
                     "name": "div.search_r_info > h1 > a"
                 }
             },
-            "url": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
+            "url": "http://chuangshi.qq.com/search/searchindex/type/chuangshi/wd/{keyword}.html"
         },
         "detail": {
             "info": {
@@ -104,6 +104,56 @@
                 "content": ".bookreadercontent",
                 "modifyTime": "#chaptercontainer > div > div.story_title > p > span:nth-child(3)",
                 "title": "#chaptercontainer > div > div.story_title > h1"
+            }
+        }
+    },
+
+    "17k": {
+        "id": "17k",
+        "name": "17K",
+        "contentSourceWeight": -100,
+        "mainSourceWeight": 10,
+        "host": "http://www.17k.com/",
+        "search": {
+            "info": {
+                "book": ".search-list > .textlist",
+                "detail": {
+                    "author": "div.textmiddle > dl > dd > ul > li.bq > span.ls > a",
+                    "catagory": "div.textmiddle > dl > dd > ul > li.bq > span:nth-child(2) > a",
+                    "complete": "",
+                    "cover": "div.textleft img",
+                    "introduce": "div.textmiddle > dl > dd > ul > li:nth-child(3) > p > a",
+                    "lastestChapter": "div.textmiddle > dl > dd > ul > li:nth-child(4) > a",
+                    "link": "div.textmiddle > dl > dt > a",
+                    "name": "div.textmiddle > dl > dt > a"
+                }
+            },
+            "url": "http://search.17k.com/search.xhtml?c.st=0&c.q={keyword}"
+        },
+        "detail": {
+            "info": {
+                "catalogLink": "div.BookInfo > div.Props > dl > dt > a",
+                "author": "div.AuthorInfo > div > a.name",
+                "catagory": "body > div.infoPath > div > a:nth-child(3)",
+                "complete": "div.BookInfo > div.Info > div.label > a:nth-child(1) > span",
+                "cover": "div.BookInfo > div.Props > div > a > img",
+                "introduce": "div.BookInfo > div.Info.Sign > dl > dd > div:nth-child(1) > a",
+                "lastestChapter": "dl.NewsChapter > dd > ul > li:nth-child(2) > a",
+                "name": "div.BookInfo > div.Info.Sign > h1 > a"
+            }
+        },
+        "catalog": {
+            "link": "{catalogLink}",
+            "type": "html",
+            "info": {
+                "link": "body > div.Main.List > dl > dd > a"
+            }
+        },
+        "chapter": {
+            "info": {
+                "content": "#chapterContentWapper",
+                "modifyTime": "#readAreaBox > div.chapter_update_time",
+                "title": "#readAreaBox > h1"
             }
         }
     },
@@ -145,7 +195,9 @@
             "link": "{detailLink}",
             "type": "html",
             "info": {
-                "link": "#list > dl a"
+                "link": "#list > dl > dt:nth-of-type(2) ~ dd > a",
+                "volume": "data.vs",
+                "volumeName": "vN"
             }
         },
         "chapter": {
@@ -193,7 +245,7 @@
             "link": "{detailLink}",
             "type": "html",
             "info": {
-                "link": "#list > dl a"
+                "link": "#list > dl > dd > a"
             }
         },
         "chapter": {
@@ -241,7 +293,7 @@
             "link": "{detailLink}",
             "type": "html",
             "info": {
-                "link": "#list > dl a"
+                "link": "#list > dl > dd > a"
             }
         },
         "chapter": {
@@ -252,6 +304,55 @@
             }
         }
     },
+    "dingdian": {
+        "id": "dingdian",
+        "name": "顶点小说",
+        "contentSourceWeight": 10,
+        "mainSourceWeight": -10,
+        "host": "http://www.booktxt.net",
+        "search": {
+            "info": {
+                "book": "#results > div.result-list > div.result-item",
+                "detail": {
+                    "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
+                    "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
+                    "complete": "",
+                    "cover": "",
+                    "introduce": "div.result-game-item-detail > p",
+                    "lastestChapter": "div.result-game-item-detail > div > p:nth-child(4) > a",
+                    "link": "div.result-game-item-detail > h3 > a",
+                    "name": "div.result-game-item-detail > h3 > a"
+                }
+            },
+            "url": "http://zhannei.baidu.com/cse/search?s=5334330359795686106&q={keyword}"
+        },
+        "detail": {
+            "info": {
+                "author": "#info > p:nth-child(2)",
+                "catagory": "",
+                "complete": "",
+                "cover": "#fmimg > img",
+                "introduce": "#intro",
+                "lastestChapter": "#info > p:nth-child(5) > a",
+                "name": "#info > h1"
+            }
+        },
+        "catalog": {
+            "link": "{detailLink}",
+            "type": "html",
+            "info": {
+                "link": "#list > dl > dt:nth-of-type(2) ~ dd > a"
+            }
+        },
+        "chapter": {
+            "info": {
+                "content": "#content",
+                "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
+                "title": "div.content_read > div > div.bookname > h1"
+            }
+        }
+    },
+
     "biqulou": {
         "id": "biqulou",
         "name": "笔趣楼",
@@ -289,7 +390,7 @@
             "link": "{detailLink}",
             "type": "html",
             "info": {
-                "link": "#list > dl a"
+                "link": "#list > dl > dd > a"
             }
         },
         "chapter": {
@@ -303,8 +404,8 @@
     "daizhuzai": {
         "id": "daizhuzai",
         "name": "大主宰小说网",
-        "contentSourceWeight": -10,
-        "mainSourceWeight": -10,
+        "contentSourceWeight": -10000,
+        "mainSourceWeight": -10000,
         "host": "http://www.daizhuzai.com/",
         "search": {
             "info": {

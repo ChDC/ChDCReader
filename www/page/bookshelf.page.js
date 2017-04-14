@@ -89,7 +89,7 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
                         var _ref2 = _slicedToArray(_ref, 1),
                             lastestChapter = _ref2[0];
 
-                        nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).css('color', _this4.isReadingLastestChapter(lastestChapter, readingRecord) ? 'black' : 'red');
+                        nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).css('color', _this4.isReadingLastestChapter(lastestChapter, readingRecord) ? null : 'red');
 
                         book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
                     });

@@ -42,9 +42,126 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                         return e.name == bookName && e.author == bookAuthor;
                     });
                     return book ? book : Promise.reject(404);
-                }).catch(function (error) {
-                    return Promise.reject(error == 602 ? 404 : error);
                 });
+            }
+        }, {
+            key: "searchBookInAllBookSource",
+            value: function searchBookInAllBookSource(keyword) {
+                var _this2 = this;
+
+                var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+                    _ref$filterSameResult = _ref.filterSameResult,
+                    filterSameResult = _ref$filterSameResult === undefined ? true : _ref$filterSameResult;
+
+                util.log("BookSourceManager: Search Book in all booksource \"" + keyword + "\"");
+
+                var result = {};
+                var errorList = [];
+                var allBsids = this.getSourcesKeysByMainSourceWeight();
+                var tasks = [];
+
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    var _loop2 = function _loop2() {
+                        var bsid = _step.value;
+
+                        tasks.push(_this2.searchBook(bsid, keyword).then(function (books) {
+                            result[bsid] = books;
+                        }).catch(function (error) {
+                            errorList.push(error);
+                        }));
+                    };
+
+                    for (var _iterator = allBsids[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        _loop2();
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                function handleResult() {
+                    var finalResult = [];
+
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = allBsids[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var bsid = _step2.value;
+
+                            var books = result[bsid];
+                            var _iteratorNormalCompletion3 = true;
+                            var _didIteratorError3 = false;
+                            var _iteratorError3 = undefined;
+
+                            try {
+                                var _loop = function _loop() {
+                                    var b = _step3.value;
+
+                                    if (filterSameResult) {
+                                        if (!finalResult.find(function (e) {
+                                            return Book.equal(e, b);
+                                        })) finalResult.push(b);
+                                    } else finalResult.push(b);
+                                };
+
+                                for (var _iterator3 = books[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                    _loop();
+                                }
+                            } catch (err) {
+                                _didIteratorError3 = true;
+                                _iteratorError3 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                        _iterator3.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError3) {
+                                        throw _iteratorError3;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+
+                    if (finalResult.length === 0 && errorList.length > 0) {
+                        var re = util.arrayCount(errorList);
+                        throw re[0][0];
+                    }
+
+                    return finalResult;
+                }
+
+                return Promise.all(tasks).then(handleResult);
             }
         }, {
             key: "searchBook",
@@ -54,7 +171,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
 
                 var self = this;
                 var bs = this.sources[bsid];
-                if (!bs) return;
+                if (!bs) return Promise.reject("Illegal booksource!");
 
                 var search = bs.search;
                 var searchLink = util.format(search.url, { keyword: keyword });
@@ -72,7 +189,35 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                 }
 
                 function checkBook(book) {
-                    return true;
+                    var name = book.name;
+                    var author = book.author;
+                    var keywords = keyword.split(/ +/);
+                    var _iteratorNormalCompletion4 = true;
+                    var _didIteratorError4 = false;
+                    var _iteratorError4 = undefined;
+
+                    try {
+                        for (var _iterator4 = keywords[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                            var kw = _step4.value;
+
+                            if (kw.indexOf(name) >= 0 || kw.indexOf(author) >= 0 || name.indexOf(kw) >= 0 || author.indexOf(kw) >= 0) return true;
+                        }
+                    } catch (err) {
+                        _didIteratorError4 = true;
+                        _iteratorError4 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                _iterator4.return();
+                            }
+                        } finally {
+                            if (_didIteratorError4) {
+                                throw _iteratorError4;
+                            }
+                        }
+                    }
+
+                    return false;
                 }
 
                 function getBookFromHtml(htmlContent) {
@@ -86,13 +231,13 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                     var fixer = BookSourceManager.fixer;
 
                     var bookItems = html.querySelectorAll(info.book);
-                    var _iteratorNormalCompletion = true;
-                    var _didIteratorError = false;
-                    var _iteratorError = undefined;
+                    var _iteratorNormalCompletion5 = true;
+                    var _didIteratorError5 = false;
+                    var _iteratorError5 = undefined;
 
                     try {
-                        for (var _iterator = Array.from(bookItems)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                            var element = _step.value;
+                        for (var _iterator5 = Array.from(bookItems)[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                            var element = _step5.value;
 
                             var book = new Book(self);
 
@@ -119,21 +264,21 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                             books.push(book);
                         }
                     } catch (err) {
-                        _didIteratorError = true;
-                        _iteratorError = err;
+                        _didIteratorError5 = true;
+                        _iteratorError5 = err;
                     } finally {
                         try {
-                            if (!_iteratorNormalCompletion && _iterator.return) {
-                                _iterator.return();
+                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                _iterator5.return();
                             }
                         } finally {
-                            if (_didIteratorError) {
-                                throw _iteratorError;
+                            if (_didIteratorError5) {
+                                throw _iteratorError5;
                             }
                         }
                     }
 
-                    return books.length <= 0 ? Promise.reject(602) : Promise.resolve(books);
+                    return Promise.resolve(books);
                 };
             }
         }, {
@@ -251,13 +396,13 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                     try {
                         var json = JSON.parse(data);
                         var chapters = util.getDataFromObject(json, info.chapter);
-                        var _iteratorNormalCompletion2 = true;
-                        var _didIteratorError2 = false;
-                        var _iteratorError2 = undefined;
+                        var _iteratorNormalCompletion6 = true;
+                        var _didIteratorError6 = false;
+                        var _iteratorError6 = undefined;
 
                         try {
-                            for (var _iterator2 = chapters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                var c = _step2.value;
+                            for (var _iterator6 = chapters[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                                var c = _step6.value;
 
                                 var chapter = new Chapter();
                                 var name = util.getDataFromObject(c, info.name);
@@ -279,16 +424,16 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                                 catalog.push(chapter);
                             }
                         } catch (err) {
-                            _didIteratorError2 = true;
-                            _iteratorError2 = err;
+                            _didIteratorError6 = true;
+                            _iteratorError6 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                    _iterator2.return();
+                                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                    _iterator6.return();
                                 }
                             } finally {
-                                if (_didIteratorError2) {
-                                    throw _iteratorError2;
+                                if (_didIteratorError6) {
+                                    throw _iteratorError6;
                                 }
                             }
                         }
@@ -306,13 +451,13 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                     html.innerHTML = htmlContent;
 
                     var chapters = html.querySelectorAll(info.link);
-                    var _iteratorNormalCompletion3 = true;
-                    var _didIteratorError3 = false;
-                    var _iteratorError3 = undefined;
+                    var _iteratorNormalCompletion7 = true;
+                    var _didIteratorError7 = false;
+                    var _iteratorError7 = undefined;
 
                     try {
-                        for (var _iterator3 = Array.from(chapters)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                            var element = _step3.value;
+                        for (var _iterator7 = Array.from(chapters)[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                            var element = _step7.value;
 
                             var chapter = new Chapter();
                             chapter.link = util.fixurl(element.getAttribute("href"), catalogLink);
@@ -325,16 +470,16 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                             catalog.push(chapter);
                         }
                     } catch (err) {
-                        _didIteratorError3 = true;
-                        _iteratorError3 = err;
+                        _didIteratorError7 = true;
+                        _iteratorError7 = err;
                     } finally {
                         try {
-                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                _iterator3.return();
+                            if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                                _iterator7.return();
                             }
                         } finally {
-                            if (_didIteratorError3) {
-                                throw _iteratorError3;
+                            if (_didIteratorError7) {
+                                throw _iteratorError7;
                             }
                         }
                     }
@@ -393,7 +538,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
         }, {
             key: "getSourcesKeysByMainSourceWeight",
             value: function getSourcesKeysByMainSourceWeight() {
-                return util.objectSortedKey(this.sources, 'mainSourceWeight');
+                return util.objectSortedKey(this.sources, 'mainSourceWeight').reverse();
             }
         }, {
             key: "getBookSourceName",
@@ -471,7 +616,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                     }
 
                     function checkLastestChapter(bs, book) {
-                        var _ref, _ref2, lastestChapter, lastestChapterUpdated;
+                        var _ref2, _ref3, lastestChapter, lastestChapterUpdated;
 
                         return regeneratorRuntime.wrap(function checkLastestChapter$(_context3) {
                             while (1) {
@@ -484,10 +629,10 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                                         });
 
                                     case 2:
-                                        _ref = _context3.sent;
-                                        _ref2 = _slicedToArray(_ref, 2);
-                                        lastestChapter = _ref2[0];
-                                        lastestChapterUpdated = _ref2[1];
+                                        _ref2 = _context3.sent;
+                                        _ref3 = _slicedToArray(_ref2, 2);
+                                        lastestChapter = _ref3[0];
+                                        lastestChapterUpdated = _ref3[1];
 
                                         if (lastestChapter.length > 0) {
                                             log(getInfo() + " -> 获取最新章节信息：OK");
@@ -594,7 +739,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
 
                 var self = this;
                 return co(regeneratorRuntime.mark(function _callee3() {
-                    var data, taskQueue, sk, books, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, book, _taskQueue$shift, _taskQueue$shift2, bsid, _book;
+                    var data, taskQueue, sk, books, _iteratorNormalCompletion8, _didIteratorError8, _iteratorError8, _iterator8, _step8, book, _taskQueue$shift, _taskQueue$shift2, _bsid, _book;
 
                     return regeneratorRuntime.wrap(function _callee3$(_context6) {
                         while (1) {
@@ -616,13 +761,13 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
 
                                     sk = _context6.t1.value;
                                     books = data.sources[sk];
-                                    _iteratorNormalCompletion4 = true;
-                                    _didIteratorError4 = false;
-                                    _iteratorError4 = undefined;
+                                    _iteratorNormalCompletion8 = true;
+                                    _didIteratorError8 = false;
+                                    _iteratorError8 = undefined;
                                     _context6.prev = 11;
 
-                                    for (_iterator4 = books[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                                        book = _step4.value;
+                                    for (_iterator8 = books[Symbol.iterator](); !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                                        book = _step8.value;
 
                                         if (!(book in data.books)) {
                                             error("没有在测试配置文件中找到书籍：" + book);
@@ -634,26 +779,26 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                                 case 15:
                                     _context6.prev = 15;
                                     _context6.t2 = _context6["catch"](11);
-                                    _didIteratorError4 = true;
-                                    _iteratorError4 = _context6.t2;
+                                    _didIteratorError8 = true;
+                                    _iteratorError8 = _context6.t2;
 
                                 case 19:
                                     _context6.prev = 19;
                                     _context6.prev = 20;
 
-                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                                        _iterator4.return();
+                                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                                        _iterator8.return();
                                     }
 
                                 case 22:
                                     _context6.prev = 22;
 
-                                    if (!_didIteratorError4) {
+                                    if (!_didIteratorError8) {
                                         _context6.next = 25;
                                         break;
                                     }
 
-                                    throw _iteratorError4;
+                                    throw _iteratorError8;
 
                                 case 25:
                                     return _context6.finish(22);
@@ -671,12 +816,12 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function (co, util, Book
                                         break;
                                     }
 
-                                    _taskQueue$shift = taskQueue.shift(), _taskQueue$shift2 = _slicedToArray(_taskQueue$shift, 2), bsid = _taskQueue$shift2[0], _book = _taskQueue$shift2[1];
+                                    _taskQueue$shift = taskQueue.shift(), _taskQueue$shift2 = _slicedToArray(_taskQueue$shift, 2), _bsid = _taskQueue$shift2[0], _book = _taskQueue$shift2[1];
 
-                                    log("测试书源：" + self.sources[bsid].name);
+                                    log("测试书源：" + self.sources[_bsid].name);
                                     _context6.prev = 32;
                                     _context6.next = 35;
-                                    return check(bsid, _book);
+                                    return check(_bsid, _book);
 
                                 case 35:
                                     _context6.next = 39;

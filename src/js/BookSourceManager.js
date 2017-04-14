@@ -32,10 +32,62 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                 .then(books => {
                     const book = books.find(e => e.name == bookName && e.author == bookAuthor );
                     return book ? book : Promise.reject(404);
-                })
-                .catch(error => {
-                    return Promise.reject(error == 602 ? 404 : error);
                 });
+        }
+
+        // 全网搜索
+        // * options
+        // *   filterSameResult
+        searchBookInAllBookSource(keyword, {filterSameResult=true}={}){
+
+            util.log(`BookSourceManager: Search Book in all booksource "${keyword}"`);
+
+            let result = {};
+            const errorList = [];
+            const allBsids = this.getSourcesKeysByMainSourceWeight();
+            const tasks = [];
+
+            for(const bsid of allBsids)
+            {
+                // 单书源搜索
+                tasks.push(this.searchBook(bsid, keyword)
+                    .then(books => {
+                        result[bsid] = books;
+                    })
+                    .catch(error => {
+                        errorList.push(error);
+                    }));
+            }
+
+            function handleResult(){
+                // 处理结果
+                let finalResult = [];
+
+                for(let bsid of allBsids){
+                    let books = result[bsid];
+                    for(let b of books){
+                        if(filterSameResult){
+                            // 过滤相同的结果
+                            if(!finalResult.find(e => Book.equal(e, b)))
+                                finalResult.push(b);
+                        }
+                        else
+                            finalResult.push(b);
+                    }
+                }
+
+                if(finalResult.length === 0 && errorList.length > 0)
+                {
+                    let re = util.arrayCount(errorList);
+                    throw(re[0][0]);
+                }
+
+                // 合并结果
+                return finalResult;
+            }
+
+            return Promise.all(tasks)
+                .then(handleResult);
         }
 
         // 搜索书籍
@@ -45,7 +97,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             const self = this;
             const bs = this.sources[bsid];
-            if(!bs) return;
+            if(!bs) return Promise.reject("Illegal booksource!");
 
             const search = bs.search;
             const searchLink = util.format(search.url, {keyword: keyword});
@@ -64,8 +116,16 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
             }
 
             function checkBook(book){
-                // TODO: 筛选搜索结果
-                return true;
+                // 筛选搜索结果
+                let name = book.name;
+                let author = book.author;
+                let keywords = keyword.split(/ +/);
+                for(let kw of keywords){
+                    if(kw.indexOf(name) >= 0 || kw.indexOf(author) >= 0 ||
+                       name.indexOf(kw) >= 0 || author.indexOf(kw) >= 0)
+                        return true;
+                }
+                return false;
             }
 
             function getBookFromHtml(htmlContent){
@@ -108,7 +168,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                     books.push(book);
                 }
 
-                return books.length <= 0 ? Promise.reject(602) : Promise.resolve(books);
+                return Promise.resolve(books);
             };
         }
 
@@ -329,7 +389,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
         // 按主源权重从大到小排序的数组
         getSourcesKeysByMainSourceWeight(){
-            return util.objectSortedKey(this.sources, 'mainSourceWeight'); // 按主源权重从大到小排序的数组
+            return util.objectSortedKey(this.sources, 'mainSourceWeight').reverse(); // 按主源权重从大到小排序的数组
         }
 
         // 获取内容源的名字

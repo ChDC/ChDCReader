@@ -5,15 +5,15 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "c767e8e13cd007d5971b53d6c5bdec6f"
+    "hash": "c36ec256ca5bceb5abbc619b67371678"
   },
   {
     "file": "data/booksourcesTest.json",
-    "hash": "fb356aff7e12744d012184c0a957dba9"
+    "hash": "25797cc7769cf0ea036b2b53cd425a26"
   },
   {
     "file": "data/errorCode.json",
-    "hash": "4027d07be399bcdfba399f7af266be99"
+    "hash": "9ffb0415e107c1c08ab7cb6f4a698125"
   },
   {
     "file": "img/book_cover.png",
@@ -41,7 +41,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "d8c5d23061371fe45986df81b5576d4c"
+    "hash": "d3be4abe5337292b397bd5e22a4b4da1"
   },
   {
     "file": "js/BookShelf.js",
@@ -53,7 +53,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "0bc3c1593f371d011d6ba55fd7ff083a"
+    "hash": "4f2bea71e9d40a06654b5ca8aef18330"
   },
   {
     "file": "js/Chapter.js",
@@ -85,7 +85,7 @@
   },
   {
     "file": "js/util.js",
-    "hash": "fb82eb3d4e2bf61ab4cea4a981eee273"
+    "hash": "b213ab82acff050224ae78a7c54a96ab"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -245,7 +245,7 @@
   },
   {
     "file": "page/bookdetail.page.js",
-    "hash": "a177687bf14df07f06b3fbcf197ff425"
+    "hash": "e2d575a1fa09ded0b7eb7862bed234fe"
   },
   {
     "file": "page/bookshelf.page.css",
@@ -257,7 +257,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "329f80da8236f4e91f9a269863930172"
+    "hash": "3c20e5c1af29ad01304436f4b7b065a5"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -269,11 +269,11 @@
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "73be2f1f7fffc322a8461aea070704f6"
+    "hash": "47e1b94ed26db796095be9cd039ac577"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "ef63213798bf21d2a355ec14000f1032"
+    "hash": "3f85b4a27d65ff76057ddb44f9c6c019"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -281,14 +281,14 @@
   },
   {
     "file": "page/search.page.css",
-    "hash": "99ae5a9178b82adbce3fbf2d2ecfe810"
+    "hash": "1fd71c42723eb20ae9ad236334296989"
   },
   {
     "file": "page/search.page.html",
-    "hash": "488a1cfdc9190c0368d198d135b53c32"
+    "hash": "cfd7ece21b1bdad319462816459cbc20"
   },
   {
     "file": "page/search.page.js",
-    "hash": "97ca298f2d57c204dae074858609956f"
+    "hash": "293e2f3f9067c9fcf0b75ca8216ad76b"
   }
 ]

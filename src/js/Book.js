@@ -49,7 +49,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
 
         // 按内容源权重从大到小排序的数组
         getSourcesKeysByContentSourceWeight(configFileOrConfig){
-            return util.objectSortedKey(this.sources, 'weight');
+            return util.objectSortedKey(this.sources, 'weight').reverse();
         }
 
         // 检查源是否有缺失
@@ -245,6 +245,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
 
             const chapterA = catalog[index];
             const result = []; // 结果的集合，按权重排序
+            const errorCodeList = []; // 用于存放每次获取章节失败的原因
             let remainCount = count;// 想获取的数目
 
             // ***** 常量 ******
@@ -290,6 +291,10 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             // 提交结果
             function submitResult(){
                 if(result.length <= 0){
+                    // 返回错误数最多的错误
+                    let re = util.arrayCount(errorCodeList);
+                    if(re.length > 0)
+                        return Promise.reject(re[0][0]);
                     return Promise.reject(201);
                 }
                 else{
@@ -339,6 +344,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
                         remainCount--;
                     }
                     catch(e){
+                        errorCodeList.push(e);
                         if(!noInfluenceWeight)
                             self.sources[sourceB].weight += NOTFOUND_WEIGHT;
                     }
@@ -350,6 +356,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             function handleWithNormalMethod(error){
                 // 失败则按正常方式获取
                 // 注意网络不通的问题
+                errorCodeList.push(error);
                 return co(getChapterFromContentSources2());
             }
 
@@ -449,6 +456,11 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             nb.sources[bsid] = nbs;
         }
         return nb;
+    }
+
+    // 判断两本是书是否相等
+    Book.equal = function(bookA, bookB){
+        return bookA.name == bookB.name && bookA.author == bookB.author;
     }
 
     return Book;

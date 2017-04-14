@@ -25,7 +25,7 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
             }
         }, {
             key: "loadBookDetail",
-            value: function loadBookDetail(id, book, bookSourceId) {
+            value: function loadBookDetail(id, book) {
                 var nb = $(id);
                 if (book.cover) nb.find(".book-cover").attr("src", book.cover);
                 nb.find(".book-name").text(book.name);
@@ -37,7 +37,6 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
 
                 nb.find(".btnRead").click(function (e) {
                     return app.page.showPage("readbook", {
-                        bookSourceId: bookSourceId,
                         book: book
                     });
                 });
@@ -62,12 +61,12 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
             }
         }, {
             key: "loadBookChapters",
-            value: function loadBookChapters(id, book, bookSourceId) {
+            value: function loadBookChapters(id, book) {
 
                 var bookChapter = $(id);
                 var c = $(".template .book-chapter");
                 bookChapter.empty();
-                book.getCatalog(false, bookSourceId).then(function (catalog) {
+                book.getCatalog(false, undefined).then(function (catalog) {
                     var _iteratorNormalCompletion = true;
                     var _didIteratorError = false;
                     var _iteratorError = undefined;
@@ -105,8 +104,8 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
             key: "loadView",
             value: function loadView(params) {
 
-                this.loadBookDetail(".book", params.book, params.bookSourceId);
-                this.loadBookChapters(".book-chapters", params.book, params.bookSourceId);
+                this.loadBookDetail(".book", params.book);
+                this.loadBookChapters(".book-chapters", params.book);
             }
         }]);
 

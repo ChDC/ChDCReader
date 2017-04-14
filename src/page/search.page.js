@@ -8,7 +8,7 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
         }
 
         // 加载结果列表
-        loadBooks(id, books, bookSourceId){
+        loadBooks(id, books){
             const bs = $(id);
             const b = $(".template .book");
             bs.empty();
@@ -44,9 +44,9 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
                     });
                 }
                 nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {
-                            bookSourceId: bookSourceId,
                             book: book
                         }));
+                nb.find(".book-booksource").text(app.bookSourceManager.getBookSourceName(book.mainSourceId));
                 bs.append(nb);
             }
         }
@@ -61,10 +61,25 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
                 return;
             }
 
+            if(bookSourceId == "#all#"){
+                // 全网搜索
+                app.bookSourceManager.searchBookInAllBookSource(keyword)
+                    .then(books => {
+                        app.hideLoading();
+                        this.loadBooks(".result", books);
+                    })
+                    .catch(error => {
+                        app.hideLoading();
+                        util.showError(app.error.getMessage(error));
+                    });
+                return;
+            }
+
+            // 单书源搜索
             app.bookSourceManager.searchBook(bookSourceId, keyword)
                 .then(books => {
                     app.hideLoading();
-                    this.loadBooks(".result", books, bookSourceId);
+                    this.loadBooks(".result", books);
                 })
                 .catch(error => {
                     app.hideLoading();
@@ -75,16 +90,23 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
         loadView(){
             // 添加选项
             const bookSource = $(".bookSource");
-            const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
+            const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
+
+            // 添加特殊搜索
+            bookSource.append('<option value ="#all#">[全网搜索]</option>');
+
+            // 添加书源搜索
             for(const bskey of keys)
             {
                 const bsName = app.bookSourceManager.getBookSourceName(bskey);
                 const newOption = `<option value ="${bskey}">${bsName}</option>`;
                 bookSource.append(newOption);
             }
+
+
             $("#btnClose").click(e => this.close());
             $(".btnSearch").click(e => this.search());
-            $(".keyword").on('keydown', event => event.keyCode==13 && this.search());
+            $(".keyword").on('keydown', event => !(event.keyCode==13 && this.search()));
             $(".keyword").on('focus', event => event.currentTarget.select());
         }
     }

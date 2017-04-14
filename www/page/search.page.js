@@ -25,7 +25,7 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
             }
         }, {
             key: "loadBooks",
-            value: function loadBooks(id, books, bookSourceId) {
+            value: function loadBooks(id, books) {
                 var bs = $(id);
                 var b = $(".template .book");
                 bs.empty();
@@ -65,10 +65,10 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                         }
                         nb.find(".btnDetail").click(function (e) {
                             return app.page.showPage("bookdetail", {
-                                bookSourceId: bookSourceId,
                                 book: book
                             });
                         });
+                        nb.find(".book-booksource").text(app.bookSourceManager.getBookSourceName(book.mainSourceId));
                         bs.append(nb);
                     };
 
@@ -104,9 +104,20 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                     return;
                 }
 
+                if (bookSourceId == "#all#") {
+                    app.bookSourceManager.searchBookInAllBookSource(keyword).then(function (books) {
+                        app.hideLoading();
+                        _this2.loadBooks(".result", books);
+                    }).catch(function (error) {
+                        app.hideLoading();
+                        util.showError(app.error.getMessage(error));
+                    });
+                    return;
+                }
+
                 app.bookSourceManager.searchBook(bookSourceId, keyword).then(function (books) {
                     app.hideLoading();
-                    _this2.loadBooks(".result", books, bookSourceId);
+                    _this2.loadBooks(".result", books);
                 }).catch(function (error) {
                     app.hideLoading();
                     util.showError(app.error.getMessage(error));
@@ -118,7 +129,10 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                 var _this3 = this;
 
                 var bookSource = $(".bookSource");
-                var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight().reverse();
+                var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
+
+                bookSource.append('<option value ="#all#">[全网搜索]</option>');
+
                 var _iteratorNormalCompletion2 = true;
                 var _didIteratorError2 = false;
                 var _iteratorError2 = undefined;
@@ -153,7 +167,7 @@ define(["jquery", "main", "Page", "util"], function ($, app, Page, util) {
                     return _this3.search();
                 });
                 $(".keyword").on('keydown', function (event) {
-                    return event.keyCode == 13 && _this3.search();
+                    return !(event.keyCode == 13 && _this3.search());
                 });
                 $(".keyword").on('focus', function (event) {
                     return event.currentTarget.select();

@@ -117,7 +117,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
         };
 
-        // 加载内容源列表
+        // 加载目录源列表
         loadBookSource(){
             let changeMainContentSourceClickEvent = (event) => {
                 const target = event.currentTarget;
@@ -158,7 +158,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page
             const listBookSource = $("#listBookSource");
             listBookSource.empty();
             const listBookSourceEntry = $(".template .listBookSourceEntry");
-            for(const bsk of this.book.getSourcesKeysByContentSourceWeight()){
+            for(const bsk of this.book.getSourcesKeysByMainSourceWeight()){
                 if(bsk == this.book.mainSourceId)
                     continue;
                 const nlbse = listBookSourceEntry.clone();

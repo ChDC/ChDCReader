@@ -8,7 +8,7 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
         }
 
         // 加载书籍详情
-        loadBookDetail(id, book, bookSourceId){
+        loadBookDetail(id, book){
             const nb = $(id);
             if(book.cover)
                 nb.find(".book-cover").attr("src", book.cover);
@@ -20,7 +20,6 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
             nb.find(".book-introduce").text(book.introduce);
 
             nb.find(".btnRead").click( e => app.page.showPage("readbook", {
-                    bookSourceId: bookSourceId,
                     book: book
                 }));
 
@@ -48,12 +47,12 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
         }
 
         // 加载章节列表
-        loadBookChapters(id, book, bookSourceId){
+        loadBookChapters(id, book){
 
             const bookChapter = $(id);
             const c = $(".template .book-chapter");
             bookChapter.empty();
-            book.getCatalog(false, bookSourceId)
+            book.getCatalog(false, undefined)
                 .then(catalog => {
                     for(const chapter of catalog){
                         const nc = c.clone();
@@ -69,8 +68,8 @@ define(["jquery", "main", "Page", "util"], function($, app, Page, util){
 
         loadView(params){
 
-            this.loadBookDetail(".book", params.book, params.bookSourceId);
-            this.loadBookChapters(".book-chapters", params.book, params.bookSourceId);
+            this.loadBookDetail(".book", params.book);
+            this.loadBookChapters(".book-chapters", params.book);
         }
 
     }

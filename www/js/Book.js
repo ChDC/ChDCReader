@@ -58,7 +58,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         }, {
             key: "getSourcesKeysByContentSourceWeight",
             value: function getSourcesKeysByContentSourceWeight(configFileOrConfig) {
-                return util.objectSortedKey(this.sources, 'weight');
+                return util.objectSortedKey(this.sources, 'weight').reverse();
             }
         }, {
             key: "checkBookSources",
@@ -358,7 +358,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                     noInfluenceWeight = _ref2$noInfluenceWeig === undefined ? false : _ref2$noInfluenceWeig,
                     forceRefresh = _ref2.forceRefresh;
 
-                var _marked, chapterA, result, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
+                var _marked, chapterA, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
 
                 return regeneratorRuntime.wrap(function __getChapterFromContentSources$(_context5) {
                     while (1) {
@@ -425,6 +425,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                                 };
 
                                 handleWithNormalMethod = function handleWithNormalMethod(error) {
+                                    errorCodeList.push(error);
                                     return co(getChapterFromContentSources2());
                                 };
 
@@ -499,7 +500,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                                                 case 22:
                                                     if (!(contentSources.length > 0 && remainCount > 0)) {
-                                                        _context3.next = 48;
+                                                        _context3.next = 49;
                                                         break;
                                                     }
 
@@ -535,23 +536,24 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                                                     addChapterToResult(chapterB, indexB, sourceB);
                                                     remainCount--;
-                                                    _context3.next = 46;
+                                                    _context3.next = 47;
                                                     break;
 
                                                 case 43:
                                                     _context3.prev = 43;
                                                     _context3.t1 = _context3["catch"](26);
 
+                                                    errorCodeList.push(_context3.t1);
                                                     if (!noInfluenceWeight) self.sources[sourceB].weight += NOTFOUND_WEIGHT;
 
-                                                case 46:
+                                                case 47:
                                                     _context3.next = 22;
                                                     break;
 
-                                                case 48:
+                                                case 49:
                                                     return _context3.abrupt("return", submitResult());
 
-                                                case 49:
+                                                case 50:
                                                 case "end":
                                                     return _context3.stop();
                                             }
@@ -561,6 +563,8 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                                 submitResult = function submitResult() {
                                     if (result.length <= 0) {
+                                        var re = util.arrayCount(errorCodeList);
+                                        if (re.length > 0) return Promise.reject(re[0][0]);
                                         return Promise.reject(201);
                                     } else {
                                         if (count > 1) return Promise.resolve(result);else {
@@ -586,6 +590,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                                 _marked = [getChapterFromContentSources2, getChapterFromSelectBookSourceAndSelectSourceChapterIndex].map(regeneratorRuntime.mark);
                                 chapterA = catalog[index];
                                 result = [];
+                                errorCodeList = [];
                                 remainCount = count;
                                 FOUND_WEIGHT = 0;
                                 NOTFOUND_WEIGHT = -2;
@@ -596,16 +601,16 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                                 if (excludes && excludes.indexOf(contentSourceId) >= 0) contentSourceId = null;
 
                                 if (!(contentSourceId && typeof contentSourceChapterIndex == 'number')) {
-                                    _context5.next = 19;
+                                    _context5.next = 20;
                                     break;
                                 }
 
                                 return _context5.abrupt("return", co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex)).catch(handleWithNormalMethod));
 
-                            case 19:
+                            case 20:
                                 return _context5.abrupt("return", co(getChapterFromContentSources2(contentSourceId)));
 
-                            case 20:
+                            case 21:
                             case "end":
                                 return _context5.stop();
                         }
@@ -692,6 +697,10 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
             nb.sources[bsid] = nbs;
         }
         return nb;
+    };
+
+    Book.equal = function (bookA, bookB) {
+        return bookA.name == bookB.name && bookA.author == bookB.author;
     };
 
     return Book;

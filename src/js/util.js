@@ -1,21 +1,15 @@
 define(["jquery"], function($){
     "use strict"
 
-    // init
-    // $.ajaxSetup({
-    //     timeout : 8000 //超时时间设置，单位毫秒
-    // });
-
-    // if (typeof cordovaHTTP != "undefined") {
-    //     console.log("Set HTTP Header!");
-    //     cordovaHTTP.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36");
-    // }
-
     return {
         /*
         * 开启调试模式
         */
         DEBUG: true,
+        type(obj){
+            return $.type(obj);
+        },
+
         /**
          * 存储
          */
@@ -86,14 +80,20 @@ define(["jquery"], function($){
         },
 
         showMessage(msg, delay=1000, level=null){
-            if(!msg)
-                return;
+            if(!msg) return;
 
+            // const msgBoxContainer = document.createElment("div");
             const msgBoxContainer = $('<div class="message-box-container"></div>')
+            // msgBoxContainer.classList.add("message-box-container");
+
+            // const msgBox = document.createElment("div");
             const msgBox = $('<div class="message-box"></div>');
+            // msgBox.classList.add("message-box");
+
             switch(level){
                 case "error":
                     msgBox.css("color", "red");
+                    // msgBox.style.color = "red";
                     break;
                 case "info":
                     break;
@@ -147,48 +147,96 @@ define(["jquery"], function($){
         },
 
         /*
-        * 原始的获取 JSON
+        * 原始的 HTTP Get
+        * url: 完整的 URL
+        * params: 参数
+        */
+        // get(url, params, dataType, {timeout=5}={}) {
+        //     if(url == null)return Promise.reject();
+
+        //     this.log(`Get: ${this.__urlJoin(url, params)}`);
+
+        //     const getPromise = new Promise((resolve, reject) => {
+        //         url = encodeURI(url);
+        //         $.get(url, params, resolve, dataType)
+        //             .fail(data => reject(data));
+        //     });
+
+        //     if(timeout <= 0)
+        //         return getPromise;
+
+        //     const timeoutPromise = new Promise((resolve, reject) => {
+        //         setTimeout(reject, timeout*1000);
+        //     });
+
+        //     return Promise.race([getPromise, timeoutPromise])
+        //         .catch(error => {
+        //             this.error("Fail to get: " + url + ", 网络错误");
+        //             throw error;
+        //         });
+        // },
+
+        /*
+        * 原始的 HTTP Get
         * url: 完整的 URL
         * params: 参数
         */
         get(url, params, dataType, {timeout=5}={}) {
-            if(url == null){
-                return Promise.reject();
-            }
+            return new Promise((resolve, reject) => {
+                if(url == null) return Promise.reject("url is null");
 
-            this.log(`Get: ${this.__urlJoin(url, params)}`);
+                url = this.__urlJoin(url, params);
 
-            const getPromise = new Promise((resolve, reject) => {
+                this.log(`Get: ${url}`);
+
                 url = encodeURI(url);
-                $.get(url, params, resolve, dataType)
-                    .fail(data => reject(data));
-            });
 
-            if(timeout <= 0)
-                return getPromise;
+                let request = new XMLHttpRequest();
+                request.open("GET", url);
 
-            const timeoutPromise = new Promise((resolve, reject) => {
-                setTimeout(reject, timeout*1000);
-            });
+                request.timeout = timeout * 1000;
 
-            return Promise.race([getPromise, timeoutPromise])
-                .catch(error => {
+                switch(dataType){
+                    // case null:
+                    // case "":
+                    // case undefined:
+                    //     request.setRequestHeader("Content-Type", "text/plain");
+                    //     break;
+                    case "json":
+                    case "JSON":
+                        request.setRequestHeader("Content-Type", "application/json");
+                        break;
+                }
+
+                request.onload = () => {
+                    // success
+                    switch(dataType){
+                        case "json":
+                            resolve(JSON.parse(request.responseText));
+                            break;
+                        default:
+                            resolve(request.responseText);
+                            break;
+                    }
+                };
+
+                request.ontimeout = () => {
+                    this.error(`Fail to get: ${url}, 网络超时`);
+                    reject(701);
+                };
+
+                request.onabort = () => {
+                    this.error(`Fail to get: ${url}, 传输中断`);
+                    reject(702);
+                }
+
+                request.onerror = () => {
                     this.error("Fail to get: " + url + ", 网络错误");
-                    throw error;
-                });
+                    reject(703);
+                }
 
-            // if (typeof cordovaHTTP != "undefined") {
-            //     this.log("HTTP with Cordova");
-            //     const s = function(data) {
-            //         if (data.status != 200) {
-            //             handleNetworkError(data);
-            //         } else {
-            //             success(data.data);
-            //         }
-            //     };
-            //     return cordovaHTTP.get(url, params, {},
-            //     s, handleNetworkError);
-            // }
+                request.send(null);
+            });
         },
 
         // 获取 JSON 格式
@@ -266,11 +314,11 @@ define(["jquery"], function($){
             let result = obj;
             for(let i = 0; i < keys.length; i++){
                 const k = keys[i];
-                if($.type(result) == 'array'){
+                if(this.type(result) == 'array'){
                     let tmp = [];
                     for(let j = 0; j < result.length; j++){
                         const tt = result[j][k];
-                        if($.type(tt) == 'array'){
+                        if(this.type(tt) == 'array'){
                             tmp = tmp.concat(tt);
                         }
                         else{
@@ -790,7 +838,7 @@ define(["jquery"], function($){
 
             // 显示加载进度条
             this.show = () => {
-                const loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>')
+                const loadingBg = $('<div style="z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>');
                 const img = $('<img src="' + this.__img + '" style="position:relative;opacity:1;"/>');
                 loadingBg.append(img);
 
@@ -812,6 +860,23 @@ define(["jquery"], function($){
         elementFind(element, selector){
             return selector && element.querySelector(selector) ||
                 { getAttribute: e=> "", textContent: "", html: ""};
+        },
+
+        // 给数组计数
+        arrayCount(array){
+            const counter = {};
+            for(let m of array){
+                if(!(m in counter))
+                    counter[m] = 1;
+                else
+                    counter[m] += 1;
+            }
+            const result = [];
+            for(let k in counter){
+                result.push([k, counter[k]])
+            }
+            result.sort((e1,e2) => e2[1] - e1[1]);
+            return result;
         },
 
         // 持久化数据

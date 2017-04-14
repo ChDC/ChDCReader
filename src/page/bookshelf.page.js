@@ -63,7 +63,7 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
                     .then(([lastestChapter]) => {
                         nb.find(".book-lastestchapter")
                             .text("最新：" + (lastestChapter? lastestChapter : "无"))
-                            .css('color', this.isReadingLastestChapter(lastestChapter, readingRecord)? 'black' : 'red');
+                            .css('color', this.isReadingLastestChapter(lastestChapter, readingRecord)? null : 'red');
 
                         // 缓存后面章节内容
                         book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);

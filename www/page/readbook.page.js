@@ -156,7 +156,7 @@ define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Pag
                 var _iteratorError = undefined;
 
                 try {
-                    for (var _iterator = this.book.getSourcesKeysByContentSourceWeight()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    for (var _iterator = this.book.getSourcesKeysByMainSourceWeight()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                         var bsk = _step.value;
 
                         if (bsk == this.book.mainSourceId) continue;

@@ -7,6 +7,9 @@ define(["jquery"], function ($) {
 
     return {
         DEBUG: true,
+        type: function type(obj) {
+            return $.type(obj);
+        },
 
         storage: {
             getItem: function getItem(keyName) {
@@ -65,10 +68,14 @@ define(["jquery"], function ($) {
             if (!msg) return;
 
             var msgBoxContainer = $('<div class="message-box-container"></div>');
+
             var msgBox = $('<div class="message-box"></div>');
+
+
             switch (level) {
                 case "error":
                     msgBox.css("color", "red");
+
                     break;
                 case "info":
                     break;
@@ -105,28 +112,54 @@ define(["jquery"], function ($) {
                 _ref$timeout = _ref.timeout,
                 timeout = _ref$timeout === undefined ? 5 : _ref$timeout;
 
-            if (url == null) {
-                return Promise.reject();
-            }
+            return new Promise(function (resolve, reject) {
+                if (url == null) return Promise.reject("url is null");
 
-            this.log("Get: " + this.__urlJoin(url, params));
+                url = _this.__urlJoin(url, params);
 
-            var getPromise = new Promise(function (resolve, reject) {
+                _this.log("Get: " + url);
+
                 url = encodeURI(url);
-                $.get(url, params, resolve, dataType).fail(function (data) {
-                    return reject(data);
-                });
-            });
 
-            if (timeout <= 0) return getPromise;
+                var request = new XMLHttpRequest();
+                request.open("GET", url);
 
-            var timeoutPromise = new Promise(function (resolve, reject) {
-                setTimeout(reject, timeout * 1000);
-            });
+                request.timeout = timeout * 1000;
 
-            return Promise.race([getPromise, timeoutPromise]).catch(function (error) {
-                _this.error("Fail to get: " + url + ", 网络错误");
-                throw error;
+                switch (dataType) {
+                    case "json":
+                    case "JSON":
+                        request.setRequestHeader("Content-Type", "application/json");
+                        break;
+                }
+
+                request.onload = function () {
+                    switch (dataType) {
+                        case "json":
+                            resolve(JSON.parse(request.responseText));
+                            break;
+                        default:
+                            resolve(request.responseText);
+                            break;
+                    }
+                };
+
+                request.ontimeout = function () {
+                    _this.error("Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
+                    reject(701);
+                };
+
+                request.onabort = function () {
+                    _this.error("Fail to get: " + url + ", \u4F20\u8F93\u4E2D\u65AD");
+                    reject(702);
+                };
+
+                request.onerror = function () {
+                    _this.error("Fail to get: " + url + ", 网络错误");
+                    reject(703);
+                };
+
+                request.send(null);
             });
         },
         getJSON: function getJSON(url, params) {
@@ -192,11 +225,11 @@ define(["jquery"], function ($) {
             var result = obj;
             for (var i = 0; i < keys.length; i++) {
                 var k = keys[i];
-                if ($.type(result) == 'array') {
+                if (this.type(result) == 'array') {
                     var tmp = [];
                     for (var j = 0; j < result.length; j++) {
                         var tt = result[j][k];
-                        if ($.type(tt) == 'array') {
+                        if (this.type(tt) == 'array') {
                             tmp = tmp.concat(tt);
                         } else {
                             tmp.push(tt);
@@ -654,7 +687,7 @@ define(["jquery"], function ($) {
             this.container = container;
 
             this.show = function () {
-                var loadingBg = $('<div style=z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>');
+                var loadingBg = $('<div style="z-index:1000000;position:fixed;width:100%;height:100%;text-align:center;background-color:#808080;opacity:0.5;top:0;"></div>');
                 var img = $('<img src="' + _this3.__img + '" style="position:relative;opacity:1;"/>');
                 loadingBg.append(img);
 
@@ -676,34 +709,70 @@ define(["jquery"], function ($) {
                     return "";
                 }, textContent: "", html: "" };
         },
+        arrayCount: function arrayCount(array) {
+            var counter = {};
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var m = _step.value;
+
+                    if (!(m in counter)) counter[m] = 1;else counter[m] += 1;
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            var result = [];
+            for (var k in counter) {
+                result.push([k, counter[k]]);
+            }
+            result.sort(function (e1, e2) {
+                return e2[1] - e1[1];
+            });
+            return result;
+        },
         persistent: function persistent(o) {
             function __persistent(obj) {
                 switch (typeof obj === "undefined" ? "undefined" : _typeof(obj)) {
                     case "object":
                         if (Array.prototype.isPrototypeOf(obj)) {
                             var children = [];
-                            var _iteratorNormalCompletion = true;
-                            var _didIteratorError = false;
-                            var _iteratorError = undefined;
+                            var _iteratorNormalCompletion2 = true;
+                            var _didIteratorError2 = false;
+                            var _iteratorError2 = undefined;
 
                             try {
-                                for (var _iterator = obj[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                    var v = _step.value;
+                                for (var _iterator2 = obj[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                    var v = _step2.value;
 
                                     var value = __persistent(v);
                                     if (value != undefined) children.push(value);
                                 }
                             } catch (err) {
-                                _didIteratorError = true;
-                                _iteratorError = err;
+                                _didIteratorError2 = true;
+                                _iteratorError2 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion && _iterator.return) {
-                                        _iterator.return();
+                                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                        _iterator2.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError) {
-                                        throw _iteratorError;
+                                    if (_didIteratorError2) {
+                                        throw _iteratorError2;
                                     }
                                 }
                             }
@@ -720,28 +789,28 @@ define(["jquery"], function ($) {
                             } else keys = Object.getOwnPropertyNames(obj);
 
                             var _children = [];
-                            var _iteratorNormalCompletion2 = true;
-                            var _didIteratorError2 = false;
-                            var _iteratorError2 = undefined;
+                            var _iteratorNormalCompletion3 = true;
+                            var _didIteratorError3 = false;
+                            var _iteratorError3 = undefined;
 
                             try {
-                                for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                    var k = _step2.value;
+                                for (var _iterator3 = keys[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                    var k = _step3.value;
 
                                     var _value = __persistent(obj[k]);
                                     if (_value != undefined) _children.push("\"" + k + "\":" + _value);
                                 }
                             } catch (err) {
-                                _didIteratorError2 = true;
-                                _iteratorError2 = err;
+                                _didIteratorError3 = true;
+                                _iteratorError3 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                        _iterator2.return();
+                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                        _iterator3.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError2) {
-                                        throw _iteratorError2;
+                                    if (_didIteratorError3) {
+                                        throw _iteratorError3;
                                     }
                                 }
                             }
