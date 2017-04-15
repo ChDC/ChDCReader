@@ -73,34 +73,6 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
                 return Promise.reject(404);
 
             return this.bookSourceManager.getBookCatalogLink(this.id, this);
-
-            // if(!this.catalogLink){
-
-            //     // computeCatalogLink
-            //     const bsm = this.bookSourceManager.sources[this.id];
-            //     if(!bsm)
-            //         return;
-            //     if(bsm.detail.info.catalogLink){
-            //         // 从详细页获取目录链接
-            //         const detailLink = yield this.__getBookSourceDetailLink();
-
-            //         let html = yield util.getDOM(detailLink);
-
-            //         let container = document.createElement('div');
-            //         container.innerHTML = html;
-            //         // html = $(html);
-            //         // const link = container.find(bsm.detail.info.catalogLink).attr('href');
-            //         const link = util.elementFind(container, bsm.detail.info.catalogLink).getAttribute("href");
-            //         this.catalogLink = link;
-            //     }
-            //     else{
-            //         const catalogLink = bsm.catalog.link;
-            //         const o = Object.assign({}, this, this.bookSourceManager[this.id]);
-            //         const link = util.format(catalogLink, o);
-            //         this.catalogLink = link;
-            //     }
-            // }
-            // return this.catalogLink;
         }
 
         // 刷新目录

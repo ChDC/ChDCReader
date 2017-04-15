@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", 'infinitelist'], function($, app, Page, util, Infinitelist){
+define(["jquery", "main", "Page", "util", 'mylib/infinitelist'], function($, app, Page, util, Infinitelist){
 
     class MyPage extends Page{
 
