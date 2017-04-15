@@ -1,5 +1,17 @@
+define(["util"], function(util){
+
+    class BookSourceManagerTest{
+
+        constructor(test){
+            this.test = test;
+        }
+
+        doTest(){
+            return this.checkBookSources("data/booksources.test.json", this.test.output, this.test.error);
+        }
+
         // 检查源是否正确
-        checkBookSources(testFile, log=msg=>console.log(msg), error){
+        checkBookSources(testFile, log, error){
 
             if(!error){
                 throw new Error("The argument 'error' is not defined!");
@@ -95,7 +107,7 @@
 
             }
 
-            const self = this;
+            const self = app.bookSourceManager;
             return co(function*(){
                 const data = yield util.getJSON(testFile);
                 const taskQueue = [];
@@ -125,3 +137,9 @@
             }());
 
         }
+    }
+
+
+    return BookSourceManagerTest;
+});
+

@@ -255,27 +255,27 @@ define(["jquery"], function($){
         },
 
         getDOM(url, params){
-            const filterHtmlContent = html => {
-                // 只要 body
-                const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
-                if(m && m.length >= 2)
-                    html = m[1];
-                // 去掉 script 标签
-                html = this.__filterElement(html, "script");
-                html = this.__filterElement(html, "iframe");
-                html = this.__filterElement(html, "link");
-                html = this.__filterElement(html, "meta");
-                html = this.__filterElement(html, "style");
-
-                // 图片的 src 属性转换成 data-src 属性
-                html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
-                return html;
-            };
-
-
             return this.get(url, params)
-                    .then(data => `<div>${filterHtmlContent(data)}</div>`);
+                    .then(data => `<div>${this.filterHtmlContent(data)}</div>`);
 
+        },
+
+        // 过滤 HTML 中的内容，用于爬虫
+        filterHtmlContent(html){
+            // 只要 body
+            const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
+            if(m && m.length >= 2)
+                html = m[1];
+            // 去掉 script 标签
+            html = this.__filterElement(html, "script");
+            html = this.__filterElement(html, "iframe");
+            html = this.__filterElement(html, "link");
+            html = this.__filterElement(html, "meta");
+            html = this.__filterElement(html, "style");
+
+            // 图片的 src 属性转换成 data-src 属性
+            html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
+            return html;
         },
 
         // 从 URL 字符串中获取参数对象
@@ -882,6 +882,13 @@ define(["jquery"], function($){
         // 持久化数据
         persistent(o){
             function __persistent(obj){
+                // undefined
+                // null
+                // boolean
+                // string
+                // number
+                // object: array
+                // symbol
                 switch(typeof(obj)){
                     case "object":
                         if(Array.prototype.isPrototypeOf(obj))

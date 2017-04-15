@@ -119,6 +119,19 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function($, 
                     })
                     .then(() => $('#output').append($('<p>').text("完成！")));
             });
+            $("#btnTest").click(e => {
+                $('#output').empty();
+                require(["../test/main.test"], (mainTest) => {
+                    mainTest.doTest(
+                        msg => $('#output').append($('<p>').text(msg)),
+                        (errMsg, errorCode) => {
+                            if(errorCode)
+                                errMsg += `(${errorCode}, ${app.error.getMessage(errorCode)})\n`;
+                            $('#output').append($('<p class="error">').text(errMsg));
+                        })
+                        .then(() => $('#output').append($('<p>').text("完成！")));
+                });
+            });
             $(".btnSearch").click(e => app.page.showPage("search"));
         }
 

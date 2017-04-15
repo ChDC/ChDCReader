@@ -61,4 +61,21 @@
 
 * 弹出框响应 Android 的返回键
 
+改动：
+
+search:
+cover -> coverImg
+link -> detailLink
+
+detail:
+
+cover -> coverImg
+
+catalog:
+
+删除 vipLinkPattern
+
+chapter:
+
+content -> contentHTML
 

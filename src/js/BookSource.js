@@ -83,7 +83,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
 
             const catalogLink = yield this.__getBookSourceCatalogLink();
 
-            const catalog = yield this.bookSourceManager.getBookCatalog(this.id, catalogLink);
+            const catalog = yield this.bookSourceManager.getBookCatalog(this.id, catalogLink, this);
             this.catalog = catalog;
             this.updatedCatalogTime = (new Date()).getTime();
             this.needSaveCatalog = true;

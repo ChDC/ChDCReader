@@ -1,4 +1,4 @@
-define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book, BookSource, Chapter) {
+define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, util, Spider, Book, BookSource, Chapter) {
     "use strict"
 
     // **** BookSourceManager *****
@@ -7,6 +7,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
         constructor(configFileOrConfig){
 
             this.sources = undefined;
+            this.spider = new Spider();
 
             if(typeof configFileOrConfig == 'string'){
                 util.getJSON(configFileOrConfig)
@@ -99,20 +100,38 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
             const bs = this.sources[bsid];
             if(!bs) return Promise.reject("Illegal booksource!");
 
-            const search = bs.search;
-            const searchLink = util.format(search.url, {keyword: keyword});
-            return util.getDOM(searchLink)
-                .then(getBookFromHtml);
+            return this.spider.get(bs.search, {keyword: keyword})
+                .then(getBooks);
 
-            function getBookIdFromHtml(bookElement, bookid, bss){
+            function getBooks(data){
 
-                const bidElement = bookElement.querySelector(bookid.element);
-                if(bookid.attribute){
-                    const bid = bidElement.getAttribute(bookid.attribute);
-                    if(bid){
-                        bss.bookid = bid;
+                const books = [];
+
+                for(let m of data){
+                    m.cover = m.coverImg;
+                    const book = Book.createBook(m, self);
+                    if(!checkBook(book))
+                        continue;
+
+                    book.sources = {}; // 内容来源
+
+                    const bss = new BookSource(book, self, bsid, bs.contentSourceWeight);
+
+                    if(m.bookid) bss.bookid = m.bookid;
+
+                    bss.detailLink = m.detailLink;
+                    if(m.lastestChapter){
+                        bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
                     }
+                    // bss.catalogLink = computeCatalogLink(bss);
+
+                    bss.searched = true;
+                    book.sources[bsid] = bss;
+
+                    book.mainSourceId = bsid;  // 主要来源
+                    books.push(book);
                 }
+                return books;
             }
 
             function checkBook(book){
@@ -127,49 +146,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                 }
                 return false;
             }
-
-            function getBookFromHtml(htmlContent){
-
-                let html = document.createElement("div");
-                html.innerHTML = htmlContent;
-
-                const info = search.info;
-                const detail = info.detail;
-                const books = [];
-                const fixer = BookSourceManager.fixer;
-
-                // const bookItems = html.find(info.book);
-                const bookItems = html.querySelectorAll(info.book);
-                for(let element of Array.from(bookItems)){
-                    const book = new Book(self);
-
-                    book.name = fixer.fixName(element.querySelector(detail.name).textContent);  // 书名
-                    book.author = fixer.fixAuthor(element.querySelector(detail.author).textContent);  // 作者
-                    if(!checkBook(book))
-                        continue;
-                    book.catagory = fixer.fixCatagory(util.elementFind(element, detail.catagory).textContent);  // 分类
-                    book.cover = util.fixurl(util.elementFind(element, detail.cover).getAttribute("data-src"), searchLink);  // 封面
-                    book.complete = fixer.fixComplete(util.elementFind(element, detail.complete).textContent);  // 是否完结
-                    book.introduce = fixer.fixIntroduce(util.elementFind(element, detail.introduce).textContent);  // 简介
-
-                    book.sources = {}; // 内容来源
-                    const bss = new BookSource(book, self, bsid, bs.contentSourceWeight);
-                    if(info.bookid){
-                        getBookIdFromHtml(element, info.bookid, bss);
-                    }
-                    bss.detailLink = util.fixurl(util.elementFind(element, detail.link).getAttribute("href"), searchLink);
-                    bss.lastestChapter = fixer.fixLastestChapter(util.elementFind(element, detail.lastestChapter).textContent);  // 最新的章节
-                    // bss.catalogLink = computeCatalogLink(bss);
-
-                    bss.searched = true;
-                    book.sources[bsid] = bss;
-
-                    book.mainSourceId = bsid;  // 主要来源
-                    books.push(book);
-                }
-
-                return Promise.resolve(books);
-            };
         }
 
         // 使用详情页链接刷新书籍信息
@@ -177,28 +153,16 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             util.log(`BookSourceManager: Get Book Info from ${bsid} with link "${detailLink}"`);
 
-            const bsm = this.sources[bsid];
-            const detail = bsm.detail;
-            const info = detail.info;
-            const fixer = BookSourceManager.fixer;
+            const bs = this.sources[bsid];
+            if(!bs) return Promise.reject("Illegal booksource!");
 
-            return util.getDOM(detailLink)
-                .then(htmlContent => {
-                    let html = document.createElement("div");
-                    html.innerHTML = htmlContent;
-
-                    const book = {};
-                    // 更新信息的时候不更新书名和作者，因为换源的时候需要用到
-                    book.catagory = fixer.fixCatagory(util.elementFind(html, info.catagory).textContent);  // 分类
-                    book.cover = util.fixurl(util.elementFind(html, info.cover).getAttribute("data-src"), detailLink);  // 封面
-                    book.complete = fixer.fixComplete(util.elementFind(html, info.complete).textContent);  // 是否完结
-                    book.introduce = fixer.fixIntroduce(util.elementFind(html, info.introduce).textContent);  // 简介
-
-                    return book;
+            return this.spider.get(bs.detail, {detailLink: detailLink})
+                .then(data => {
+                    data.cover = data.coverImg;
+                    delete data.coverImg;
+                    return data;
                 });
         }
-
-
 
         // 获取目录链接
         // {detailLink, bookid, catalogLink}
@@ -208,10 +172,11 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
 
             const self = this;
             const bsm = this.sources[bsid];
-            if(!bsm) return Promise.reject();
+            if(!bsm) return Promise.reject("Illegal booksource!");
 
             return co(function*(){
-                if(bsm.detail.info.catalogLink){
+                if(bsm.detail.response.catalogLink){
+                    debugger;
                     // 从详细页获取目录链接
                     // const detailLink = yield this.__getBookSourceDetailLink();
 
@@ -225,7 +190,7 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
                     return Promise.resolve(link);
                 }
                 else{
-                    const catalogLink = bsm.catalog.link;
+                    const catalogLink = bsm.catalog.request.url;
                     const o = Object.assign({}, options, this[bsid]);
                     const link = util.format(catalogLink, o);
                     return Promise.resolve(link);
@@ -234,106 +199,26 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
         }
 
         // 获取书籍目录
-        getBookCatalog(bsid, catalogLink){
+        getBookCatalog(bsid, catalogLink, locals){
 
             util.log(`BookSourceManager: Refresh Catalog from ${bsid} with link "${catalogLink}"`);
 
             const bsm = this.sources[bsid];
-            if(!bsm) return;
+            if(!bsm) return Promise.reject("Illegal booksource!");
 
-            const info = bsm.catalog.info;
-            const type = bsm.catalog.type.toLowerCase();
+            return this.spider.get(bsm.catalog, locals)
+                .then(data => {
 
-            let rp = null;
-            switch(type){
-                case 'html':
-                    rp = util.getDOM(catalogLink)
-                        .then(getChaptersFromHTML);
-                    break;
-                case 'json':
-                    rp =  util.get(catalogLink)
-                        .then(getChaptersFromJSON);
-                    break;
-                default:
-                    rp =  util.getDOM(catalogLink)
-                        .then(getChaptersFromHTML);
-                    break;
-            }
-
-            return rp.then(catalog => {
-                catalog = catalog.filter(e => e);
-                if(catalog.length <= 0){
-                    return Promise.reject(601);
-                }
-                else{
-                    return catalog;
-                }
-            });
-
-            function getChaptersFromJSON(data){
-                const catalog = [];
-                try{
-                    const json = JSON.parse(data);
-                    const chapters = util.getDataFromObject(json, info.chapter);
-                    for(const c of chapters){
+                    const catalog = [];
+                    for(let c of data){
                         const chapter = new Chapter();
-                        const name = util.getDataFromObject(c, info.name);
-                        const linkid = util.getDataFromObject(c, info.linkid);
-                        chapter.title = name;
-                        const vip = util.getDataFromObject(c, info.vip);
-                        const locals = {
-                                name: name,
-                                linkid: linkid,
-                                vip: vip
-                            };
-
-                        const vipLinkPattern = util.format(info.vipLinkPattern, locals);
-                        if(eval(vipLinkPattern)){
-                            chapter.link = null;
-                        }
-                        else{
-                            chapter.link = util.format(info.link, locals);
-                        }
+                        chapter.title = c.name;
+                        chapter.link = c.link;
                         catalog.push(chapter);
                     }
-                }
-                catch(e){
-                    util.error(e);
-                }
-                finally{
+
                     return catalog;
-                }
-            }
-
-            function getChaptersFromHTML(htmlContent){
-                const catalog = [];
-
-                let html = document.createElement("div");
-                html.innerHTML = htmlContent;
-
-                // html = $(html);
-                const chapters = html.querySelectorAll(info.link);
-                for(let element of Array.from(chapters)){
-                    // element = $(element);
-                    const chapter = new Chapter();
-                    chapter.link = util.fixurl(element.getAttribute("href"), catalogLink);
-                    if(info.vipLinkPattern && chapter.link.match(info.vipLinkPattern)){
-                       chapter.link = null;
-                    }
-
-                    chapter.title = BookSourceManager.fixer.fixChapterTitle(element.textContent);
-                    // 去重复
-                    // const i = util.arrayIndex(catalog, null, function(e){
-                    //     return e && e.title == chapter.title;
-                    // });
-                    // if(i >= 0){
-                    //     catalog[i] = null;
-                    // }
-                    catalog.push(chapter);
-                }
-                return catalog;
-            }
-
+                });
         }
 
         // 从网络上获取章节内容
@@ -344,47 +229,36 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
             if(!chapterLink) return Promise.reject(206);
 
             const bsm = this.sources[bsid];
-            const info = bsm.chapter.info;
-            return util.getDOM(chapterLink)
-                .then(getChapterFromHtml);
+            if(!bsm) return Promise.reject("Illegal booksource!");
 
-            function getChapterFromHtml(htmlContent){
-                let html = document.createElement("div");
-                html.innerHTML = htmlContent;
 
-                const chapter = new Chapter();
-                chapter.content = BookSourceManager.fixer.fixChapterContent(html.querySelector(info.content).innerHTML);
-                if(!chapter.content){
-                    // 没有章节内容就返回错误
-                    return Promise.reject(206);
-                }
-                chapter.link = chapterLink;
-                chapter.title = BookSourceManager.fixer.fixChapterTitle(html.querySelector(info.title).textContent);
+            return this.spider.get(bsm.chapter, {chapterLink: chapterLink})
+                .then(data => {
+                    const chapter = new Chapter();
+                    chapter.content = util.html2text(data.contentHTML);
 
-                return chapter;
-            }
+                    if(!chapter.content){
+                        // 没有章节内容就返回错误
+                        return Promise.reject(206);
+                    }
+                    chapter.link = chapterLink;
+                    chapter.title = data.title;
+
+                    return chapter;
+                });
         }
 
         // 获取最新章节
         getLastestChapter(bsid, detailLink){
-
             util.log(`BookSourceManager: Get Lastest Chapter from ${bsid} with link "${detailLink}"`);
 
             const bsm = this.sources[bsid];
-            const detail = bsm.detail;
-            const info = detail.info;
+            if(!bsm) return Promise.reject("Illegal booksource!");
 
-            return util.getDOM(detailLink)
-                .then(getBookDetailFromHtml);
-
-            function getBookDetailFromHtml(htmlContent){
-
-                let html = document.createElement("div");
-                html.innerHTML = htmlContent;
-
-                const lastestChapter = BookSourceManager.fixer.fixLastestChapter(html.querySelector(info.lastestChapter).textContent);  // 最新的章节
-                return lastestChapter;
-            };
+            return this.spider.get(bsm.detail, {detailLink: detailLink})
+                .then(data => {
+                    return data.lastestChapter.replace(/^最新更新\s+/, '');
+                });
         }
 
         // 按主源权重从大到小排序的数组
@@ -412,75 +286,6 @@ define(['co', "util", "Book", "BookSource", "Chapter"], function(co, util, Book,
         }
 
     }
-
-    // 修复属性用的工具函数
-    BookSourceManager.fixer = {
-        fixChapterContent: function(html){
-            // 从 HTML 文本中获取格式化的正文
-            return util.html2text(html);
-        },
-
-        fixChapterTitle: function(text){
-            // 从 HTML 文本中获取格式化的正文
-            return text.trim();
-        },
-
-        fixName: function(text)
-        {
-            //书名
-            text = text.trim();
-            return text;
-        },
-
-        fixAuthor: function(text)
-        {
-            //作者
-            text = text.trim();
-            return text;
-        },
-
-        fixCatagory: function(text)
-        {
-            //分类
-            text = text.trim();
-            return text;
-        },
-
-        // fixCover: function(text)
-        // {
-        //     //封面
-        //     text = text.trim();
-        //     return text;
-        // },
-
-        fixComplete: function(text)
-        {
-            //是否完结
-            text = text.trim();
-            return !!text.match(/完成|完结|完本/);
-        },
-
-        fixIntroduce: function(text)
-        {
-            //简介
-            text = text.trim();
-            return text;
-        },
-
-        // fixReadingChapter: function(text)
-        // {
-        //     //读到的章节
-        //     text = text.trim();
-        //     return text;
-        // },
-
-        fixLastestChapter: function(text)
-        {
-            //最新的章节
-            text = text.replace(/^最新更新/, '').trim()
-            return text;
-        }
-    };
 
 
     BookSourceManager.prototype.qidian = {

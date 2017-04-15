@@ -458,6 +458,21 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
         return nb;
     }
 
+    Book.createBook = function(obj, bookSourceManager){
+        if(!obj) return undefined;
+
+        const book = new Book(bookSourceManager);
+        book.name = obj.name;  // 书名
+        book.author = obj.author;// 作者
+
+        book.catagory = obj.catagory;  // 分类
+        book.cover = obj.cover; // 封面
+        book.complete = obj.complete;  // 是否完结
+        book.introduce = obj.introduce;  // 简介
+
+        return book;
+    };
+
     // 判断两本是书是否相等
     Book.equal = function(bookA, bookB){
         return bookA.name == bookB.name && bookA.author == bookB.author;

@@ -1,7 +1,7 @@
 "use strict"
 
 requirejs.config({
-    "baseUrl": "js",
+    "baseUrl": "test",
     "shim" : {
         "bootstrap" : { "deps" :['jquery'] },
         "co": { deps:[], exports: 'co' }
@@ -26,5 +26,9 @@ requirejs.config({
 });
 
 requirejs(['polyfill']);
-requirejs(["main"]);
-requirejs(['jqueryui'])
+requirejs(['jqueryui']);
+
+
+requirejs(["main.test"], function(MainTest){
+    MainTest.doSoleTest();
+});

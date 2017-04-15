@@ -6,53 +6,78 @@
         "mainSourceWeight": 20,
         "host": "http://www.qidian.com/",
         "search": {
-            "info": {
-                "book": "#result-list li[data-rid]",
-                "detail": {
-                    "author": ".book-mid-info .author>a.name",
-                    "catagory": ".book-mid-info .author a:nth-child(4)",
-                    "complete": ".book-mid-info .author span:last-child",
-                    "cover": ".book-img-box img",
-                    "introduce": ".book-mid-info .intro",
-                    "lastestChapter": ".book-mid-info .update>a",
-                    "link": ".book-mid-info>h4>a",
-                    "name": ".book-mid-info>h4>a"
-                },
-                "bookid": {
-                    "element": ".book-mid-info>h4>a",
-                    "attribute": "data-bid"
-                }
+            "request": {
+                "url": "http://se.qidian.com/?kw={keyword}",
+                "timeout": 5
             },
-            "url": "http://se.qidian.com/?kw={keyword}"
+            "response": {
+                "type": "array",
+                "element": "#result-list li[data-rid]",
+                "children": {
+                        "name": ".book-mid-info>h4>a",
+                        "author": ".book-mid-info .author>a.name",
+                        "catagory": ".book-mid-info .author a:nth-child(4)",
+                        "complete": {
+                            "type": "boolean",
+                            "element": ".book-mid-info .author span:last-child",
+                            "true": "完本",
+                            "false": "连载中"
+                        },
+                        "coverImg": ".book-img-box img",
+                        "introduce": ".book-mid-info .intro",
+                        "lastestChapter": ".book-mid-info .update>a",
+                        "detailLink": ".book-mid-info>h4>a",
+                        "bookid": {
+                            "type": "string",
+                            "element": ".book-mid-info>h4>a",
+                            "attribute": "data-bid"
+                        }
+                    }
+            }
         },
         "detail": {
-            "info": {
+            "request": {
+                "url": "{detailLink}",
+                "timeout": 5
+            },
+            "response": {
                 "author": "div.book-info > h1 > span > a",
                 "catagory": "div.book-info > p.tag > a:nth-child(4)",
                 "complete": "div.book-info > p.tag > span:nth-child(1)",
-                "cover": "#bookImg > img",
+                "coverImg": "#bookImg > img",
                 "introduce": "div.book-intro > p",
                 "lastestChapter": "div.book-info-detail > div.book-state li.update a",
                 "name": "div.book-info > h1 > em"
             }
         },
         "catalog": {
-            "link": "http://book.qidian.com/ajax/book/category?_csrfToken={csrfToken}&bookId={bookid}",
-            "type": "JSON",
-            "info": {
-                "volume": "data.vs",
-                "volumeName": "vN",
-                "chapter": "data.vs.cs",
-                "name": "cN",
-                "linkid": "cU",
-                "vip": "sS",
-                "vipLinkPattern": "{vip}==0",
-                "link": "http://read.qidian.com/chapter/{linkid}"
+            "request": {
+                "url": "http://book.qidian.com/ajax/book/category?_csrfToken={csrfToken}&bookId={bookid}",
+                "timeout": 15,
+                "type": "JSON"
+            },
+            "response": {
+                "type": "array",
+                "element": "data.vs.cs",
+                "children": {
+                    "name": "cN",
+                    "linkid": "cU",
+                    "vip": "sS",
+                    "link": {
+                        "type": "format",
+                        "value": "http://read.qidian.com/chapter/{linkid}",
+                        "valid": "{vip}==1"
+                    }
+                }
             }
         },
         "chapter": {
-            "info": {
-                "content": "div.read-content",
+            "request": {
+                "url": "{chapterLink}",
+                "timeout": 5
+            },
+            "response": {
+                "contentHTML": "div.read-content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
                 "title": "div.text-head > h3"
             }
@@ -65,8 +90,8 @@
         "mainSourceWeight": 10,
         "host": "http://chuangshi.qq.com/",
         "search": {
-            "info": {
-                "book": "#searchResultList > li",
+            "response": {
+                "element": "#searchResultList > li",
                 "detail": {
                     "author": "div.search_r_info > p:nth-child(2) > b > a",
                     "catagory": "div.search_r_info > p:nth-child(3) > a:nth-child(1)",
@@ -78,10 +103,10 @@
                     "name": "div.search_r_info > h1 > a"
                 }
             },
-            "url": "http://chuangshi.qq.com/search/searchindex/type/chuangshi/wd/{keyword}.html"
+            "request": "http://chuangshi.qq.com/search/searchindex/type/chuangshi/wd/{keyword}.html"
         },
         "detail": {
-            "info": {
+            "response": {
                 "catalogLink": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
                 "author": "div.mainbox > div.autherinfo > div.au_name > p:nth-child(2) > a",
                 "catagory": "div.mainbox > div.main2 > div.left > div.title > a:nth-child(2)",
@@ -95,12 +120,12 @@
         "catalog": {
             "link": "{catalogLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "div.indexbox ul > li > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": ".bookreadercontent",
                 "modifyTime": "#chaptercontainer > div > div.story_title > p > span:nth-child(3)",
                 "title": "#chaptercontainer > div > div.story_title > h1"
@@ -115,8 +140,8 @@
         "mainSourceWeight": 10,
         "host": "http://www.17k.com/",
         "search": {
-            "info": {
-                "book": ".search-list > .textlist",
+            "response": {
+                "element": ".search-list > .textlist",
                 "detail": {
                     "author": "div.textmiddle > dl > dd > ul > li.bq > span.ls > a",
                     "catagory": "div.textmiddle > dl > dd > ul > li.bq > span:nth-child(2) > a",
@@ -128,10 +153,10 @@
                     "name": "div.textmiddle > dl > dt > a"
                 }
             },
-            "url": "http://search.17k.com/search.xhtml?c.st=0&c.q={keyword}"
+            "request": "http://search.17k.com/search.xhtml?c.st=0&c.q={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "catalogLink": "div.BookInfo > div.Props > dl > dt > a",
                 "author": "div.AuthorInfo > div > a.name",
                 "catagory": "body > div.infoPath > div > a:nth-child(3)",
@@ -145,12 +170,12 @@
         "catalog": {
             "link": "{catalogLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "body > div.Main.List > dl > dd > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": "#chapterContentWapper",
                 "modifyTime": "#readAreaBox > div.chapter_update_time",
                 "title": "#readAreaBox > h1"
@@ -165,8 +190,8 @@
         "mainSourceWeight": -10,
         "host": "http://www.biquge.com/",
         "search": {
-            "info": {
-                "book": "#results > div.result-list > div.result-item",
+            "response": {
+                "element": "#results > div.result-list > div.result-item",
                 "detail": {
                     "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
                     "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
@@ -178,10 +203,10 @@
                     "name": "div.result-game-item-detail > h3 > a"
                 }
             },
-            "url": "http://zhannei.baidu.com/cse/search?s=287293036948159515&q={keyword}"
+            "request": "http://zhannei.baidu.com/cse/search?s=287293036948159515&q={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "author": "#info > p:nth-child(2)",
                 "catagory": "",
                 "complete": "",
@@ -194,14 +219,14 @@
         "catalog": {
             "link": "{detailLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "#list > dl > dt:nth-of-type(2) ~ dd > a",
                 "volume": "data.vs",
                 "volumeName": "vN"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": "#content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
                 "title": "div.content_read > div > div.bookname > h1"
@@ -215,8 +240,8 @@
         "mainSourceWeight": -10,
         "host": "http://www.biqugezw.com/",
         "search": {
-            "info": {
-                "book": "#results > div.result-list > div.result-item",
+            "response": {
+                "element": "#results > div.result-list > div.result-item",
                 "detail": {
                     "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
                     "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
@@ -228,10 +253,10 @@
                     "name": "div.result-game-item-detail > h3 > a"
                 }
             },
-            "url": "http://zhannei.baidu.com/cse/search?s=1211228452607586324&q={keyword}"
+            "request": "http://zhannei.baidu.com/cse/search?s=1211228452607586324&q={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "author": "#info > p:nth-child(2)",
                 "catagory": "",
                 "complete": "",
@@ -244,12 +269,12 @@
         "catalog": {
             "link": "{detailLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "#list > dl > dd > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": "#content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
                 "title": "div.content_read > div > div.bookname > h1"
@@ -263,8 +288,8 @@
         "mainSourceWeight": -10,
         "host": "http://www.biquge.com.tw/",
         "search": {
-            "info": {
-                "book": "#results > div.result-list > div.result-item",
+            "response": {
+                "element": "#results > div.result-list > div.result-item",
                 "detail": {
                     "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
                     "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
@@ -276,10 +301,10 @@
                     "name": "div.result-game-item-detail > h3 > a"
                 }
             },
-            "url": "http://zhannei.baidu.com/cse/search?s=8353527289636145615&q={keyword}"
+            "request": "http://zhannei.baidu.com/cse/search?s=8353527289636145615&q={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "author": "#info > p:nth-child(2)",
                 "catagory": "",
                 "complete": "",
@@ -292,12 +317,12 @@
         "catalog": {
             "link": "{detailLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "#list > dl > dd > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": "#content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
                 "title": "div.content_read > div > div.bookname > h1"
@@ -311,8 +336,8 @@
         "mainSourceWeight": -10,
         "host": "http://www.booktxt.net",
         "search": {
-            "info": {
-                "book": "#results > div.result-list > div.result-item",
+            "response": {
+                "element": "#results > div.result-list > div.result-item",
                 "detail": {
                     "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
                     "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
@@ -324,10 +349,10 @@
                     "name": "div.result-game-item-detail > h3 > a"
                 }
             },
-            "url": "http://zhannei.baidu.com/cse/search?s=5334330359795686106&q={keyword}"
+            "request": "http://zhannei.baidu.com/cse/search?s=5334330359795686106&q={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "author": "#info > p:nth-child(2)",
                 "catagory": "",
                 "complete": "",
@@ -340,12 +365,12 @@
         "catalog": {
             "link": "{detailLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "#list > dl > dt:nth-of-type(2) ~ dd > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": "#content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
                 "title": "div.content_read > div > div.bookname > h1"
@@ -360,8 +385,8 @@
         "mainSourceWeight": -10,
         "host": "http://www.biqulou.net/",
         "search": {
-            "info": {
-                "book": "#results > div.result-list > div.result-item",
+            "response": {
+                "element": "#results > div.result-list > div.result-item",
                 "detail": {
                     "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
                     "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
@@ -373,10 +398,10 @@
                     "name": "div.result-game-item-detail > h3 > a"
                 }
             },
-            "url": "http://zhannei.baidu.com/cse/search?s=3164401634903103732&q={keyword}"
+            "request": "http://zhannei.baidu.com/cse/search?s=3164401634903103732&q={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "author": "#info > p:nth-child(2)",
                 "catagory": "",
                 "complete": "",
@@ -389,12 +414,12 @@
         "catalog": {
             "link": "{detailLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "#list > dl > dd > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": "#content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
                 "title": "div.content_read > div > div.bookname > h1"
@@ -408,8 +433,8 @@
         "mainSourceWeight": -10000,
         "host": "http://www.daizhuzai.com/",
         "search": {
-            "info": {
-                "book": "ul.librarylist > li",
+            "response": {
+                "element": "ul.librarylist > li",
                 "detail": {
                     "author": "div.pt-ll-r > p.info > span:nth-child(2) > a",
                     "catagory": "div.pt-ll-r > p.info > span:nth-child(3) > a",
@@ -421,10 +446,10 @@
                     "name": "div.pt-ll-r > p.info > span:nth-child(1) > a"
                 }
             },
-            "url": "http://www.daizhuzai.com/search.html?searchtype=novelname&searchkey={keyword}"
+            "request": "http://www.daizhuzai.com/search.html?searchtype=novelname&searchkey={keyword}"
         },
         "detail": {
-            "info": {
+            "response": {
                 "author": "#stats > i:nth-child(1) > a",
                 "catagory": "#author > i:nth-child(2) > a",
                 "complete": "#stats > i:nth-child(3)",
@@ -437,12 +462,12 @@
         "catalog": {
             "link": "{detailLink}",
             "type": "html",
-            "info": {
+            "response": {
                 "link": "ul.dirlist > li > a"
             }
         },
         "chapter": {
-            "info": {
+            "response": {
                 "content": ".bookreadercontent",
                 "modifyTime": "#chaptercontainer > div > div.story_title > p > span:nth-child(3)",
                 "title": "#chaptercontainer > div > div.story_title > h1"
