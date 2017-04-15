@@ -44,8 +44,9 @@ define(["util", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootst
                     _this2.__error = data;
                 });
             },
-            getMessage: function getMessage(id) {
-                return this.__error[id];
+            getMessage: function getMessage(errorCode) {
+                if (errorCode in this.__error) return this.__error[errorCode];
+                if (util.type(errorCode) == "error") return errorCode.message;
             }
         },
         init: function init() {

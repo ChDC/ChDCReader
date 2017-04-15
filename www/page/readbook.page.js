@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", 'infinitelist'], function ($, app, Page, util, Infinitelist) {
+define(["jquery", "main", "Page", "util", 'mylib/infinitelist'], function ($, app, Page, util, Infinitelist) {
     var MyPage = function (_Page) {
         _inherits(MyPage, _Page);
 

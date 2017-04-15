@@ -699,6 +699,21 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         return nb;
     };
 
+    Book.createBook = function (obj, bookSourceManager) {
+        if (!obj) return undefined;
+
+        var book = new Book(bookSourceManager);
+        book.name = obj.name;
+        book.author = obj.author;
+
+        book.catagory = obj.catagory;
+        book.cover = obj.cover;
+        book.complete = obj.complete;
+        book.introduce = obj.introduce;
+
+        return book;
+    };
+
     Book.equal = function (bookA, bookB) {
         return bookA.name == bookB.name && bookA.author == bookB.author;
     };

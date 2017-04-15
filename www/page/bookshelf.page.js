@@ -137,15 +137,17 @@ define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($,
                 $("#btnCheckUpdate").click(function (e) {
                     return app.chekcUpdate(true, true);
                 });
-                $("#btnCheckBookSources").click(function (e) {
+                $("#btnTest").click(function (e) {
                     $('#output').empty();
-                    app.bookSourceManager.checkBookSources("data/booksourcesTest.json", function (msg) {
-                        return $('#output').append($('<p>').text(msg));
-                    }, function (msg, error) {
-                        if (error) msg += "(" + error + ", " + app.error.getMessage(error) + ")\n";
-                        $('#output').append($('<p class="error">').text(msg));
-                    }).then(function () {
-                        return $('#output').append($('<p>').text("完成！"));
+                    require(["../test/main.test"], function (mainTest) {
+                        mainTest.doTest(function (msg) {
+                            return $('#output').append($('<p>').text(msg));
+                        }, function (errMsg, errorCode) {
+                            if (errorCode) errMsg += "(" + errorCode + ", " + app.error.getMessage(errorCode) + ")\n";
+                            $('#output').append($('<p class="error">').text(errMsg));
+                        }).then(function () {
+                            return $('#output').append($('<p>').text("完成！"));
+                        });
                     });
                 });
                 $(".btnSearch").click(function (e) {
