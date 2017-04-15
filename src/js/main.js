@@ -46,8 +46,11 @@ define(["util", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootst
                     });
             },
 
-            getMessage(id){
-                return this.__error[id];
+            getMessage(errorCode){
+                if(errorCode in this.__error)
+                    return this.__error[errorCode];
+                if(util.type(errorCode) == "error")
+                    return errorCode.message;
             }
         },
         init(){

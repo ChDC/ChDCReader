@@ -156,7 +156,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
             const bs = this.sources[bsid];
             if(!bs) return Promise.reject("Illegal booksource!");
 
-            return this.spider.get(bs.detail, {detailLink: detailLink})
+            return this.spider.get(bs.detail, {url: detailLink, detailLink: detailLink})
                 .then(data => {
                     data.cover = data.coverImg;
                     delete data.coverImg;
@@ -165,43 +165,23 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
         }
 
         // 获取目录链接
-        // {detailLink, bookid, catalogLink}
-        getBookCatalogLink(bsid, options={}){
+        getBookCatalogLink(bsid, locals){
 
-            util.log(`BookSourceManager: Get BookCatalogLink from ${bsid} with options "${options}"`);
+            util.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
 
-            const self = this;
-            const bsm = this.sources[bsid];
-            if(!bsm) return Promise.reject("Illegal booksource!");
+            const bs = this.sources[bsid];
+            if(!bs) return Promise.reject("Illegal booksource!");
 
-            return co(function*(){
-                if(bsm.detail.response.catalogLink){
-                    debugger;
-                    // 从详细页获取目录链接
-                    // const detailLink = yield this.__getBookSourceDetailLink();
+            if(!bs.catalogLink)
+                return Promise.resolve(null);
 
-                    let html = yield util.getDOM(options.detailLink);
-
-                    let container = document.createElement('div');
-                    container.innerHTML = html;
-                    // html = $(html);
-                    // const link = container.find(bsm.detail.info.catalogLink).attr('href');
-                    const link = util.elementFind(container, bsm.detail.info.catalogLink).getAttribute("href");
-                    return Promise.resolve(link);
-                }
-                else{
-                    const catalogLink = bsm.catalog.request.url;
-                    const o = Object.assign({}, options, this[bsid]);
-                    const link = util.format(catalogLink, o);
-                    return Promise.resolve(link);
-                }
-            });
+            return this.spider.get(bs.catalogLink, locals);
         }
 
         // 获取书籍目录
-        getBookCatalog(bsid, catalogLink, locals){
+        getBookCatalog(bsid, locals){
 
-            util.log(`BookSourceManager: Refresh Catalog from ${bsid} with link "${catalogLink}"`);
+            util.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
 
             const bsm = this.sources[bsid];
             if(!bsm) return Promise.reject("Illegal booksource!");
@@ -232,7 +212,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
             if(!bsm) return Promise.reject("Illegal booksource!");
 
 
-            return this.spider.get(bsm.chapter, {chapterLink: chapterLink})
+            return this.spider.get(bsm.chapter, {url: chapterLink, chapterLink: chapterLink})
                 .then(data => {
                     const chapter = new Chapter();
                     chapter.content = util.html2text(data.contentHTML);
@@ -255,7 +235,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
             const bsm = this.sources[bsid];
             if(!bsm) return Promise.reject("Illegal booksource!");
 
-            return this.spider.get(bsm.detail, {detailLink: detailLink})
+            return this.spider.get(bsm.detail, {url: detailLink, detailLink: detailLink})
                 .then(data => {
                     return data.lastestChapter.replace(/^最新更新\s+/, '');
                 });

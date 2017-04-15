@@ -63,6 +63,85 @@ define(["util"], function(util){
 
         }
 
+
+        // 从配置对象中抓取并获得结果
+        get({request, response}, locals={}){
+            if(!response)
+                throw new Error("Empty response");
+
+            if(!request)
+                request = {
+                    "url": locals.url
+                };
+
+            if(util.type(request) == "string"){
+                request = {
+                    "url": request
+                };
+            }
+
+            if(!request.url)
+                throw new Error("Illegal URL");
+
+            // 补充缺省值
+            let method = (request.method || "GET").toLowerCase();
+            let type = (request.type || "HTML").toLowerCase();
+
+            // 获取 URL
+            let url = util.format(request.url, locals);
+            locals.host = url; // 用于修复获取到的 URL
+
+            let requestPromise;
+
+            switch(method){
+                case "post":
+                    // TODO: POST
+                    break;
+                case "get":
+                    requestPromise = util.get(url, request.params, null,
+                                    {timeout: request.timeout});
+                    break;
+                default:
+                    throw new Error("Illegal type");
+            }
+
+            switch(type){
+                case "html":
+                    return requestPromise
+                        .then(data => {
+                            data = util.filterHtmlContent(data);
+                            let html = document.createElement("div");
+                            html.innerHTML = data;
+
+                            return this.__handleResponse(html, response, null,  locals);
+                        });
+                case "json":
+                    return requestPromise.then(data => {
+                        let json = JSON.parse(data);
+                        return this.__handleResponse(json, response, null, locals);
+                    });
+                default:
+                    throw new Error("Illegal type");
+            }
+        }
+
+        // 处理响应
+        __handleResponse(data, response, keyName, topLocals={}, locals={}){
+
+            if(!response) return undefined;
+
+            switch(util.type(response)){
+                case "array":
+                    return this.__handleArray(data, response, keyName, topLocals, locals);
+                case "object":
+                    return this.__handleObject(data, response, keyName, topLocals, locals);
+                case "string":
+                    return this.__handleString(data, response, keyName, topLocals, locals);
+                default:
+                    throw new Error("Illegal type");
+            }
+        }
+
         __handleArray(data, response, keyName, topLocals={}, locals={}){
             debugger;
             let result = [];
@@ -198,75 +277,7 @@ define(["util"], function(util){
             }
         }
 
-        // 处理响应
-        __handleResponse(data, response, keyName, topLocals={}, locals={}){
 
-            if(!response) return undefined;
-
-            switch(util.type(response)){
-                case "array":
-                    return this.__handleArray(data, response, keyName, topLocals, locals);
-                case "object":
-                    return this.__handleObject(data, response, keyName, topLocals, locals);
-                case "string":
-                    return this.__handleString(data, response, keyName, topLocals, locals);
-                default:
-                    throw new Error("Illegal type");
-            }
-
-
-        }
-
-        // 从配置对象中抓取并获得结果
-        get({request, response}, locals={}){
-
-            if(util.type(request) == "string"){
-                request = {
-                    "url": request
-                };
-            }
-
-            // 补充缺省值
-            let method = (request.method || "GET").toLowerCase();
-            let type = (request.type || "HTML").toLowerCase();
-
-            // 获取 URL
-            let url = util.format(request.url, locals);
-            locals.host = url; // 用于修复获取到的 URL
-
-            let requestPromise;
-
-            switch(method){
-                case "post":
-                    // TODO: POST
-                    break;
-                case "get":
-                    requestPromise = util.get(url, request.params, null,
-                                                {timeout: request.timeout});
-                    break;
-                default:
-                    throw new Error("Illegal type");
-            }
-
-            switch(type){
-                case "html":
-                    return requestPromise
-                        .then(data => {
-                            data = util.filterHtmlContent(data);
-                            let html = document.createElement("div");
-                            html.innerHTML = data;
-
-                            return this.__handleResponse(html, response, null,  locals);
-                        });
-                case "json":
-                    return requestPromise.then(data => {
-                        let json = JSON.parse(data);
-                        return this.__handleResponse(json, response, null, locals);
-                    });
-                default:
-                    throw new Error("Illegal type");
-            }
-        }
     }
 
     return Spider;

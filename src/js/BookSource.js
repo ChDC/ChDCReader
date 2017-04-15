@@ -15,10 +15,10 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
             this.weight = weight; // 书源的权重
             this.searched = false; // 本书是否已经被搜索到了
 
-            this.detailLink = null; // 详情页链接
-            this.catalogLink = null; // 目录页链接
-            this.bookid = null; // 书籍 ID
-            this.catalog = null; // 目录
+            this.detailLink; // 详情页链接
+            this.catalogLink; // 目录页链接
+            this.bookid; // 书籍 ID
+            this.catalog; // 目录
 
             this.updatedCatalogTime = 0; // 上次更新目录时间
             this.updatedLastestChapterTime = 0; // 上次更新最新章节时间
@@ -72,7 +72,13 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
             if(this.disable)
                 return Promise.reject(404);
 
-            return this.bookSourceManager.getBookCatalogLink(this.id, this);
+            if(this.catalogLink != undefined)
+                return Promise.resolve(this.catalogLink);
+            return this.bookSourceManager.getBookCatalogLink(this.id, this)
+                .then(cl => {
+                    this.catalogLink = cl;
+                    return cl;
+                });
         }
 
         // 刷新目录
@@ -81,9 +87,9 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
             if((new Date()).getTime() - this.updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
                 return this.catalog;
 
-            const catalogLink = yield this.__getBookSourceCatalogLink();
+            yield this.__getBookSourceCatalogLink();
 
-            const catalog = yield this.bookSourceManager.getBookCatalog(this.id, catalogLink, this);
+            const catalog = yield this.bookSourceManager.getBookCatalog(this.id, this);
             this.catalog = catalog;
             this.updatedCatalogTime = (new Date()).getTime();
             this.needSaveCatalog = true;
