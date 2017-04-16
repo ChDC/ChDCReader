@@ -58,7 +58,7 @@
             },
             "response": {
                 "type": "array",
-                "element": "data.vs.cs",
+                "element": "data.vs.cs:concat",
                 "children": {
                     "name": "cN",
                     "linkid": "cU",

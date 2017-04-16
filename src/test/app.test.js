@@ -1,34 +1,21 @@
 "use strict"
 
-requirejs.config({
-    "baseUrl": "test",
-    "shim" : {
-        "bootstrap" : { "deps" :['jquery'] },
-        "co": { deps:[], exports: 'co' }
-    },
-    "paths": {
-        "lib": "../lib",
-        "mylib": "../mylib",
-        "jquery" : "../lib/jquery-3.1.1/jquery.min",
-        "jqueryui": "../lib/jquery-ui-1.12.1/jquery-ui.min",
-        "sortablejs": "../lib/sortablejs-1.5.1/Sortable",
-        "co": "../lib/co",
-        "bootstrap" :  "../lib/bootstrap-3.3.7/js/bootstrap.min",
-        "polyfill" : "../lib/polyfill.min",
-        "common": "common",
+require(["../js/config"], function(){
+    requirejs(["mocha"], function(mocha){
 
-        "util": "../mylib/util",
-        "Test": "../mylib/Test",
-        "Page": "../mylib/Page",
-        "PageManager": "../mylib/PageManager",
-        "Spider": "../mylib/Spider"
-    }
+        mocha.setup('bdd');
+        //---- 配置要测试的模块 ---
+        let testList = [
+            "mocha",
+            "util",
+        ];
+
+        //---- 配置结束 ----
+
+        require(testList.map(e => `../test/${e}.test`), function(){
+            mocha.run();
+        })
+    });
 });
 
-requirejs(['polyfill']);
-requirejs(['jqueryui']);
 
-
-requirejs(["main.test"], function(MainTest){
-    MainTest.doSoleTest();
-});
