@@ -11,40 +11,6 @@ define(["jquery"], function($){
       return $.type(obj);
     },
 
-    /**
-     * 存储
-     */
-    // storage: {
-    //   getItem(keyName) {
-    //     return localStorage.getItem(keyName);
-    //   },
-    //   setItem(keyName, keyValue) {
-    //     return localStorage.setItem(keyName, keyValue);
-    //   },
-    //   hasItem(keyName) {
-    //     return keyName in localStorage;
-    //   },
-    //   removeItem(keyName) {
-    //     return localStorage.removeItem(keyName);
-    //   }
-    // },
-    /**
-     * 临时存储
-     */
-    // cacheStorage: {
-    //   getItem(keyName) {
-    //     return sessionStorage.getItem(keyName);
-    //   },
-    //   setItem(keyName, keyValue) {
-    //     return sessionStorage.setItem(keyName, keyValue);
-    //   },
-    //   hasItem(keyName) {
-    //     return keyName in sessionStorage;
-    //   },
-    //   removeItem(keyName) {
-    //     return localStorage.removeItem(keyName);
-    //   }
-    // },
     /*
     * 输出log 信息
     */
@@ -307,6 +273,7 @@ define(["jquery"], function($){
 
     // HTML 内容转换为 Text
     html2text(html){
+
       function replaceElement(html, element, replaceString){
         const pattern = `<${element}(?: [^>]*?)?>[\\s　]*([\\s\\S]*?)[\\s　]*</${element}>`;
         html = html.replace(new RegExp(pattern, 'gi'), replaceString);
@@ -336,21 +303,18 @@ define(["jquery"], function($){
     },
 
     text2html(text, className){
-      // 将每一行都加上 p 标签
-      let html = "";
-      const pStart = className? `<p class="${className}">` : '<p>';
-      const lines = text.split("\n");
+      if(!text) return text;
 
-      lines.forEach((line)=>{
-        line = line.replace(/ /g, '&nbsp;');
-        html += pStart + line + '</p>';
-      });
-      return html;
+      // 将每一行都加上 p 标签
+      const pStart = className? `<p class="${className}">` : '<p>';
+      const lines = text.split("\n")
+        .map(line => `${pStart}${line.replace(/ /g, '&nbsp;')}</p>`);
+      return lines.join('\n');
     },
 
-    // 将数组中的每个成员的类型都转换为执行的类
+    // 将 Object 类型转换为指定的类
     objectCast(obj, ClassFunction){
-        if(!obj || !ClassFunction) return array;
+      if(!obj || !ClassFunction) return obj;
 
       const nc = new ClassFunction();
       Object.assign(nc, obj);
@@ -366,64 +330,21 @@ define(["jquery"], function($){
         Object.assign(nc, array[i]);
         arr[i] = nc;
       });
+      return array;
     },
 
-    // 返回数组中值最大的索引的集合
-    __arrayMaxIndex(array, compareFuntion=(i1, i2) => i1 - i2){
-      if(!array) return array;
-
-      const result = [0];
-      if(!array || array.length <= 0)
-        return result;
-      let max = array[0];
-      for(let i = 1; i < array.length; i++){
-        const r = compareFuntion(array[i], max);
-        if(r > 0){
-          result.length = 0;
-          result.push(i);
-          max = array[i];
-        }
-        else if(r == 0){
-          result.push(i);
-        }
-      }
-      return result;
-    },
-
-    // 返回数组中值最小的索引的集合
-    __arrayMinIndex(array, compareFuntion=(a,b)=>b-a){
-      if(!array) return array;
-
-      const result = [0];
-      if(!array || array.length <= 0)
-        return result;
-      let min = array[0];
-      for(let i = 1; i < array.length; i++){
-        const r = compareFuntion(array[i], min);
-        if(r < 0){
-          result.length = 0;
-          result.push(i);
-          min = array[i];
-        }
-        else if(r == 0){
-          result.push(i);
-        }
-      }
-      return result;
-    },
-
-    // 从副列表中匹配查询主列表的元素的索引
+    // 从副列表中匹配（必须相等）查询主列表的元素的索引
     listMatch(listA, listB, indexA,
-      equalFunction=(i1,i2)=>i1-i2, startIndexB=0){
+      equalFunction=(i1,i2)=>i1==i2, startIndexB=0){
+      if(!listA || !listB) return -1;
 
-      if(listA == listB)
-        return indexA;
+      if(listA == listB) return indexA;
 
       // 比较前、后 n 个邻居
       function compareNeighbor(indexB, offset){
         const nia = indexA + offset;
         const nib = indexB + offset;
-        let equal = 0;
+        let equal;
         if(nia < 0 || nia >= listA.length)
           // 如果 indexA 越界，则返回 2
           equal = 2;
@@ -439,39 +360,15 @@ define(["jquery"], function($){
 
       // 提供最优结果
       // 最终从所有结果中选出一个最好的
-      const result = [];
-      let i = startIndexB - 1; //, j, r;
-
       const itemA = listA[indexA];
+      // 所有匹配的结果的索引集合
+      const equalSet = listB.slice(startIndexB)
+          .map((e,i) => equalFunction(e, itemA) ? i : -1).filter(e => e>=0);
+      if(equalSet.length <= 0)
+        return -1;
 
-      while(true)
-      {
-        i = listB.slice(i+1).findIndex(e => equalFunction(e, itemA));
-
-
-        if(i < 0){
-          // 没找到结果
-          // 返回结果集合中的一个最优结果
-
-          // 最优结果：权值最大，并且索引值最靠近 indexA
-          if(result.length == 0){
-            // 一个结果也没有
-            return -1;
-          }
-          const rr = this.__arrayMaxIndex(result, (a, b) => a.weight - b.weight);
-          if(rr.length <= 1){
-            return result[rr[0]].index;
-          }
-          else{
-            return result[this.__arrayMinIndex(rr, (a, b) => {
-              const ia = result[a].index;
-              const ib = result[b].index;
-              return Math.abs(ia-indexA) - Math.abs(ib-indexA);
-            })[0]].index;
-          }
-          return -1;
-        }
-        // 找到结果，开始分析
+      const result = [];
+      for(let i of equalSet){
         // 比对前邻和后邻是否相同
         const leftEqual = compareNeighbor(i, -1) + 0.5; // 前面的权重大
         const rightEqual = compareNeighbor(i, 1);
@@ -483,14 +380,35 @@ define(["jquery"], function($){
         else{
           result.push({
             index: i,
-            weight: weight
+            weight: weight,
+            distance: Math.abs(i-indexA)
           });
         }
+      }
+
+      // 没找到结果
+      // 返回结果集合中的一个最优结果
+
+      // 最优结果：权值最大，并且索引值最靠近 indexA
+
+      // 返回权值最大的值的集合
+      const maxWeight = Math.max(...result.map(e => e.weight));
+      const maxWeightSet = result.filter(e => e.weight == maxWeight);
+
+      if(maxWeightSet.length <= 1)
+        return maxWeightSet[0].index;
+      else{
+        // 在最大权重中搜索离 indexA 最近的值
+        const minDistance = Math.min(...result.map(e => e.distance));
+        return maxWeightSet.find(e => e.distance == minDistance).index;
       }
     },
 
     // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
     listMatchWithNeighbour(listA, listB, indexA, equalFunction=(i1, i2)=>i1==i2, indexB){
+
+      if(!listA || !listB) return -1;
+
       if(listA == listB)
         return indexA;
 
@@ -556,27 +474,6 @@ define(["jquery"], function($){
         }
       }
     },
-
-    // 适用于数组和对象的，返回按照指定数字降序排序的键值的数组
-    // objectSortedKey(object, getFunctionOrObjectKeyName=i=>i){
-    //   if(!object) return object;
-
-    //   if(typeof getFunctionOrObjectKeyName == 'string'){
-    //     const objectKeyName = getFunctionOrObjectKeyName;
-    //     getFunctionOrObjectKeyName = item => item[objectKeyName];
-    //   }
-
-    //   const arr = [];
-    //   for(const k in object){
-    //     arr.push([k, getFunctionOrObjectKeyName(object[k])]);
-    //   }
-    //   arr.sort((e1, e2) => e1[1] - e2[1]);
-    //   const result = [];
-    //   for(let i = 0; i < arr.length; i++){
-    //     result[i] = arr[i][0];
-    //   }
-    //   return result;
-    // },
 
     // 确保文件名正确
     __convertFileName(file){
@@ -769,12 +666,6 @@ define(["jquery"], function($){
       str = str.replace(/\s/g, '');
       return str;
     },
-
-    // 模拟 $.find 方法
-    // elementFind(element, selector){
-    //   return selector && element.querySelector(selector) ||
-    //     { getAttribute: e=> "", textContent: "", html: ""};
-    // },
 
     // 给数组计数
     arrayCount(array){

@@ -174,7 +174,6 @@ define(["chai", "util"], function(chai, util){
       equal("http://www.test.com/abc/www.abc.com", util.fixurl("www.abc.com", host2));
       equal("http://www.test.com/def/abc/ddd", util.fixurl("/def/abc/ddd", host2));
       equal("http://www.test.com/def/abc/ddd", util.fixurl("../def/abc/ddd", host2));
-
     });
 
     it('html2text', () => {
@@ -186,27 +185,49 @@ define(["chai", "util"], function(chai, util){
     });
 
     it('text2html', () => {
-
+      equal(undefined, util.text2html());
+      equal('<p>test</p>', util.text2html('test'));
+      equal('<p class="abc">test</p>', util.text2html('test', 'abc'));
+      equal('<p class="abc def">test</p>', util.text2html('test', "abc def"));
+      equal('<p>test</p>\n<p>test2</p>', util.text2html('test\ntest2'));
     });
 
     it('objectCast', () => {
-
+      equal(undefined, util.objectCast());
+      equal('{}', JSON.stringify(util.objectCast({})));
+      let A = function(){};
+      equal("A", util.objectCast({}, A).constructor.name);
     });
 
     it('arrayCast', () => {
-
-    });
-
-    it('arrayMinIndex', () => {
-
+      equal(undefined, util.arrayCast());
+      equal('[]', JSON.stringify(util.arrayCast([])));
+      let A = function(){};
+      equal("A", util.arrayCast([{},{}], A)[1].constructor.name);
     });
 
     it('listMatch', () => {
-      throw new Error();
+      equal(-1, util.listMatch());
+      let listA = ["A", "B", "C", "D", "E"];
+      let listB = ["B", "C", "D", "E", "B"];
+      equal(0, util.listMatch(listA, listB, 1));
+      equal(3, util.listMatch([3,2,1,4,5,6], [2,2,3,2,1,4,5,6], 1));
+      equal(-1, util.listMatch([3,2,1,4,5,6], [3,4,1,4,5,6], 1));
+      equal(3, util.listMatch([3,2,1,4,5,6], [3,4,1,2,4,5,6], 1));
+      equal(6, util.listMatch([3,2,1,4,5,6], [3,4,1,2,4,5,6,6], 5));
+      equal(8, util.listMatch([3,2,1,4,5,6], [3,4,6,3,2,1,4,5,6], 5));
     });
 
     it('listMatchWithNeighbour', () => {
-      throw new Error();
+      equal(-1, util.listMatchWithNeighbour());
+      let listA = ["A", "B", "C", "D", "E"];
+      let listB = ["B", "C", "D", "E", "B"];
+      equal(0, util.listMatchWithNeighbour(listA, listB, 1));
+      equal(3, util.listMatchWithNeighbour([3,2,1,4,5,6], [2,2,3,2,1,4,5,6], 1));
+      equal(1, util.listMatchWithNeighbour([3,2,1,4,5,6], [3,4,1,4,5,6], 1));
+      equal(1, util.listMatchWithNeighbour([3,2,1,4,5,6], [3,4,1,2,4,5,6], 1));
+      equal(-1, util.listMatchWithNeighbour([3,2,1,4,5,6], [3,4,1,2,4,5,6,6], 5));
+      equal(8, util.listMatchWithNeighbour([3,2,1,4,5,6], [3,4,6,3,2,1,4,5,6], 5));
     });
 
     it('storage', () => {
