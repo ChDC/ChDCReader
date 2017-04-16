@@ -308,7 +308,7 @@ define(["jquery"], function($){
     // HTML 内容转换为 Text
     html2text(html){
       function replaceElement(html, element, replaceString){
-        const pattern = `<${element}(?: [^>]*?)?>[\s　]*([\\s\\S]*?)[\s　]*</${element}>`;
+        const pattern = `<${element}(?: [^>]*?)?>[\\s　]*([\\s\\S]*?)[\\s　]*</${element}>`;
         html = html.replace(new RegExp(pattern, 'gi'), replaceString);
         return html;
       };
@@ -327,6 +327,8 @@ define(["jquery"], function($){
       // 替换标签
       html = replaceElement(html, 'p', '$1\n');
       html = replaceElement(html, 'span', '$1');
+      html = replaceElement(html, 'b', '$1');
+      html = replaceElement(html, 'i', '$1');
 
       // 去掉所有标签
       html = this.__filterElement(html, "(\\w+)", "$1");

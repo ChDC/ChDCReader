@@ -180,7 +180,7 @@ define(["chai", "util"], function(chai, util){
     it('html2text', () => {
       equal(undefined, util.html2text());
       equal("test1", util.html2text('<p class="test">test1</p>'));
-      equal("test1", util.html2text('t<span>es</span>t1<br/>'));
+      equal("test1", util.html2text('t<span>es</span>t<b>1</b><br/>'));
       equal("test1\ntest2", util.html2text('test1<br/>test2'));
       equal("test1", util.html2text('<p class="test">test1</p>'));
     });
