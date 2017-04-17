@@ -84,7 +84,7 @@ define(["jquery"], function($){
     * url: 完整的 URL
     * params: 参数
     */
-    get(url, params, dataType, {timeout=15}={}) {
+    get(url, params, dataType, {timeout=5}={}) {
       return new Promise((resolve, reject) => {
         if(!url) return reject(new Error("url is null"));
 

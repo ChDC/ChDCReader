@@ -434,7 +434,7 @@ define(["chai", "BookSourceManager"], function(chai, BookSourceManager){
     };
 
   for(let bsid in config){
-  // for(let bsid of ['dingdian']){
+  // for(let bsid of ['chuangshi']){
     let books = config[bsid];
 
     function equalBook(bsid, book, b){

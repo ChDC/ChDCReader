@@ -359,6 +359,44 @@ define(["chai", "Spider"], function(chai, Spider){
         });
     });
 
+
+
+    it('Type 为 array，有 valideach 属性', ()=>{
+      let config = {
+        "request": {
+          "url": "http://se.qidian.com/?kw={keyword}",
+          "timeout": 5
+        },
+        "response": {
+          "type": "array",
+          "element": "#result-list li[data-rid]",
+          "valideach": "{complete}==false",
+          "children": {
+              "name": ".book-mid-info>h4>a",
+              "author": ".book-mid-info .author>a.name",
+              "catagory": ".book-mid-info .author a:nth-child(4)",
+              "complete": {
+                "type": "boolean",
+                "element": ".book-mid-info .author span:last-child",
+                "true": "完本",
+                "false": "连载中"
+              },
+              "coverImg": ".book-img-box img",
+              "introduce": ".book-mid-info .intro",
+              "lastestChapter": ".book-mid-info .update>a",
+              "detailLink": ".book-mid-info>h4>a",
+              "bookid": {
+                "type": "string",
+                "element": ".book-mid-info>h4>a",
+                "attribute": "data-bid"
+              }
+            }
+        }
+      };
+      return spider.get(config, {keyword: "神墓"})
+        .then(r => equal('神墓深渊', r[0].name));
+    });
+
   });
 });
 

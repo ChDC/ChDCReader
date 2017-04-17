@@ -157,12 +157,12 @@ define(["util"], function(util){
     // 处理 object
     __handleObject(data, response, keyName, topLocals={}, locals={}){
 
-      const __privateHandleObject = () => {
+      const __privateHandleObject = (response) => {
         // object 类型
         let result = {};
         // let delay = [];
         for(let key in response){
-          // TODO: 把 format 类型和带有 vaild 验证功能的最后处理
+          // TODO: 把 format 类型和带有 valid 验证功能的最后处理
           result[key] = this.__handleResponse(data, response[key], key, topLocals, result);
         }
         return result;
@@ -170,16 +170,10 @@ define(["util"], function(util){
 
       if(!response.type){
         // object 类型，直接解析成员
-        return __privateHandleObject();
+        return __privateHandleObject(response);
       }
 
-      if("valid" in response){
-        // 有验证的类型
-        let dict = Object.assign({}, topLocals, locals);
-        const vaildCode = '"use strict"\n' + this.format(response.valid, dict);
-        if(!eval(vaildCode))
-          return undefined; // 验证失败，返回空值
-      }
+      let result;
 
       let type = response.type.toLowerCase();
 
@@ -189,23 +183,41 @@ define(["util"], function(util){
           // array
           if(!response.element || !response.children)
             return undefined;
-          let result = [];
+          result = [];
           let list = this.__getAllElements(data, response.element);
-          for(let m of list){
-            result.push(this.__handleResponse(m, response.children, keyName, topLocals, locals));
-          }
-          return result;
+          result = list.map(m =>
+              this.__handleResponse(m, response.children, keyName, topLocals, locals));
+          if(response.valideach)
+            result = result.filter(m => {
+              // 有验证的类型
+              let dict = Object.assign({}, topLocals, util.type(m) == "object" ? m : {});
+              const validCode = '"use strict"\n' + this.format(response.valideach, dict);
+              return eval(validCode);
+            });
         }
-
+        break;
+        case "object": {
+          if(!response.children)
+            return undefined;
+          result = __privateHandleObject(response.children);
+        }
+        break;
         case "string": {
           if(!response.element)
             return undefined;
 
           let e = this.__getElement(data, response.element);
           if(!e) return undefined;
-          let result;
-          if(response.attribute)
-            result = e.getAttribute(response.attribute);
+          if(response.attribute){
+            let attr;
+            if(response.attribute == 'src')
+              attr = 'src';
+            else
+              attr = response.attribute;
+            result = e.getAttribute(attr);
+            if(attr == 'innerHTML')
+              result = result.replace(/\bdata-src=(?=["'])/gi, "src=");
+          }
           else
             result = this.__getValue(e, keyName, topLocals, locals);
 
@@ -214,36 +226,44 @@ define(["util"], function(util){
             let regex = new RegExp(response.remove, 'gi');
             result = result.replace(regex, '');
           }
-          return result;
         }
         break;
-
         case "boolean": {
           if(!response.element)
-            return undefined;
+            return response.default;
           let e = this.__getElement(data, response.element);
-          if(!e) return undefined;
+          if(!e) return response.default;
           let v = this.__getValue(e, keyName, topLocals, locals);
           if(v && response.true == v)
-            return true;
-          if(!v || response.false == v)
-            return false;
-          return undefined;
+            result = true;
+          else if(!v || response.false == v)
+            result = false;
+          else
+            result = response.default;
         }
-
+        break;
         case "format": {
           // 合成结果
           if(!response.value)
             return undefined;
           let dict = Object.assign({}, topLocals, locals);
-          return this.format(response.value, dict);
+          result = this.format(response.value, dict);
         }
-
+        break;
         default: {
           // 把 type 当前普通值对待
-          return __privateHandleObject();
+          result = __privateHandleObject(response);
         }
       }
+
+      if("valid" in response){
+        // 有验证的类型
+        let dict = Object.assign({}, topLocals, locals);
+        const validCode = '"use strict"\n' + this.format(response.valid, dict);
+        if(!eval(validCode))
+          return undefined; // 验证失败，返回空值
+      }
+      return result;
     }
 
     __handleString(data, response, keyName, topLocals={}, locals={}){
@@ -262,7 +282,7 @@ define(["util"], function(util){
         else if(keyName.match(/img$|image$/i))
           return this.fixurl(element.getAttribute("data-src"), topLocals.host);
         else if(keyName.match(/html$/i))
-          return element.innerHTML;
+          return element.innerHTML.replace(/\bdata-src=(?=["'])/gi, "src=");
         else
           return element.textContent.trim();
       }
@@ -291,7 +311,7 @@ define(["util"], function(util){
       if(!element || !selector) return undefined;
 
       if("querySelectorAll" in element){
-        return element.querySelectorAll(selector);
+        return Array.from(element.querySelectorAll(selector));
       }
       else{
         return this.__getDataFromObject(element, selector);

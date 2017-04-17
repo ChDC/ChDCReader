@@ -93,6 +93,7 @@
             "response": {
                 "type": "array",
                 "element": "#searchResultList > li",
+                "valideach": "'{detailLink}'.match(/^http:\\/\\/yunqi.qq.com/) || '{detailLink}'.match(/^http:\\/\\/chuangshi.qq.com/)",
                 "children": {
                     "author": "div.search_r_info > p:nth-child(2) > b > a",
                     "catagory": "div.search_r_info > p:nth-child(3) > a:nth-child(1)",
@@ -100,7 +101,7 @@
                             "element": "div.search_r_img > p > i",
                             "type": "boolean",
                             "true": "完本",
-                            "false": "连载中"
+                            "false": "连载"
                         },
                     "coverImg": "div.search_r_img > a > img",
                     "introduce": "div.search_r_info > p.search_i > em",
@@ -519,7 +520,10 @@
                 "children": {
                     "author": "div.pt-ll-r > p.info > span:nth-child(2) > a",
                     "catagory": "div.pt-ll-r > p.info > span:nth-child(3) > a",
-                    "complete": "",
+                    "complete": {
+                        "type": "boolean",
+                        "default": false
+                    },
                     "coverImg": "div.pt-ll-l > a > img",
                     "introduce": "div.pt-ll-r > p.intro",
                     "lastestChapter": "div.pt-ll-r > p.last > a",

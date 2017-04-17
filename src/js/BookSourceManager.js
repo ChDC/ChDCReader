@@ -148,9 +148,9 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
 
       function checkBook(book){
         // 筛选搜索结果
-        let name = book.name;
-        let author = book.author;
-        let keywords = keyword.split(/ +/);
+        let name = book.name.toLowerCase();
+        let author = book.author.toLowerCase();
+        let keywords = keyword.toLowerCase().split(/ +/);
         for(let kw of keywords){
           if(kw.indexOf(name) >= 0 || kw.indexOf(author) >= 0 ||
              name.indexOf(kw) >= 0 || author.indexOf(kw) >= 0)
