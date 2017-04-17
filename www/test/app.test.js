@@ -1,33 +1,17 @@
 "use strict";
 
-requirejs.config({
-    "baseUrl": "test",
-    "shim": {
-        "bootstrap": { "deps": ['jquery'] },
-        "co": { deps: [], exports: 'co' }
-    },
-    "paths": {
-        "lib": "../lib",
-        "mylib": "../mylib",
-        "jquery": "../lib/jquery-3.1.1/jquery.min",
-        "jqueryui": "../lib/jquery-ui-1.12.1/jquery-ui.min",
-        "sortablejs": "../lib/sortablejs-1.5.1/Sortable",
-        "co": "../lib/co",
-        "bootstrap": "../lib/bootstrap-3.3.7/js/bootstrap.min",
-        "polyfill": "../lib/polyfill.min",
-        "common": "common",
+require(["../js/config"], function () {
+    requirejs(["mocha"], function (mocha) {
 
-        "util": "../mylib/util",
-        "Test": "../mylib/Test",
-        "Page": "../mylib/Page",
-        "PageManager": "../mylib/PageManager",
-        "Spider": "../mylib/Spider"
-    }
-});
+        mocha.setup('bdd');
+        mocha.timeout(5000);
 
-requirejs(['polyfill']);
-requirejs(['jqueryui']);
+        var testList = ["mocha", "util", "Spider", "BookSourceManager"];
 
-requirejs(["main.test"], function (MainTest) {
-    MainTest.doSoleTest();
+        require(testList.map(function (e) {
+            return "../test/" + e + ".test";
+        }), function () {
+            mocha.run();
+        });
+    });
 });

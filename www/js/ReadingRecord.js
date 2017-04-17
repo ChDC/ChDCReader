@@ -5,37 +5,37 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 define(function () {
-    "use strict";
+  "use strict";
 
-    var ReadingRecord = function () {
-        function ReadingRecord() {
-            _classCallCheck(this, ReadingRecord);
+  var ReadingRecord = function () {
+    function ReadingRecord() {
+      _classCallCheck(this, ReadingRecord);
 
-            this.chapterIndex = 0;
-            this.pageScrollTop = 0;
-            this.chapterTitle = "";
-            this.options = {};
-        }
+      this.chapterIndex = 0;
+      this.pageScrollTop = 0;
+      this.chapterTitle = "";
+      this.options = {};
+    }
 
-        _createClass(ReadingRecord, [{
-            key: "reset",
-            value: function reset() {
-                this.chapterIndex = 0;
-                this.chapterTitle = "";
-                this.pageScrollTop = 0;
-                this.options = {};
-            }
-        }, {
-            key: "setReadingRecord",
-            value: function setReadingRecord(chapterIndex, chapterTitle, options) {
-                this.chapterIndex = chapterIndex;
-                this.chapterTitle = chapterTitle;
-                this.options = options;
-            }
-        }]);
-
-        return ReadingRecord;
-    }();
+    _createClass(ReadingRecord, [{
+      key: "reset",
+      value: function reset() {
+        this.chapterIndex = 0;
+        this.chapterTitle = "";
+        this.pageScrollTop = 0;
+        this.options = {};
+      }
+    }, {
+      key: "setReadingRecord",
+      value: function setReadingRecord(chapterIndex, chapterTitle, options) {
+        this.chapterIndex = chapterIndex;
+        this.chapterTitle = chapterTitle;
+        this.options = options;
+      }
+    }]);
 
     return ReadingRecord;
+  }();
+
+  return ReadingRecord;
 });

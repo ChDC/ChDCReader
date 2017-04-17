@@ -1,307 +1,441 @@
 "use strict";
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+define(["chai", "BookSourceManager"], function (chai, BookSourceManager) {
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+    var assert = chai.assert;
+    var equal = assert.equal;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    var config = {
+        "qidian": [{
+            "name": "一念永恒",
+            "author": "耳根",
+            "complete": false,
+            "csrfToken": "",
+            "introduce": "一念成沧海，一念化桑田。一念斩千魔",
 
-define(["util"], function (util) {
-    var BookSourceManagerTest = function () {
-        function BookSourceManagerTest(test) {
-            _classCallCheck(this, BookSourceManagerTest);
+            "cover": "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
+            "lastestChapter": "",
+            "bookid": "1003354631",
+            "detailLink": "http://book.qidian.com/info/1003354631",
 
-            this.test = test;
+            "chapters": [{
+                "title": "第四章 炼灵",
+                "link": "http://read.qidian.com/chapter/rJgN8tJ_cVdRGoWu-UQg7Q2/N7RItTUlse2aGfXRMrUjdw2",
+                "content": "众人大喜，看向白小纯时，已是喜欢到了极点，觉得这白小纯不但可爱，肚子里坏水还不少"
+            }]
+        }, {
+            "name": "银狐",
+            "author": "孑与2",
+            "complete": false,
+            "csrfToken": "",
+            "introduce": "人的第一要求就是活着，第二要求还是活着，",
+
+            "cover": "http://qidian.qpic.cn/qdbimg/349573/3650892/150",
+            "lastestChapter": "",
+            "bookid": "3650892",
+            "detailLink": "http://book.qidian.com/info/3650892",
+
+            "chapters": [{
+                "link": "http://read.qidian.com/chapter/2EOvKFDAVe01/o1CNvVz-KeMex0RJOkJclQ2",
+                "title": "第二章铁心源的运气",
+                "content": "王柔花远没有铁心源那样自在，她如今正举着那根棒槌和一只雪白的狐狸对峙"
+            }]
+        }, {
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": false,
+            "csrfToken": "",
+            "introduce": "大千世界，位面交汇，万族林立",
+
+            "cover": "http://qidian.qpic.cn/qdbimg/349573/2750457/150",
+            "lastestChapter": "",
+            "bookid": "2750457",
+            "detailLink": "http://book.qidian.com/info/2750457",
+
+            "chapters": [{
+                "link": "http://read.qidian.com/chapter/2OZih9MNQLg1/o2rSOd-S_DUex0RJOkJclQ2",
+                "title": "第三章 牧域",
+                "content": "北灵境分九域，各由一主掌控，"
+            }]
+        }],
+
+        "biqulou": [{
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "introduce": "大千世界，位面交汇，万族林立",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biqulou.net/24/24835/",
+
+            "chapters": [{
+                "title": "第九十五章 黑色卷轴",
+                "link": "http://www.biqulou.net/24/24835/7682020.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "银狐",
+            "author": "孑与2",
+            "introduce": "人的第一要求就是活着，第二要求还是活着",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biqulou.net/94/94905/",
+
+            "chapters": [{
+                "title": "第九十二章一人一世界",
+                "link": "http://www.biqulou.net/94/94905/5182713.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "一念永恒",
+            "author": "耳根",
+            "introduce": "一念成沧海，一念化桑田。",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biqulou.net/120/120773/",
+
+            "chapters": [{
+                "title": "第九十七章 我就是张大胖!",
+                "link": "http://www.biqulou.net/120/120773/6351804.html",
+                "content": "的"
+            }]
+        }],
+        "daizhuzai": [{
+            "name": "一念永恒",
+            "author": "耳根",
+            "complete": false,
+            "introduce": "一念成沧海，一念化桑田。",
+
+            "cover": "http://img.dzz8.com/public/cover/5e/b0/bd/5eb0bd600f38ed89e26bd0dc3d70ff0d.jpg",
+            "lastestChapter": "",
+            "detailLink": "http://www.daizhuzai.com/351/",
+
+            "chapters": [{
+                "title": "第九十八章 龙象化海经",
+                "link": "http://www.daizhuzai.com/351/101.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "银狐",
+            "author": "孑与2",
+            "complete": false,
+            "introduce": "人的第一要求就是活着，第二要求还是活着",
+
+            "cover": "http://img.dzz8.com/public/cover/20/ef/10/20ef1080b85cd4570cee3718809683cf.jpg",
+            "lastestChapter": "",
+            "detailLink": "http://www.daizhuzai.com/248/",
+
+            "chapters": [{
+                "title": "第九十七章黑了心的铁心源",
+                "link": "http://www.daizhuzai.com/248/101.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": false,
+            "introduce": "大千世界，位面交汇，万族林立",
+
+            "cover": "http://img.dzz8.com/public/cover/ad/53/d9/ad53d94c9d60c650d7db17bb7d98636a.jpg",
+            "lastestChapter": "",
+            "detailLink": "http://www.daizhuzai.com/1/",
+
+            "chapters": [{
+                "title": "第九十五章 黑色卷轴",
+                "link": "http://www.daizhuzai.com/1/101.html",
+                "content": "的"
+            }]
+        }],
+
+        "biqugezw": [{
+            "name": "一念永恒",
+            "author": "耳根",
+            "complete": undefined,
+            "introduce": "一念成沧海，一念化桑田",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biqugezw.com/3_3096/",
+
+            "chapters": [{
+                "title": "第一百零一章 水泽国度与元磁翅！",
+                "link": "http://www.biqugezw.com/3_3096/2806430.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "银狐",
+            "author": "孑与2",
+            "complete": undefined,
+            "introduce": "人的第一要求就是活着",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biqugezw.com/modules/article/reader.php?aid=198",
+
+            "chapters": [{
+                "title": "第九十六章致命的坏习惯",
+                "link": "http://www.biqugezw.com/0_198/916236.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": undefined,
+            "introduce": "殿，百战之皇，战威无可敌",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biqugezw.com/modules/article/reader.php?aid=1769",
+
+            "chapters": [{
+                "title": "第一百零五章 三级灵阵",
+                "link": "http://www.biqugezw.com/1_1769/417408.html",
+                "content": "的"
+            }]
+        }],
+
+        "biquge.tw": [{
+            "name": "一念永恒",
+            "author": "耳根",
+            "complete": undefined,
+            "introduce": "一念成沧海，一念化桑田",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biquge.com.tw/0_213/",
+
+            "chapters": [{
+                "title": "第一百零一章 水泽国度与元磁翅！",
+                "link": "http://www.biquge.com.tw/0_213/7165919.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "银狐",
+            "author": "孑与2",
+            "complete": undefined,
+            "introduce": "人的第一要求就是活着",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biquge.com.tw/12_12001/",
+
+            "chapters": [{
+                "title": "第九十一章怎么就不响呢？",
+                "link": "http://www.biquge.com.tw/12_12001/6505969.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": undefined,
+            "introduce": "大千世界，万道争锋，吾为大主宰",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biquge.com.tw/0_757/",
+
+            "chapters": [{
+                "title": "第一百零一章 融天境",
+                "link": "http://www.biquge.com.tw/0_757/530594.html",
+                "content": "的"
+            }]
+        }],
+
+        "biquge": [{
+            "name": "一念永恒",
+            "author": "耳根",
+            "complete": undefined,
+            "introduce": "一念成沧海，一念化桑田",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biquge.com/16_16431/",
+
+            "chapters": [{
+                "title": "第九十八章 龙象化海经",
+                "link": "http://www.biquge.com/16_16431/9283491.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "银狐",
+            "author": "孑与2",
+            "complete": undefined,
+            "introduce": "哲人，我就是神",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biquge.com/11_11997/",
+
+            "chapters": [{
+                "title": "第九十四章来自邓八爷的威胁",
+                "link": "http://www.biquge.com/11_11997/6883762.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": undefined,
+            "introduce": "西天之殿，百战之皇，战威无可敌",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.biquge.com/0_176/",
+
+            "chapters": [{
+                "title": "第一百零一章 融天境",
+                "link": "http://www.biquge.com/0_176/1238877.html",
+                "content": "的"
+            }]
+        }],
+
+        "chuangshi": [{
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": false,
+            "introduce": "大千世界，位面交汇，万族林",
+
+            "cover": "http://img1.write.qq.com/upload/cover/2013-05-01/cm_4d00258637d3464c3ea19f932d58d1d0.jpg",
+            "lastestChapter": "",
+            "detailLink": "http://chuangshi.qq.com/bk/xh/462523.html?sword=大主宰",
+            "catalogLink": "http://chuangshi.qq.com/bk/xh/AGwEMl1iVjIAOFRn-l.html",
+            "chapters": [{
+                "title": "第八章 柳阳",
+                "link": "http://chuangshi.qq.com/bk/xh/AGwEMl1iVjIAOFRn-r-8.html",
+                "content": "的"
+            }]
+        }],
+
+        "dingdian": [{
+            "name": "一念永恒",
+            "author": "耳根",
+            "complete": undefined,
+            "introduce": "一念成沧海，一念化桑田",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.booktxt.net/1_1137/",
+
+            "chapters": [{
+                "title": "第九十八章 龙象化海经",
+                "link": "http://www.booktxt.net/1_1137/1012080.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "大主宰",
+            "author": "天蚕土豆",
+            "complete": undefined,
+            "introduce": "大千世界，万道争锋，吾为大主宰",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.booktxt.net/0_59/",
+
+            "chapters": [{
+                "title": "第九十一章 说服",
+                "link": "http://www.booktxt.net/0_59/32964.html",
+                "content": "的"
+            }]
+        }, {
+            "name": "三生三世十里桃花",
+            "author": "唐七公子",
+            "complete": undefined,
+            "introduce": "那一世，大荒之中一处荒山，成就她与",
+
+            "lastestChapter": "",
+            "detailLink": "http://www.booktxt.net/4_4903/",
+
+            "chapters": [{
+                "title": "第四章（1）",
+                "link": "http://www.booktxt.net/4_4903/1814813.html",
+                "content": "的"
+            }]
+        }]
+    };
+
+    var _loop = function _loop(bsid) {
+        var books = config[bsid];
+
+        function equalBook(bsid, book, b) {
+            assert.isObject(b);
+            assert.isNotNull(b);
+            equal(true, !!b);
+
+            var exclude = ['chapters', 'introduce', 'lastestChapter', 'cover'];
+            for (var key in book) {
+                if (exclude.indexOf(key) >= 0) continue;
+                if (key in b) equal(book[key], b[key], book.name + "." + key);else if ('sources' in b && key in b.sources[bsid]) equal(book[key], b.sources[bsid][key], book.name + "." + key);
+            }
+
+            if ("introduce" in book && "introduce" in b) equal(true, b.introduce.length > 0 && b.introduce.indexOf(book.introduce) >= 0, book.name + ".introduce");
+
+            if ("lastestChapter" in book && "sources" in b && "lastestChapter" in b.sources[bsid]) equal(true, b.sources[bsid].lastestChapter.length > 0, book.name + ".lastestChapter");
+            if ("cover" in book && "cover" in b) equal(true, !!b.cover.match(/^http/), book.name + ".cover");
         }
 
-        _createClass(BookSourceManagerTest, [{
-            key: "doTest",
-            value: function doTest() {
-                return this.checkBookSources("data/booksources.test.json", this.test.output, this.test.error);
-            }
-        }, {
-            key: "checkBookSources",
-            value: function checkBookSources(testFile, log, error) {
+        describe("BookSourceManager \u6D4B\u8BD5\uFF1A" + bsid, function () {
+            var bsm = void 0;
 
-                if (!error) {
-                    throw new Error("The argument 'error' is not defined!");
-                }
+            before(function () {
+                bsm = new BookSourceManager();
+                return bsm.loadConfig("data/booksources.json");
+                var bsName = bsm.getBookSourceName(bsid);
+            });
 
-                function check(bsid, testBook) {
-                    var _marked = [checkBookInfo, checkLastestChapter, checkCatalog].map(regeneratorRuntime.mark);
+            it('测试搜索', function () {
+                return Promise.all(books.map(function (book) {
+                    return bsm.searchBook(bsid, book.name).then(function (bs) {
+                        var b = bs[0];
+                        equalBook(bsid, book, b);
+                    });
+                }));
+            });
 
-                    function getInfo() {
-                        return self.sources[bsid].name;
-                    }
+            it('测试获取书籍', function () {
+                return Promise.all(books.map(function (book) {
+                    return bsm.getBook(bsid, book.name, book.author).then(function (b) {
+                        equalBook(bsid, book, b);
+                    });
+                }));
+            });
 
-                    function checkBookInfo(bs, book) {
-                        var ik, testProperty;
-                        return regeneratorRuntime.wrap(function checkBookInfo$(_context) {
-                            while (1) {
-                                switch (_context.prev = _context.next) {
-                                    case 0:
-                                        _context.next = 2;
-                                        return bs.getBookInfo(self, book).catch(function (e) {
-                                            error(getInfo() + " -> 获取书籍信息失败：", e);
-                                            throw e;
-                                        });
+            it('测试获取书籍信息', function () {
+                return Promise.all(books.map(function (book) {
+                    return bsm.getBookInfo(bsid, book.detailLink).then(function (b) {
+                        equalBook(bsid, book, b);
+                    });
+                }));
+            });
 
-                                    case 2:
-                                        book = _context.sent;
+            it('测试最新章节', function () {
+                return Promise.all(books.map(function (book) {
+                    return bsm.getLastestChapter(bsid, book.detailLink).then(function (lc) {
+                        equal(true, lc.length > 0);
+                    });
+                }));
+            });
 
+            it('测试书籍目录', function () {
+                return Promise.all(books.map(function (book) {
+                    return bsm.getBookCatalog(bsid, book).then(function (catalog) {
+                        assert.isArray(catalog);
+                        equal(true, catalog.length > 0);
+                        book.chapters.forEach(function (chapter) {
+                            equal(true, catalog.findIndex(function (e) {
+                                return e.title == chapter.title;
+                            }) >= 0);
+                        });
+                    });
+                }));
+            });
 
-                                        for (ik in testBook) {
-                                            if (ik.match(/^test_/)) {
-                                                testProperty = ik.substring(5);
-
-                                                if (book[testProperty].match(testBook[ik])) {
-                                                    log(getInfo() + " -> 测试属性：" + testProperty + " OK");
-                                                } else {
-                                                    error(getInfo() + " -> 测试属性：" + testProperty + " Wrong!");
-                                                }
-                                            }
-                                        }
-
-                                    case 4:
-                                    case "end":
-                                        return _context.stop();
-                                }
-                            }
-                        }, _marked[0], this);
-                    }
-
-                    function checkLastestChapter(bs, book) {
-                        var _ref, _ref2, lastestChapter, lastestChapterUpdated;
-
-                        return regeneratorRuntime.wrap(function checkLastestChapter$(_context2) {
-                            while (1) {
-                                switch (_context2.prev = _context2.next) {
-                                    case 0:
-                                        _context2.next = 2;
-                                        return bs.refreshLastestChapter(self, book).catch(function (e) {
-                                            error(getInfo() + " -> 获取最新章节信息失败：", e);
-                                            throw e;
-                                        });
-
-                                    case 2:
-                                        _ref = _context2.sent;
-                                        _ref2 = _slicedToArray(_ref, 2);
-                                        lastestChapter = _ref2[0];
-                                        lastestChapterUpdated = _ref2[1];
-
-                                        if (lastestChapter.length > 0) {
-                                            log(getInfo() + " -> 获取最新章节信息：OK");
-                                        } else {
-                                            error(getInfo() + " -> 获取最新章节信息：Wrong!");
-                                        }
-
-                                    case 7:
-                                    case "end":
-                                        return _context2.stop();
-                                }
-                            }
-                        }, _marked[1], this);
-                    }
-
-                    function checkCatalog(bs, book) {
-                        var catalog, chapter;
-                        return regeneratorRuntime.wrap(function checkCatalog$(_context3) {
-                            while (1) {
-                                switch (_context3.prev = _context3.next) {
-                                    case 0:
-                                        _context3.next = 2;
-                                        return bs.getCatalog(self, book, true).catch(function (e) {
-                                            error(getInfo() + " -> 测试目录 Wrong!");
-                                            throw e;
-                                        });
-
-                                    case 2:
-                                        catalog = _context3.sent;
-
-                                        if (!(catalog.length <= 0 || !catalog[0].title)) {
-                                            _context3.next = 6;
-                                            break;
-                                        }
-
-                                        error(getInfo() + " -> 测试目录 Wrong!");
-                                        return _context3.abrupt("return");
-
-                                    case 6:
-
-                                        log(getInfo() + " -> 测试目录 OK");
-
-                                        _context3.next = 9;
-                                        return bs.getChapter(catalog[0], false).catch(function (e) {
-                                            error(getInfo() + " -> 测试章节错误：", e);
-                                            throw e;
-                                        });
-
-                                    case 9:
-                                        chapter = _context3.sent;
-
-
-                                        if (chapter.title == catalog[0].title && chapter.content.length > 0) {
-                                            log(getInfo() + " -> 测试章节 OK");
-                                        } else {
-                                            error(getInfo() + " -> 测试章节 Wrong!");
-                                        }
-
-                                    case 11:
-                                    case "end":
-                                        return _context3.stop();
-                                }
-                            }
-                        }, _marked[2], this);
-                    }
-
-                    return co(regeneratorRuntime.mark(function _callee() {
-                        var book, bs;
-                        return regeneratorRuntime.wrap(function _callee$(_context4) {
-                            while (1) {
-                                switch (_context4.prev = _context4.next) {
-                                    case 0:
-                                        log(getInfo() + " -> 测试书籍：" + testBook.name + " by " + testBook.author);
-                                        _context4.next = 3;
-                                        return self.getBook(bsid, testBook.name, testBook.author).catch(function (e) {
-                                            error(getInfo() + " -> 获取书籍失败：", e);throw e;
-                                        });
-
-                                    case 3:
-                                        book = _context4.sent;
-
-
-                                        log(getInfo() + " -> 测试项目：获取书籍 OK");
-                                        bs = book.sources[bsid];
-                                        _context4.next = 8;
-                                        return checkBookInfo(bs, book);
-
-                                    case 8:
-                                        _context4.next = 10;
-                                        return checkLastestChapter(bs, book);
-
-                                    case 10:
-                                        _context4.next = 12;
-                                        return checkCatalog(bs, book);
-
-                                    case 12:
-                                    case "end":
-                                        return _context4.stop();
-                                }
-                            }
-                        }, _callee, this);
+            it('测试获取章节', function () {
+                return Promise.all(books.map(function (book) {
+                    return Promise.all(book.chapters.map(function (chapter) {
+                        return bsm.getChapter(bsid, chapter.link).then(function (c) {
+                            equal(chapter.title, c.title);
+                            equal(chapter.link, c.link);
+                            equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
+                        });
                     }));
-                }
+                }));
+            });
+        });
+    };
 
-                var self = app.bookSourceManager;
-                return co(regeneratorRuntime.mark(function _callee2() {
-                    var data, taskQueue, sk, books, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, book, _taskQueue$shift, _taskQueue$shift2, bsid, _book;
+    for (var bsid in config) {
+        _loop(bsid);
+    }
 
-                    return regeneratorRuntime.wrap(function _callee2$(_context5) {
-                        while (1) {
-                            switch (_context5.prev = _context5.next) {
-                                case 0:
-                                    _context5.next = 2;
-                                    return util.getJSON(testFile);
+    describe("BookSourceManager \u5176\u4ED6\u6D4B\u8BD5", function () {
 
-                                case 2:
-                                    data = _context5.sent;
-                                    taskQueue = [];
-                                    _context5.t0 = regeneratorRuntime.keys(data.sources);
-
-                                case 5:
-                                    if ((_context5.t1 = _context5.t0()).done) {
-                                        _context5.next = 29;
-                                        break;
-                                    }
-
-                                    sk = _context5.t1.value;
-                                    books = data.sources[sk];
-                                    _iteratorNormalCompletion = true;
-                                    _didIteratorError = false;
-                                    _iteratorError = undefined;
-                                    _context5.prev = 11;
-
-                                    for (_iterator = books[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                        book = _step.value;
-
-                                        if (!(book in data.books)) {
-                                            error("没有在测试配置文件中找到书籍：" + book);
-                                        } else taskQueue.push([sk, data.books[book]]);
-                                    }
-                                    _context5.next = 19;
-                                    break;
-
-                                case 15:
-                                    _context5.prev = 15;
-                                    _context5.t2 = _context5["catch"](11);
-                                    _didIteratorError = true;
-                                    _iteratorError = _context5.t2;
-
-                                case 19:
-                                    _context5.prev = 19;
-                                    _context5.prev = 20;
-
-                                    if (!_iteratorNormalCompletion && _iterator.return) {
-                                        _iterator.return();
-                                    }
-
-                                case 22:
-                                    _context5.prev = 22;
-
-                                    if (!_didIteratorError) {
-                                        _context5.next = 25;
-                                        break;
-                                    }
-
-                                    throw _iteratorError;
-
-                                case 25:
-                                    return _context5.finish(22);
-
-                                case 26:
-                                    return _context5.finish(19);
-
-                                case 27:
-                                    _context5.next = 5;
-                                    break;
-
-                                case 29:
-                                    if (!(taskQueue.length > 0)) {
-                                        _context5.next = 41;
-                                        break;
-                                    }
-
-                                    _taskQueue$shift = taskQueue.shift(), _taskQueue$shift2 = _slicedToArray(_taskQueue$shift, 2), bsid = _taskQueue$shift2[0], _book = _taskQueue$shift2[1];
-
-                                    log("测试书源：" + self.sources[bsid].name);
-                                    _context5.prev = 32;
-                                    _context5.next = 35;
-                                    return check(bsid, _book);
-
-                                case 35:
-                                    _context5.next = 39;
-                                    break;
-
-                                case 37:
-                                    _context5.prev = 37;
-                                    _context5.t3 = _context5["catch"](32);
-
-                                case 39:
-                                    _context5.next = 29;
-                                    break;
-
-                                case 41:
-                                case "end":
-                                    return _context5.stop();
-                            }
-                        }
-                    }, _callee2, this, [[11, 15, 19, 27], [20,, 22, 26], [32, 37]]);
-                })());
-            }
-        }]);
-
-        return BookSourceManagerTest;
-    }();
-
-    return BookSourceManagerTest;
+        it('全局搜索', function () {});
+    });
 });

@@ -10,154 +10,141 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", 'Chapter', 'sortablejs'], function ($, app, Page, util, Chapter, sortablejs) {
-    var MyPage = function (_Page) {
-        _inherits(MyPage, _Page);
+define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], function ($, app, Page, util, uiutil, Chapter, sortablejs) {
+  var MyPage = function (_Page) {
+    _inherits(MyPage, _Page);
 
-        function MyPage() {
-            _classCallCheck(this, MyPage);
+    function MyPage() {
+      _classCallCheck(this, MyPage);
 
-            return _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).apply(this, arguments));
+      return _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).apply(this, arguments));
+    }
+
+    _createClass(MyPage, [{
+      key: "onLoad",
+      value: function onLoad(params) {
+        this.loadView();
+      }
+    }, {
+      key: "onResume",
+      value: function onResume() {
+        var _this2 = this;
+
+        if (app.bookShelf.loaded) {
+          this.loadBooks(".bookshelf", app.bookShelf);
+        } else {
+          app.bookShelf.load(app.bookSourceManager).then(function () {
+            return _this2.loadBooks(".bookshelf", app.bookShelf);
+          });
         }
+      }
+    }, {
+      key: "onDeviceResume",
+      value: function onDeviceResume() {
+        console.log("Refresh bookshelf on DeviceResume");
+        this.onResume();
+      }
+    }, {
+      key: "isReadingLastestChapter",
+      value: function isReadingLastestChapter(lastestChapter, readingRecord) {
+        return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
+      }
+    }, {
+      key: "removeBook",
+      value: function removeBook(event) {
+        var _this3 = this;
 
-        _createClass(MyPage, [{
-            key: "onLoad",
-            value: function onLoad(params) {
-                this.loadView();
-            }
-        }, {
-            key: "onResume",
-            value: function onResume() {
-                var _this2 = this;
+        var target = $(event.currentTarget);
+        var i = target.data('book-index');
+        app.bookShelf.removeBook(i);
+        app.bookShelf.save().then(function () {
+          uiutil.showMessage("删除成功！");
+          _this3.loadBooks(".bookshelf", app.bookShelf);
+        }).catch(function (error) {
+          uiutil.showError("删除失败！");
+          _this3.loadBooks(".bookshelf", app.bookShelf);
+        });
+        return false;
+      }
+    }, {
+      key: "loadBooks",
+      value: function loadBooks(id, bookShelf) {
+        var _this4 = this;
 
-                if (app.bookShelf.loaded) {
-                    this.loadBooks(".bookshelf", app.bookShelf);
-                } else {
-                    app.bookShelf.load(app.bookSourceManager).then(function () {
-                        return _this2.loadBooks(".bookshelf", app.bookShelf);
-                    });
-                }
-            }
-        }, {
-            key: "onDeviceResume",
-            value: function onDeviceResume() {
-                console.log("Refresh bookshelf on DeviceResume");
-                this.onResume();
-            }
-        }, {
-            key: "isReadingLastestChapter",
-            value: function isReadingLastestChapter(lastestChapter, readingRecord) {
-                return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
-            }
-        }, {
-            key: "removeBook",
-            value: function removeBook(event) {
-                var _this3 = this;
+        var books = bookShelf.books;
+        var bs = $(id);
+        bs.empty();
+        var b = $(".template .book");
 
-                var target = $(event.currentTarget);
-                var i = target.data('book-index');
-                app.bookShelf.removeBook(i);
-                app.bookShelf.save().then(function () {
-                    util.showMessage("删除成功！");
-                    _this3.loadBooks(".bookshelf", app.bookShelf);
-                }).catch(function (error) {
-                    util.showError("删除失败！");
-                    _this3.loadBooks(".bookshelf", app.bookShelf);
-                });
-                return false;
-            }
-        }, {
-            key: "loadBooks",
-            value: function loadBooks(id, bookShelf) {
-                var _this4 = this;
+        books.forEach(function (value, i) {
+          var readingRecord = value.readingRecord;
+          var book = value.book;
 
-                var books = bookShelf.books;
-                var bs = $(id);
-                bs.empty();
-                var b = $(".template .book");
+          var nb = b.clone();
+          if (book.cover) nb.find(".book-cover").attr("src", book.cover);
+          nb.find(".book-name").text(book.name);
+          nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
-                books.forEach(function (value, i) {
-                    var readingRecord = value.readingRecord;
-                    var book = value.book;
+          book.getLastestChapter().then(function (_ref) {
+            var _ref2 = _slicedToArray(_ref, 1),
+                lastestChapter = _ref2[0];
 
-                    var nb = b.clone();
-                    if (book.cover) nb.find(".book-cover").attr("src", book.cover);
-                    nb.find(".book-name").text(book.name);
-                    nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
+            nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).css('color', _this4.isReadingLastestChapter(lastestChapter, readingRecord) ? null : 'red');
 
-                    book.getLastestChapter().then(function (_ref) {
-                        var _ref2 = _slicedToArray(_ref, 1),
-                            lastestChapter = _ref2[0];
+            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+          });
 
-                        nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).css('color', _this4.isReadingLastestChapter(lastestChapter, readingRecord) ? null : 'red');
+          nb.find('.book-cover, .book-info').click(function () {
+            return app.page.showPage("readbook", value);
+          });
 
-                        book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
-                    });
+          nb.find('.btnBookMenu').click(function (event) {
+            $(event.currentTarget).dropdown();
+            return false;
+          }).dropdown();
 
-                    nb.find('.book-cover, .book-info').click(function () {
-                        return app.page.showPage("readbook", value);
-                    });
+          nb.data('book-index', i);
 
-                    nb.find('.btnBookMenu').click(function (event) {
-                        $(event.currentTarget).dropdown();
-                        return false;
-                    }).dropdown();
+          nb.find('.btnRemoveBook').click(_this4.removeBook.bind(_this4)).data('book-index', i);
+          bs.append(nb);
+        });
+      }
+    }, {
+      key: "sortBooksByElementOrde",
+      value: function sortBooksByElementOrde() {
+        var newBooks = [];
+        var elements = $(".bookshelf").children();
+        var length = elements.length;
 
-                    nb.data('book-index', i);
+        for (var i = 0; i < length; i++) {
+          newBooks[i] = app.bookShelf.books[$(elements[i]).data('book-index')];
+        }
+        if (newBooks.length == app.bookShelf.books.length) app.bookShelf.books = newBooks;
+      }
+    }, {
+      key: "loadView",
+      value: function loadView() {
+        var _this5 = this;
 
-                    nb.find('.btnRemoveBook').click(_this4.removeBook.bind(_this4)).data('book-index', i);
-                    bs.append(nb);
-                });
-            }
-        }, {
-            key: "sortBooksByElementOrde",
-            value: function sortBooksByElementOrde() {
-                var newBooks = [];
-                var elements = $(".bookshelf").children();
-                var length = elements.length;
+        sortablejs.create($(".bookshelf")[0], {
+          handle: ".btnBookMenu",
+          animation: 150,
 
-                for (var i = 0; i < length; i++) {
-                    newBooks[i] = app.bookShelf.books[$(elements[i]).data('book-index')];
-                }
-                if (newBooks.length == app.bookShelf.books.length) app.bookShelf.books = newBooks;
-            }
-        }, {
-            key: "loadView",
-            value: function loadView() {
-                var _this5 = this;
-
-                sortablejs.create($(".bookshelf")[0], {
-                    handle: ".btnBookMenu",
-                    animation: 150,
-
-                    onUpdate: function onUpdate(event) {
-                        _this5.sortBooksByElementOrde();
-                    }
-                });
-                $("#btnCheckUpdate").click(function (e) {
-                    return app.chekcUpdate(true, true);
-                });
-                $("#btnTest").click(function (e) {
-                    $('#output').empty();
-                    require(["../test/main.test"], function (mainTest) {
-                        mainTest.doTest(function (msg) {
-                            return $('#output').append($('<p>').text(msg));
-                        }, function (errMsg, errorCode) {
-                            if (errorCode) errMsg += "(" + errorCode + ", " + app.error.getMessage(errorCode) + ")\n";
-                            $('#output').append($('<p class="error">').text(errMsg));
-                        }).then(function () {
-                            return $('#output').append($('<p>').text("完成！"));
-                        });
-                    });
-                });
-                $(".btnSearch").click(function (e) {
-                    return app.page.showPage("search");
-                });
-            }
-        }]);
-
-        return MyPage;
-    }(Page);
+          onUpdate: function onUpdate(event) {
+            _this5.sortBooksByElementOrde();
+          }
+        });
+        $("#btnCheckUpdate").click(function (e) {
+          return app.chekcUpdate(true, true);
+        });
+        $(".btnSearch").click(function (e) {
+          return app.page.showPage("search");
+        });
+      }
+    }]);
 
     return MyPage;
+  }(Page);
+
+  return MyPage;
 });
