@@ -1,145 +1,552 @@
-define(["util"], function(util){
+define(["chai", "BookSourceManager"], function(chai, BookSourceManager){
 
-  class BookSourceManagerTest{
+  let assert = chai.assert;
+  let equal = assert.equal;
 
-    constructor(test){
-      this.test = test;
-    }
+  let config = {
+      // "qidian": [
+      //     {
+      //         "name": "",
+      //         "author": "",
+      //         // "catagory": "",
+      //         "complete": false,
+      //         "cover": "",
+      //         "introduce": "",
+      //         "lastestChapter": "",
+      //         "bookid": "",
+      //         "detailLink": "",
 
-    doTest(){
-      return this.checkBookSources("data/booksources.test.json", this.test.output, this.test.error);
-    }
+      //         "chapters": [
+      //             {
+      //                 "name": "",
+      //                 "link": "",
+      //                 "content": ""
+      //             },
+      //         ]
+      //     },
+      // ],
+      "qidian": [
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "complete": false,
+              "csrfToken": "",
+              "introduce": "一念成沧海，一念化桑田。一念斩千魔",
+              // "catagory": "仙侠",
+              "cover": "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
+              "lastestChapter": "",
+              "bookid": "1003354631",
+              "detailLink": "http://book.qidian.com/info/1003354631",
 
-    // 检查源是否正确
-    checkBookSources(testFile, log, error){
+              "chapters": [
+                  {
+                      "title": "第四章 炼灵",
+                      "link": "http://read.qidian.com/chapter/rJgN8tJ_cVdRGoWu-UQg7Q2/N7RItTUlse2aGfXRMrUjdw2",
+                      "content": "众人大喜，看向白小纯时，已是喜欢到了极点，觉得这白小纯不但可爱，肚子里坏水还不少"
+                  },
+              ]
+          },
+          {
+              "name": "银狐",
+              "author": "孑与2",
+              "complete": false,
+              "csrfToken": "",
+              "introduce": "人的第一要求就是活着，第二要求还是活着，",
+              // "catagory": "历史",
+              "cover": "http://qidian.qpic.cn/qdbimg/349573/3650892/150",
+              "lastestChapter": "",
+              "bookid": "3650892",
+              "detailLink": "http://book.qidian.com/info/3650892",
 
-      if(!error){
-        throw new Error("The argument 'error' is not defined!");
+              "chapters": [
+                  {
+                    "link": "http://read.qidian.com/chapter/2EOvKFDAVe01/o1CNvVz-KeMex0RJOkJclQ2",
+                    "title": "第二章铁心源的运气",
+                    "content": "王柔花远没有铁心源那样自在，她如今正举着那根棒槌和一只雪白的狐狸对峙"
+                  },
+              ]
+          },
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": false,
+              "csrfToken": "",
+              "introduce": "大千世界，位面交汇，万族林立",
+              // "catagory": "玄幻",
+              "cover": "http://qidian.qpic.cn/qdbimg/349573/2750457/150",
+              "lastestChapter": "",
+              "bookid": "2750457",
+              "detailLink": "http://book.qidian.com/info/2750457",
+
+              "chapters": [
+                  {
+                    "link": "http://read.qidian.com/chapter/2OZih9MNQLg1/o2rSOd-S_DUex0RJOkJclQ2",
+                    "title": "第三章 牧域",
+                    "content": "北灵境分九域，各由一主掌控，"
+                  },
+              ]
+          },
+      ],
+
+      "biqulou": [
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "introduce": "大千世界，位面交汇，万族林立",
+              // "catagory": "东方玄幻",
+              "lastestChapter": "",
+              "detailLink": "http://www.biqulou.net/24/24835/",
+
+              "chapters": [
+                  {
+                    "title": "第九十五章 黑色卷轴",
+                    "link": "http://www.biqulou.net/24/24835/7682020.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "银狐",
+              "author": "孑与2",
+              "introduce": "人的第一要求就是活着，第二要求还是活着",
+              // "catagory": "历史军事",
+              "lastestChapter": "",
+              "detailLink": "http://www.biqulou.net/94/94905/",
+
+              "chapters": [
+                  {
+                    "title": "第九十二章一人一世界",
+                    "link": "http://www.biqulou.net/94/94905/5182713.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "introduce": "一念成沧海，一念化桑田。",
+              // "catagory": "武侠仙侠",
+              "lastestChapter": "",
+              "detailLink": "http://www.biqulou.net/120/120773/",
+
+              "chapters": [
+                  {
+                    "title": "第九十七章 我就是张大胖!",
+                    "link": "http://www.biqulou.net/120/120773/6351804.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+      "daizhuzai": [
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "complete": false,
+              "introduce": "一念成沧海，一念化桑田。",
+              // "catagory": "武侠",
+              "cover": "http://img.dzz8.com/public/cover/5e/b0/bd/5eb0bd600f38ed89e26bd0dc3d70ff0d.jpg",
+              "lastestChapter": "",
+              "detailLink": "http://www.daizhuzai.com/351/",
+
+              "chapters": [
+                  {
+                    "title": "第九十八章 龙象化海经",
+                    "link": "http://www.daizhuzai.com/351/101.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "银狐",
+              "author": "孑与2",
+              "complete": false,
+              "introduce": "人的第一要求就是活着，第二要求还是活着",
+              // "catagory": "历史",
+              "cover": "http://img.dzz8.com/public/cover/20/ef/10/20ef1080b85cd4570cee3718809683cf.jpg",
+              "lastestChapter": "",
+              "detailLink": "http://www.daizhuzai.com/248/",
+
+              "chapters": [
+                  {
+                    "title": "第九十七章黑了心的铁心源",
+                    "link": "http://www.daizhuzai.com/248/101.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": false,
+              "introduce": "大千世界，位面交汇，万族林立",
+              // "catagory": "玄幻",
+              "cover": "http://img.dzz8.com/public/cover/ad/53/d9/ad53d94c9d60c650d7db17bb7d98636a.jpg",
+              "lastestChapter": "",
+              "detailLink": "http://www.daizhuzai.com/1/",
+
+              "chapters": [
+                  {
+                    "title": "第九十五章 黑色卷轴",
+                    "link": "http://www.daizhuzai.com/1/101.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+
+      "biqugezw": [
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "complete": undefined,
+              "introduce": "一念成沧海，一念化桑田",
+              // "catagory": "仙侠修真",
+              "lastestChapter": "",
+              "detailLink": "http://www.biqugezw.com/3_3096/",
+
+              "chapters": [
+                  {
+                    "title": "第一百零一章 水泽国度与元磁翅！",
+                    "link": "http://www.biqugezw.com/3_3096/2806430.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "银狐",
+              "author": "孑与2",
+              "complete": undefined,
+              "introduce": "人的第一要求就是活着",
+              // "catagory": "其他小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.biqugezw.com/modules/article/reader.php?aid=198",
+
+              "chapters": [
+                  {
+                    "title": "第九十六章致命的坏习惯",
+                    "link": "http://www.biqugezw.com/0_198/916236.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": undefined,
+              "introduce": "殿，百战之皇，战威无可敌",
+              // "catagory": "玄幻魔法",
+              "lastestChapter": "",
+              "detailLink": "http://www.biqugezw.com/modules/article/reader.php?aid=1769",
+
+              "chapters": [
+                  {
+                    "title": "第一百零五章 三级灵阵",
+                    "link": "http://www.biqugezw.com/1_1769/417408.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+
+      "biquge.tw": [
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "complete": undefined,
+              "introduce": "一念成沧海，一念化桑田",
+              // "catagory": "修真小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.biquge.com.tw/0_213/",
+
+              "chapters": [
+                  {
+                    "title": "第一百零一章 水泽国度与元磁翅！",
+                    "link": "http://www.biquge.com.tw/0_213/7165919.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "银狐",
+              "author": "孑与2",
+              "complete": undefined,
+              "introduce": "人的第一要求就是活着",
+              // "catagory": "历史小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.biquge.com.tw/12_12001/",
+
+              "chapters": [
+                  {
+                    "title": "第九十一章怎么就不响呢？",
+                    "link": "http://www.biquge.com.tw/12_12001/6505969.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": undefined,
+              "introduce": "大千世界，万道争锋，吾为大主宰",
+              // "catagory": "玄幻小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.biquge.com.tw/0_757/",
+
+              "chapters": [
+                  {
+                    "title": "第一百零一章 融天境",
+                    "link": "http://www.biquge.com.tw/0_757/530594.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+
+      "biquge": [
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "complete": undefined,
+              "introduce": "一念成沧海，一念化桑田",
+              // "catagory": "奇幻修真",
+              "lastestChapter": "",
+              "detailLink": "http://www.biquge.com/16_16431/",
+
+              "chapters": [
+                  {
+                    "title": "第九十八章 龙象化海经",
+                    "link": "http://www.biquge.com/16_16431/9283491.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "银狐",
+              "author": "孑与2",
+              "complete": undefined,
+              "introduce": "哲人，我就是神",
+              // "catagory": "架空历史",
+              "lastestChapter": "",
+              "detailLink": "http://www.biquge.com/11_11997/",
+
+              "chapters": [
+                  {
+                    "title": "第九十四章来自邓八爷的威胁",
+                    "link": "http://www.biquge.com/11_11997/6883762.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": undefined,
+              "introduce": "西天之殿，百战之皇，战威无可敌",
+              // "catagory": "东方玄幻",
+              "lastestChapter": "",
+              "detailLink": "http://www.biquge.com/0_176/",
+
+              "chapters": [
+                  {
+                    "title": "第一百零一章 融天境",
+                    "link": "http://www.biquge.com/0_176/1238877.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+
+      "chuangshi": [
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": false,
+              "introduce": "大千世界，位面交汇，万族林",
+              // "catagory": "[异世]",
+              "cover": "http://img1.write.qq.com/upload/cover/2013-05-01/cm_4d00258637d3464c3ea19f932d58d1d0.jpg",
+              "lastestChapter": "",
+              "detailLink": "http://chuangshi.qq.com/bk/xh/462523.html?sword=大主宰",
+              "catalogLink": "http://chuangshi.qq.com/bk/xh/AGwEMl1iVjIAOFRn-l.html",
+              "chapters": [
+                  {
+                    "title": "第八章 柳阳",
+                    "link": "http://chuangshi.qq.com/bk/xh/AGwEMl1iVjIAOFRn-r-8.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+
+      "dingdian": [
+          {
+              "name": "一念永恒",
+              "author": "耳根",
+              "complete": undefined,
+              "introduce": "一念成沧海，一念化桑田",
+              // "catagory": "修真小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.booktxt.net/1_1137/",
+
+              "chapters": [
+                  {
+                    "title": "第九十八章 龙象化海经",
+                    "link": "http://www.booktxt.net/1_1137/1012080.html",
+                      "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "大主宰",
+              "author": "天蚕土豆",
+              "complete": undefined,
+              "introduce": "大千世界，万道争锋，吾为大主宰",
+              // "catagory": "玄幻小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.booktxt.net/0_59/",
+
+              "chapters": [
+                  {
+                    "title": "第九十一章 说服",
+                    "link": "http://www.booktxt.net/0_59/32964.html",
+                    "content": "的"
+                  },
+              ]
+          },
+          {
+              "name": "三生三世十里桃花",
+              "author": "唐七公子",
+              "complete": undefined,
+              "introduce": "那一世，大荒之中一处荒山，成就她与",
+              // "catagory": "其他小说",
+              "lastestChapter": "",
+              "detailLink": "http://www.booktxt.net/4_4903/",
+
+              "chapters": [
+                  {
+                    "title": "第四章（1）",
+                    "link": "http://www.booktxt.net/4_4903/1814813.html",
+                      "content": "的"
+                  },
+              ]
+          },
+      ],
+    };
+
+  for(let bsid in config){
+  // for(let bsid of ['dingdian']){
+    let books = config[bsid];
+
+    function equalBook(bsid, book, b){
+      assert.isObject(b);
+      assert.isNotNull(b);
+      equal(true, !!b);
+
+      // 除了 chapters 和 introduce 之外的，其他都相等
+      let exclude = ['chapters', 'introduce', 'lastestChapter', 'cover'];
+      for(let key in book){
+        if(exclude.indexOf(key) >= 0)
+          continue;
+        if(key in b)
+          equal(book[key], b[key],
+                `${book.name}.${key}`);
+        else if('sources' in b && key in b.sources[bsid])
+          equal(book[key], b.sources[bsid][key],
+                `${book.name}.${key}`);
       }
 
-      function check(bsid, testBook){
-
-        function getInfo(){
-          return self.sources[bsid].name;
-        }
-
-        function* checkBookInfo(bs, book){
-          // 测试获取书籍信息
-          book = yield bs.getBookInfo(self, book)
-            .catch(e => {
-              error(getInfo() + " -> 获取书籍信息失败：", e);
-              throw e;
-            });
-
-          for(const ik in testBook){
-            if(ik.match(/^test_/)){
-              const testProperty = ik.substring(5);
-              if(book[testProperty].match(testBook[ik])){
-                log(getInfo() + " -> 测试属性：" + testProperty + " OK")
-              }
-              else{
-                error(getInfo() + " -> 测试属性：" + testProperty + " Wrong!")
-              }
-            }
-          }
-        }
-
-        function* checkLastestChapter(bs, book){
-          // 测试获取书籍信息
-          let [lastestChapter, lastestChapterUpdated] = yield bs.refreshLastestChapter(self, book)
-            .catch(e => {
-              error(getInfo() + " -> 获取最新章节信息失败：", e);
-              throw e;
-            });
-          if(lastestChapter.length > 0){
-            log(getInfo() + " -> 获取最新章节信息：OK")
-          }
-          else{
-            error(getInfo() + " -> 获取最新章节信息：Wrong!")
-          }
-        }
-
-        function* checkCatalog(bs, book){
-          const catalog = yield bs.getCatalog(self, book, true)
-            .catch(e => {
-              error(getInfo() + " -> 测试目录 Wrong!");
-              throw e;
-            });
-
-          if(catalog.length <= 0 || !catalog[0].title){
-            error(getInfo() + " -> 测试目录 Wrong!");
-            return;
-          }
-
-          log(getInfo() + " -> 测试目录 OK");
-
-          // 测试获取章节
-          const chapter = yield bs.getChapter(catalog[0], false)
-            .catch(e => {
-              error(getInfo() + " -> 测试章节错误：", e);
-              throw e;
-            });
-
-          if(chapter.title == catalog[0].title && chapter.content.length > 0)
-          {
-            log(getInfo() + " -> 测试章节 OK");
-          }
-          else{
-            error(getInfo() + " -> 测试章节 Wrong!");
-          }
-        }
-
-        return co(function*(){
-          log(getInfo() + " -> 测试书籍：" + testBook.name + " by " + testBook.author);
-          const book = yield self.getBook(bsid, testBook.name, testBook.author)
-            .catch(e => {error(getInfo() + " -> 获取书籍失败：", e); throw e;});
-
-          log(getInfo() + " -> 测试项目：获取书籍 OK");
-          const bs = book.sources[bsid];
-
-          // 测试获取书籍信息
-          yield checkBookInfo(bs, book);
-          // 测试最新章节信息
-          yield checkLastestChapter(bs, book);
-          // 测试获取目录
-          yield checkCatalog(bs, book);
-        });
-
-      }
-
-      const self = app.bookSourceManager;
-      return co(function*(){
-        const data = yield util.getJSON(testFile);
-        const taskQueue = [];
-        for(const sk in data.sources){
-          const books = data.sources[sk];
-          for(const book of books){
-            if(!(book in data.books)){
-              error("没有在测试配置文件中找到书籍：" + book);
-            }
-            else
-              taskQueue.push([sk, data.books[book]]);
-          }
-        }
-        // start to work
-
-        while(taskQueue.length > 0){
-          const [bsid, book] = taskQueue.shift();
-          log("测试书源：" + self.sources[bsid].name);
-          try{
-            yield check(bsid, book);
-          }
-          catch(e)
-          {
-
-          }
-        }
-      }());
+      // introduce
+      if("introduce" in book && "introduce" in b)
+        equal(true, b.introduce.length > 0 && b.introduce.indexOf(book.introduce) >=0, `${book.name}.introduce`);
+      // lastestChapter
+      if("lastestChapter" in book && "sources" in b && "lastestChapter" in b.sources[bsid])
+        equal(true, b.sources[bsid].lastestChapter.length > 0, `${book.name}.lastestChapter`);
+      if("cover" in book && "cover" in b)
+        equal(true, !!(b.cover.match(/^http/)), `${book.name}.cover`);
 
     }
+
+    describe(`BookSourceManager 测试：${bsid}`, () => {
+      let bsm;
+
+      before(()=>{
+        bsm = new BookSourceManager();
+        return bsm.loadConfig("data/booksources.json");
+        let bsName = bsm.getBookSourceName(bsid);
+      });
+
+      it('测试搜索', ()=>{
+        return Promise.all(books.map(book => {
+          return bsm.searchBook(bsid, book.name)
+            .then(bs => {
+              // 除了 chapters 和 introduce 之外的，其他都相等
+              let b = bs[0];
+              equalBook(bsid, book, b);
+            })
+        }));
+      });
+
+      it('测试获取书籍', ()=>{
+        return Promise.all(books.map(book => {
+          return bsm.getBook(bsid, book.name, book.author)
+            .then(b => {
+              equalBook(bsid, book, b);
+            })
+        }));
+      });
+
+      it('测试获取书籍信息', ()=>{
+        return Promise.all(books.map(book => {
+          return bsm.getBookInfo(bsid, book.detailLink)
+            .then(b => {
+              equalBook(bsid, book, b);
+            })
+        }));
+      });
+
+      it('测试最新章节', ()=>{
+        return Promise.all(books.map(book => {
+          return bsm.getLastestChapter(bsid, book.detailLink)
+            .then(lc => {
+              equal(true, lc.length > 0);
+            })
+        }));
+      });
+
+      it('测试书籍目录', ()=>{
+        return Promise.all(books.map(book => {
+          return bsm.getBookCatalog(bsid, book)
+            .then(catalog => {
+              assert.isArray(catalog);
+              equal(true, catalog.length > 0);
+              book.chapters.forEach(chapter => {
+                equal(true, catalog.findIndex(e => e.title == chapter.title) >= 0);
+              });
+            })
+        }));
+      });
+
+      it('测试获取章节', ()=>{
+        return Promise.all(books.map(book =>
+          Promise.all(book.chapters.map(chapter =>
+            bsm.getChapter(bsid, chapter.link)
+              .then(c => {
+                equal(chapter.title, c.title);
+                equal(chapter.link, c.link);
+                equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
+              })
+          ))
+        ))
+      });
+    });
   }
 
 
-  return BookSourceManagerTest;
-});
+  describe(`BookSourceManager 其他测试`, () => {
 
+    it('全局搜索', () => {
+
+    });
+
+  });
+});

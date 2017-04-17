@@ -6,20 +6,32 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
 
     constructor(configFileOrConfig){
 
-      this.sources = undefined;
+      this.sources;
       this.spider = new Spider();
 
+      this.loadConfig(configFileOrConfig)
+        .then(() => {
+          this.init();
+        });
+    }
+
+    // 加载配置
+    loadConfig(configFileOrConfig){
+      if(!configFileOrConfig)
+        return Promise.resolve(this.sources);
+
       if(typeof configFileOrConfig == 'string'){
-        util.getJSON(configFileOrConfig)
-          .then(data => this.sources = data);
+        return util.getJSON(configFileOrConfig)
+          .then(data => {
+            this.sources = data;
+            return this.sources;
+          });
       }
       else{
         this.sources = configFileOrConfig;
+        return Promise.resolve(this.sources);
       }
-
-      this.init();
     }
-
 
     // 通过书名字和目录搜索唯一的书籍
     getBook(bsid, bookName, bookAuthor){
@@ -164,6 +176,19 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
         });
     }
 
+    // 获取最新章节
+    getLastestChapter(bsid, detailLink){
+      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid} with link "${detailLink}"`);
+
+      const bsm = this.sources[bsid];
+      if(!bsm) return Promise.reject("Illegal booksource!");
+
+      return this.spider.get(bsm.detail, {url: detailLink, detailLink: detailLink})
+        .then(data => {
+          return data.lastestChapter.replace(/^最新更新\s+/, '');
+        });
+    }
+
     // 获取目录链接
     getBookCatalogLink(bsid, locals){
 
@@ -192,7 +217,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
           const catalog = [];
           for(let c of data){
             const chapter = new Chapter();
-            chapter.title = c.name;
+            chapter.title = c.title;
             chapter.link = c.link;
             catalog.push(chapter);
           }
@@ -228,19 +253,6 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
         });
     }
 
-    // 获取最新章节
-    getLastestChapter(bsid, detailLink){
-      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid} with link "${detailLink}"`);
-
-      const bsm = this.sources[bsid];
-      if(!bsm) return Promise.reject("Illegal booksource!");
-
-      return this.spider.get(bsm.detail, {url: detailLink, detailLink: detailLink})
-        .then(data => {
-          return data.lastestChapter.replace(/^最新更新\s+/, '');
-        });
-    }
-
     // 按主源权重从大到小排序的数组
     getSourcesKeysByMainSourceWeight(){
       let object = this.sources;
@@ -268,7 +280,6 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
     }
 
   }
-
 
   BookSourceManager.prototype.qidian = {
     csrfToken: "",

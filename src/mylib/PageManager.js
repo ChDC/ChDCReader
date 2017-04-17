@@ -70,8 +70,6 @@ define(["jquery", "util"], function($, util){
       // util.log("showPage", baseurl);
 
       // 如果栈中有该页则从栈中加载
-      // const i = util.arrayLastIndex(this.pageStack, name, (element, name) =>
-      //   element.page == name);
       const i = this.pageStack.findIndex(e => e.page == name);
 
       if(i>=0){
@@ -94,24 +92,6 @@ define(["jquery", "util"], function($, util){
 
       // 获取页面
       $.get(urls.htmlurl, content => {
-
-        // const __showPage = () => {
-        //     this.container.children().detach();
-        //     this.container.append(contentContainer);
-
-        //     this.currentPage = name;
-        //     this.__saveState(name, params);
-
-        //     // Load page js
-        //     requirejs([urls.jsurl], Page => {
-        //         let page = new Page();
-        //         this.jsStorage[this.currentPage] = page;
-        //         if(page.onLoad)
-        //             page.onLoad(params);
-        //         if(page.onResume)
-        //             page.onResume();
-        //     });
-        // }
 
         // util.log("Gotten page", name);
         const contentContainer = $('<div class="page-content-container"></div>');
@@ -156,17 +136,7 @@ define(["jquery", "util"], function($, util){
             page.__onPause();
             if(page.onPause)
               page.onPause();
-            // __showPage();
-            // requirejs([this.getURLs(this.currentPage).jsurl],
-            //     page => {
-            //         if(page.onPause)
-            //             page.onPause();
-            //         __showPage();
-            //     });
           }
-          // else{
-          //     __showPage();
-          // }
         }
 
         // showPage

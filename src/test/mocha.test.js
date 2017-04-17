@@ -1,8 +1,15 @@
 define(["chai"], function(chai){
 
+  /************************************
+    测试用例规范：
+    * 先写空参数测试
+    * 再写异常参数测试
+    * 正确参数和正确结果
+  ************************************/
+
   let assert = chai.assert;
 
-  describe('加法函数的测试', () => {
+  describe('mocha 可用性测试', () => {
 
     before(() => {
       // 在本区块的所有测试用例之前执行
@@ -21,14 +28,10 @@ define(["chai"], function(chai){
     });
 
 
-    it('1 加 1 应该等于 2', () => {
-      expect(1 + 1).to.be.equal(3);
+    it('测试 mocha 和 chai 的可用性', () => {
+      assert.equal(1, 1);
     });
 
-    it('任何数加0等于自身', () => {
-      // expect(add(1, 0)).to.be.equal(1);
-      // expect(add(0, 0)).to.be.equal(0);
-    });
   });
 });
 

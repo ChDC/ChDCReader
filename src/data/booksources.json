@@ -18,8 +18,8 @@
                         "author": ".book-mid-info .author>a.name",
                         "catagory": ".book-mid-info .author a:nth-child(4)",
                         "complete": {
-                            "type": "boolean",
                             "element": ".book-mid-info .author span:last-child",
+                            "type": "boolean",
                             "true": "完本",
                             "false": "连载中"
                         },
@@ -43,7 +43,12 @@
             "response": {
                 "author": "div.book-info > h1 > span > a",
                 "catagory": "div.book-info > p.tag > a:nth-child(4)",
-                "complete": "div.book-info > p.tag > span:nth-child(1)",
+                "complete": {
+                    "element": "div.book-info > p.tag > span:nth-child(1)",
+                    "type": "boolean",
+                    "true": "完本",
+                    "false": "连载"
+                },
                 "coverImg": "#bookImg > img",
                 "introduce": "div.book-intro > p",
                 "lastestChapter": "div.book-info-detail > div.book-state li.update a",
@@ -53,14 +58,13 @@
         "catalog": {
             "request": {
                 "url": "http://book.qidian.com/ajax/book/category?_csrfToken={csrfToken}&bookId={bookid}",
-                "timeout": 15,
                 "type": "JSON"
             },
             "response": {
                 "type": "array",
-                "element": "data.vs.cs:concat",
+                "element": "data::vs#filter(\"$element.vN.indexOf(\\\"相关\\\") < 0\")::cs#concat",
                 "children": {
-                    "name": "cN",
+                    "title": "cN",
                     "linkid": "cU",
                     "vip": "sS",
                     "link": {
@@ -92,7 +96,12 @@
                 "children": {
                     "author": "div.search_r_info > p:nth-child(2) > b > a",
                     "catagory": "div.search_r_info > p:nth-child(3) > a:nth-child(1)",
-                    "complete": "div.search_r_img > p > i",
+                    "complete": {
+                            "element": "div.search_r_img > p > i",
+                            "type": "boolean",
+                            "true": "完本",
+                            "false": "连载中"
+                        },
                     "coverImg": "div.search_r_img > a > img",
                     "introduce": "div.search_r_info > p.search_i > em",
                     "lastestChapter": "div.search_r_info > p:nth-child(5) > a",
@@ -100,14 +109,19 @@
                     "name": "div.search_r_info > h1 > a"
                 }
             },
-            "request": "http://chuangshi.qq.com/search/searchindex/type/chuangshi/wd/{keyword}.html"
+            "request": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
         },
         "detail": {
             "response": {
                 "catalogLink": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
-                "author": "div.mainbox > div.autherinfo > div.au_name > p:nth-child(2) > a",
+                "author": "div.autherinfo > div.au_name > p:nth-child(2) > a",
                 "catagory": "div.mainbox > div.main2 > div.left > div.title > a:nth-child(2)",
-                "complete": "div.mainbox > div.main1 > div.title > i:nth-child(3)",
+                "complete": {
+                            "element": "div.mainbox > div.main1 > div.title > i:nth-child(3)",
+                            "type": "boolean",
+                            "true": "完本",
+                            "false": "连载中"
+                        },
                 "coverImg": "div.mainbox > div.main2 > div.left > div.cover > a > img",
                 "introduce": "div.mainbox > div.main2 > div.left > div.info",
                 "lastestChapter": "#newChapterList > div.chaptername > b > a",
@@ -124,7 +138,7 @@
                 "type": "array",
                 "element": "div.indexbox ul > li",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -166,7 +180,12 @@
                 "catalogLink": "div.BookInfo > div.Props > dl > dt > a",
                 "author": "div.AuthorInfo > div > a.name",
                 "catagory": "body > div.infoPath > div > a:nth-child(3)",
-                "complete": "div.BookInfo > div.Info > div.label > a:nth-child(1) > span",
+                "complete": {
+                            "element": "div.BookInfo > div.Info > div.label > a:nth-child(1) > span",
+                            "type": "boolean",
+                            "true": "完本",
+                            "false": "连载中"
+                        },
                 "coverImg": "div.BookInfo > div.Props > div > a > img",
                 "introduce": "div.BookInfo > div.Info.Sign > dl > dd > div:nth-child(1) > a",
                 "lastestChapter": "dl.NewsChapter > dd > ul > li:nth-child(2) > a",
@@ -183,7 +202,7 @@
                 "type": "array",
                 "element": "body > div.Main.List > dl > dd",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -222,7 +241,11 @@
         },
         "detail": {
             "response": {
-                "author": "#info > p:nth-child(2)",
+                "author": {
+                    "type": "string",
+                    "element": "#info > p:nth-child(2)",
+                    "remove": "作 *者[：:]"
+                },
                 "catagory": "",
                 "complete": "",
                 "coverImg": "#fmimg > img",
@@ -237,7 +260,7 @@
                 "type": "array",
                 "element": "#list > dl > dt:nth-of-type(2) ~ dd",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -275,7 +298,11 @@
         },
         "detail": {
             "response": {
-                "author": "#info > p:nth-child(2)",
+                "author": {
+                    "type": "string",
+                    "element": "#info > p:nth-child(2)",
+                    "remove": "作 *者[：:]"
+                },
                 "catagory": "",
                 "complete": "",
                 "coverImg": "#fmimg > img",
@@ -290,7 +317,7 @@
                 "type": "array",
                 "element": "#list > dl > dd",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -319,7 +346,7 @@
                     "complete": "",
                     "coverImg": "",
                     "introduce": "div.result-game-item-detail > p",
-                    "lastestChapter": "",
+                    "lastestChapter": "div.result-game-item-detail > div > p:nth-child(3) > span:nth-child(2)",
                     "detailLink": "div.result-game-item-detail > h3 > a",
                     "name": "div.result-game-item-detail > h3 > a"
                 }
@@ -328,7 +355,11 @@
         },
         "detail": {
             "response": {
-                "author": "#info > p:nth-child(2)",
+                "author": {
+                    "type": "string",
+                    "element": "#info > p:nth-child(2)",
+                    "remove": "作 *者[：:]"
+                },
                 "catagory": "",
                 "complete": "",
                 "coverImg": "#fmimg > img",
@@ -343,7 +374,7 @@
                 "type": "array",
                 "element": "#list > dl > dd",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -381,7 +412,11 @@
         },
         "detail": {
             "response": {
-                "author": "#info > p:nth-child(2)",
+                "author": {
+                    "type": "string",
+                    "element": "#info > p:nth-child(2)",
+                    "remove": "作 *者[：:]"
+                },
                 "catagory": "",
                 "complete": "",
                 "coverImg": "#fmimg > img",
@@ -396,7 +431,7 @@
                 "type": "array",
                 "element": "#list > dl > dt:nth-of-type(2) ~ dd",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -405,7 +440,11 @@
             "response": {
                 "contentHTML": "#content",
                 "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
-                "title": "div.content_read > div > div.bookname > h1"
+                "title": {
+                    "element": "div.content_read > div > div.bookname > h1",
+                    "type": "string",
+                    "remove": "正文 ?"
+                }
             }
         }
     },
@@ -435,7 +474,11 @@
         },
         "detail": {
             "response": {
-                "author": "#info > p:nth-child(2)",
+                "author": {
+                    "type": "string",
+                    "element": "#info > p:nth-child(2)",
+                    "remove": "作 *者[：:]"
+                },
                 "catagory": "",
                 "complete": "",
                 "coverImg": "#fmimg > img",
@@ -450,7 +493,7 @@
                 "type": "array",
                 "element": "#list > dl > dd",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }
@@ -488,10 +531,15 @@
         },
         "detail": {
             "response": {
-                "author": "#stats > i:nth-child(1) > a",
+                "author": "#author > i:nth-child(1) > a",
                 "catagory": "#author > i:nth-child(2) > a",
-                "complete": "#stats > i:nth-child(3)",
-                "coverImg": "section > div:nth-child(2) > div.w-left > div > div.body.novel > div.novelinfo > div.novelinfo-r > a > img",
+                "complete": {
+                            "element": "#author > i:nth-child(3)",
+                            "type": "boolean",
+                            "true": "完本",
+                            "false": "连载中"
+                        },
+                "coverImg": "div.novelinfo img",
                 "introduce": "#intro",
                 "lastestChapter": "#intro > p:nth-child(3) > a",
                 "name": "section > div:nth-child(2) > div.w-left > div > div.header.line > h1"
@@ -503,7 +551,7 @@
                 "type": "array",
                 "element": "ul.dirlist > li",
                 "children": {
-                    "name": "a",
+                    "title": "a",
                     "link": "a"
                 }
             }

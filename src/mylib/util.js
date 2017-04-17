@@ -84,7 +84,7 @@ define(["jquery"], function($){
     * url: 完整的 URL
     * params: 参数
     */
-    get(url, params, dataType, {timeout=5}={}) {
+    get(url, params, dataType, {timeout=15}={}) {
       return new Promise((resolve, reject) => {
         if(!url) return reject(new Error("url is null"));
 
@@ -125,17 +125,17 @@ define(["jquery"], function($){
 
         request.ontimeout = () => {
           this.error(`Fail to get: ${url}, 网络超时`);
-          reject(701);
+          reject(new Error("Request Timeout"));
         };
 
         request.onabort = () => {
           this.error(`Fail to get: ${url}, 传输中断`);
-          reject(702);
+          reject(new Error("Request Abort"));
         }
 
         request.onerror = () => {
           this.error("Fail to get: " + url + ", 网络错误");
-          reject(703);
+          reject(new Error("Request Error"));
         }
 
         request.send(null);
@@ -147,44 +147,11 @@ define(["jquery"], function($){
       return this.get(url, params, "json");
     },
 
-    // 过滤某些标签
-    __filterElement(html, element, endElement=element){
+    // getDOM(url, params){
+    //   return this.get(url, params)
+    //       .then(data => `<div>${this.filterHtmlContent(data)}</div>`);
 
-      if(!html || !element) return html;
-
-      let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${endElement}>`;
-      html = html.replace(new RegExp(pattern, 'gi'), '');
-      // 去除单标签
-      pattern = `<${element}([^>]*?)?>`;
-      html = html.replace(new RegExp(pattern, 'gi'), '');
-      return html;
-    },
-
-    getDOM(url, params){
-      return this.get(url, params)
-          .then(data => `<div>${this.filterHtmlContent(data)}</div>`);
-
-    },
-
-    // 过滤 HTML 中的内容，用于爬虫
-    filterHtmlContent(html){
-      if(!html) return html;
-
-      // 只要 body
-      const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
-      if(m && m.length >= 2)
-        html = m[1];
-      // 去掉 script 标签
-      html = this.__filterElement(html, "script");
-      html = this.__filterElement(html, "iframe");
-      html = this.__filterElement(html, "link");
-      html = this.__filterElement(html, "meta");
-      html = this.__filterElement(html, "style");
-
-      // 图片的 src 属性转换成 data-src 属性
-      html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
-      return html;
-    },
+    // },
 
     // 从 URL 字符串中获取参数对象
     getParamsFromURL(url){
@@ -206,69 +173,6 @@ define(["jquery"], function($){
         }
       }
       return params;
-    },
-
-    // 字符串格式化，类似于 Python 的 string.format
-    format(string, object={}){
-      if(!string) return string;
-
-      const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          p1 in object ? object[p1] : `{${p1}}`
-        )
-      return result;
-    },
-
-    // 从 Object 中获取数据
-    getDataFromObject(obj, key){
-      if(!obj || !key) return obj;
-      const keys = key.split('.');
-      let result = obj;
-      for(let key of keys){
-        let [k, operator] = key.split(':');
-
-        if(!result) return undefined;
-
-        if(this.type(result) == 'array'){
-          if(!operator)
-            result = result.map(m => m[k]);
-          else if(operator == 'concat')
-            result = result.reduce((s, m) => s.concat(m[k]), []);
-        }
-        else
-          result = result[k];
-      }
-      return result
-    },
-
-    // 修复抓取的 URL
-    fixurl(url, host){
-      if(!url || url.match("^https?://"))
-        return url;
-
-      if(url.match("^//"))
-        url = "http:" + url;
-      else if(url.match("^://"))
-        url = "http" + url;
-      else if(url.match("^javascript:"))
-        url = "";
-      else {
-
-        // 需要用到 host 了
-        let matcher = host.match(/^(.*):\/\//);
-        let scheme = matcher ? matcher[0] : "";
-        host = host.substring(scheme.length);
-
-        if(url.match("^/")){
-          host = host.replace(/\/.*$/, ""); // 去掉第一个 / 后面的内容
-          url = `${scheme}${host}${url}`;
-        }
-        else{
-          // host = host.replace(/\?.*$/, ""); // 去掉?后面的内容
-          host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
-          url = `${scheme}${host}/${url}`;
-        }
-      }
-      return url;
     },
 
     // HTML 内容转换为 Text
@@ -298,7 +202,8 @@ define(["jquery"], function($){
       html = replaceElement(html, 'i', '$1');
 
       // 去掉所有标签
-      html = this.__filterElement(html, "(\\w+)", "$1");
+      html = html.replace(/<(\\w+)( [^>]*?)?>[\\s\\S]*?<\/$1>/gi, ''); // 双标签
+      html = html.replace(/<\\w+([^>]*?)?>/gi, ''); // 单标签
       return html.trim();
     },
 
