@@ -51,7 +51,7 @@
         },
         "catalog": {
             "request": {
-                "url": "{url}",
+                "url": "http://www.comico.com.tw/api/article_nav.nhn?titleNo={bookid}&articleNo=0",
                 "type": "json",
                 "timeout": 10
             },
@@ -69,10 +69,9 @@
             }
         },
         "chapter": {
-            "info": {
-                "content": "#chapterContentWapper",
-                "modifyTime": "#readAreaBox > div.chapter_update_time",
-                "title": "#readAreaBox > h1"
+            "response": {
+                "contentHTML": "._view",
+                "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1) > font > font"
             }
         }
     },

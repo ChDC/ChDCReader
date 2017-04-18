@@ -175,6 +175,12 @@ define(["jquery"], function($){
       return params;
     },
 
+    // 将复杂的 HTML 内容转换成只有文字和图片的简单的内容
+    clearHTML(html){
+      // 清除除文字和图片之外的其他标签
+      // TODO
+    },
+
     // HTML 内容转换为 Text
     html2text(html){
 
