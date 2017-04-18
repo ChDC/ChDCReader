@@ -1,4 +1,81 @@
 {
+    "comico": {
+        "id": "comico",
+        "name": "Comico",
+        "contentSourceWeight": 100,
+        "mainSourceWeight": 10,
+        "host": "http://www.comico.com.tw/",
+        "search": {
+            "request": {
+                "url": "http://www.comico.com.tw/api/genretitles.nhn?seq=1&typeMain=0&typeSub=0",
+                "type": "JSON",
+                "timeout": 10
+            },
+            "response": {
+                "type": "array",
+                "element": "lists",
+                "children": {
+                    "name": "name",
+                    "author": "author",
+                    "catagory": "",
+                    "complete": "isFinish",
+                    "coverImg": "imageUrl",
+                    "introduce": "copy",
+                    "bookid": "titleNo",
+                    "detailLink": {
+                        "type": "format",
+                        "value": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
+                    },
+                    "catalogLink": {
+                        "type": "format",
+                        "value": "http://www.comico.com.tw/api/article_list.nhn?titleNo={bookid}&startIndex=10"
+                    }
+                }
+            }
+        },
+        "detail": {
+            "response": {
+                "author": "dd.name > span:nth-child(1)",
+                "catagory": "#container > div > div.chapban > div > dl > dd.name > span:nth-child(3)",
+                "complete": {
+                    "type": "boolean",
+                    "true": "#container > div > div.contwrap > div.chaphd > p > strong",
+                    "default": false
+                },
+                "coverImg": "#container > div > div.chapban > span.bg_img > img",
+                "introduce": "#container > div > div.chapban > div > dl > dd.dsc",
+                "lastestChapter": "#container > div > div.contwrap > ul > li:nth-child(1) > a > span.tit",
+                "lastestChapterLink": "#container > div > div.contwrap > ul > li:nth-child(1) > a",
+                "name": "#container > div > div.chapban > div > h2"
+            }
+        },
+        "catalog": {
+            "request": {
+                "url": "{url}",
+                "type": "json",
+                "timeout": 10
+            },
+            "response":{
+                "type": "array",
+                "element": "list",
+                "children": {
+                    "title": "name",
+                    "linkid": "id",
+                    "link": {
+                        "type": "format",
+                        "value": "http://www.comico.com.tw/detail.nhn?titleNo={bookid}&articleNo={linkid}"
+                    }
+                }
+            }
+        },
+        "chapter": {
+            "info": {
+                "content": "#chapterContentWapper",
+                "modifyTime": "#readAreaBox > div.chapter_update_time",
+                "title": "#readAreaBox > h1"
+            }
+        }
+    },
     "qidian": {
         "id": "qidian",
         "name": "起点中文网",

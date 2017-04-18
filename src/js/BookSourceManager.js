@@ -180,10 +180,10 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
           if(m.bookid) bss.bookid = m.bookid;
 
           bss.detailLink = m.detailLink;
+          bss.catalogLink = m.catalogLink;
           if(m.lastestChapter){
             bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
           }
-          // bss.catalogLink = computeCatalogLink(bss);
 
           bss.searched = true;
           book.sources[bsid] = bss;
@@ -237,7 +237,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
         });
     }
 
-    // 获取目录链接
+    // 从某个网页获取目录链接
     getBookCatalogLink(bsid, locals){
 
       util.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
@@ -349,6 +349,41 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
       // aftergetBook(book){
       //   return book;
       // }
+    },
+
+    comico: {
+      getBookCatalog(bsid, locals){
+
+        let self = this;
+
+        return co(function*(){
+          let bookid = locals.bookid;
+
+          let data = yield self.getBookInfo(bsid, locals.detailLink);
+          let lc = data.lastestChapterLink;
+          if(!lc) return null;
+          // 获取最新章节，然后从序号中获取总章节数目
+          let maxCount = data.lastestChapterLink.match(/articleNo=(\d+)/)[1];
+
+          // 0 10 ...
+          let n = Math.ceil(maxCount / 10);
+          let startIndexs = (new Array(n)).fill(0).map((e,i) => i*10)
+
+          // 获取所有章节列表
+          let result = yield Promise.all(startIndexs.map(si => getPartCatalog(si, locals)));
+          // 将结果按 linkid 排序
+          result.sort((e1, e2) => e1[0].linkid - e2[0].linkid);
+          // 合并结果并返回
+          return result.reduce((s, e) => s.concat(e), []);
+
+          // 获取每一部分章节
+          function getPartCatalog(startIndex, locals){
+            let catalogLink = `http://www.comico.com.tw/api/article_list.nhn?titleNo=${locals.bookid}&startIndex=${startIndex}`;
+            let dict = Object.assign({}, locals, {url: catalogLink});
+            return self.spider.get(self.sources[bsid].catalog, dict);
+          }
+        });
+      }
     }
 
   };
