@@ -320,7 +320,7 @@ define(["jquery"], function ($) {
     __convertFileName: function __convertFileName(file) {
       return file.replace(/[\\:*?"<>|/]/g, "");
     },
-    __saveJSONToFile: function __saveJSONToFile(file, data) {
+    __saveTextToFile: function __saveTextToFile(file, data) {
       var isCacheDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       file = this.__convertFileName(file);
@@ -351,7 +351,7 @@ define(["jquery"], function ($) {
         createAndWriteFile();
       });
     },
-    __loadJSONFromFile: function __loadJSONFromFile(file) {
+    __loadTextFromFile: function __loadTextFromFile(file) {
       var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       file = this.__convertFileName(file);
@@ -435,9 +435,9 @@ define(["jquery"], function ($) {
 
       if (!key) return Promise.reject(new Error("Illegal args"));
 
-      if (window.requestFileSystem) {
-        return this.__loadJSONFromFile(key, onlyCache);
-      } else {
+      if (window.requestFileSystem) return this.__loadTextFromFile(key, onlyCache).then(function (data) {
+        return JSON.parse(data);
+      });else {
         var s = onlyCache ? sessionStorage : localStorage;
         var data = s.getItem(key);
         data = JSON.parse(data);

@@ -386,7 +386,7 @@ define(["jquery"], function($){
     },
 
     // 保存 JSON 对象到文件中
-    __saveJSONToFile(file, data, isCacheDir=false){
+    __saveTextToFile(file, data, isCacheDir=false){
       file = this.__convertFileName(file);
 
       return new Promise((resolve, reject) => {
@@ -429,7 +429,7 @@ define(["jquery"], function($){
     },
 
     // 从文件中获取 JSON 对象
-    __loadJSONFromFile(file, isCacheDir=false){
+    __loadTextFromFile(file, isCacheDir=false){
       file = this.__convertFileName(file);
 
       return new Promise((resolve, reject) => {
@@ -517,9 +517,9 @@ define(["jquery"], function($){
     loadData(key, onlyCache=false){
       if(!key) return Promise.reject(new Error("Illegal args"));
 
-      if(window.requestFileSystem){
-        return this.__loadJSONFromFile(key, onlyCache);
-      }
+      if(window.requestFileSystem)
+        return this.__loadTextFromFile(key, onlyCache)
+          .then(data => JSON.parse(data));
       else{
         const s = onlyCache? sessionStorage : localStorage;
         let data = s.getItem(key);

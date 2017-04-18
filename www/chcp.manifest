@@ -285,7 +285,7 @@
   },
   {
     "file": "mylib/util.js",
-    "hash": "d60c6216b305b249358d082e1d5a0b50"
+    "hash": "88f506ff60260abcfcca85e46f82af3b"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -345,7 +345,7 @@
   },
   {
     "file": "test.html",
-    "hash": "cfcc30e950b64dc6f7c7d59b9e04a131"
+    "hash": "3c270c564c0abfcba5a704308211fbed"
   },
   {
     "file": "test/app.test.js",
