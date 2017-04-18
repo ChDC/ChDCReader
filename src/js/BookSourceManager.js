@@ -9,27 +9,74 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
       this.sources;
       this.spider = new Spider();
 
-      this.loadConfig(configFileOrConfig)
-        .then(() => {
-          this.init();
-        });
+      this.loadConfig(configFileOrConfig);
+      this.addCustomSourceFeature();
+    }
+
+    init(){
+      return Promise.all(Object.values(this.CustomSourceFunction)
+        .map(cm => cm.init && cm.init()));
     }
 
     // 加载配置
     loadConfig(configFileOrConfig){
-      if(!configFileOrConfig)
-        return Promise.resolve(this.sources);
-
-      if(typeof configFileOrConfig == 'string'){
+      if(configFileOrConfig && typeof configFileOrConfig == 'string'){
         return util.getJSON(configFileOrConfig)
           .then(data => {
             this.sources = data;
-            return this.sources;
-          });
+          })
+          .then(() => this.init())
+          .then(() => this.sources);
       }
-      else{
+      else if(configFileOrConfig){
         this.sources = configFileOrConfig;
-        return Promise.resolve(this.sources);
+      }
+      return this.init()
+          .then(() => this.sources);
+    }
+
+    // 把拦截函数功能添加到类中
+    // 可以设置前置拦截器、方法拦截器和后置拦截器
+    addCustomSourceFeature(){
+      let customFunctionList = ["getBook", "searchBook",
+              "getBookInfo", "getChapter",
+              "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
+      for(let cf of customFunctionList){
+        let oldFunction = this[cf];
+        let self = this;
+        this[cf] = function(bsid){ // 此处必须用 function，不能用箭头函数
+
+          // 在调用系统函数之前，用自定义的 before* 函数处理参数
+          // 如 beforegetBook 或 beforeGetBook 处理 getBook 函数
+          let beforeFunctions = [`before${cf}`, `before${cf[0].toUpperCase()}${cf.slice(1)}`];
+          let args = arguments;
+          for(let bf of beforeFunctions){
+            if(bsid in self.CustomSourceFunction && bf in self.CustomSourceFunction[bsid]){
+              args = self.CustomSourceFunction[bsid][bf].apply(self, args);
+              break;
+            }
+          }
+
+          let promise;
+          // 优先调用自定义的同名函数，如果 getBook
+          if(bsid in self.CustomSourceFunction && cf in self.CustomSourceFunction[bsid])
+            promise = self.CustomSourceFunction[bsid][cf].apply(self, args);
+
+          else
+            // 调用系统函数
+            promise = oldFunction.apply(self, args);
+
+          // 在调用完系统函数之后，用自定义的 after* 函数处理结果
+          // 如 aftergetBook 或 afterGetBook 处理 getBook 函数
+          let afterFunctions = [`after${cf}`, `after${cf[0].toUpperCase()}${cf.slice(1)}`];
+
+          for(let af of afterFunctions){
+            if(bsid in self.CustomSourceFunction && af in self.CustomSourceFunction[bsid]){
+              return promise.then(result => self.CustomSourceFunction[bsid][af].call(self, result));
+            }
+          }
+          return promise;
+        };
       }
     }
 
@@ -270,42 +317,39 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
       }
     }
 
-    init(){
-      for(const key in this){
-        const value = this[key];
-        if(typeof value == 'object' && 'init' in value){
-          value.init();
-        }
-      }
-    }
-
   }
 
-  BookSourceManager.prototype.qidian = {
-    csrfToken: "",
-    getCSRToken(){
-      const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-      if(typeof cordovaHTTP != 'undefined'){
-        cordovaHTTP.get(url, {}, {},
-          function(response){
-            debugger;
-          },
-          function(e){
-            debugger;
-          });
-      }
+  // 定义一个用于存放自定义获取信息的钩子的集合
+  BookSourceManager.prototype.CustomSourceFunction = {
 
-      // $.getJSON(url, function(json, status, xhr){
-      //     if(json.code == 0){
-      //         return;
-      //     }
-      //     const cookies = xhr.getResponseHeader("Cookies");
-      //     debugger;
-      // });
-    },
-    init(){
-      this.getCSRToken();
+    qidian: {
+      csrfToken: "",
+      getCSRToken(){
+        const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
+        if(typeof cordovaHTTP != 'undefined'){
+          cordovaHTTP.get(url, {}, {},
+            function(response){
+              debugger;
+            },
+            function(e){
+              debugger;
+            });
+        }
+      },
+      init(){
+        return this.getCSRToken();
+      },
+      // beforeGetBook(){
+      //   return arguments;
+      // },
+      // getBook(){
+      //   debugger;
+      // },
+      // aftergetBook(book){
+      //   return book;
+      // }
     }
+
   };
 
   return BookSourceManager;
