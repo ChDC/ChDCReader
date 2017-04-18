@@ -1,0 +1,63 @@
+{
+    "comico": {
+        "id": "comico",
+        "name": "Comico",
+        "contentSourceWeight": 100,
+        "mainSourceWeight": 10,
+        "host": "http://www.comico.com.tw/",
+        "search": {
+            "request": {
+                "url": "http://www.comico.com.tw/api/genretitles.nhn?seq=1&typeMain=0&typeSub=0",
+                "type": "JSON"
+            },
+            "response": {
+                "type": "array",
+                "element": "lists",
+                "children": {
+                    "name": "name",
+                    "author": "author",
+                    "catagory": "",
+                    "complete": "isFinish",
+                    "coverImg": "imageUrl",
+                    "introduce": "copy",
+                    "lastestChapter": "",
+                    "bookid": "titleNo",
+                    "detailLink": {
+                        "type": "format",
+                        "value": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
+                    },
+                    "catalogLink": {
+                        "type": "format",
+                        "value": "http://www.comico.com.tw/api/article_list.nhn?titleNo={bookid}&startIndex=10"
+                    }
+                }
+            }
+        },
+        "detail": {
+            "response": {
+                "author": "div.AuthorInfo > div > a.name",
+                "catagory": "body > div.infoPath > div > a:nth-child(3)",
+                "complete": "div.BookInfo > div.Info > div.label > a:nth-child(1) > span",
+                "cover": "div.BookInfo > div.Props > div > a > img",
+                "introduce": "div.BookInfo > div.Info.Sign > dl > dd > div:nth-child(1) > a",
+                "lastestChapter": "dl.NewsChapter > dd > ul > li:nth-child(2) > a",
+                "name": "div.BookInfo > div.Info.Sign > h1 > a"
+            }
+        },
+        "catalog": {
+            "link": "{catalogLink}",
+            "type": "html",
+            "info": {
+                "link": "body > div.Main.List > dl > dd > a"
+            }
+        },
+        "chapter": {
+            "info": {
+                "content": "#chapterContentWapper",
+                "modifyTime": "#readAreaBox > div.chapter_update_time",
+                "title": "#readAreaBox > h1"
+            }
+        }
+    }
+
+}

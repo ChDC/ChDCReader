@@ -137,7 +137,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       this.error.load("data/errorCode.json");
       this.settings.load()
         .then(() => {
-          this.bookSourceManager = new BookSourceManager("data/booksources.json");
+          this.bookSourceManager = new BookSourceManager("data/comicsources.json");
           // this.bookSourceManager.init();
 
           this.bookShelf = new BookShelf();
