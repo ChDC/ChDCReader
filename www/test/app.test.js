@@ -6,7 +6,7 @@ require(["../js/config"], function () {
         mocha.setup('bdd');
         mocha.timeout(5000);
 
-        var testList = ["util", "Spider", "BookSourceManager"];
+        var testList = ["mocha", "util", "Spider", "BookSourceManager"];
 
         require(testList.map(function (e) {
             return "../test/" + e + ".test";
