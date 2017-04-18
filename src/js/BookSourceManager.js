@@ -125,6 +125,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
 
         for(let bsid of allBsids){
           let books = result[bsid];
+          if(!books)break;
           for(let b of books){
             if(filterSameResult){
               // 过滤相同的结果

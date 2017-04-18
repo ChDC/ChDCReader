@@ -472,7 +472,6 @@ define(["chai", "BookSourceManager"], function(chai, BookSourceManager){
       before(()=>{
         bsm = new BookSourceManager();
         return bsm.loadConfig("data/booksources.json");
-        let bsName = bsm.getBookSourceName(bsid);
       });
 
       it('测试搜索', ()=>{
@@ -544,8 +543,19 @@ define(["chai", "BookSourceManager"], function(chai, BookSourceManager){
 
   describe(`BookSourceManager 其他测试`, () => {
 
-    it('全局搜索', () => {
+    let bsm;
 
+    before(()=>{
+      bsm = new BookSourceManager();
+      return bsm.loadConfig("data/booksources.json");
+    });
+
+    it('全局搜索', () => {
+      return bsm.searchBookInAllBookSource("三生三世十里桃花")
+            .then(books => {
+              equal(true, books.length >= 0);
+              equal("三生三世十里桃花", books.find(b => b.name == "三生三世十里桃花").name);
+            })
     });
 
   });
