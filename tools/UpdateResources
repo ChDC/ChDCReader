@@ -1,0 +1,7 @@
+#!/bin/bash
+cd ${0%/*}
+cd ..
+
+url='https://raw.githubusercontent.com/ChDC/ChDCNovelReader/dev/'
+
+python tools/ReplaceCRLFtoLF.py -d www && cordova-hcp build && git checkout dev && git add . && git commit -m "Update Resources" && git push github dev && python tools/RefreshGithubURL.py -d www -u $url
