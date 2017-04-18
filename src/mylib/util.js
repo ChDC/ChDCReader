@@ -495,7 +495,7 @@ define(["jquery"], function($){
       if(!key || !data)
         return Promise.reject(new Error("Illegal args"));
       if(window.requestFileSystem){
-        return this.__saveJSONToFile(key, data, onlyCache);
+        return this.__saveTextToFile(key, data, onlyCache);
       }
       else{
         const s = onlyCache? sessionStorage : localStorage;
