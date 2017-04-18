@@ -433,6 +433,9 @@ define(["jquery"], function($){
       file = this.__convertFileName(file);
 
       return new Promise((resolve, reject) => {
+        function handleError(){
+          resolve(null);
+        }
         function readFile(){
           const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
           //持久化数据保存
@@ -449,8 +452,8 @@ define(["jquery"], function($){
 
                     reader.readAsText(file);
 
-                  }, reject);
-                }, reject);
+                  }, handleError);
+                }, handleError);
 
             }, reject);
         }

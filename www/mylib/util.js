@@ -357,6 +357,9 @@ define(["jquery"], function ($) {
       file = this.__convertFileName(file);
 
       return new Promise(function (resolve, reject) {
+        function handleError() {
+          resolve(null);
+        }
         function readFile() {
           var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
 
@@ -370,8 +373,8 @@ define(["jquery"], function ($) {
                 };
 
                 reader.readAsText(file);
-              }, reject);
-            }, reject);
+              }, handleError);
+            }, handleError);
           }, reject);
         }
 
