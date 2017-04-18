@@ -29,7 +29,7 @@
     <plugin name="cordova-plugin-device" spec="~1.1.4" />
     <preference name="OverrideUserAgent" value="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36" />
     <chcp>
-        <config-file url="https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/www/chcp.json" />
+        <config-file url="https://raw.githubusercontent.com/ChDC/ChDCNovelReader/dev/www/chcp.json" />
         <auto-install enabled="false" />
         <auto-download enabled="false" />
     </chcp>
