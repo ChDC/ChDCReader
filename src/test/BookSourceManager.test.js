@@ -5,8 +5,9 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
   // 小说书源测试
   let bsids = ["biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
-  // for(let bsid of bsids){
-  for(let bsid of ['comico']){
+
+  for(let bsid of bsids){
+  // for(let bsid of ['comico']){
 
     function equalBook(bsid, book, b){
       assert.isObject(b);
@@ -14,7 +15,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       equal(true, !!b);
 
       // 除了 chapters 和 introduce 之外的，其他都相等
-      let exclude = ['chapters', 'introduce', 'lastestChapter', 'cover'];
+      let exclude = ['chapters', 'introduce', 'lastestChapter', 'cover', 'catalogLink'];
       for(let key in book){
         if(exclude.indexOf(key) >= 0)
           continue;

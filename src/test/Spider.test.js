@@ -81,9 +81,9 @@ define(["chai", "Spider"], function(chai, Spider){
       assert.notInclude(spider.__filterElement(html, 'div'), 'div');
     });
 
-    it('filterHtmlContent', () => {
-      assert.equal("", spider.filterHtmlContent(""));
-      assert.equal(null, spider.filterHtmlContent());
+    it('__transformHTMLTagProperty', () => {
+      assert.equal("", spider.__transformHTMLTagProperty(""));
+      assert.equal(null, spider.__transformHTMLTagProperty());
 
       let html = `
         <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
@@ -91,20 +91,86 @@ define(["chai", "Spider"], function(chai, Spider){
         <style></style>
         <style>abc</style>
         <script type="text/javascript" src="cordova.js"></script>
-        <title>ChDCNovelReader</title>
+        <title>ChDCReader</title>
+        <iframe src="cordova"></iframe>
+        <img src="test.png" />
+        <img src="test.png" />
+      `;
+
+      let fh = spider.__transformHTMLTagProperty(html);
+      assert.include(fh, '<img data-src="test.png" />');
+      assert.notInclude(fh, '<img src="test.png" />');
+    });
+
+    it('clearHtml', () => {
+      assert.equal("", spider.clearHtml(""));
+      assert.equal(null, spider.clearHtml());
+
+      let html = `
+        <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
+        <meta charset="UTF-8">
+        <style></style>
+        <style>abc</style>
+        <script type="text/javascript" src="cordova.js">
+        </script>
+        <title>ChDCReader</title>
+        <iframe src="cordova"></iframe>
+        <img class="css" src="test.png" />
+        <img align="right" src="test.png" />
+        <img class="css" src="test.png"></img>
+        <p class
+        ="css" style
+        ="color:red;">Test1</p>
+
+        Test2<br/>
+        Test3<br/>
+        Test4<br/>
+        Test2<br/>
+        Test2<br/>
+        Test2<br/>
+        <p class="css" style="color='red'">Test10</p>
+      `;
+
+      let fh = spider.clearHtml(html);
+      assert.notInclude(fh, '<style');
+      assert.notInclude(fh, '<meta');
+      assert.notInclude(fh, '<link');
+      assert.notInclude(fh, '<iframe');
+      assert.include(fh, '<img');
+
+      assert.include(fh, 'Test1');
+      assert.include(fh, 'test.png');
+      assert.notInclude(fh, 'red');
+      assert.notInclude(fh, 'css');
+      assert.notInclude(fh, 'right');
+      assert.notInclude(fh, '<br');
+      assert.include(fh, 'Test10');
+      assert.include(fh, 'Test4');
+    });
+
+    it('filterHtmlContent', () => {
+      assert.equal("", spider.filterHtmlContent(""));
+      assert.equal(null, spider.filterHtmlContent());
+
+      let html = `
+        <link rel="stylesheet"
+        href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
+        <meta charset="UTF-8">
+        <style></style>
+        <style>abc
+        </style>
+        <script type="text/javascript" src="cordova.js"></script>
+        <title>ChDCReader</title>
         <iframe src="cordova"></iframe>
         <img src="test.png" />
         <img src="test.png" />
       `;
       let fh = spider.filterHtmlContent(html);
-      assert.notInclude(fh, 'style');
-      assert.notInclude(fh, 'meta');
-      assert.notInclude(fh, 'link');
-      assert.notInclude(fh, 'iframe');
-      assert.include(fh, 'img');
-      assert.include(fh, '<img data-src="test.png" />');
-      assert.notInclude(fh, '<img src="test.png" />');
-
+      assert.notInclude(fh, '<style');
+      assert.notInclude(fh, '<meta');
+      assert.notInclude(fh, '<link');
+      assert.notInclude(fh, '<iframe');
+      assert.include(fh, '<img');
     });
 
     it('getDataFromObject', () => {

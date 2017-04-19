@@ -71,7 +71,7 @@
         "chapter": {
             "response": {
                 "contentHTML": "._view",
-                "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1) > font > font"
+                "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
             }
         }
     },

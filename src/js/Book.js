@@ -260,7 +260,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
       const self = this;
 
       // 如果指定的源是要排除的源，则清除之
-      if(excludes && excludes.indexOf(contentSourceId) >= 0)
+      if(excludes && excludes.includes(contentSourceId))
         contentSourceId = null;
 
       // 如果选项中有 contentSourceId 和 contentSourceChapterIndex，则比对指定的索引
@@ -317,14 +317,14 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
           for(const exclude of excludes)
           {
             const i = contentSources.indexOf(exclude);
-            delete contentSources[i];
+            contentSources.splice(i, 1);
             if(!noInfluenceWeight)
               self.sources[exclude].weight += EXECLUDE_WEIGHT;
           }
         }
         if(includeSource){
           const i = contentSources.indexOf(includeSource);
-          delete contentSources[i];
+          contentSources.splice(i, 1);
           // 放到结尾处
           contentSources.push(includeSource);
           if(!noInfluenceWeight)

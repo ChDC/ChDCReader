@@ -1,16 +1,18 @@
-# ChDCNovelReader
+# ChDCReader
 
 ## 简介
 
-用于追小说的 App。
+用于追小说、漫画的 App。
 
 ## 功能
 
-* 从各大书源搜索小说
+* 从各大书源搜索小说、漫画
 * 自动从各大书源获取最新章节
 * 夜间模式
 
 ## 当前支持的书源
+
+### 小说
 
 * [起点中文网](http://www.qidian.com/)
 * [创世中文网](http://chuangshi.qq.com/)
@@ -19,6 +21,10 @@
 * [笔趣阁 TW](http://www.biquge.com.tw/)
 * [笔趣阁中文网](http://www.biqugezw.com/)
 * [笔趣阁](http://www.biquge.com/)
+
+### 漫画
+
+* [comico](http://www.comico.com.tw/)
 
 ## 声明
 
@@ -30,19 +36,28 @@
 
 ## 截图
 
-![阅读页面](Screenshot/Screenshot_2017-03-24-21-09-01-856_com.chdc.novelreader.png)
 
-![书架页](Screenshot/Screenshot_2017-03-24-21-08-27-044_com.chdc.novelreader.png)
+### 书架页面
 
-![书籍操作](Screenshot/Screenshot_2017-03-24-21-08-31-689_com.chdc.novelreader.png)
+![书架页](Screenshot/Screenshot_2017-03-24-21-08-27-044_com.chdc.reader.png)
 
-![目录页](Screenshot/Screenshot_2017-03-24-21-11-24-410_com.chdc.novelreader.png)
+![书籍操作](Screenshot/Screenshot_2017-03-24-21-08-31-689_com.chdc.reader.png)
 
-![搜索页](Screenshot/Screenshot_2017-03-24-21-08-21-025_com.chdc.novelreader.png)
+![夜间模式书架](Screenshot/Screenshot_2017-03-24-21-09-18-075_com.chdc.reader.png)
 
-![夜间模式阅读页面](Screenshot/Screenshot_2017-03-24-21-09-14-051_com.chdc.novelreader.png)
+### 目录页
 
-![夜间模式书架](Screenshot/Screenshot_2017-03-24-21-09-18-075_com.chdc.novelreader.png)
+![目录页](Screenshot/Screenshot_2017-03-24-21-11-24-410_com.chdc.reader.png)
+
+### 搜索页面
+
+![搜索页](Screenshot/Screenshot_2017-03-24-21-08-21-025_com.chdc.reader.png)
+
+### 小说阅读界面
+
+![阅读页面](Screenshot/Screenshot_2017-03-24-21-09-01-856_com.chdc.reader.png)
+
+![夜间模式阅读页面](Screenshot/Screenshot_2017-03-24-21-09-14-051_com.chdc.reader.png)
 
 ## 使用技巧
 

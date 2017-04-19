@@ -4,7 +4,7 @@
          "author" : "夜宵草",
          "chapters" : [
             {
-               "content" : "的",
+               "content" : "<img",
                "linkid": 104,
                "link" : "http://www.comico.com.tw/detail.nhn?titleNo=1&articleNo=104",
                "title" : "report104. 泡沫之花"
@@ -81,7 +81,7 @@
          "chapters" : [
             {
                "content" : "的",
-               "link" : "http\n://www.biquge.com.tw/12_12001/6505969.html",
+               "link" : "http://www.biquge.com.tw/12_12001/6505969.html",
                "title" : "第九十一章怎么就不响呢？"
             }
          ],
@@ -223,7 +223,7 @@
             }
          ],
          "complete" : false,
-         "cover" : "http://img.dzz8.com/pu\nblic/cover/5e/b0/bd/5eb0bd600f38ed89e26bd0dc3d70ff0d.jpg",
+         "cover" : "http://img.dzz8.com/public/cover/5e/b0/bd/5eb0bd600f38ed89e26bd0dc3d70ff0d.jpg",
          "detailLink" : "http://www.daizhuzai.com/351/",
          "introduce" : "一念成沧海，一念化桑田。",
          "lastestChapter" : "",

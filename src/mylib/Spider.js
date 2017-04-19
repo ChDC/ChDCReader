@@ -114,6 +114,7 @@ define(["util"], function(util){
           return requestPromise
             .then(data => {
               data = this.filterHtmlContent(data);
+              data = this.__transformHTMLTagProperty(data);
               let html = document.createElement("div");
               html.innerHTML = data;
 
@@ -428,6 +429,29 @@ define(["util"], function(util){
       return result;
     }
 
+    // 将复杂的 HTML 内容转换成只有文字和图片的简单的内容
+    clearHtml(html){
+      if(!html) return html;
+
+      // 清除黑名单标签
+      html = this.filterHtmlContent(html);
+
+      // 清空标签属性，排除白名单属性 src
+      let whitePropertyList = ['src'];
+      html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*" */gi, (p0, p1)=>
+          whitePropertyList.includes(p1) ? p0 : ""
+        );
+
+      // 转换 <br> 为 p 标签
+      html = html.replace(/([^>]*)<br *\/>/gi, '<p>$1</p>');
+
+      // 去掉标签前后的空格 &nbsp;
+      html = html.replace(/>[　 \n\r]+/gi, '>');
+      html = html.replace(/[　 \n\r]+</gi, '<');
+
+      return html;
+    }
+
     // 过滤 HTML 中的内容，用于爬虫
     filterHtmlContent(html){
       if(!html) return html;
@@ -436,12 +460,15 @@ define(["util"], function(util){
       const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
       if(m && m.length >= 2)
         html = m[1];
-      // 去掉 script 标签
-      html = this.__filterElement(html, "script");
-      html = this.__filterElement(html, "iframe");
-      html = this.__filterElement(html, "link");
-      html = this.__filterElement(html, "meta");
-      html = this.__filterElement(html, "style");
+
+      let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
+      html = blackList.reduce((html, be) => this.__filterElement(html, be), html);
+      return html;
+    }
+
+    // 将诸如 img 标签的 src 属性转换为 data-src 防止浏览器加载图片
+    __transformHTMLTagProperty(html){
+      if(!html) return html;
 
       // 图片的 src 属性转换成 data-src 属性
       html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");

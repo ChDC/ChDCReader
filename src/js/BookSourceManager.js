@@ -200,8 +200,8 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
         let author = book.author.toLowerCase();
         let keywords = keyword.toLowerCase().split(/ +/);
         for(let kw of keywords){
-          if(kw.indexOf(name) >= 0 || kw.indexOf(author) >= 0 ||
-             name.indexOf(kw) >= 0 || author.indexOf(kw) >= 0)
+          if(kw.includes(name) || kw.includes(author) ||
+             name.includes(kw) || author.includes(kw))
             return true;
         }
         return false;
@@ -288,7 +288,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
       return this.spider.get(bsm.chapter, {url: chapterLink, chapterLink: chapterLink})
         .then(data => {
           const chapter = new Chapter();
-          chapter.content = util.html2text(data.contentHTML);
+          chapter.content = this.spider.clearHtml(data.contentHTML);
 
           if(!chapter.content){
             // 没有章节内容就返回错误
