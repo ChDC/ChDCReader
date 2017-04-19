@@ -47,7 +47,8 @@
 }
 
 .chapter{
-    margin: 15px 0;
+    padding-top: 15px;
+    margin: 0;
     word-wrap: break-word;
 }
 

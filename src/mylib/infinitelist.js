@@ -166,8 +166,8 @@ define(["jquery", "co"], function($, co) {
 
     // 向下、上检查
     checkBoundary(){
-      if(this.isCheckingBoundary)
-        return;
+      // 加锁
+      if(this.isCheckingBoundary) return;
       this.isCheckingBoundary = true;
       this.container.off('scroll', this.__scrollEvent.bind(this));
 
@@ -178,12 +178,20 @@ define(["jquery", "co"], function($, co) {
       }
       this.__lastCheckScrollY = curScrollY;
 
-      return co(this.__checkBoundary(scrollDirection, false))
-        .then(() => co(this.__checkBoundary(-scrollDirection, true)))
-        .then(() => {
-          this.container.on('scroll', this.__scrollEvent.bind(this));
-          this.isCheckingBoundary = false;
-        });
+      let self = this;
+      return co(function*(){
+        yield self.__checkBoundary(scrollDirection, false);
+        yield self.__checkBoundary(-scrollDirection, true);
+        self.container.on('scroll', self.__scrollEvent.bind(self));
+        self.isCheckingBoundary = false;
+      });
+
+      // co(this.__checkBoundary(scrollDirection, false))
+      //   .then(() => co(this.__checkBoundary(-scrollDirection, true)))
+      //   .then(() => {
+      //     this.container.on('scroll', this.__scrollEvent.bind(this));
+      //     this.isCheckingBoundary = false;
+      //   });
     }
 
 
@@ -291,6 +299,23 @@ define(["jquery", "co"], function($, co) {
         }
         if(self.onNewListItemFinished)
           self.onNewListItemFinished(self, be, direction);
+
+        // 将所有的图片的 onload 事件都设置好
+        let imgs = newItem.find('img');
+        yield Promise.all(Array.from(imgs).map(img =>
+            new Promise((resolve, reject) => {
+              img.onload = () => {
+                // clear onload 事件
+                img.onload = null;
+                img.onerror = null;
+                resolve();
+              }
+              img.onerror = () => {
+                img.onload = null;
+                img.onerror = null;
+                resolve();
+              }
+          })));
       }
       // if(willClear){
       //     clearOutBoundary();
