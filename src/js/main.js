@@ -65,6 +65,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         $(this.onDeviceReady.bind(this));
         // document.addEventListener("load", this.onDeviceReady.bind(this));
       }
+
       this.loadingbar = new uiutil.LoadingBar('./img/loading.gif');
     },
     // 检查资源更新

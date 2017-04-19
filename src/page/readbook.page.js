@@ -282,7 +282,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     buildChapter(chapter, title, index, options){
       const nc = $('.template .chapter').clone();
       nc.find(".chapter-title").text(chapter.title);
-      nc.find(".chapter-content").html(util.text2html(chapter.content, 'chapter-p'));
+
+      let content = $(`<div>${chapter.content}</div>`);
+      content.find('p').addClass('chapter-p');
+      content.find('img').addClass('content-img');
+      nc.find(".chapter-content").html(content);
       // nc.find(".chapter-source").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
 
       nc.data('chapterIndex', index);

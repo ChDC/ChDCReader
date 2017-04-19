@@ -41,7 +41,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
     }, {
       key: "onDeviceResume",
       value: function onDeviceResume() {
-        console.log("Refresh bookshelf on DeviceResume");
         this.onResume();
       }
     }, {

@@ -57,6 +57,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       } else {
         $(this.onDeviceReady.bind(this));
       }
+
       this.loadingbar = new uiutil.LoadingBar('./img/loading.gif');
     },
     chekcUpdate: function chekcUpdate(isInstanceInstall, showMessage) {
