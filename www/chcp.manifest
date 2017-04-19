@@ -349,7 +349,7 @@
   },
   {
     "file": "test/app.test.js",
-    "hash": "9444bacae3c1f7ed5768c03795f542c8"
+    "hash": "7c6dc1c8e2cb8a48c24c0efab1d1e717"
   },
   {
     "file": "test/Book.test.js",
@@ -369,7 +369,7 @@
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "3e2ce57fe762e5a0bc0fd415c031526d"
+    "hash": "ec04d8ad1045b1a104885aee617e9181"
   },
   {
     "file": "test/main.test.js",

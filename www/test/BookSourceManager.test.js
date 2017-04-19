@@ -5,6 +5,25 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
   var assert = chai.assert;
   var equal = assert.equal;
 
+  describe("BookSourceManager \u57FA\u7840\u6D4B\u8BD5", function () {
+
+    var bsm = void 0;
+
+    before(function () {
+      bsm = new BookSourceManager();
+      return bsm.loadConfig("data/booksources.json");
+    });
+
+    it('全局搜索', function () {
+      return bsm.searchBookInAllBookSource("三生三世十里桃花").then(function (books) {
+        equal(true, books.length >= 0);
+        equal("三生三世十里桃花", books.find(function (b) {
+          return b.name == "三生三世十里桃花";
+        }).name);
+      });
+    });
+  });
+
   var bsids = ["biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
@@ -124,23 +143,4 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
       }
     }
   }
-
-  describe("BookSourceManager \u5176\u4ED6\u6D4B\u8BD5", function () {
-
-    var bsm = void 0;
-
-    before(function () {
-      bsm = new BookSourceManager();
-      return bsm.loadConfig("data/booksources.json");
-    });
-
-    it('全局搜索', function () {
-      return bsm.searchBookInAllBookSource("三生三世十里桃花").then(function (books) {
-        equal(true, books.length >= 0);
-        equal("三生三世十里桃花", books.find(function (b) {
-          return b.name == "三生三世十里桃花";
-        }).name);
-      });
-    });
-  });
 });
