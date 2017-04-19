@@ -1,8 +1,8 @@
 {
-  "name": "ChDCNovelReader",
+  "name": "ChDCReader",
   "ios_identifier": "",
   "android_identifier": "",
   "update": "start",
-  "content_url": "https://raw.githubusercontent.com/ChDC/ChDCNovelReader/dev/www/",
-  "release": "2017.04.18-15.45.20"
+  "content_url": "https://raw.githubusercontent.com/ChDC/ChDCReader/dev/www/",
+  "release": "2017.04.19-10.47.25"
 }
