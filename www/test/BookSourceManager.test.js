@@ -24,7 +24,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
     });
   });
 
-  var bsids = ["biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  var bsids = ["u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -115,10 +115,11 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
         it('测试获取章节', function () {
           return Promise.all(books.map(function (book) {
             return Promise.all(book.chapters.map(function (chapter) {
-              return bsm.getChapter(bsid, chapter.link).then(function (c) {
+              return bsm.getChapter(bsid, chapter).then(function (c) {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);
                 equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
+                assert.notInclude(c.content, "<br");
               });
             }));
           }));

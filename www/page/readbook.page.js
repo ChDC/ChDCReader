@@ -217,9 +217,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
             lce.attr("data-index", i);
             lce.click(listCatalogEntryClick.bind(_this4));
             listCatalog.append(lce);
-            if (i == _this4.readingRecord.chapterIndex) {
-              lce.css("color", 'red');
-            }
+            if (i == _this4.readingRecord.chapterIndex) lce.addClass("current-chapter");else if (!value.link) lce.addClass("vip-chapter");
           });
           app.hideLoading();
         }).catch(function (error) {

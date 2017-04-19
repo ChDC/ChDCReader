@@ -474,27 +474,30 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
       }
     }, {
       key: "getChapter",
-      value: function getChapter(bsid, chapterLink) {
+      value: function getChapter(bsid) {
         var _this4 = this;
 
-        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapterLink + "\"");
+        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        if (!chapterLink) return Promise.reject(206);
+
+        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+
+        if (!chapter.link) return Promise.reject(206);
 
         var bsm = this.sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.spider.get(bsm.chapter, { url: chapterLink, chapterLink: chapterLink }).then(function (data) {
-          var chapter = new Chapter();
-          chapter.content = _this4.spider.clearHtml(data.contentHTML);
+        return this.spider.get(bsm.chapter, { url: chapter.link, chapterLink: chapter.link }).then(function (data) {
+          var c = new Chapter();
+          c.content = _this4.spider.clearHtml(data.contentHTML);
 
-          if (!chapter.content) {
+          if (!c.content) {
             return Promise.reject(206);
           }
-          chapter.link = chapterLink;
-          chapter.title = data.title;
+          c.link = chapter.link;
+          c.title = data.title;
 
-          return chapter;
+          return c;
         });
       }
     }, {
@@ -539,8 +542,38 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
       init: function init() {
         return this.getCSRToken();
       }
-    }
+    },
 
+    u17: {
+      getChapter: function getChapter(bsid) {
+        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+
+        if (!chapter.link) return Promise.reject(206);
+
+        return util.get(chapter.link).then(function (html) {
+          if (!html) return null;
+          var regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
+          html = html.match(regex);
+          if (!html) return null;
+          var json = JSON.parse(html[1]);
+          var keys = Object.keys(json).sort(function (e1, e2) {
+            return parseInt(e1) - parseInt(e2);
+          });
+
+          var imgs = keys.map(function (e) {
+            return atob(json[e].src);
+          });
+
+          chapter.content = imgs.map(function (img) {
+            return "<img src=\"" + img + "\">";
+          }).join('\n');
+          return chapter;
+        });
+      }
+    }
   };
 
   return BookSourceManager;

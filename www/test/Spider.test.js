@@ -48,6 +48,9 @@ define(["chai", "Spider"], function (chai, Spider) {
       equal('abc{def}', spider.format('abc{def}'));
       equal('abc123', spider.format('abc{def}', { def: 123 }));
       equal('abc{def}', spider.format('abc{def}', {}));
+
+      equal('abc"123"', spider.format('abc{def}', { def: "123" }, true));
+      equal('abc123', spider.format('abc{def}', { def: "123" }, false));
     });
 
     it('fixurl', function () {

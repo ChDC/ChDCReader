@@ -1,0 +1,18 @@
+/*********** Color ***************/
+
+body{
+    background-color: #252526;
+    background-image: none;
+    /*color: #3399ff;*/
+    color: #f1f1cf;
+}
+
+.bookSource option{
+    color: #000;
+}
+
+.btn-link{
+    color: #fff;
+    background-color: #EE0000;
+}
+

@@ -195,7 +195,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
         }).catch(function (error) {
           if (error != 207) throw error;
 
-          return _this5.bookSourceManager.getChapter(_this5.id, chapter.link).then(function (chapter) {
+          return _this5.bookSourceManager.getChapter(_this5.id, chapter).then(function (chapter) {
             return _this5.__cacheChapter(chapter);
           });
         });

@@ -168,7 +168,7 @@ define(["util"], function (util) {
               });
               if (response.valideach) result = result.filter(function (m) {
                 var dict = Object.assign({}, topLocals, util.type(m) == "object" ? m : {});
-                var validCode = '"use strict"\n' + _this2.format(response.valideach, dict);
+                var validCode = '"use strict"\n' + _this2.format(response.valideach, dict, true);
                 return eval(validCode);
               });
             }
@@ -187,7 +187,7 @@ define(["util"], function (util) {
               if (!e) return undefined;
               if (response.attribute) {
                 var attr = void 0;
-                if (response.attribute == 'src') attr = 'src';else attr = response.attribute;
+                if (response.attribute == 'src') attr = 'data-src';else attr = response.attribute;
                 result = e.getAttribute(attr);
                 if (attr == 'innerHTML') result = result.replace(/\bdata-src=(?=["'])/gi, "src=");
               } else result = this.__getValue(e, keyName, topLocals, locals);
@@ -204,7 +204,8 @@ define(["util"], function (util) {
               var _e = this.__getElement(data, response.element);
               if (!_e) return response.default;
               var v = this.__getValue(_e, keyName, topLocals, locals);
-              if (v && response.true == v) result = true;else if (!v || response.false == v) result = false;else result = response.default;
+
+              if (v && response.true && v.match(response.true)) result = true;else if (v && response.false && v.match(response.false)) result = false;else result = response.default;
             }
             break;
           case "format":
@@ -222,7 +223,7 @@ define(["util"], function (util) {
 
         if ("valid" in response) {
           var _dict = Object.assign({}, topLocals, locals);
-          var validCode = '"use strict"\n' + this.format(response.valid, _dict);
+          var validCode = '"use strict"\n' + this.format(response.valid, _dict, true);
           if (!eval(validCode)) return undefined;
         }
         return result;
@@ -393,11 +394,12 @@ define(["util"], function (util) {
       key: "format",
       value: function format(string) {
         var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var stringify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
         if (!string) return string;
 
         var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-          return p1 in object ? object[p1] : "{" + p1 + "}";
+          return p1 in object ? stringify ? JSON.stringify(object[p1]) : object[p1] : "{" + p1 + "}";
         });
         return result;
       }
@@ -413,10 +415,10 @@ define(["util"], function (util) {
           return whitePropertyList.includes(p1) ? p0 : "";
         });
 
-        html = html.replace(/([^>]*)<br *\/>/gi, '<p>$1</p>');
+        html = html.replace(/([^>]*)<br *\/?>/gi, '<p>$1</p>');
 
-        html = html.replace(/>[　 \n\r]+/gi, '>');
-        html = html.replace(/[　 \n\r]+</gi, '<');
+        html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
+        html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
 
         return html;
       }

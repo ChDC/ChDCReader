@@ -60,3 +60,7 @@
 .bookshelf .book{
     border-color: #aaa;
 }
+
+.unread-chapter{
+    color: red;
+}
