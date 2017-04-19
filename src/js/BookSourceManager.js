@@ -1,4 +1,4 @@
-define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, util, Spider, Book, BookSource, Chapter) {
+define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function(co, util, Spider, translate, Book, BookSource, Chapter, customBookSource) {
   "use strict"
 
   // **** BookSourceManager *****
@@ -14,7 +14,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
     }
 
     init(){
-      return Promise.all(Object.values(this.CustomSourceFunction)
+      return Promise.all(Object.values(customBookSource)
         .map(cm => cm.init && cm.init()));
     }
 
@@ -51,16 +51,16 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
           let beforeFunctions = [`before${cf}`, `before${cf[0].toUpperCase()}${cf.slice(1)}`];
           let args = arguments;
           for(let bf of beforeFunctions){
-            if(bsid in self.CustomSourceFunction && bf in self.CustomSourceFunction[bsid]){
-              args = self.CustomSourceFunction[bsid][bf].apply(self, args);
+            if(bsid in customBookSource && bf in customBookSource[bsid]){
+              args = customBookSource[bsid][bf].apply(self, args);
               break;
             }
           }
 
           let promise;
           // 优先调用自定义的同名函数，如果 getBook
-          if(bsid in self.CustomSourceFunction && cf in self.CustomSourceFunction[bsid])
-            promise = self.CustomSourceFunction[bsid][cf].apply(self, args);
+          if(bsid in customBookSource && cf in customBookSource[bsid])
+            promise = customBookSource[bsid][cf].apply(self, args);
 
           else
             // 调用系统函数
@@ -71,8 +71,8 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
           let afterFunctions = [`after${cf}`, `after${cf[0].toUpperCase()}${cf.slice(1)}`];
 
           for(let af of afterFunctions){
-            if(bsid in self.CustomSourceFunction && af in self.CustomSourceFunction[bsid]){
-              return promise.then(result => self.CustomSourceFunction[bsid][af].call(self, result));
+            if(bsid in customBookSource && af in customBookSource[bsid]){
+              return promise.then(result => customBookSource[bsid][af].call(self, result));
             }
           }
           return promise;
@@ -275,29 +275,29 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
     }
 
     // 从网络上获取章节内容
-    getChapter(bsid, chapterLink){
+    getChapter(bsid, chapter={}){
 
-      util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapterLink}"`);
+      util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
-      if(!chapterLink) return Promise.reject(206);
+      if(!chapter.link) return Promise.reject(206);
 
       const bsm = this.sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
 
-      return this.spider.get(bsm.chapter, {url: chapterLink, chapterLink: chapterLink})
+      return this.spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
         .then(data => {
-          const chapter = new Chapter();
-          chapter.content = this.spider.clearHtml(data.contentHTML);
+          const c = new Chapter();
+          c.content = this.spider.clearHtml(data.contentHTML);
 
-          if(!chapter.content){
+          if(!c.content){
             // 没有章节内容就返回错误
             return Promise.reject(206);
           }
-          chapter.link = chapterLink;
-          chapter.title = data.title;
+          c.link = chapter.link;
+          c.title = data.title;
 
-          return chapter;
+          return c;
         });
     }
 
@@ -318,75 +318,31 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
       }
     }
 
-  }
+    // 获取内容源的类型
+    getBookSourceType(bsid){
+      try{
+        return this.sources[bsid].type;
+      }
+      catch(e){
+        return "";
+      }
+    }
 
-  // 定义一个用于存放自定义获取信息的钩子的集合
-  BookSourceManager.prototype.CustomSourceFunction = {
-
-    qidian: {
-      csrfToken: "",
-      getCSRToken(){
-        const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-        if(typeof cordovaHTTP != 'undefined'){
-          cordovaHTTP.get(url, {}, {},
-            function(response){
-              debugger;
-            },
-            function(e){
-              debugger;
-            });
+    // 获取内容源的类型
+    getBookSourceTypeName(bsid){
+      try{
+        let typeName = {
+          "comics": "漫画",
+          "novel": "小说"
         }
-      },
-      init(){
-        return this.getCSRToken();
-      },
-      // beforeGetBook(){
-      //   return arguments;
-      // },
-      // getBook(){
-      //   debugger;
-      // },
-      // aftergetBook(book){
-      //   return book;
-      // }
-    },
+        return typeName[this.sources[bsid].type];
+      }
+      catch(e){
+        return "";
+      }
+    }
 
-    // comico: {
-    //   getBookCatalog(bsid, locals){
-
-    //     let self = this;
-
-    //     return co(function*(){
-    //       let bookid = locals.bookid;
-
-    //       let data = yield self.getBookInfo(bsid, locals.detailLink);
-    //       let lc = data.lastestChapterLink;
-    //       if(!lc) return null;
-    //       // 获取最新章节，然后从序号中获取总章节数目
-    //       let maxCount = data.lastestChapterLink.match(/articleNo=(\d+)/)[1];
-
-    //       // 0 10 ...
-    //       let n = Math.ceil(maxCount / 10);
-    //       let startIndexs = (new Array(n)).fill(0).map((e,i) => i*10)
-
-    //       // 获取所有章节列表
-    //       let result = yield Promise.all(startIndexs.map(si => getPartCatalog(si, locals)));
-    //       // 将结果按 linkid 排序
-    //       result.sort((e1, e2) => e1[0].linkid - e2[0].linkid);
-    //       // 合并结果并返回
-    //       return result.reduce((s, e) => s.concat(e), []);
-
-    //       // 获取每一部分章节
-    //       function getPartCatalog(startIndex, locals){
-    //         let catalogLink = `http://www.comico.com.tw/api/article_list.nhn?titleNo=${locals.bookid}&startIndex=${startIndex}`;
-    //         let dict = Object.assign({}, locals, {url: catalogLink});
-    //         return self.spider.get(self.sources[bsid].catalog, dict);
-    //       }
-    //     });
-    //   }
-    // }
-
-  };
+  }
 
   return BookSourceManager;
 });

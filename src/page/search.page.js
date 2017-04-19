@@ -16,6 +16,9 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
         const nb = b.clone();
         if(book.cover)
           nb.find(".book-cover").attr("src", book.cover);
+
+        nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
+
         nb.find(".book-name").text(book.name);
         // nb.find(".book-lastestchapter").text("最新章节：" + (book.getLastestChapter()? book.getLastestChapter() : "无"));
         nb.find(".book-author").text(book.author);

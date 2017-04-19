@@ -40,35 +40,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
 
       // 弹出工具栏
       $(".chapterContainer").on("click", event => {
-        // function isClickInRegion(minHeight, maxHeight)
-        // {
-        //     const clientHeight = $(window).height();
-        //     const y = event.clientY;
-        //     minHeight *= clientHeight;
-        //     maxHeight *= clientHeight;
-        //     return y >= minHeight && y <= maxHeight;
-        // }
-
-        // if(isClickInRegion(0.33, 0.66))
-        // {
           // 弹出工具栏
           $('.toolbar').toggle();
-        // }
-        // else if(isClickInRegion(0, 0.33))
-        // {
-        //     // 点击上半部分，向上滚动
-        //     $('.toolbar').hide();
-        //     const cc = $('.chapterContainer');
-        //     cc.scrollTop(cc.scrollTop() - cc.height() / 2);
-        // }
-        // else if(isClickInRegion(0.66, 1))
-        // {
-        //     // 点击下半部分，向下滚动
-        //     $('.toolbar').hide();
-        //     const cc = $('.chapterContainer');
-        //     cc.scrollTop(cc.scrollTop() + cc.height() / 2);
-
-        // }
       });
       $(".toolbar").blur((e) => $('.toolbar').hide());
       $(".toolbar").click((e) => $('.toolbar').hide());
@@ -92,6 +65,12 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         this.tmpOptions = {
           excludes: [this.readingRecord.options.contentSourceId]
         }
+        this.chapterList.loadList();
+      });
+      $("#btnRefresh").click(e => {
+        // this.readingRecord.chapterIndex = chapterIndex;
+        this.chapterList.emptyList();
+        app.showLoading();
         this.chapterList.loadList();
       });
       $("#btnSortReversed").click((e) => {
@@ -204,9 +183,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
             lce.click(listCatalogEntryClick.bind(this));
             listCatalog.append(lce);
             if(i == this.readingRecord.chapterIndex)
-            {
-              lce.css("color", 'red');
-            }
+              // 标记当前章节
+              lce.addClass("current-chapter");
+            else if(!value.link)
+              lce.addClass("vip-chapter");
           });
           app.hideLoading()
         })

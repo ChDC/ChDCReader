@@ -192,7 +192,7 @@ define(["util"], function(util){
             result = result.filter(m => {
               // 有验证的类型
               let dict = Object.assign({}, topLocals, util.type(m) == "object" ? m : {});
-              const validCode = '"use strict"\n' + this.format(response.valideach, dict);
+              const validCode = '"use strict"\n' + this.format(response.valideach, dict, true);
               return eval(validCode);
             });
         }
@@ -212,7 +212,7 @@ define(["util"], function(util){
           if(response.attribute){
             let attr;
             if(response.attribute == 'src')
-              attr = 'src';
+              attr = 'data-src';
             else
               attr = response.attribute;
             result = e.getAttribute(attr);
@@ -235,9 +235,10 @@ define(["util"], function(util){
           let e = this.__getElement(data, response.element);
           if(!e) return response.default;
           let v = this.__getValue(e, keyName, topLocals, locals);
-          if(v && response.true == v)
+
+          if(v && response.true && v.match(response.true))
             result = true;
-          else if(!v || response.false == v)
+          else if(v && response.false && v.match(response.false))
             result = false;
           else
             result = response.default;
@@ -260,7 +261,7 @@ define(["util"], function(util){
       if("valid" in response){
         // 有验证的类型
         let dict = Object.assign({}, topLocals, locals);
-        const validCode = '"use strict"\n' + this.format(response.valid, dict);
+        const validCode = '"use strict"\n' + this.format(response.valid, dict, true);
         if(!eval(validCode))
           return undefined; // 验证失败，返回空值
       }
@@ -315,7 +316,7 @@ define(["util"], function(util){
         return Array.from(element.querySelectorAll(selector));
       }
       else{
-        return this.__getDataFromObject(element, selector);
+        return this.__getDataFromObject(element, selector) || [];
       }
     }
 
@@ -420,11 +421,12 @@ define(["util"], function(util){
     }
 
     // 字符串格式化，类似于 Python 的 string.format
-    format(string, object={}){
+    // stringify 为 true 表示将属性先 stringify 在放入
+    format(string, object={}, stringify=false){
       if(!string) return string;
 
       const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          p1 in object ? object[p1] : `{${p1}}`
+          p1 in object ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : `{${p1}}`
         )
       return result;
     }
@@ -443,11 +445,11 @@ define(["util"], function(util){
         );
 
       // 转换 <br> 为 p 标签
-      html = html.replace(/([^>]*)<br *\/>/gi, '<p>$1</p>');
+      html = html.replace(/([^>]*)<br *\/?>/gi, '<p>$1</p>');
 
       // 去掉标签前后的空格 &nbsp;
-      html = html.replace(/>[　 \n\r]+/gi, '>');
-      html = html.replace(/[　 \n\r]+</gi, '<');
+      html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
+      html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
 
       return html;
     }

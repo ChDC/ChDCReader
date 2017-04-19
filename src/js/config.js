@@ -25,7 +25,8 @@ requirejs.config({
     "Test": "../mylib/Test",
     "Page": "../mylib/Page",
     "PageManager": "../mylib/PageManager",
-    "Spider": "../mylib/Spider"
+    "Spider": "../mylib/Spider",
+    "translate": "../mylib/translate"
   }
 });
 

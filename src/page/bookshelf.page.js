@@ -55,6 +55,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         if(book.cover)
           nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
+        if(app.bookSourceManager.getBookSourceType(book.mainSourceId) == 'comics')
+          nb.find(".book-name").addClass('type-comics');
         nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
         // 刷新最新章节
@@ -62,7 +64,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           .then(([lastestChapter]) => {
             nb.find(".book-lastestchapter")
               .text("最新：" + (lastestChapter? lastestChapter : "无"))
-              .css('color', this.isReadingLastestChapter(lastestChapter, readingRecord)? null : 'red');
+              .addClass(this.isReadingLastestChapter(lastestChapter, readingRecord) ? "" : 'unread-chapter');
 
             // 缓存后面章节内容
             book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);

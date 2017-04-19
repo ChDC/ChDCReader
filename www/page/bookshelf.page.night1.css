@@ -1,6 +1,6 @@
 /*********** Color ***************/
 
-body{
+body, .dropdown-menu{
     background-color: #252526;
     background-image: none;
     /*color: #3399ff;*/
@@ -22,3 +22,8 @@ body{
 .bookshelf .book{
     border-color: #aaa;
 }
+
+.dropdown-menu>li>a, .btnBookMenu{
+    color: #f1f1cf;
+}
+

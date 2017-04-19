@@ -3,8 +3,29 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
   let assert = chai.assert;
   let equal = assert.equal;
 
+
+  describe('BookSourceManager 基础测试', () => {
+
+    let bsm;
+
+    before(()=>{
+      bsm = new BookSourceManager();
+      return bsm.loadConfig("data/booksources.json");
+    });
+
+    it('全局搜索', () => {
+      return bsm.searchBookInAllBookSource("三生三世十里桃花")
+            .then(books => {
+              equal(true, books.length >= 0);
+              equal("三生三世十里桃花", books.find(b => b.name == "三生三世十里桃花").name);
+            })
+    });
+
+  });
+
+
   // 小说书源测试
-  let bsids = ["biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = ["u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
   // for(let bsid of ['comico']){
@@ -106,11 +127,12 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       it('测试获取章节', ()=>{
         return Promise.all(books.map(book =>
           Promise.all(book.chapters.map(chapter =>
-            bsm.getChapter(bsid, chapter.link)
+            bsm.getChapter(bsid, chapter)
               .then(c => {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);
                 equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
+                assert.notInclude(c.content, "<br");
               })
           ))
         ))
@@ -118,23 +140,4 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
     });
   }
 
-
-  describe(`BookSourceManager 其他测试`, () => {
-
-    let bsm;
-
-    before(()=>{
-      bsm = new BookSourceManager();
-      return bsm.loadConfig("data/booksources.json");
-    });
-
-    it('全局搜索', () => {
-      return bsm.searchBookInAllBookSource("三生三世十里桃花")
-            .then(books => {
-              equal(true, books.length >= 0);
-              equal("三生三世十里桃花", books.find(b => b.name == "三生三世十里桃花").name);
-            })
-    });
-
-  });
 });

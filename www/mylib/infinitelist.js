@@ -155,8 +155,6 @@ define(["jquery", "co"], function ($, co) {
     }, {
       key: "checkBoundary",
       value: function checkBoundary() {
-        var _this2 = this;
-
         if (this.isCheckingBoundary) return;
         this.isCheckingBoundary = true;
         this.container.off('scroll', this.__scrollEvent.bind(this));
@@ -168,21 +166,39 @@ define(["jquery", "co"], function ($, co) {
         }
         this.__lastCheckScrollY = curScrollY;
 
-        return co(this.__checkBoundary(scrollDirection, false)).then(function () {
-          return co(_this2.__checkBoundary(-scrollDirection, true));
-        }).then(function () {
-          _this2.container.on('scroll', _this2.__scrollEvent.bind(_this2));
-          _this2.isCheckingBoundary = false;
-        });
+        var self = this;
+        return co(regeneratorRuntime.mark(function _callee() {
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _context.next = 2;
+                  return self.__checkBoundary(scrollDirection, false);
+
+                case 2:
+                  _context.next = 4;
+                  return self.__checkBoundary(-scrollDirection, true);
+
+                case 4:
+                  self.container.on('scroll', self.__scrollEvent.bind(self));
+                  self.isCheckingBoundary = false;
+
+                case 6:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee, this);
+        }));
       }
     }, {
       key: "__checkBoundary",
       value: regeneratorRuntime.mark(function __checkBoundary(direction, willClear) {
-        var isOutBoundary, getBoundaryItem, isBoundarySatisfied, clearOutBoundary, self, es, be, _ref, newItem, type, bbe, cs;
+        var isOutBoundary, getBoundaryItem, isBoundarySatisfied, clearOutBoundary, self, es, be, _ref, newItem, type, bbe, cs, imgs;
 
-        return regeneratorRuntime.wrap(function __checkBoundary$(_context) {
+        return regeneratorRuntime.wrap(function __checkBoundary$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 clearOutBoundary = function clearOutBoundary() {
                   var ies = self.itemList.children();
@@ -239,7 +255,7 @@ define(["jquery", "co"], function ($, co) {
 
               case 5:
                 if (isBoundarySatisfied()) {
-                  _context.next = 22;
+                  _context2.next = 25;
                   break;
                 }
 
@@ -250,16 +266,16 @@ define(["jquery", "co"], function ($, co) {
                   be = direction >= 0 ? es.last() : es.first();
                 }
 
-                _context.next = 11;
+                _context2.next = 11;
                 return self.onNewListItem(self, be, direction);
 
               case 11:
-                _ref = _context.sent;
+                _ref = _context2.sent;
                 newItem = _ref.newItem;
                 type = _ref.type;
 
                 if (newItem) {
-                  _context.next = 17;
+                  _context2.next = 17;
                   break;
                 }
 
@@ -270,7 +286,7 @@ define(["jquery", "co"], function ($, co) {
                     bbe.data(direction + 'end', true);
                   }
                 }
-                return _context.abrupt("break", 22);
+                return _context2.abrupt("break", 25);
 
               case 17:
                 if (!be) {
@@ -286,15 +302,34 @@ define(["jquery", "co"], function ($, co) {
                   self.container.scrollTop(cs + newItem.outerHeight(true));
                 }
                 if (self.onNewListItemFinished) self.onNewListItemFinished(self, be, direction);
-                _context.next = 5;
-                break;
 
-              case 22:
-                return _context.abrupt("return", Promise.resolve());
+                imgs = newItem.find('img');
+                _context2.next = 23;
+                return Promise.all(Array.from(imgs).map(function (img) {
+                  return new Promise(function (resolve, reject) {
+                    img.onload = function () {
+                      img.onload = null;
+                      img.onerror = null;
+                      resolve();
+                    };
+                    img.onerror = function () {
+                      img.onload = null;
+                      img.onerror = null;
+                      resolve();
+                    };
+                  });
+                }));
 
               case 23:
+                _context2.next = 5;
+                break;
+
+              case 25:
+                return _context2.abrupt("return", Promise.resolve());
+
+              case 26:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
         }, __checkBoundary, this);

@@ -5,7 +5,26 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
   var assert = chai.assert;
   var equal = assert.equal;
 
-  var bsids = ["biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  describe('BookSourceManager 基础测试', function () {
+
+    var bsm = void 0;
+
+    before(function () {
+      bsm = new BookSourceManager();
+      return bsm.loadConfig("data/booksources.json");
+    });
+
+    it('全局搜索', function () {
+      return bsm.searchBookInAllBookSource("三生三世十里桃花").then(function (books) {
+        equal(true, books.length >= 0);
+        equal("三生三世十里桃花", books.find(function (b) {
+          return b.name == "三生三世十里桃花";
+        }).name);
+      });
+    });
+  });
+
+  var bsids = ["u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -96,10 +115,11 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
         it('测试获取章节', function () {
           return Promise.all(books.map(function (book) {
             return Promise.all(book.chapters.map(function (chapter) {
-              return bsm.getChapter(bsid, chapter.link).then(function (c) {
+              return bsm.getChapter(bsid, chapter).then(function (c) {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);
                 equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
+                assert.notInclude(c.content, "<br");
               });
             }));
           }));
@@ -124,23 +144,4 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
       }
     }
   }
-
-  describe("BookSourceManager \u5176\u4ED6\u6D4B\u8BD5", function () {
-
-    var bsm = void 0;
-
-    before(function () {
-      bsm = new BookSourceManager();
-      return bsm.loadConfig("data/booksources.json");
-    });
-
-    it('全局搜索', function () {
-      return bsm.searchBookInAllBookSource("三生三世十里桃花").then(function (books) {
-        equal(true, books.length >= 0);
-        equal("三生三世十里桃花", books.find(function (b) {
-          return b.name == "三生三世十里桃花";
-        }).name);
-      });
-    });
-  });
 });

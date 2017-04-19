@@ -42,6 +42,11 @@
     font-weight: bold;
 }
 
+.type-comics:after{
+    content: "comics";
+    font-size: 50%;
+    margin-left: 10px;
+}
 
 /*********** Color ***************/
 
@@ -59,4 +64,8 @@
 
 .bookshelf .book{
     border-color: #aaa;
+}
+
+.unread-chapter{
+    color: red;
 }

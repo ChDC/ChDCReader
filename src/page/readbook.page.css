@@ -47,8 +47,17 @@
 }
 
 .chapter{
-    padding: 15px;
+    padding-top: 15px;
+    margin: 0;
     word-wrap: break-word;
+}
+
+.chapter-p{
+    padding: 0 15px;
+    text-indent: 2em;
+    font-size: 18px;
+    line-height: 32px;
+    margin-top: 15px 0 0 0;
 }
 
 .container{
@@ -66,15 +75,6 @@
     margin: 0px;
     padding: 5px 5px 10px 5px;
 }
-
-.chapter-content p{
-    text-indent: 2em;
-    font-size: 18px;
-    line-height: 32px;
-    margin-top: 15px 0 0 0;
-    padding: 0px;
-}
-
 
 
 .toolbar{
@@ -110,11 +110,20 @@
     /*top: -30px;*/
 }
 
-/*********** Color ***************/
-.toolbar{
-    /*background-color: #181818;*/
-    /*color: white;*/
+.top{
+    box-shadow: 0 3px 9px rgba(0,0,0,.5);
 }
+
+.bottom{
+    box-shadow: 0 -3px 9px rgba(0,0,0,.5);
+}
+
+/*********** Color ***************/
+/*.toolbar.top, .toolbar.bottom{
+    background-color: #181818;
+    color: white;
+}*/
+
 
 .mainView{
     background-image: url(img/readbg1.jpg);
@@ -138,4 +147,15 @@
 
 .mainViewFooter{
     color: #eee;
+}
+
+.current-chapter{
+    color: red;
+}
+
+.vip-chapter:after{
+    content: "vip";
+    font-size: 80%;
+    margin-left: 10px;
+    color: red;
 }
