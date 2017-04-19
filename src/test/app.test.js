@@ -8,10 +8,11 @@ require(["../js/config"], function(){
 
         //---- 配置要测试的模块 ---
         let testList = [
-            // "mocha",
+            "mocha",
             "BookSourceManager",
-            // "util",
-            // "Spider",
+            "util",
+            "translate",
+            "Spider",
         ];
 
         //---- 配置结束 ----

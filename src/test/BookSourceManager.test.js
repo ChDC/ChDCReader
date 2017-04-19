@@ -4,7 +4,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
   let equal = assert.equal;
 
 
-  describe(`BookSourceManager 基础测试`, () => {
+  describe('BookSourceManager 基础测试', () => {
 
     let bsm;
 

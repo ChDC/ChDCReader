@@ -55,6 +55,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         if(book.cover)
           nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
+        if(app.bookSourceManager.getBookSourceType(book.mainSourceId) == 'comics')
+          nb.find(".book-name").addClass('type-comics');
         nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
         // 刷新最新章节
