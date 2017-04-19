@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.chdc.reader.debug" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>ChDC Reader</name>
+    <name>ChDC Reader(Debug)</name>
     <description>
-        ChDC Reader
+        ChDC Reader for Debug
     </description>
     <author email="chendacai@qq.com" href="https://github.com/ChDC">
         ChDC
