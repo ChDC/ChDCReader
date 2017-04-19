@@ -46,7 +46,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       before(()=>{
         bsm = new BookSourceManager();
         return Promise.all([bsm.loadConfig("data/booksources.json"),
-          util.getJSON("test/BookSourceManager.test.data.js").then(data => {
+          util.getJSON("test/BookSourceManager.test.data.json").then(data => {
             config = data;
             books = config[bsid];
           })]);

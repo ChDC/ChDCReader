@@ -458,7 +458,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                             exclude = _step2.value;
                             i = contentSources.indexOf(exclude);
 
-                            delete contentSources[i];
+                            contentSources.splice(i, 1);
                             if (!noInfluenceWeight) self.sources[exclude].weight += EXECLUDE_WEIGHT;
                           }
                           _context3.next = 13;
@@ -498,7 +498,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                           if (includeSource) {
                             _i = contentSources.indexOf(includeSource);
 
-                            delete contentSources[_i];
+                            contentSources.splice(_i, 1);
 
                             contentSources.push(includeSource);
                             if (!noInfluenceWeight) self.sources[includeSource].weight += INCLUDE_WEIGHT;
@@ -604,7 +604,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                 INCLUDE_WEIGHT = 0;
                 self = this;
 
-                if (excludes && excludes.indexOf(contentSourceId) >= 0) contentSourceId = null;
+                if (excludes && excludes.includes(contentSourceId)) contentSourceId = null;
 
                 if (!(contentSourceId && typeof contentSourceChapterIndex == 'number')) {
                   _context5.next = 20;

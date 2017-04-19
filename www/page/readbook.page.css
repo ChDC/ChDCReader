@@ -1,5 +1,9 @@
 /*********** Location ***************/
 
+.content-img{
+    width: 100%
+}
+
 .mainView{
     padding: 0;
     position: absolute;
