@@ -5,7 +5,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
   var assert = chai.assert;
   var equal = assert.equal;
 
-  describe("BookSourceManager \u57FA\u7840\u6D4B\u8BD5", function () {
+  describe('BookSourceManager 基础测试', function () {
 
     var bsm = void 0;
 

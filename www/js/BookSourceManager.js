@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, util, Spider, Book, BookSource, Chapter) {
+define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function (co, util, Spider, translate, Book, BookSource, Chapter, customBookSource) {
   "use strict";
 
   var BookSourceManager = function () {
@@ -23,7 +23,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
     _createClass(BookSourceManager, [{
       key: "init",
       value: function init() {
-        return Promise.all(Object.values(this.CustomSourceFunction).map(function (cm) {
+        return Promise.all(Object.values(customBookSource).map(function (cm) {
           return cm.init && cm.init();
         }));
       }
@@ -74,8 +74,8 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
                 for (var _iterator2 = beforeFunctions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                   var bf = _step2.value;
 
-                  if (bsid in self.CustomSourceFunction && bf in self.CustomSourceFunction[bsid]) {
-                    args = self.CustomSourceFunction[bsid][bf].apply(self, args);
+                  if (bsid in customBookSource && bf in customBookSource[bsid]) {
+                    args = customBookSource[bsid][bf].apply(self, args);
                     break;
                   }
                 }
@@ -96,7 +96,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
 
               var promise = void 0;
 
-              if (bsid in self.CustomSourceFunction && cf in self.CustomSourceFunction[bsid]) promise = self.CustomSourceFunction[bsid][cf].apply(self, args);else promise = oldFunction.apply(self, args);
+              if (bsid in customBookSource && cf in customBookSource[bsid]) promise = customBookSource[bsid][cf].apply(self, args);else promise = oldFunction.apply(self, args);
 
               var afterFunctions = ["after" + cf, "after" + cf[0].toUpperCase() + cf.slice(1)];
 
@@ -108,10 +108,10 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
                 var _loop2 = function _loop2() {
                   var af = _step3.value;
 
-                  if (bsid in self.CustomSourceFunction && af in self.CustomSourceFunction[bsid]) {
+                  if (bsid in customBookSource && af in customBookSource[bsid]) {
                     return {
                       v: promise.then(function (result) {
-                        return self.CustomSourceFunction[bsid][af].call(self, result);
+                        return customBookSource[bsid][af].call(self, result);
                       })
                     };
                   }
@@ -520,61 +520,32 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
           return "";
         }
       }
+    }, {
+      key: "getBookSourceType",
+      value: function getBookSourceType(bsid) {
+        try {
+          return this.sources[bsid].type;
+        } catch (e) {
+          return "";
+        }
+      }
+    }, {
+      key: "getBookSourceTypeName",
+      value: function getBookSourceTypeName(bsid) {
+        try {
+          var typeName = {
+            "comics": "漫画",
+            "novel": "小说"
+          };
+          return typeName[this.sources[bsid].type];
+        } catch (e) {
+          return "";
+        }
+      }
     }]);
 
     return BookSourceManager;
   }();
-
-  BookSourceManager.prototype.CustomSourceFunction = {
-
-    qidian: {
-      csrfToken: "",
-      getCSRToken: function getCSRToken() {
-        var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-        if (typeof cordovaHTTP != 'undefined') {
-          cordovaHTTP.get(url, {}, {}, function (response) {
-            debugger;
-          }, function (e) {
-            debugger;
-          });
-        }
-      },
-      init: function init() {
-        return this.getCSRToken();
-      }
-    },
-
-    u17: {
-      getChapter: function getChapter(bsid) {
-        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-
-        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
-
-        if (!chapter.link) return Promise.reject(206);
-
-        return util.get(chapter.link).then(function (html) {
-          if (!html) return null;
-          var regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
-          html = html.match(regex);
-          if (!html) return null;
-          var json = JSON.parse(html[1]);
-          var keys = Object.keys(json).sort(function (e1, e2) {
-            return parseInt(e1) - parseInt(e2);
-          });
-
-          var imgs = keys.map(function (e) {
-            return atob(json[e].src);
-          });
-
-          chapter.content = imgs.map(function (img) {
-            return "<img src=\"" + img + "\">";
-          }).join('\n');
-          return chapter;
-        });
-      }
-    }
-  };
 
   return BookSourceManager;
 });
