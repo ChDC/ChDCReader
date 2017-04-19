@@ -269,7 +269,7 @@ define(["util"], function (util) {
         if ("querySelectorAll" in element) {
           return Array.from(element.querySelectorAll(selector));
         } else {
-          return this.__getDataFromObject(element, selector);
+          return this.__getDataFromObject(element, selector) || [];
         }
       }
     }, {

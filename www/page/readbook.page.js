@@ -89,6 +89,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           };
           _this2.chapterList.loadList();
         });
+        $("#btnRefresh").click(function (e) {
+          _this2.chapterList.emptyList();
+          app.showLoading();
+          _this2.chapterList.loadList();
+        });
         $("#btnSortReversed").click(function (e) {
           var list = $('#listCatalog');
           list.append(list.children().toArray().reverse());
