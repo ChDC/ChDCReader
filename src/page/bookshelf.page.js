@@ -62,7 +62,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           .then(([lastestChapter]) => {
             nb.find(".book-lastestchapter")
               .text("最新：" + (lastestChapter? lastestChapter : "无"))
-              .css('color', this.isReadingLastestChapter(lastestChapter, readingRecord)? null : 'red');
+              .addClass(this.isReadingLastestChapter(lastestChapter, readingRecord) ? "" : 'unread-chapter');
 
             // 缓存后面章节内容
             book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);

@@ -204,9 +204,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
             lce.click(listCatalogEntryClick.bind(this));
             listCatalog.append(lce);
             if(i == this.readingRecord.chapterIndex)
-            {
-              lce.css("color", 'red');
-            }
+              // 标记当前章节
+              lce.addClass("current-chapter");
+            else if(!value.link)
+              lce.addClass("vip-chapter");
           });
           app.hideLoading()
         })

@@ -1,6 +1,91 @@
 {
+    "u17": {
+        "id": "u17",
+        "type": "comics",
+        "name": "有妖气",
+        "contentSourceWeight": 100,
+        "mainSourceWeight": 10,
+        "host": "http://www.u17.com",
+        "search": {
+            "request": {
+                "url": "http://so.u17.com/all/{keyword}/m0_p1.html"
+            },
+            "response": {
+                "type": "array",
+                "element": "#comiclist div.comiclist > ul > li",
+                "children": {
+                    "name": "div > div.info > h3 > strong > a",
+                    "author": "[href^=\"http://i\"]",
+                    "catagory": "div > div.info > p.cf > i",
+                    "complete": {
+                        "type": "boolean",
+                        "element": "div > div.info > p.cf > i",
+                        "true": "连载中",
+                        "false": "完结",
+                        "default": false
+                    },
+                    "coverImg": "div > div.cover > a > img",
+                    "introduce": "div > div.info > p.text",
+                    "detailLink": "div > div.info > h3 > strong > a"
+                }
+            }
+        },
+        "detail": {
+            "response": {
+                "author": "div.comic_info > div.right > div > div.info > a",
+                "catagory": "div.comic_info > div.left > div.info > div.top > div.line1",
+                "complete": {
+                    "type": "boolean",
+                    "element": "div.comic_info > div.left > div.info div:nth-child(1) > span",
+                    "true": "连载中",
+                    "default": false
+                },
+                "coverImg": "#cv > a > img",
+                "introduce": "#words",
+                "lastestChapter": {
+                    "type": "string",
+                    "element": "#chapter > li:last-child > a",
+                    "attribute": "title"
+                },
+                "name": "h1"
+            }
+        },
+        "catalog": {
+            "request": {
+                "url": "{detailLink}"
+            },
+            "response":{
+                "type": "array",
+                "element": "#chapter > li",
+                "children": {
+                    "title": {
+                        "type": "string",
+                        "element": "a",
+                        "attribute": "title"
+                    },
+                    "vip": {
+                        "type": "string",
+                        "element": "a",
+                        "attribute": "class"
+                    },
+                    "link": {
+                        "type": "string",
+                        "element": "a",
+                        "valid": "!{vip} || !({vip}.includes('vip_chapter'))"
+                    }
+                }
+            }
+        },
+        "chapter": {
+            "response": {
+                "contentHTML": "._view",
+                "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
+            }
+        }
+    },
     "comico": {
         "id": "comico",
+        "type": "comics",
         "name": "Comico",
         "contentSourceWeight": 100,
         "mainSourceWeight": 10,
@@ -39,7 +124,8 @@
                 "catagory": "#container > div > div.chapban > div > dl > dd.name > span:nth-child(3)",
                 "complete": {
                     "type": "boolean",
-                    "true": "#container > div > div.contwrap > div.chaphd > p > strong",
+                    "element": "#container > div > div.contwrap > div.chaphd > p > strong",
+                    "true": "週",
                     "default": false
                 },
                 "coverImg": "#container > div > div.chapban > span.bg_img > img",
@@ -77,6 +163,7 @@
     },
     "qidian": {
         "id": "qidian",
+        "type": "novel",
         "name": "起点中文网",
         "contentSourceWeight": -10,
         "mainSourceWeight": 20,
@@ -161,6 +248,7 @@
     },
     "chuangshi": {
         "id": "chuangshi",
+        "type": "novel",
         "name": "创世中文网",
         "contentSourceWeight": -100,
         "mainSourceWeight": 10,
@@ -169,7 +257,7 @@
             "response": {
                 "type": "array",
                 "element": "#searchResultList > li",
-                "valideach": "'{detailLink}'.match(/^http:\\/\\/yunqi.qq.com/) || '{detailLink}'.match(/^http:\\/\\/chuangshi.qq.com/)",
+                "valideach": "{detailLink}.match(/^http:\\/\\/yunqi.qq.com/) || {detailLink}.match(/^http:\\/\\/chuangshi.qq.com/)",
                 "children": {
                     "author": "div.search_r_info > p:nth-child(2) > b > a",
                     "catagory": "div.search_r_info > p:nth-child(3) > a:nth-child(1)",
@@ -231,6 +319,7 @@
 
     "17k": {
         "id": "17k",
+        "type": "novel",
         "name": "17K",
         "contentSourceWeight": -100,
         "mainSourceWeight": 10,
@@ -295,6 +384,7 @@
 
     "biquge": {
         "id": "biquge",
+        "type": "novel",
         "name": "笔趣阁",
         "contentSourceWeight": 10,
         "mainSourceWeight": -10,
@@ -352,6 +442,7 @@
     },
     "biqugezw": {
         "id": "biqugezw",
+        "type": "novel",
         "name": "笔趣阁中文网",
         "contentSourceWeight": 10,
         "mainSourceWeight": -10,
@@ -409,6 +500,7 @@
     },
     "biquge.tw": {
         "id": "biquge.tw",
+        "type": "novel",
         "name": "笔趣阁 TW",
         "contentSourceWeight": 10,
         "mainSourceWeight": -10,
@@ -466,6 +558,7 @@
     },
     "dingdian": {
         "id": "dingdian",
+        "type": "novel",
         "name": "顶点小说",
         "contentSourceWeight": 10,
         "mainSourceWeight": -10,
@@ -528,6 +621,7 @@
 
     "biqulou": {
         "id": "biqulou",
+        "type": "novel",
         "name": "笔趣楼",
         "contentSourceWeight": 10,
         "mainSourceWeight": -10,
@@ -585,6 +679,7 @@
     },
     "daizhuzai": {
         "id": "daizhuzai",
+        "type": "novel",
         "name": "大主宰小说网",
         "contentSourceWeight": -10000,
         "mainSourceWeight": -10000,

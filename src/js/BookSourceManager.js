@@ -275,29 +275,29 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
     }
 
     // 从网络上获取章节内容
-    getChapter(bsid, chapterLink){
+    getChapter(bsid, chapter={}){
 
-      util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapterLink}"`);
+      util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
-      if(!chapterLink) return Promise.reject(206);
+      if(!chapter.link) return Promise.reject(206);
 
       const bsm = this.sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
 
-      return this.spider.get(bsm.chapter, {url: chapterLink, chapterLink: chapterLink})
+      return this.spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
         .then(data => {
-          const chapter = new Chapter();
-          chapter.content = this.spider.clearHtml(data.contentHTML);
+          const c = new Chapter();
+          c.content = this.spider.clearHtml(data.contentHTML);
 
-          if(!chapter.content){
+          if(!c.content){
             // 没有章节内容就返回错误
             return Promise.reject(206);
           }
-          chapter.link = chapterLink;
-          chapter.title = data.title;
+          c.link = chapter.link;
+          c.title = data.title;
 
-          return chapter;
+          return c;
         });
     }
 
@@ -385,7 +385,29 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function(co, u
     //     });
     //   }
     // }
+    u17: {
+      getChapter(bsid, chapter={}){
 
+        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+
+        if(!chapter.link) return Promise.reject(206);
+
+        return util.get(chapter.link)
+          .then(html => {
+            if(!html) return null;
+            let regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
+            html = html.match(regex);
+            if(!html) return null;
+            let json = JSON.parse(html[1]);
+            let keys = Object.keys(json).sort((e1, e2) => parseInt(e1) - parseInt(e2));
+            // 得到所有图片的链接
+            let imgs = keys.map(e => atob(json[e].src));
+            // 组合成 img 标签
+            chapter.content = imgs.map(img => `<img src="${img}">`).join('\n');
+            return chapter;
+          });
+      }
+    }
   };
 
   return BookSourceManager;

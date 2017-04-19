@@ -147,7 +147,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
           if(error != 207)
             throw error;
           // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
-          return this.bookSourceManager.getChapter(this.id, chapter.link)
+          return this.bookSourceManager.getChapter(this.id, chapter)
             .then(chapter => // 缓存该章节
               this.__cacheChapter(chapter));
         });

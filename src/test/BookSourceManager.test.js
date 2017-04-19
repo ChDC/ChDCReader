@@ -25,7 +25,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
 
   // 小说书源测试
-  let bsids = ["biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = ["u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
   // for(let bsid of ['comico']){
@@ -127,11 +127,12 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       it('测试获取章节', ()=>{
         return Promise.all(books.map(book =>
           Promise.all(book.chapters.map(chapter =>
-            bsm.getChapter(bsid, chapter.link)
+            bsm.getChapter(bsid, chapter)
               .then(c => {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);
                 equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
+                assert.notInclude(c.content, "<br");
               })
           ))
         ))
