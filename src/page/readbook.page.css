@@ -109,11 +109,20 @@
     /*top: -30px;*/
 }
 
-/*********** Color ***************/
-.toolbar{
-    /*background-color: #181818;*/
-    /*color: white;*/
+.top{
+    box-shadow: 0 3px 9px rgba(0,0,0,.5);
 }
+
+.bottom{
+    box-shadow: 0 -3px 9px rgba(0,0,0,.5);
+}
+
+/*********** Color ***************/
+/*.toolbar.top, .toolbar.bottom{
+    background-color: #181818;
+    color: white;
+}*/
+
 
 .mainView{
     background-image: url(img/readbg1.jpg);
