@@ -61,6 +61,7 @@ define(["util"], function (util) {
           case "html":
             return requestPromise.then(function (data) {
               data = _this.filterHtmlContent(data);
+              data = _this.__transformHTMLTagProperty(data);
               var html = document.createElement("div");
               html.innerHTML = data;
 
@@ -401,18 +402,44 @@ define(["util"], function (util) {
         return result;
       }
     }, {
+      key: "clearHtml",
+      value: function clearHtml(html) {
+        if (!html) return html;
+
+        html = this.filterHtmlContent(html);
+
+        var whitePropertyList = ['src'];
+        html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*" */gi, function (p0, p1) {
+          return whitePropertyList.includes(p1) ? p0 : "";
+        });
+
+        html = html.replace(/([^>]*)<br *\/>/gi, '<p>$1</p>');
+
+        html = html.replace(/>[　 \n\r]+/gi, '>');
+        html = html.replace(/[　 \n\r]+</gi, '<');
+
+        return html;
+      }
+    }, {
       key: "filterHtmlContent",
       value: function filterHtmlContent(html) {
+        var _this3 = this;
+
         if (!html) return html;
 
         var m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
         if (m && m.length >= 2) html = m[1];
 
-        html = this.__filterElement(html, "script");
-        html = this.__filterElement(html, "iframe");
-        html = this.__filterElement(html, "link");
-        html = this.__filterElement(html, "meta");
-        html = this.__filterElement(html, "style");
+        var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
+        html = blackList.reduce(function (html, be) {
+          return _this3.__filterElement(html, be);
+        }, html);
+        return html;
+      }
+    }, {
+      key: "__transformHTMLTagProperty",
+      value: function __transformHTMLTagProperty(html) {
+        if (!html) return html;
 
         html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
         return html;

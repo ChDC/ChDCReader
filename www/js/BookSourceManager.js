@@ -234,6 +234,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
               var bsid = _step5.value;
 
               var books = result[bsid];
+              if (!books) break;
               var _iteratorNormalCompletion6 = true;
               var _didIteratorError6 = false;
               var _iteratorError6 = undefined;
@@ -327,10 +328,10 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
               if (m.bookid) bss.bookid = m.bookid;
 
               bss.detailLink = m.detailLink;
+              bss.catalogLink = m.catalogLink;
               if (m.lastestChapter) {
                 bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');
               }
-
 
               bss.searched = true;
               book.sources[bsid] = bss;
@@ -368,7 +369,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
             for (var _iterator8 = keywords[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
               var kw = _step8.value;
 
-              if (kw.indexOf(name) >= 0 || kw.indexOf(author) >= 0 || name.indexOf(kw) >= 0 || author.indexOf(kw) >= 0) return true;
+              if (kw.includes(name) || kw.includes(author) || name.includes(kw) || author.includes(kw)) return true;
             }
           } catch (err) {
             _didIteratorError8 = true;
@@ -474,6 +475,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
     }, {
       key: "getChapter",
       value: function getChapter(bsid, chapterLink) {
+        var _this4 = this;
 
         util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapterLink + "\"");
 
@@ -484,7 +486,7 @@ define(['co', "util", "Spider", "Book", "BookSource", "Chapter"], function (co, 
 
         return this.spider.get(bsm.chapter, { url: chapterLink, chapterLink: chapterLink }).then(function (data) {
           var chapter = new Chapter();
-          chapter.content = util.html2text(data.contentHTML);
+          chapter.content = _this4.spider.clearHtml(data.contentHTML);
 
           if (!chapter.content) {
             return Promise.reject(206);

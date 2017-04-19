@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.chdc.novelreader" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>ChDC小说阅读器</name>
+<widget id="com.chdc.reader" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>ChDC Reader</name>
     <description>
-        ChDC Novel Reader
+        ChDC Reader
     </description>
     <author email="chendacai@qq.com" href="https://github.com/ChDC">
         ChDC
@@ -29,8 +29,10 @@
     <plugin name="cordova-plugin-device" spec="~1.1.4" />
     <preference name="OverrideUserAgent" value="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36" />
     <chcp>
-        <config-file url="https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/www/chcp.json" />
+        <config-file url="https://raw.githubusercontent.com/ChDC/ChDCReader/master/www/chcp.json" />
         <auto-install enabled="false" />
         <auto-download enabled="false" />
     </chcp>
+    <engine name="browser" spec="~4.1.0" />
+    <engine name="android" spec="~6.1.2" />
 </widget>
