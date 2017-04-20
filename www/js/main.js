@@ -10,9 +10,11 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         cacheChapterCount: 3,
         cacheCountEachChapter: 1,
         cacheCountEachChapterWithWifi: 3,
-        nighttheme: "night1",
-        daytheme: "",
-        night: false
+        theme: {
+          nighttheme: "night1",
+          daytheme: "",
+          night: false
+        }
       },
 
       load: function load() {
@@ -33,8 +35,9 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
     bookSourceManager: null,
 
     bookShelf: null,
-    util: util,
+
     page: null,
+
     error: {
       __error: {},
       load: function load(file) {
@@ -49,6 +52,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         if (util.type(errorCode) == "error") return errorCode.message;
       }
     },
+
     init: function init() {
 
       if (typeof cordova != 'undefined') {
@@ -104,7 +108,6 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       });
     },
 
-
     loadingbar: null,
     showLoading: function showLoading() {
       this.loadingbar.show();
@@ -123,7 +126,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
 
         _this3.bookShelf = new BookShelf();
 
-        _this3.page.setTheme(_this3.settings.settings.night ? _this3.settings.settings.nighttheme : _this3.settings.settings.daytheme);
+        app.theme.load();
 
         _this3.page.showPage("bookshelf");
         _this3.chekcUpdate(true);
@@ -134,6 +137,51 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
     },
     onUpdateInstalled: function onUpdateInstalled() {
       uiutil.showMessage("资源更新成功！");
+    },
+
+    theme: {
+      themes: {
+        day: {
+          "": {
+            "statuscolor": "#252526"
+          }
+        },
+        night: {
+          "night1": {
+            "statuscolor": "#252526"
+          }
+        }
+      },
+
+      get: function get(name) {
+        var dayornight = this.isNight() ? "night" : "day";
+        name = name || app.settings.settings.theme[dayornight + 'theme'];
+        return this.themes[dayornight][name];
+      },
+      load: function load(name) {
+        if (!name) {
+          app.page.setTheme(this.isNight() ? app.settings.settings.theme.nighttheme : app.settings.settings.theme.daytheme);
+          if (typeof cordova != "undefined" && cordova.platformId == 'android') {
+            if (typeof StatusBar != "undefined") StatusBar.backgroundColorByHexString(this.get().statuscolor);
+          }
+        } else app.page.setTheme(name);
+      },
+      change: function change(name) {
+        var dayornight = this.isNight() ? "night" : "day";
+        if (name in this.themes[dayornight]) {
+          app.settings.settings.theme[dayornight + 'theme'] = name;
+          app.settings.save();
+          this.load(name);
+        }
+      },
+      isNight: function isNight() {
+        return app.settings.settings.theme.night;
+      },
+      toggleNight: function toggleNight() {
+        app.settings.settings.theme.night = !app.settings.settings.theme.night;
+        app.settings.save();
+        this.load();
+      }
     }
   };
 

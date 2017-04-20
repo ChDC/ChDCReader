@@ -77,11 +77,12 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         $("#btnCatalog").click(function (e) {
           return _this2.loadCatalog();
         });
+        $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
+
         $("#btnToggleNight").click(function (e) {
-          app.settings.settings.night = !app.settings.settings.night;
-          app.settings.save();
-          $("#labelNight").text(app.settings.settings.night ? "白天" : "夜间");
-          app.page.setTheme(app.settings.settings.night ? app.settings.settings.nighttheme : app.settings.settings.daytheme);
+
+          app.theme.toggleNight();
+          $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
         });
         $("#btnBadChapter").click(function (e) {
           _this2.tmpOptions = {
