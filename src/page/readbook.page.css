@@ -118,6 +118,10 @@
     box-shadow: 0 -3px 9px rgba(0,0,0,.5);
 }
 
+.img-errorloaded{
+    border: 1px red solid;
+}
+
 /*********** Color ***************/
 /*.toolbar.top, .toolbar.bottom{
     background-color: #181818;

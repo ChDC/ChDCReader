@@ -440,12 +440,23 @@ define(["util"], function(util){
 
       // 清空标签属性，排除白名单属性 src
       let whitePropertyList = ['src'];
-      html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*" */gi, (p0, p1)=>
+      html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, (p0, p1)=>
           whitePropertyList.includes(p1) ? p0 : ""
         );
 
       // 转换 <br> 为 p 标签
-      html = html.replace(/([^>]*)<br *\/?>/gi, '<p>$1</p>');
+      if(html.match(/<br\s*\/?>/gi)){
+        // 替换双 br
+        let dbrhtml = html.replace(/([^>]*)<br\s*\/?>\s*<br\s*\/?>/gi, '<p>$1</pchange>');
+        if(dbrhtml.match(/<br\s*\/?>\s*/i))
+          html = html.replace(/([^>]*)<br\s*\/?>/gi, '<p>$1</pchange>');
+        else
+          html = dbrhtml;
+        // 转换了 br
+        // 转换最后一行
+        html = html.replace(/<\/pchange>([^<]+)($|<)/gi, '</p><p>$1</p>$2');
+        html = html.replace(/<\/pchange>/gi, '</p>');
+      }
 
       // 去掉标签前后的空格 &nbsp;
       html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');

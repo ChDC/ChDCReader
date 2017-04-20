@@ -10,7 +10,7 @@ define(["jquery", "co"], function($, co) {
       this.onNewListItem = onNewListItem; // 获取列表元素的函数
       this.onNewListItemFinished = onNewListItemFinished; // 获取列表元素完成的函数
 
-      // self.container.on('scroll', self.__scrollEvent.bind(self));
+      // self.container.on('scroll', self.__scrollEventBindThis);
 
       this.currentItem = null; // 当前元素
 
@@ -27,6 +27,7 @@ define(["jquery", "co"], function($, co) {
       // 是否正在检查边界
       this.isCheckingBoundary = false;
 
+      this.__scrollEventBindThis = this.__scrollEvent.bind(this);
     }
 
 
@@ -71,11 +72,17 @@ define(["jquery", "co"], function($, co) {
       return this.checkBoundary();
     }
 
-    // 清空列表数据
-    emptyList(){
-      this.currentItem = null;
-      this.container.scrollTop(0);
+    // 关闭
+    close(){
+      this.container.off('scroll', this.__scrollEventBindThis);
       this.itemList.empty();
+
+      this.container = null;
+      this.itemList = null;
+      this.currentItem = null;
+      this.onNewListItem = null;
+      this.onNewListItemFinished = null;
+      this.onCurrentItemChanged = null;
       this.__lastCheckScrollY = null;
     }
 
@@ -169,7 +176,7 @@ define(["jquery", "co"], function($, co) {
       // 加锁
       if(this.isCheckingBoundary) return;
       this.isCheckingBoundary = true;
-      this.container.off('scroll', this.__scrollEvent.bind(this));
+      this.container.off('scroll', this.__scrollEventBindThis);
 
       const curScrollY = this.container.scrollTop();
       let scrollDirection = 1;
@@ -182,16 +189,11 @@ define(["jquery", "co"], function($, co) {
       return co(function*(){
         yield self.__checkBoundary(scrollDirection, false);
         yield self.__checkBoundary(-scrollDirection, true);
-        self.container.on('scroll', self.__scrollEvent.bind(self));
+
+        // 解锁
+        self.container.on('scroll', self.__scrollEventBindThis);
         self.isCheckingBoundary = false;
       });
-
-      // co(this.__checkBoundary(scrollDirection, false))
-      //   .then(() => co(this.__checkBoundary(-scrollDirection, true)))
-      //   .then(() => {
-      //     this.container.on('scroll', this.__scrollEvent.bind(this));
-      //     this.isCheckingBoundary = false;
-      //   });
     }
 
 
@@ -225,6 +227,8 @@ define(["jquery", "co"], function($, co) {
             result = item.offset().top < -self.UP_THRESHOLD * wh;
           return result;
         }
+        if(!self.container)
+          return true;
 
         const be = getBoundaryItem();
         if(!be)
@@ -274,7 +278,7 @@ define(["jquery", "co"], function($, co) {
 
         const {newItem, type} = yield self.onNewListItem(self, be, direction);
 
-        if(!newItem){
+        if(!newItem || newItem.length <= 0){
           if(type == 1){
             // 该元素是边界
             // 标记边界
@@ -283,7 +287,9 @@ define(["jquery", "co"], function($, co) {
               bbe.data(direction + 'end', true);
             }
           }
-          break;
+          // 没有获取到新元素，应该退出
+          // break;
+          return Promise.resolve();
         }
         if(!be){
           self.setCurrentItem(newItem);
@@ -297,25 +303,23 @@ define(["jquery", "co"], function($, co) {
           self.itemList.prepend(newItem);
           self.container.scrollTop(cs + newItem.outerHeight(true));
         }
-        if(self.onNewListItemFinished)
-          self.onNewListItemFinished(self, be, direction);
 
         // 将所有的图片的 onload 事件都设置好
         let imgs = newItem.find('img');
         yield Promise.all(Array.from(imgs).map(img =>
             new Promise((resolve, reject) => {
-              img.onload = () => {
-                // clear onload 事件
-                img.onload = null;
-                img.onerror = null;
+
+              function onloadOrError(e){
+                img.removeEventListener('load', onloadOrError);
+                img.removeEventListener('error', onloadOrError);
                 resolve();
               }
-              img.onerror = () => {
-                img.onload = null;
-                img.onerror = null;
-                resolve();
-              }
+              img.addEventListener('load', onloadOrError);
+              img.addEventListener('error', onloadOrError);
           })));
+
+        if(self.onNewListItemFinished)
+          self.onNewListItemFinished(self, be, direction);
       }
       // if(willClear){
       //     clearOutBoundary();
