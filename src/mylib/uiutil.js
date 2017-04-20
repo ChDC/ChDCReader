@@ -106,6 +106,7 @@ define(["jquery"], function($){
       img.classList.add("img-errorloaded");
 
       function imgClick(e){
+        e.stopPropagation();
         let img = e.currentTarget;
         img.src = `${img.src.replace(/\?[^\/]*$/i, '')}?${new Date().getTime()}`;
         img.onload = (e) => {
@@ -113,6 +114,7 @@ define(["jquery"], function($){
           img.classList.remove("img-errorloaded");
           img.alt = "";
         };
+        return false;
       }
       img.onclick = imgClick;
     }
