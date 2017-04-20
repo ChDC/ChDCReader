@@ -13,16 +13,18 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       this.lastSavePageScrollTop = 0;
     }
 
+    onClose(){
+      this.chapterList.close();
+    }
+
     onLoad(params, p){
       this.book = params.book;
       this.book.checkBookSources();
       this.readingRecord = params.readingRecord;
+      this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
 
       this.loadView();
-      this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
-      app.showLoading();
-      this.chapterList.loadList();
-
+      this.refreshChapterList();
     }
 
     onPause(){
@@ -36,8 +38,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }
 
     loadView(){
-      this.initList();
-
       // 弹出工具栏
       $(".chapterContainer").on("click", event => {
           // 弹出工具栏
@@ -60,18 +60,14 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         app.page.setTheme(app.settings.settings.night ? app.settings.settings.nighttheme : app.settings.settings.daytheme);
       });
       $("#btnBadChapter").click(e => {
-        this.chapterList.emptyList();
-        app.showLoading();
         this.tmpOptions = {
           excludes: [this.readingRecord.options.contentSourceId]
         }
-        this.chapterList.loadList();
+        this.refreshChapterList();
       });
       $("#btnRefresh").click(e => {
         // this.readingRecord.chapterIndex = chapterIndex;
-        this.chapterList.emptyList();
-        app.showLoading();
-        this.chapterList.loadList();
+        this.refreshChapterList();
       });
       $("#btnSortReversed").click((e) => {
         const list = $('#listCatalog');
@@ -126,7 +122,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
                 });
             }
             else{
-              this.chapterList.loadList();
+              this.refreshChapterList();
             }
             // 更新书籍信息
             this.book.refreshBookInfo();
@@ -162,9 +158,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         target = $(target);
         const chapterIndex = parseInt(target.attr('data-index'));
         this.readingRecord.chapterIndex = chapterIndex;
-        this.chapterList.emptyList();
-        app.showLoading();
-        this.chapterList.loadList();
+        this.refreshChapterList();
       }
 
       app.showLoading();
@@ -197,7 +191,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }
 
 
-    initList(){
+    refreshChapterList(){
+      app.showLoading();
+      if(this.chapterList)
+        this.chapterList.close();
       this.chapterList = new Infinitelist(
         $('.chapterContainer'),
         $('.chapters'),
@@ -215,6 +212,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       }
+
+      this.chapterList.loadList();
     }
 
     onNewChapterItem(event, be, direction){
@@ -261,11 +260,15 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
 
     buildChapter(chapter, title, index, options){
       const nc = $('.template .chapter').clone();
+      if(!nc || nc.length <=0)
+        return null;
       nc.find(".chapter-title").text(chapter.title);
 
       let content = $(`<div>${chapter.content}</div>`);
       content.find('p').addClass('chapter-p');
-      content.find('img').addClass('content-img');
+      content.find('img').addClass('content-img')
+        .on('error', uiutil.imgonerror);
+
       nc.find(".chapter-content").html(content);
       // nc.find(".chapter-source").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
 
@@ -284,7 +287,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     lastChapter(){
       this.chapterList.lastItem();
     }
-
   }
 
   return MyPage;
