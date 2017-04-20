@@ -411,11 +411,17 @@ define(["util"], function (util) {
         html = this.filterHtmlContent(html);
 
         var whitePropertyList = ['src'];
-        html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*" */gi, function (p0, p1) {
+        html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, function (p0, p1) {
           return whitePropertyList.includes(p1) ? p0 : "";
         });
 
-        html = html.replace(/([^>]*)<br *\/?>/gi, '<p>$1</p>');
+        if (html.match(/<br\s*\/?>/gi)) {
+          var dbrhtml = html.replace(/([^>]*)<br\s*\/?>\s*<br\s*\/?>/gi, '<p>$1</pchange>');
+          if (dbrhtml.match(/<br\s*\/?>\s*/i)) html = html.replace(/([^>]*)<br\s*\/?>/gi, '<p>$1</pchange>');else html = dbrhtml;
+
+          html = html.replace(/<\/pchange>([^<]+)($|<)/gi, '</p><p>$1</p>$2');
+          html = html.replace(/<\/pchange>/gi, '</p>');
+        }
 
         html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
         html = html.replace(/(　|\s|&nbsp;)+</gi, '<');

@@ -26,16 +26,20 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }
 
     _createClass(MyPage, [{
+      key: "onClose",
+      value: function onClose() {
+        this.chapterList.close();
+      }
+    }, {
       key: "onLoad",
       value: function onLoad(params, p) {
         this.book = params.book;
         this.book.checkBookSources();
         this.readingRecord = params.readingRecord;
+        this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
 
         this.loadView();
-        this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
-        app.showLoading();
-        this.chapterList.loadList();
+        this.refreshChapterList();
       }
     }, {
       key: "onPause",
@@ -52,8 +56,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       key: "loadView",
       value: function loadView() {
         var _this2 = this;
-
-        this.initList();
 
         $(".chapterContainer").on("click", function (event) {
           $('.toolbar').toggle();
@@ -82,17 +84,13 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           app.page.setTheme(app.settings.settings.night ? app.settings.settings.nighttheme : app.settings.settings.daytheme);
         });
         $("#btnBadChapter").click(function (e) {
-          _this2.chapterList.emptyList();
-          app.showLoading();
           _this2.tmpOptions = {
             excludes: [_this2.readingRecord.options.contentSourceId]
           };
-          _this2.chapterList.loadList();
+          _this2.refreshChapterList();
         });
         $("#btnRefresh").click(function (e) {
-          _this2.chapterList.emptyList();
-          app.showLoading();
-          _this2.chapterList.loadList();
+          _this2.refreshChapterList();
         });
         $("#btnSortReversed").click(function (e) {
           var list = $('#listCatalog');
@@ -144,7 +142,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
                 loadCurrentChapter(0);
               });
             } else {
-              _this3.chapterList.loadList();
+              _this3.refreshChapterList();
             }
 
             _this3.book.refreshBookInfo();
@@ -203,9 +201,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           target = $(target);
           var chapterIndex = parseInt(target.attr('data-index'));
           _this4.readingRecord.chapterIndex = chapterIndex;
-          _this4.chapterList.emptyList();
-          app.showLoading();
-          _this4.chapterList.loadList();
+          _this4.refreshChapterList();
         };
 
         app.showLoading();
@@ -231,10 +227,12 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         });
       }
     }, {
-      key: "initList",
-      value: function initList() {
+      key: "refreshChapterList",
+      value: function refreshChapterList() {
         var _this5 = this;
 
+        app.showLoading();
+        if (this.chapterList) this.chapterList.close();
         this.chapterList = new Infinitelist($('.chapterContainer'), $('.chapters'), this.onNewChapterItem.bind(this), this.onNewChapterItemFinished.bind(this));
         this.chapterList.onCurrentItemChanged = function (event, newValue, oldValue) {
           var index = newValue.data('chapterIndex');
@@ -247,6 +245,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           $(".labelChapterTitle").text(title);
           app.hideLoading();
         };
+
+        this.chapterList.loadList();
       }
     }, {
       key: "onNewChapterItem",
@@ -298,11 +298,13 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       key: "buildChapter",
       value: function buildChapter(chapter, title, index, options) {
         var nc = $('.template .chapter').clone();
+        if (!nc || nc.length <= 0) return null;
         nc.find(".chapter-title").text(chapter.title);
 
         var content = $("<div>" + chapter.content + "</div>");
         content.find('p').addClass('chapter-p');
-        content.find('img').addClass('content-img');
+        content.find('img').addClass('content-img').on('error', uiutil.imgonerror);
+
         nc.find(".chapter-content").html(content);
 
 

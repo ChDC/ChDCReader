@@ -110,6 +110,13 @@ define(["chai", "Spider"], function (chai, Spider) {
       assert.notInclude(fh, '<br');
       assert.include(fh, 'Test10');
       assert.include(fh, 'Test4');
+
+      equal('<p>test1</p><p>test2</p><p>test3</p>', spider.clearHtml('test1<br>test2<br>test3'));
+      equal('<div><p>test1</p><p>test2</p><p>test3</p></div>', spider.clearHtml('<div>test1<br>test2<br>test3</div>'));
+      equal('<p>test1</p><p>test2</p><p>test3</p><p>test4</p>', spider.clearHtml('test1<br>test2<br>test3<p>test4</p>'));
+      equal('<p>test1</p><p>test3</p><p>test4</p>', spider.clearHtml('test1<br><br>test3<p>test4</p>'));
+      equal('<p></p><p>1</p><p>test3</p><p>test4</p>', spider.clearHtml('<br>1<br>test3<p>test4</p>'));
+      equal('<p>test1</p><p>test2</p><p>test3</p>', spider.clearHtml('test1<br><br>test2<br><br>test3'));
     });
 
     it('filterHtmlContent', function () {

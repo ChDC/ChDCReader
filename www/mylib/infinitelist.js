@@ -29,6 +29,8 @@ define(["jquery", "co"], function ($, co) {
       this.onCurrentItemChanged = null;
 
       this.isCheckingBoundary = false;
+
+      this.__scrollEventBindThis = this.__scrollEvent.bind(this);
     }
 
     _createClass(Infinitelist, [{
@@ -68,11 +70,17 @@ define(["jquery", "co"], function ($, co) {
         return this.checkBoundary();
       }
     }, {
-      key: "emptyList",
-      value: function emptyList() {
-        this.currentItem = null;
-        this.container.scrollTop(0);
+      key: "close",
+      value: function close() {
+        this.container.off('scroll', this.__scrollEventBindThis);
         this.itemList.empty();
+
+        this.container = null;
+        this.itemList = null;
+        this.currentItem = null;
+        this.onNewListItem = null;
+        this.onNewListItemFinished = null;
+        this.onCurrentItemChanged = null;
         this.__lastCheckScrollY = null;
       }
     }, {
@@ -157,7 +165,7 @@ define(["jquery", "co"], function ($, co) {
       value: function checkBoundary() {
         if (this.isCheckingBoundary) return;
         this.isCheckingBoundary = true;
-        this.container.off('scroll', this.__scrollEvent.bind(this));
+        this.container.off('scroll', this.__scrollEventBindThis);
 
         var curScrollY = this.container.scrollTop();
         var scrollDirection = 1;
@@ -180,7 +188,7 @@ define(["jquery", "co"], function ($, co) {
                   return self.__checkBoundary(-scrollDirection, true);
 
                 case 4:
-                  self.container.on('scroll', self.__scrollEvent.bind(self));
+                  self.container.on('scroll', self.__scrollEventBindThis);
                   self.isCheckingBoundary = false;
 
                 case 6:
@@ -230,6 +238,7 @@ define(["jquery", "co"], function ($, co) {
                     if (direction >= 0) result = item.offset().top + item.outerHeight(true) > (self.DOWN_THRESHOLD + 1) * wh;else result = item.offset().top < -self.UP_THRESHOLD * wh;
                     return result;
                   }
+                  if (!self.container) return true;
 
                   var be = getBoundaryItem();
                   if (!be) return false;
@@ -274,7 +283,7 @@ define(["jquery", "co"], function ($, co) {
                 newItem = _ref.newItem;
                 type = _ref.type;
 
-                if (newItem) {
+                if (!(!newItem || newItem.length <= 0)) {
                   _context2.next = 17;
                   break;
                 }
@@ -286,7 +295,7 @@ define(["jquery", "co"], function ($, co) {
                     bbe.data(direction + 'end', true);
                   }
                 }
-                return _context2.abrupt("break", 25);
+                return _context2.abrupt("return", Promise.resolve());
 
               case 17:
                 if (!be) {
@@ -301,26 +310,25 @@ define(["jquery", "co"], function ($, co) {
                   self.itemList.prepend(newItem);
                   self.container.scrollTop(cs + newItem.outerHeight(true));
                 }
-                if (self.onNewListItemFinished) self.onNewListItemFinished(self, be, direction);
 
                 imgs = newItem.find('img');
-                _context2.next = 23;
+                _context2.next = 22;
                 return Promise.all(Array.from(imgs).map(function (img) {
                   return new Promise(function (resolve, reject) {
-                    img.onload = function () {
-                      img.onload = null;
-                      img.onerror = null;
+
+                    function onloadOrError(e) {
+                      img.removeEventListener('load', onloadOrError);
+                      img.removeEventListener('error', onloadOrError);
                       resolve();
-                    };
-                    img.onerror = function () {
-                      img.onload = null;
-                      img.onerror = null;
-                      resolve();
-                    };
+                    }
+                    img.addEventListener('load', onloadOrError);
+                    img.addEventListener('error', onloadOrError);
                   });
                 }));
 
-              case 23:
+              case 22:
+
+                if (self.onNewListItemFinished) self.onNewListItemFinished(self, be, direction);
                 _context2.next = 5;
                 break;
 
