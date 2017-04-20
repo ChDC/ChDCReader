@@ -33,4 +33,5 @@
         <auto-install enabled="false" />
         <auto-download enabled="false" />
     </chcp>
+    <plugin name="cordova-plugin-statusbar" spec="~2.2.2" />
 </widget>
