@@ -4,7 +4,7 @@
         "type": "comics",
         "name": "有妖气",
         "contentSourceWeight": 100,
-        "mainSourceWeight": 10,
+        "mainSourceWeight": 20,
         "host": "http://www.u17.com",
         "search": {
             "request": {
@@ -88,7 +88,7 @@
         "type": "comics",
         "name": "Comico",
         "contentSourceWeight": 100,
-        "mainSourceWeight": 10,
+        "mainSourceWeight": 20,
         "host": "http://www.comico.com.tw/",
         "search": {
             "request": {

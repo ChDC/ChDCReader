@@ -75,6 +75,26 @@ define(["jquery"], function ($) {
       this.hide = function () {
         _this.__loadingbar.remove();
       };
+    },
+
+    imgonerror: function imgonerror(e) {
+      var img = e.currentTarget;
+
+      img.alt = "加载失败，点击重新加载";
+      img.classList.add("img-errorloaded");
+
+      function imgClick(e) {
+        e.stopPropagation();
+        var img = e.currentTarget;
+        img.src = img.src.replace(/\?[^\/]*$/i, '') + "?" + new Date().getTime();
+        img.onload = function (e) {
+          img.onclick = null;
+          img.classList.remove("img-errorloaded");
+          img.alt = "";
+        };
+        return false;
+      }
+      img.onclick = imgClick;
     }
   };
 });
