@@ -9,8 +9,8 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
     loadView(params){
       let url = "http://m.qidian.com/";
-      let ref = cordova.InAppBrowser.open(url, "_blank", "location=no");
-      app.inAppBrowser = ref;
+      let ref = window.open(url, "_blank", "location=no");
+      // app.inAppBrowser = ref;
 
       ref.addEventListener("exit", (e) => {
         // app.inAppBrowser = null;
@@ -35,12 +35,6 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
             });
         }
       });
-
-      handleInAppBrowser(){
-        if(this.lastPage == "InAppBrowser" && app.inAppBrowser){
-
-        }
-      }
     }
 
   }
