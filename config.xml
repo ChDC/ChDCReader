@@ -35,4 +35,6 @@
     </chcp>
     <engine name="browser" spec="~4.1.0" />
     <engine name="android" spec="~6.1.2" />
+    <plugin name="cordova-plugin-statusbar" spec="~2.2.2" />
+    <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0" />
 </widget>
