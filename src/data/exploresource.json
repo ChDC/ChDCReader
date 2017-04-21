@@ -1,0 +1,19 @@
+{
+  "qidian": {
+    "logo": "",
+    "url": "http://m.qidian.com/",
+    "readbookmatcher": "^http://m.qidian.com/book/(\\d+)/\\d+.*"
+  },
+  "chuangshi": {
+
+  },
+  "17k": {
+
+  },
+  "u17": {
+
+  },
+  "comico": {
+
+  }
+}

@@ -4,26 +4,45 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
   class MyPage extends Page{
 
     onLoad(params){
-      this.loadView(params);
+      this.loadView();
     }
 
-    loadView(params){
-      let url = "http://m.qidian.com/";
-      let ref = window.open(url, "_blank", "location=no");
-      // app.inAppBrowser = ref;
+    loadData(){
+      return util.getJSON('data/exploresource.json')
+        .then(json => {
+          this.exploresources = json;
+        });
+    }
 
-      ref.addEventListener("exit", (e) => {
-        // app.inAppBrowser = null;
-      });
+    loadView(){
+      this.loadData()
+        .then(() => this.loadList());
+    }
+
+    loadList(){
+      let list = $('#list').empty();
+      for(let key of Object.keys(this.exploresources)){
+        let es = this.exploresources[key];
+        let ese = $('.template > .list-item').clone();
+        ese.find("img.booksource-logo").attr('src', es.logo);
+        ese.find(".booksource-name").text(app.bookSourceManager.getBookSourceName(key));
+        ese.click(e => this.showExplorPage(key, es));
+        list.append(ese);
+      }
+    }
+
+    showExplorPage(bsid, es){
+      let ref = window.open(es.url, "_blank", "location=no");
+
       ref.addEventListener("loadstart", (e) => {
         console.log(e.url);
         let url = e.url;
-        let matcher = url.match("^http://m.qidian.com/book/(\\d+)/\\d+.*");
+        let matcher = url.match(es.readbookmatcher);
         if(matcher){
           ref.hide();
           let bookid = matcher[1];
           debugger;
-          app.bookSourceManager.getBookInfo("qidian", {bookid: bookid})
+          app.bookSourceManager.getBookInfo(bsid, {bookid: bookid})
             .then(book => {
               app.page.showPage("readbook", {book: book})
                 .then(page => {
@@ -36,7 +55,6 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
         }
       });
     }
-
   }
 
   return MyPage;
