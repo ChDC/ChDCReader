@@ -220,7 +220,7 @@
         },
         "catalog": {
             "request": {
-                "url": "http://book.qidian.com/ajax/book/category?_csrfToken={csrfToken}&bookId={bookid}",
+                "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
                 "type": "JSON"
             },
             "response": {

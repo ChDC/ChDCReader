@@ -5,6 +5,8 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
 
   const app = {
     /**************** 全局变量 *******************/
+
+    // 全局设置
     settings: {
       settings: {
         cacheChapterCount: 3, // 缓存后面章节的数目
@@ -12,9 +14,11 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
         // chapterIndexOffset: 1,  // 当前章节的偏移值
         // chapterCount: 3,   // 每次加载的章节数目
-        nighttheme: "night1", // 夜间主题
-        daytheme: "", // 白天主题
-        night: false
+        theme: {
+          nighttheme: "night1", // 夜间主题
+          daytheme: "", // 白天主题
+          night: false
+        }
       },
 
       load(){
@@ -36,8 +40,12 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
 
     // 书架
     bookShelf: null,
-    util: util,
+    // util: util,
+
+    // 页面管理器
     page: null,
+
+    // 全局错误码
     error: {
       __error: {},
       load(file){
@@ -54,6 +62,8 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
           return errorCode.message;
       }
     },
+
+    // 初始化程序
     init(){
 
       if(typeof cordova != 'undefined'){
@@ -68,6 +78,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
 
       this.loadingbar = new uiutil.LoadingBar('./img/loading.gif');
     },
+
     // 检查资源更新
     // * isInstanceInstall 下载好资源后是否立即进行安装
     chekcUpdate(isInstanceInstall, showMessage){
@@ -124,6 +135,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       });
     },
 
+    // 加载进度条
     loadingbar: null,
     showLoading(){
       this.loadingbar.show();
@@ -142,7 +154,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
 
           this.bookShelf = new BookShelf();
           // 设置主题
-          this.page.setTheme(this.settings.settings.night ? this.settings.settings.nighttheme : this.settings.settings.daytheme);
+          app.theme.load();
 
           this.page.showPage("bookshelf");
           this.chekcUpdate(true);
@@ -154,6 +166,64 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
     onUpdateInstalled(){
       uiutil.showMessage("资源更新成功！");
       // location.reload();
+    },
+
+    // 主题管理器
+    theme: {
+      themes: {
+        day: {
+          "": {
+            "statuscolor": "#252526",
+          }
+        },
+        night: {
+          "night1": {
+            "statuscolor": "#252526",
+          }
+        },
+      },
+
+      // 获取主题配置
+      get(name){
+        let dayornight = this.isNight() ? "night" : "day";
+        name = name || app.settings.settings.theme[ dayornight + 'theme' ];
+        return this.themes[dayornight][name];
+      },
+
+      load(name){
+        if(!name){
+          app.page.setTheme(this.isNight() ? app.settings.settings.theme.nighttheme : app.settings.settings.theme.daytheme);
+          if (typeof(cordova) != "undefined" && cordova.platformId == 'android') {
+            if(typeof(StatusBar) != "undefined"){
+              let themeConfig = this.get();
+              if(themeConfig.statuscolor)
+                StatusBar.backgroundColorByHexString(themeConfig.statuscolor);
+            }
+          }
+        }
+        else
+          app.page.setTheme(name);
+      },
+
+      change(name){
+        let dayornight = this.isNight() ? "night" : "day";
+        if(name in this.themes[dayornight]){
+          app.settings.settings.theme[ dayornight + 'theme' ] = name;
+          app.settings.save();
+          this.load(name);
+        }
+      },
+
+      isNight(){
+        return app.settings.settings.theme.night;
+      },
+
+      // 切换白天模式和夜间模式
+      toggleNight(){
+        app.settings.settings.theme.night = !app.settings.settings.theme.night;
+        app.settings.save();
+        this.load();
+      }
     }
   };
 

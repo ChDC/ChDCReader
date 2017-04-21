@@ -4,24 +4,24 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
   // 定义一个用于存放自定义获取信息的钩子的集合
   let customBookSource = {
 
-    qidian: {
-      csrfToken: "",
-      getCSRToken(){
-        const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-        if(typeof cordovaHTTP != 'undefined'){
-          cordovaHTTP.get(url, {}, {},
-            function(response){
-              debugger;
-            },
-            function(e){
-              debugger;
-            });
-        }
-      },
-      init(){
-        return this.getCSRToken();
-      },
-    },
+    // qidian: {
+    //   csrfToken: "",
+    //   getCSRToken(){
+    //     const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
+    //     if(typeof cordovaHTTP != 'undefined'){
+    //       cordovaHTTP.get(url, {}, {},
+    //         function(response){
+    //           debugger;
+    //         },
+    //         function(e){
+    //           debugger;
+    //         });
+    //     }
+    //   },
+    //   init(){
+    //     return this.getCSRToken();
+    //   },
+    // },
 
     comico: {
 

@@ -28,7 +28,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }
 
     onPause(){
-      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
+      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop() + 10;
       app.bookShelf.save();
     }
 
@@ -53,11 +53,13 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       $("#btnClose").click((e) => app.page.closePage());
 
       $("#btnCatalog").click((e) => this.loadCatalog());
+      $("#labelNight").text(app.theme.isNight() ? "白天": "夜间");
+
       $("#btnToggleNight").click(e => {
-        app.settings.settings.night = !app.settings.settings.night;
-        app.settings.save();
-        $("#labelNight").text(app.settings.settings.night? "白天": "夜间");
-        app.page.setTheme(app.settings.settings.night ? app.settings.settings.nighttheme : app.settings.settings.daytheme);
+
+        app.theme.toggleNight();
+        $("#labelNight").text(app.theme.isNight() ? "白天": "夜间");
+
       });
       $("#btnBadChapter").click(e => {
         this.tmpOptions = {

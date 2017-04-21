@@ -44,9 +44,11 @@
     width: 100%;
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .chapter{
+    /* 注意：章节类不能有 margin-top 和 margin-bottom */
     padding-top: 15px;
     margin: 0;
     word-wrap: break-word;
