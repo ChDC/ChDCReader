@@ -28,7 +28,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }
 
     onPause(){
-      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
+      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop() + 10;
       app.bookShelf.save();
     }
 

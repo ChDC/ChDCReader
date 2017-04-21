@@ -194,8 +194,11 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         if(!name){
           app.page.setTheme(this.isNight() ? app.settings.settings.theme.nighttheme : app.settings.settings.theme.daytheme);
           if (typeof(cordova) != "undefined" && cordova.platformId == 'android') {
-            if(typeof(StatusBar) != "undefined")
-              StatusBar.backgroundColorByHexString(this.get().statuscolor);
+            if(typeof(StatusBar) != "undefined"){
+              let themeConfig = this.get();
+              if(themeConfig.statuscolor)
+                StatusBar.backgroundColorByHexString(themeConfig.statuscolor);
+            }
           }
         }
         else
