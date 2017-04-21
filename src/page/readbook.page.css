@@ -95,7 +95,8 @@
     padding: 6px 6px;
 }
 
-.lastAndNextChapter{
+.toolbar.lastAndNextChapter{
+    background-color: transparent;
     bottom: 78px;
     position: fixed;
     width: 100%;
@@ -104,12 +105,27 @@
     left: 0px;
 }
 
-.btnNext, .btnLast{
+.toolbar.addtoBookShelf{
+    background-color: transparent;
+    bottom: 160px;
+    position: fixed;
+    width: 100%;
+    height: 78px;
+    line-height: 58px;
+    left: 0px;
+}
+
+.btnNext, .btnLast, .btnAddtoBookShelf{
     margin: 10px 20px;
     height: 60px;
     border-radius: 100px;
     /*position: fixed;*/
     /*top: -30px;*/
+}
+
+.btnAddtoBookShelf{
+    height: 65px;
+    display: none;
 }
 
 .top{
@@ -139,12 +155,12 @@
     /*color: #cacaca;*/
 }
 
-.lastAndNextChapter{
-    background-color: transparent;
-}
-
 .btnNext, .btnLast{
     background-color: #ccc;
+}
+
+.btnAddtoBookShelf{
+    background-color: #fa3;
 }
 
 .mainViewHeader{

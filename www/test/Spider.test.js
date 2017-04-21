@@ -182,7 +182,7 @@ define(["chai", "Spider"], function (chai, Spider) {
       });
     });
 
-    it('空 Request 和 空 url 的 locals', function () {
+    it('空 Request 和 空 url 的 dict', function () {
       var config = {
         "response": {}
       };
@@ -191,7 +191,7 @@ define(["chai", "Spider"], function (chai, Spider) {
       });
     });
 
-    it('空 Request 2 和 非空 url 的 locals', function () {
+    it('空 Request 2 和 非空 url 的 dict', function () {
       var config = {
         "response": {
           "type": "array",

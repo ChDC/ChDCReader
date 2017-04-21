@@ -84,7 +84,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
 
         it('测试获取书籍信息', function () {
           return Promise.all(books.map(function (book) {
-            return bsm.getBookInfo(bsid, book.detailLink).then(function (b) {
+            return bsm.getBookInfo(bsid, book).then(function (b) {
               equalBook(bsid, book, b);
             });
           }));
@@ -92,7 +92,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
 
         it('测试最新章节', function () {
           return Promise.all(books.map(function (book) {
-            return bsm.getLastestChapter(bsid, book.detailLink).then(function (lc) {
+            return bsm.getLastestChapter(bsid, book).then(function (lc) {
               equal(true, lc.length > 0);
             });
           }));

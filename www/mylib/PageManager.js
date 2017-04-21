@@ -39,8 +39,9 @@ define(["jquery", "util"], function ($, util) {
 
           var urls = this.getURLs(this.currentPage);
           var cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
-          this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
+          return this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
         }
+        return Promise.resolve();
       }
     }, {
       key: "__changeThemeContent",
@@ -48,13 +49,14 @@ define(["jquery", "util"], function ($, util) {
 
         if (cssThemeUrl) {
           cssthemeelemnt.data('url', cssThemeUrl);
-          $.get(cssThemeUrl, function (cssContent) {
+          return $.get(cssThemeUrl, function (cssContent) {
             return cssthemeelemnt.text(cssContent);
           }).fail(function () {
             return cssthemeelemnt.text("");
           });
         } else {
           cssthemeelemnt.text("").data('url', "");
+          return Promise.resolve();
         }
       }
     }, {
@@ -89,13 +91,12 @@ define(["jquery", "util"], function ($, util) {
             this.__closePage(popPage.page);
           }
           this.pageStack.push(popPage);
-          this.__popPage();
-          return;
+          return Promise.resolve(this.__popPage());
         }
 
         var urls = this.getURLs(name);
 
-        $.get(urls.htmlurl, function (content) {
+        return $.get(urls.htmlurl).then(function (content) {
           var contentContainer = $('<div class="page-content-container"></div>');
 
           contentContainer.append(content);
@@ -131,8 +132,7 @@ define(["jquery", "util"], function ($, util) {
               });
 
               var page = _this.jsStorage[_this.currentPage];
-              page.__onPause();
-              if (page.onPause) page.onPause();
+              page.fireEvent('pause');
             }
           }
 
@@ -141,14 +141,15 @@ define(["jquery", "util"], function ($, util) {
 
           _this.currentPage = name;
           _this.__saveState(name, params);
-
-          requirejs([urls.jsurl], function (Page) {
-            var page = _this.__newPageFactory(Page, name);
-            _this.jsStorage[name] = page;
-            page.__onLoad();
-            if (page.onLoad) page.onLoad(params);
-            page.__onResume();
-            if (page.onResume) page.onResume();
+        }).then(function () {
+          return new Promise(function (resolve, reject) {
+            requirejs([urls.jsurl], function (Page) {
+              var page = _this.__newPageFactory(Page, name);
+              _this.jsStorage[name] = page;
+              page.fireEvent('load', params);
+              page.fireEvent('resume', params);
+              resolve(page);
+            });
           });
         });
       }
@@ -168,20 +169,15 @@ define(["jquery", "util"], function ($, util) {
         var executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
         var page = this.jsStorage[p];
 
-        if (executeOnPause) page.__onPause();
-        if (executeOnPause && page.onPause) {
-          page.onPause();
-        }
-        page.__onClose(params);
-        if (page.onClose) page.onClose(params);
-
+        if (executeOnPause) page.fireEvent('pause', params);
+        page.fireEvent('close', params);
         delete this.jsStorage[p];
       }
     }, {
       key: "__popPage",
       value: function __popPage() {
         var p = this.pageStack.pop();
-        if (!p) return;
+        if (!p) return p;
         this.currentPage = p.page;
         var urls = this.getURLs(this.currentPage);
 
@@ -196,14 +192,15 @@ define(["jquery", "util"], function ($, util) {
 
         var page = this.jsStorage[this.currentPage];
 
-        page.__onResume();
-        if (page.onResume) page.onResume();
+        page.fireEvent('resume');
+        return page;
       }
     }, {
       key: "closePage",
       value: function closePage(params) {
         this.__closePage(this.currentPage, params);
         this.__popPage();
+        return Promise.resolve();
       }
     }, {
       key: "__saveState",

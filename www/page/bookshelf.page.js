@@ -95,7 +95,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           });
 
           nb.find('.book-cover, .book-info').click(function () {
-            return app.page.showPage("readbook", value);
+            return app.page.showPage("readbook", { book: value.book, readingRecord: value.readingRecord });
           });
 
           nb.find('.btnBookMenu').click(function (event) {
@@ -139,6 +139,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         });
         $(".btnSearch").click(function (e) {
           return app.page.showPage("search");
+        });
+        $(".btnExplore").click(function (e) {
+          return app.page.showPage("explorebook");
         });
       }
     }]);

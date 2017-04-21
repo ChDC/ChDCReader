@@ -239,7 +239,7 @@ define(["chai", "Spider"], function(chai, Spider){
         .catch(error => equal("Empty response", error.message));
     });
 
-    it('空 Request 和 空 url 的 locals', ()=>{
+    it('空 Request 和 空 url 的 dict', ()=>{
       let config = {
         "response": {
         }
@@ -248,7 +248,7 @@ define(["chai", "Spider"], function(chai, Spider){
         .catch(error => equal("Empty URL", error.message));
     });
 
-    it('空 Request 2 和 非空 url 的 locals', ()=>{
+    it('空 Request 2 和 非空 url 的 dict', ()=>{
       let config = {
         "response": {
           "type": "array",

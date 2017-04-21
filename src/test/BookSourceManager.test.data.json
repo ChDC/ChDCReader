@@ -9,7 +9,7 @@
                "title" : "13 第十三章 武神躯 2010-12-08"
             }
          ],
-         "detailLink" : "http://www.u17.com/comic/3166.html",
+         "bookid": "3166",
          "introduce" : "镇魂街，此乃吸纳亡灵镇压恶灵之地",
          "name" : "镇魂街"
       },
@@ -22,7 +22,7 @@
                "title" : "第六十二话空瞑大帝的石棺 2016-02-07"
             }
          ],
-         "detailLink" : "http://www.u17.com/comic/99874.html",
+         "bookid": "99874",
          "introduce" : "妖神一出，谁与争锋",
          "name" : "妖神记（全彩）"
       }
@@ -39,10 +39,8 @@
             }
          ],
          "bookid": "1",
-         "detailLink" : "http://www.comico.com.tw/articleList.nhn?titleNo=1",
          "introduce" : "27岁",
-         "name" : "ReLIFE 重返17岁",
-         "catalogLink": "http://www.comico.com.tw/api/article_list.nhn?titleNo=1&startIndex=10"
+         "name" : "ReLIFE 重返17岁"
       }
    ],
    "biquge" : [

@@ -75,11 +75,11 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
     }
 
     // 添加书籍到书架中
-    addBook(book){
+    addBook(book, readingRecord){
       if(!this.hasBook(book)){
         this.books.push({
           book: book,
-          readingRecord: new ReadingRecord(),
+          readingRecord: readingRecord || new ReadingRecord(),
         });
         // return this.save();
       }
@@ -87,6 +87,8 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
 
     // 判断书架中是否有某书
     hasBook(book){
+      if(!book)
+        return book;
       return this.books.find(e => {
         const b = e.book;
         return b.name == book.name && b.author == book.author && b.mainSourceId == book.mainSourceId;

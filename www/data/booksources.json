@@ -26,11 +26,18 @@
                     },
                     "coverImg": "div > div.cover > a > img",
                     "introduce": "div > div.info > p.text",
-                    "detailLink": "div > div.info > h3 > strong > a"
+                    "detailLink": "div > div.info > h3 > strong > a",
+                    "bookid": {
+                        "type": "string",
+                        "element": "div > div.info > h3 > strong > a",
+                        "attribute": "href",
+                        "extract": "http://www.u17.com/comic/(\\d+).html"
+                    }
                 }
             }
         },
         "detail": {
+            "request": "http://www.u17.com/comic/{bookid}.html",
             "response": {
                 "author": "div.comic_info > div.right > div > div.info > a",
                 "catagory": "div.comic_info > div.left > div.info > div.top > div.line1",
@@ -52,7 +59,7 @@
         },
         "catalog": {
             "request": {
-                "url": "{detailLink}"
+                "url": "http://www.u17.com/comic/{bookid}.html"
             },
             "response":{
                 "type": "array",
@@ -106,19 +113,12 @@
                     "complete": "isFinish",
                     "coverImg": "imageUrl",
                     "introduce": "copy",
-                    "bookid": "titleNo",
-                    "detailLink": {
-                        "type": "format",
-                        "value": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
-                    },
-                    "catalogLink": {
-                        "type": "format",
-                        "value": "http://www.comico.com.tw/api/article_list.nhn?titleNo={bookid}&startIndex=10"
-                    }
+                    "bookid": "titleNo"
                 }
             }
         },
         "detail": {
+            "request": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}",
             "response": {
                 "author": "dd.name > span:nth-child(1)",
                 "catagory": "#container > div > div.chapban > div > dl > dd.name > span:nth-child(3)",
@@ -200,7 +200,7 @@
         },
         "detail": {
             "request": {
-                "url": "{detailLink}",
+                "url": "http://book.qidian.com/info/{bookid}",
                 "timeout": 5
             },
             "response": {
@@ -220,7 +220,7 @@
         },
         "catalog": {
             "request": {
-                "url": "http://book.qidian.com/ajax/book/category?_csrfToken={csrfToken}&bookId={bookid}",
+                "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
                 "type": "JSON"
             },
             "response": {
@@ -277,6 +277,7 @@
             "request": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "catalogLink": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
                 "author": "div.autherinfo > div.au_name > p:nth-child(2) > a",
@@ -407,6 +408,7 @@
             "request": "http://zhannei.baidu.com/cse/search?s=287293036948159515&q={keyword}"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "author": {
                     "type": "string",
@@ -465,6 +467,7 @@
             "request": "http://zhannei.baidu.com/cse/search?s=1211228452607586324&q={keyword}"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "author": {
                     "type": "string",
@@ -523,6 +526,7 @@
             "request": "http://zhannei.baidu.com/cse/search?s=8353527289636145615&q={keyword}"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "author": {
                     "type": "string",
@@ -581,6 +585,7 @@
             "request": "http://zhannei.baidu.com/cse/search?s=5334330359795686106&q={keyword}"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "author": {
                     "type": "string",
@@ -644,6 +649,7 @@
             "request": "http://zhannei.baidu.com/cse/search?s=3164401634903103732&q={keyword}"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "author": {
                     "type": "string",
@@ -705,6 +711,7 @@
             "request": "http://www.daizhuzai.com/search.html?searchtype=novelname&searchkey={keyword}"
         },
         "detail": {
+            "request": "{detailLink}",
             "response": {
                 "author": "#author > i:nth-child(1) > a",
                 "catagory": "#author > i:nth-child(2) > a",

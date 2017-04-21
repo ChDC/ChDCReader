@@ -294,6 +294,28 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         return Promise.all(tasks).then(handleResult);
       }
     }, {
+      key: "__createBook",
+      value: function __createBook(bs, m) {
+        m.cover = m.coverImg;
+
+        var book = Book.createBook(m, this);
+        book.sources = {};
+        var bss = new BookSource(book, this, bs.id, bs.contentSourceWeight);
+
+        if ("bookid" in m) bss.bookid = m.bookid;
+        if ("detailLink" in m) bss.detailLink = m.detailLink;
+        if ("catalogLink" in m) bss.catalogLink = m.catalogLink;
+        if (m.lastestChapter) {
+          bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');
+        }
+
+        bss.searched = true;
+        book.sources[bs.id] = bss;
+
+        book.mainSourceId = bs.id;
+        return book;
+      }
+    }, {
       key: "searchBook",
       value: function searchBook(bsid, keyword) {
 
@@ -317,27 +339,8 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
             for (var _iterator7 = data[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
               var m = _step7.value;
 
-              m.cover = m.coverImg;
-              var book = Book.createBook(m, self);
-              if (!checkBook(book)) continue;
-
-              book.sources = {};
-
-              var bss = new BookSource(book, self, bsid, bs.contentSourceWeight);
-
-              if (m.bookid) bss.bookid = m.bookid;
-
-              bss.detailLink = m.detailLink;
-              bss.catalogLink = m.catalogLink;
-              if (m.lastestChapter) {
-                bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');
-              }
-
-              bss.searched = true;
-              book.sources[bsid] = bss;
-
-              book.mainSourceId = bsid;
-              books.push(book);
+              if (!checkBook(m)) continue;
+              books.push(self.__createBook(bs, m));
             }
           } catch (err) {
             _didIteratorError7 = true;
@@ -391,34 +394,35 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       }
     }, {
       key: "getBookInfo",
-      value: function getBookInfo(bsid, detailLink) {
+      value: function getBookInfo(bsid, dict) {
+        var _this4 = this;
 
-        util.log("BookSourceManager: Get Book Info from " + bsid + " with link \"" + detailLink + "\"");
+        util.log("BookSourceManager: Get Book Info from " + bsid);
 
         var bs = this.sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
 
-        return this.spider.get(bs.detail, { url: detailLink, detailLink: detailLink }).then(function (data) {
-          data.cover = data.coverImg;
-          delete data.coverImg;
-          return data;
+        return this.spider.get(bs.detail, dict).then(function (m) {
+          m.bookid = dict.bookid;
+          var book = _this4.__createBook(bs, m);
+          return book;
         });
       }
     }, {
       key: "getLastestChapter",
-      value: function getLastestChapter(bsid, detailLink) {
-        util.log("BookSourceManager: Get Lastest Chapter from " + bsid + " with link \"" + detailLink + "\"");
+      value: function getLastestChapter(bsid, dict) {
+        util.log("BookSourceManager: Get Lastest Chapter from " + bsid + "\"");
 
         var bsm = this.sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.spider.get(bsm.detail, { url: detailLink, detailLink: detailLink }).then(function (data) {
+        return this.spider.get(bsm.detail, dict).then(function (data) {
           return data.lastestChapter.replace(/^最新更新\s+/, '');
         });
       }
     }, {
       key: "getBookCatalogLink",
-      value: function getBookCatalogLink(bsid, locals) {
+      value: function getBookCatalogLink(bsid, dict) {
 
         util.log("BookSourceManager: Get Book Catalog Link from " + bsid + "\"");
 
@@ -427,18 +431,18 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
         if (!bs.catalogLink) return Promise.resolve(null);
 
-        return this.spider.get(bs.catalogLink, locals);
+        return this.spider.get(bs.catalogLink, dict);
       }
     }, {
       key: "getBookCatalog",
-      value: function getBookCatalog(bsid, locals) {
+      value: function getBookCatalog(bsid, dict) {
 
         util.log("BookSourceManager: Refresh Catalog from " + bsid);
 
         var bsm = this.sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.spider.get(bsm.catalog, locals).then(function (data) {
+        return this.spider.get(bsm.catalog, dict).then(function (data) {
 
           var catalog = [];
           var _iteratorNormalCompletion9 = true;
@@ -475,7 +479,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }, {
       key: "getChapter",
       value: function getChapter(bsid) {
-        var _this4 = this;
+        var _this5 = this;
 
         var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -489,7 +493,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
         return this.spider.get(bsm.chapter, { url: chapter.link, chapterLink: chapter.link }).then(function (data) {
           var c = new Chapter();
-          c.content = _this4.spider.clearHtml(data.contentHTML);
+          c.content = _this5.spider.clearHtml(data.contentHTML);
 
           if (!c.content) {
             return Promise.reject(206);

@@ -103,17 +103,18 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
       }
     }, {
       key: 'addBook',
-      value: function addBook(book) {
+      value: function addBook(book, readingRecord) {
         if (!this.hasBook(book)) {
           this.books.push({
             book: book,
-            readingRecord: new ReadingRecord()
+            readingRecord: readingRecord || new ReadingRecord()
           });
         }
       }
     }, {
       key: 'hasBook',
       value: function hasBook(book) {
+        if (!book) return book;
         return this.books.find(function (e) {
           var b = e.book;
           return b.name == book.name && b.author == book.author && b.mainSourceId == book.mainSourceId;

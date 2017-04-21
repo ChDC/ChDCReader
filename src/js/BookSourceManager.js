@@ -151,6 +151,28 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         .then(handleResult);
     }
 
+    // 从获取的数据中提取 Book
+    __createBook(bs, m){
+      m.cover = m.coverImg;
+
+      const book = Book.createBook(m, this);
+      book.sources = {}; // 内容来源
+      const bss = new BookSource(book, this, bs.id, bs.contentSourceWeight);
+
+      if("bookid" in m) bss.bookid = m.bookid;
+      if("detailLink" in m) bss.detailLink = m.detailLink;
+      if("catalogLink" in m) bss.catalogLink = m.catalogLink;
+      if(m.lastestChapter){
+        bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
+      }
+
+      bss.searched = true;
+      book.sources[bs.id] = bss;
+
+      book.mainSourceId = bs.id;  // 主要来源
+      return book;
+    }
+
     // 搜索书籍
     searchBook(bsid, keyword){
 
@@ -168,28 +190,9 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         const books = [];
 
         for(let m of data){
-          m.cover = m.coverImg;
-          const book = Book.createBook(m, self);
-          if(!checkBook(book))
+          if(!checkBook(m))
             continue;
-
-          book.sources = {}; // 内容来源
-
-          const bss = new BookSource(book, self, bsid, bs.contentSourceWeight);
-
-          if(m.bookid) bss.bookid = m.bookid;
-
-          bss.detailLink = m.detailLink;
-          bss.catalogLink = m.catalogLink;
-          if(m.lastestChapter){
-            bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
-          }
-
-          bss.searched = true;
-          book.sources[bsid] = bss;
-
-          book.mainSourceId = bsid;  // 主要来源
-          books.push(book);
+          books.push(self.__createBook(bs, m));
         }
         return books;
       }
@@ -209,36 +212,36 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }
 
     // 使用详情页链接刷新书籍信息
-    getBookInfo(bsid, detailLink){
+    getBookInfo(bsid, dict){
 
-      util.log(`BookSourceManager: Get Book Info from ${bsid} with link "${detailLink}"`);
+      util.log(`BookSourceManager: Get Book Info from ${bsid}`);
 
       const bs = this.sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bs.detail, {url: detailLink, detailLink: detailLink})
-        .then(data => {
-          data.cover = data.coverImg;
-          delete data.coverImg;
-          return data;
+      return this.spider.get(bs.detail, dict)
+        .then(m => {
+          m.bookid = dict.bookid;
+          let book = this.__createBook(bs, m);
+          return book;
         });
     }
 
     // 获取最新章节
-    getLastestChapter(bsid, detailLink){
-      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid} with link "${detailLink}"`);
+    getLastestChapter(bsid, dict){
+      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid}"`);
 
       const bsm = this.sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bsm.detail, {url: detailLink, detailLink: detailLink})
+      return this.spider.get(bsm.detail, dict)
         .then(data => {
           return data.lastestChapter.replace(/^最新更新\s+/, '');
         });
     }
 
     // 从某个网页获取目录链接
-    getBookCatalogLink(bsid, locals){
+    getBookCatalogLink(bsid, dict){
 
       util.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
 
@@ -248,18 +251,18 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       if(!bs.catalogLink)
         return Promise.resolve(null);
 
-      return this.spider.get(bs.catalogLink, locals);
+      return this.spider.get(bs.catalogLink, dict);
     }
 
     // 获取书籍目录
-    getBookCatalog(bsid, locals){
+    getBookCatalog(bsid, dict){
 
       util.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
 
       const bsm = this.sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bsm.catalog, locals)
+      return this.spider.get(bsm.catalog, dict)
         .then(data => {
 
           const catalog = [];

@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], function($, app, Page, util, uiutil, Infinitelist){
+define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "ReadingRecord"], function($, app, Page, util, uiutil, Infinitelist, ReadingRecord){
 
   class MyPage extends Page{
 
@@ -11,16 +11,49 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       this.readingRecord = null; // 正在读的记录
       this.chapterList = null; // 无限列表
       this.lastSavePageScrollTop = 0;
+
+      this.isNewBook = true; // 标记是否是未加入书架的新书
     }
 
     onClose(){
       this.chapterList.close();
+      // 询问是否加入书架
+      if(this.isNewBook){
+        if(!app.bookShelf.hasBook(this.book)){ // 书架中没有本书
+          uiutil.showMessageDialog("加入书架", `是否将${this.book.name} 加入书架？`,
+              () => {
+                app.bookShelf.addBook(this.book, this.readingRecord);
+                app.bookShelf.save()
+                  .then(() => {
+                    uiutil.showMessage("添加成功！");
+                    this.fireEvent("myclose");
+                  });
+
+              },
+              () => {
+                this.fireEvent("myclose");
+              });
+        }
+        else{
+          this.fireEvent("myclose");
+        }
+      }
     }
 
-    onLoad(params, p){
-      this.book = params.book;
+    onLoad(params){
+      let bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
+      if(bookAndReadRecordInBookShelf){
+        // 如果书架中有这本书就读取书架的记录
+        this.book = bookAndReadRecordInBookShelf.book;
+        this.readingRecord = bookAndReadRecordInBookShelf.readingRecord;
+        this.isNewBook = false;
+      }
+      else{
+        this.book = params.book;
+        this.readingRecord = params.readingRecord || new ReadingRecord();
+      }
+
       this.book.checkBookSources();
-      this.readingRecord = params.readingRecord;
       this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
 
       this.loadView();
@@ -28,7 +61,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }
 
     onPause(){
-      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop() + 10;
+      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
       app.bookShelf.save();
     }
 
@@ -92,6 +125,20 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       });
       $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
+
+      if(this.isNewBook){
+        $(".btnAddtoBookShelf").show().click(e => {
+            app.bookShelf.addBook(this.book);
+            $(event.currentTarget).css("display", "none");
+            app.bookShelf.save()
+              .then(() => {
+                uiutil.showMessage("添加成功！");
+               })
+              .catch(error => {
+                $(event.currentTarget).css("display", "block");
+              });
+          });
+      }
     };
 
     // 加载目录源列表
@@ -102,6 +149,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           return;
         const bid = $(target).data('bsid');
         const oldMainSource = this.book.mainSourceId;
+        // 切换主源
         this.book.setMainSourceId(bid)
           .then(book => {
             app.bookShelf.save();
@@ -209,7 +257,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         const options = newValue.data('options');
         this.readingRecord.setReadingRecord(index, title, options);
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-        // app.bookShelf.save();
         $(".labelContentSource").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
         $(".labelChapterTitle").text(title);
         app.hideLoading();

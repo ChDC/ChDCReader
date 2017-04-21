@@ -5,23 +5,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
 
   var customBookSource = {
 
-    qidian: {
-      csrfToken: "",
-      getCSRToken: function getCSRToken() {
-        var url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-        if (typeof cordovaHTTP != 'undefined') {
-          cordovaHTTP.get(url, {}, {}, function (response) {
-            debugger;
-          }, function (e) {
-            debugger;
-          });
-        }
-      },
-      init: function init() {
-        return this.getCSRToken();
-      }
-    },
-
     comico: {
       beforeSearchBook: function beforeSearchBook() {
         return Array.from(arguments).map(function (e) {

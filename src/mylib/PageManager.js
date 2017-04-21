@@ -36,8 +36,9 @@ define(["jquery", "util"], function($, util){
         // 刷新当前页面的 CSS
         const urls = this.getURLs(this.currentPage);
         const cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
-        this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
+        return this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
       }
+      return Promise.resolve();
     }
 
     __changeThemeContent(cssthemeelemnt, cssThemeUrl){
@@ -45,11 +46,12 @@ define(["jquery", "util"], function($, util){
 
       if(cssThemeUrl){
         cssthemeelemnt.data('url', cssThemeUrl);
-        $.get(cssThemeUrl, cssContent => cssthemeelemnt.text(cssContent))
+        return $.get(cssThemeUrl, cssContent => cssthemeelemnt.text(cssContent))
           .fail(() => cssthemeelemnt.text(""));
       }
       else{
         cssthemeelemnt.text("").data('url', "");
+        return Promise.resolve();
       }
     }
 
@@ -81,8 +83,7 @@ define(["jquery", "util"], function($, util){
           this.__closePage(popPage.page);
         }
         this.pageStack.push(popPage);
-        this.__popPage();
-        return;
+        return Promise.resolve(this.__popPage());
       }
 
       // 如果缓存中没有该页，则新建
@@ -91,73 +92,72 @@ define(["jquery", "util"], function($, util){
       const urls = this.getURLs(name);
 
       // 获取页面
-      $.get(urls.htmlurl, content => {
+      return $.get(urls.htmlurl)
+        .then(content => {
 
-        // util.log("Gotten page", name);
-        const contentContainer = $('<div class="page-content-container"></div>');
-        // load page content
-        contentContainer.append(content);
-        // Load page css
-        $.get(urls.cssurl, cssContent => {
-          contentContainer.append($("<style>").text(cssContent));
+          // util.log("Gotten page", name);
+          const contentContainer = $('<div class="page-content-container"></div>');
+          // load page content
+          contentContainer.append(content);
+          // Load page css
+          $.get(urls.cssurl, cssContent => {
+            contentContainer.append($("<style>").text(cssContent));
 
-          contentContainer.append($('<style class="csstheme">').data('url', urls.cssthemeurl));
-          // Load page theme css
-          if(urls.cssthemeurl){
-            $.get(urls.cssthemeurl, cssContent => {
-              contentContainer.find('style.csstheme').text(cssContent);
-            });
+            contentContainer.append($('<style class="csstheme">').data('url', urls.cssthemeurl));
+            // Load page theme css
+            if(urls.cssthemeurl){
+              $.get(urls.cssthemeurl, cssContent => {
+                contentContainer.find('style.csstheme').text(cssContent);
+              });
+            }
+          });
+
+          if(options.clear === true){
+            debugger;
+            this.container.children().detach();
+            this.__closePage(this.currentPage);
+            let popPage = null;
+            while((popPage = this.pageStack.pop()) != null){
+              this.__closePage(popPage.page);
+            }
+            this.pageStack.length = 0;
+            // __showPage();
           }
-        });
+          else{
+            // 将之前的页面存储起来
+            const currentContentContainer = this.container.children();
+            if(currentContentContainer.length > 0){
+              this.pageStack.push({
+                page: this.currentPage,
+                params: params,
+                content: currentContentContainer
+              });
 
-        if(options.clear === true){
-          debugger;
+              // 触发之前页面的暂停事件
+              let page = this.jsStorage[this.currentPage];
+              page.fireEvent('pause');
+            }
+          }
+
+          // showPage
           this.container.children().detach();
-          this.__closePage(this.currentPage);
-          let popPage = null;
-          while((popPage = this.pageStack.pop()) != null){
-            this.__closePage(popPage.page);
-          }
-          this.pageStack.length = 0;
-          // __showPage();
-        }
-        else{
-          // 将之前的页面存储起来
-          const currentContentContainer = this.container.children();
-          if(currentContentContainer.length > 0){
-            this.pageStack.push({
-              page: this.currentPage,
-              params: params,
-              content: currentContentContainer
+          this.container.append(contentContainer);
+
+          this.currentPage = name;
+          this.__saveState(name, params);
+        })
+        .then(() =>
+          // Load page js
+          new Promise((resolve, reject) => {
+            requirejs([urls.jsurl], Page => {
+              let page = this.__newPageFactory(Page, name);
+              this.jsStorage[name] = page;
+              page.fireEvent('load', params);
+              page.fireEvent('resume', params);
+              resolve(page);
             });
-
-            // 触发之前页面的暂停事件
-            let page = this.jsStorage[this.currentPage];
-            page.__onPause();
-            if(page.onPause)
-              page.onPause();
-          }
-        }
-
-        // showPage
-        this.container.children().detach();
-        this.container.append(contentContainer);
-
-        this.currentPage = name;
-        this.__saveState(name, params);
-
-        // Load page js
-        requirejs([urls.jsurl], Page => {
-          let page = this.__newPageFactory(Page, name);
-          this.jsStorage[name] = page;
-          page.__onLoad();
-          if(page.onLoad)
-            page.onLoad(params);
-          page.__onResume();
-          if(page.onResume)
-            page.onResume();
-        });
-      });
+          })
+        );
     }
 
     __newPageFactory(Page, name){
@@ -175,14 +175,9 @@ define(["jquery", "util"], function($, util){
       const executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
       let page = this.jsStorage[p];
 
-      if(executeOnPause) page.__onPause();
-      if(executeOnPause && page.onPause){
-        page.onPause();
-      }
-      page.__onClose(params)
-      if(page.onClose)
-        page.onClose(params);
-
+      if(executeOnPause)
+        page.fireEvent('pause', params);
+      page.fireEvent('close', params);
       delete this.jsStorage[p];
     }
 
@@ -190,7 +185,7 @@ define(["jquery", "util"], function($, util){
     __popPage(){
       const p = this.pageStack.pop();
       if(!p)
-        return;
+        return p;
       this.currentPage = p.page;
       const urls = this.getURLs(this.currentPage);
       // Load Theme CSS
@@ -206,14 +201,14 @@ define(["jquery", "util"], function($, util){
 
       let page = this.jsStorage[this.currentPage];
       // 触发弹出页面的恢复事件
-      page.__onResume();
-      if(page.onResume)
-        page.onResume();
+      page.fireEvent('resume');
+      return page;
     }
     // 关闭当前页面
     closePage(params){
       this.__closePage(this.currentPage, params);
       this.__popPage();
+      return Promise.resolve();
     }
 
     __saveState(name, params){

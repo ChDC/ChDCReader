@@ -134,6 +134,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       document.addEventListener("pause", function () {
         app.bookShelf.save();
       }, false);
+      if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
     onUpdateInstalled: function onUpdateInstalled() {
       uiutil.showMessage("资源更新成功！");
@@ -162,7 +163,10 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         if (!name) {
           app.page.setTheme(this.isNight() ? app.settings.settings.theme.nighttheme : app.settings.settings.theme.daytheme);
           if (typeof cordova != "undefined" && cordova.platformId == 'android') {
-            if (typeof StatusBar != "undefined") StatusBar.backgroundColorByHexString(this.get().statuscolor);
+            if (typeof StatusBar != "undefined") {
+              var themeConfig = this.get();
+              if (themeConfig.statuscolor) StatusBar.backgroundColorByHexString(themeConfig.statuscolor);
+            }
           }
         } else app.page.setTheme(name);
       },

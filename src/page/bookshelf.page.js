@@ -70,7 +70,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
             book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
           });
 
-        nb.find('.book-cover, .book-info').click(() => app.page.showPage("readbook", value));
+        nb.find('.book-cover, .book-info')
+          .click(() => app.page.showPage("readbook", {book: value.book, readingRecord: value.readingRecord}));
 
         nb.find('.btnBookMenu').click(event => {
           $(event.currentTarget).dropdown();
@@ -110,6 +111,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
               });
       $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
       $(".btnSearch").click(e => app.page.showPage("search"));
+      $(".btnExplore").click(e => app.page.showPage("explorebook"));
+
     }
 
   }

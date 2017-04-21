@@ -100,7 +100,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     getBookInfo(){
       return this.__getBookSourceDetailLink()
         .then(detailLink =>
-        this.bookSourceManager.getBookInfo(this.id, detailLink));
+        this.bookSourceManager.getBookInfo(this.id, this));
     }
 
     // 获取目录
@@ -123,7 +123,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
 
       return this.__getBookSourceDetailLink()
         .then(detailLink =>
-          this.bookSourceManager.getLastestChapter(this.id, detailLink))
+          this.bookSourceManager.getLastestChapter(this.id, this))
         .then(lastestChapter => {
           this.updatedLastestChapterTime = (new Date()).getTime();
           let lastestChapterUpdated = false;

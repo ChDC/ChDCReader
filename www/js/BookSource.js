@@ -154,7 +154,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
         var _this3 = this;
 
         return this.__getBookSourceDetailLink().then(function (detailLink) {
-          return _this3.bookSourceManager.getBookInfo(_this3.id, detailLink);
+          return _this3.bookSourceManager.getBookInfo(_this3.id, _this3);
         });
       }
     }, {
@@ -174,7 +174,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
         util.log('Refresh LastestChapter!');
 
         return this.__getBookSourceDetailLink().then(function (detailLink) {
-          return _this4.bookSourceManager.getLastestChapter(_this4.id, detailLink);
+          return _this4.bookSourceManager.getLastestChapter(_this4.id, _this4);
         }).then(function (lastestChapter) {
           _this4.updatedLastestChapterTime = new Date().getTime();
           var lastestChapterUpdated = false;

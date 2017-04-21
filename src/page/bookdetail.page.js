@@ -1,10 +1,17 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util, uiutil){
+define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($, app, Page, util, uiutil, ReadingRecord){
 
   class MyPage extends Page{
 
-    onLoad(params, p){
+    onLoad(params){
+      this.book = params.book;
       this.loadView(params);
+    }
+
+
+    readbookpageclose(){
+      if(app.bookShelf.hasBook(this.book))
+        app.page.showPage("bookshelf");
     }
 
     // 加载书籍详情
@@ -21,6 +28,9 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
       nb.find(".btnRead").click( e => app.page.showPage("readbook", {
           book: book
+        })
+        .then(page => {
+          page.addEventListener('myclose', this.readbookpageclose.bind(this));
         }));
 
       if(app.bookShelf.hasBook(book)){
@@ -54,14 +64,20 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
       bookChapter.empty();
       book.getCatalog(false, undefined)
         .then(catalog => {
-          for(const chapter of catalog){
+          catalog.forEach((chapter, index) => {
             const nc = c.clone();
             nc.text(chapter.title);
             nc.click(e => {
-              // TODO: 打开阅读页面
+              app.page.showPage("readbook", {
+                book: book,
+                readingRecord: new ReadingRecord({chapterIndex: index, chapterTitle: chapter.title})
+              })
+              .then(page => {
+                page.addEventListener('myclose', this.readbookpageclose.bind(this));
+              });
             });
             bookChapter.append(nc);
-          };
+          });
         })
         .catch(error => uiutil.showError(app.error.getMessage(error)));
     }

@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, util, uiutil) {
+define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function ($, app, Page, util, uiutil, ReadingRecord) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -20,12 +20,20 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
 
     _createClass(MyPage, [{
       key: "onLoad",
-      value: function onLoad(params, p) {
+      value: function onLoad(params) {
+        this.book = params.book;
         this.loadView(params);
+      }
+    }, {
+      key: "readbookpageclose",
+      value: function readbookpageclose() {
+        if (app.bookShelf.hasBook(this.book)) app.page.showPage("bookshelf");
       }
     }, {
       key: "loadBookDetail",
       value: function loadBookDetail(id, book) {
+        var _this2 = this;
+
         var nb = $(id);
         if (book.cover) nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
@@ -38,6 +46,8 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
         nb.find(".btnRead").click(function (e) {
           return app.page.showPage("readbook", {
             book: book
+          }).then(function (page) {
+            page.addEventListener('myclose', _this2.readbookpageclose.bind(_this2));
           });
         });
 
@@ -62,40 +72,25 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
     }, {
       key: "loadBookChapters",
       value: function loadBookChapters(id, book) {
+        var _this3 = this;
 
         var bookChapter = $(id);
         var c = $(".template .book-chapter");
         bookChapter.empty();
         book.getCatalog(false, undefined).then(function (catalog) {
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = catalog[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var chapter = _step.value;
-
-              var nc = c.clone();
-              nc.text(chapter.title);
-              nc.click(function (e) {});
-              bookChapter.append(nc);
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-
-          ;
+          catalog.forEach(function (chapter, index) {
+            var nc = c.clone();
+            nc.text(chapter.title);
+            nc.click(function (e) {
+              app.page.showPage("readbook", {
+                book: book,
+                readingRecord: new ReadingRecord({ chapterIndex: index, chapterTitle: chapter.title })
+              }).then(function (page) {
+                page.addEventListener('myclose', _this3.readbookpageclose.bind(_this3));
+              });
+            });
+            bookChapter.append(nc);
+          });
         }).catch(function (error) {
           return uiutil.showError(app.error.getMessage(error));
         });

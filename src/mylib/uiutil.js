@@ -36,37 +36,41 @@ define(["jquery"], function($){
         this.showMessage(msg, delay, 'error');
     },
 
-    showMessageDialog(title, msg, ok, cancel){
+    showMessageDialog(title, msg, okEvent, cancelEvent,
+                      {oktext="确定", canceltext="取消"}={}){
       const dialog = $(
-  '<div class="modal fade" id="modalMessage">'
-+ '    <div class="modal-dialog">'
-+ '      <div class="modal-content">'
-+ '        <div class="modal-header">'
-+ '          <h4 class="modal-title">'
-+ '          </h4>'
-+ '        </div>'
-+ '        <div class="modal-body">'
-+ '          <p class="modal-message"></p>'
-+ '        </div>'
-+ '        <div class="modal-footer">'
-+ '          <button type="button" class="btn btn-default" btnCancel data-dismiss="modal">'
-+ '            取消'
-+ '          </button>'
-+ '          <button type="button" class="btn btn-primary btnOK" data-dismiss="modal">'
-+ '          确定'
-+ '          </button>'
-+ '        </div>'
-+ '      </div>'
-+ '    </div>'
-+ '  </div>');
-      debugger;
-      // TODO 失效后销毁
-      // dialog.remove();
+        `<div class="modal fade" id="modalMessage">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">
+                </h4>
+              </div>
+              <div class="modal-body">
+                <p class="modal-message"></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default btnCancel" data-dismiss="modal">
+                  ${canceltext}
+                </button>
+                <button type="button" class="btn btn-primary btnOK" data-dismiss="modal">
+                  ${oktext}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>`);
+
       $(document.body).append(dialog);
-      dialog.find('.btnOk').click(ok);
-      dialog.find('.btnCancel').click(cancel);
+
+      dialog.on('hidden.bs.modal', () => {
+        // 销毁自己
+        dialog.remove();
+      });
       dialog.find('.modal-title').text(title);
       dialog.find('.modal-message').text(msg);
+      dialog.find('.btnOK').click(okEvent);
+      dialog.find('.btnCancel').click(cancelEvent);
       dialog.modal('show');
     },
 
