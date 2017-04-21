@@ -4,3 +4,4 @@ config.xml merge=ours
 cordova-hcp.json merge=ours
 package.json merge=ours
 www/chcp.json merge=ours
+www merge=ours
