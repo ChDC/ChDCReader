@@ -6,7 +6,9 @@
     "compile": "babel --no-comments --presets es2015 --ignore src/lib/ -Dd www src",
     "watch": "babel --no-comments --presets es2015 --ignore src/lib/ -wDd www src",
     "update": "tools\\UpdateResources",
-    "build": "cordova build android --buildConfig \"E:\\AppData\\Sign\\cordova.json\""
+    "build": "cordova build android --buildConfig \"E:\\AppData\\Sign\\cordova.json\"",
+    "buildrelease": "cordova build android --release --buildConfig \"E:\\AppData\\Sign\\cordova.json\""
+
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
