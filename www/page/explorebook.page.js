@@ -126,17 +126,19 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
             var matcher = url.match(config.matcher);
             if (!matcher) return "continue";
 
-            if (config.executeScript) ref.executeScript({ code: config.executeScript });
-            ref.hide();
-            var bookid = matcher[1];
-            app.bookSourceManager.getBookInfo(bsid, { bookid: bookid }).then(function (book) {
-              app.page.showPage(pageName, { book: book }).then(function (page) {
-                page.addEventListener('myclose', function () {
-                  ref.show();
-                  ref.executeScript({ code: "history.back()" });
+            var action = function action() {
+              ref.hide();
+              var bookid = matcher[1];
+              app.bookSourceManager.getBookInfo(bsid, { bookid: bookid }).then(function (book) {
+                app.page.showPage(pageName, { book: book }).then(function (page) {
+                  page.addEventListener('myclose', function () {
+                    ref.show();
+                    ref.executeScript({ code: "history.back()" });
+                  });
                 });
               });
-            });
+            };
+            if (config.executeScript) ref.executeScript({ code: config.executeScript }, action);else action();
           };
 
           for (var _i = 0; _i < _arr.length; _i++) {
