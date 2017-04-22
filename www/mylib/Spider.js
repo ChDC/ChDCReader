@@ -23,12 +23,12 @@ define(["util"], function (util) {
             request = _ref.request,
             response = _ref.response;
 
-        var locals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         if (!response) return Promise.reject(new Error("Empty response"));
 
         if (!request) request = {
-          "url": locals.url
+          "url": dict.url
         };
 
         if (util.type(request) == "string") {
@@ -42,8 +42,8 @@ define(["util"], function (util) {
         var method = (request.method || "GET").toLowerCase();
         var type = (request.type || "HTML").toLowerCase();
 
-        var url = this.format(request.url, locals);
-        locals.host = url;
+        var url = this.format(request.url, dict);
+        dict.host = url;
 
         var requestPromise = void 0;
 
@@ -65,12 +65,12 @@ define(["util"], function (util) {
               var html = document.createElement("div");
               html.innerHTML = data;
 
-              return _this.__handleResponse(html, response, null, locals);
+              return _this.__handleResponse(html, response, null, dict);
             });
           case "json":
             return requestPromise.then(function (data) {
               var json = JSON.parse(data);
-              return _this.__handleResponse(json, response, null, locals);
+              return _this.__handleResponse(json, response, null, dict);
             });
           default:
             throw new Error("Illegal type");
@@ -79,19 +79,19 @@ define(["util"], function (util) {
     }, {
       key: "__handleResponse",
       value: function __handleResponse(data, response, keyName) {
-        var topLocals = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-        var locals = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+        var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
 
         if (!response) return undefined;
 
         switch (util.type(response)) {
           case "array":
-            return this.__handleArray(data, response, keyName, topLocals, locals);
+            return this.__handleArray(data, response, keyName, globalDict, dict);
           case "object":
-            return this.__handleObject(data, response, keyName, topLocals, locals);
+            return this.__handleObject(data, response, keyName, globalDict, dict);
           case "string":
-            return this.__handleString(data, response, keyName, topLocals, locals);
+            return this.__handleString(data, response, keyName, globalDict, dict);
           default:
             throw new Error("Illegal type");
         }
@@ -99,8 +99,8 @@ define(["util"], function (util) {
     }, {
       key: "__handleArray",
       value: function __handleArray(data, response, keyName) {
-        var topLocals = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-        var locals = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+        var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
         var result = [];
         var _iteratorNormalCompletion = true;
@@ -111,7 +111,7 @@ define(["util"], function (util) {
           for (var _iterator = response[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var m = _step.value;
 
-            result.push(this.__handleResponse(data, m, keyName, topLocals, locals));
+            result.push(this.__handleResponse(data, m, keyName, globalDict, dict));
           }
         } catch (err) {
           _didIteratorError = true;
@@ -135,15 +135,15 @@ define(["util"], function (util) {
       value: function __handleObject(data, response, keyName) {
         var _this2 = this;
 
-        var topLocals = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-        var locals = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+        var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
 
         var __privateHandleObject = function __privateHandleObject(response) {
           var result = {};
 
           for (var key in response) {
-            result[key] = _this2.__handleResponse(data, response[key], key, topLocals, result);
+            result[key] = _this2.__handleResponse(data, response[key], key, globalDict, result);
           }
           return result;
         };
@@ -164,11 +164,11 @@ define(["util"], function (util) {
               result = [];
               var list = this.__getAllElements(data, response.element);
               result = list.map(function (m) {
-                return _this2.__handleResponse(m, response.children, keyName, topLocals, locals);
+                return _this2.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                var dict = Object.assign({}, topLocals, util.type(m) == "object" ? m : {});
-                var validCode = '"use strict"\n' + _this2.format(response.valideach, dict, true);
+                var gatherDict = Object.assign({}, globalDict, util.type(m) == "object" ? m : {});
+                var validCode = '"use strict"\n' + _this2.format(response.valideach, gatherDict, true);
                 return eval(validCode);
               });
             }
@@ -190,11 +190,20 @@ define(["util"], function (util) {
                 if (response.attribute == 'src') attr = 'data-src';else attr = response.attribute;
                 result = e.getAttribute(attr);
                 if (attr == 'innerHTML') result = result.replace(/\bdata-src=(?=["'])/gi, "src=");
-              } else result = this.__getValue(e, keyName, topLocals, locals);
+              } else result = this.__getValue(e, keyName, globalDict, dict);
+
+              if (!result) return result;
 
               if (response.remove) {
                 var regex = new RegExp(response.remove, 'gi');
                 result = result.replace(regex, '');
+              }
+
+              if (response.extract) {
+                var _regex = new RegExp(response.extract, 'i');
+                var matcher = result.match(_regex);
+                if (!matcher) return undefined;
+                result = matcher[1];
               }
             }
             break;
@@ -203,7 +212,7 @@ define(["util"], function (util) {
               if (!response.element) return response.default;
               var _e = this.__getElement(data, response.element);
               if (!_e) return response.default;
-              var v = this.__getValue(_e, keyName, topLocals, locals);
+              var v = this.__getValue(_e, keyName, globalDict, dict);
 
               if (v && response.true && v.match(response.true)) result = true;else if (v && response.false && v.match(response.false)) result = false;else result = response.default;
             }
@@ -211,8 +220,8 @@ define(["util"], function (util) {
           case "format":
             {
               if (!response.value) return undefined;
-              var dict = Object.assign({}, topLocals, locals);
-              result = this.format(response.value, dict);
+              var gatherDict = Object.assign({}, globalDict, dict);
+              result = this.format(response.value, gatherDict);
             }
             break;
           default:
@@ -222,8 +231,8 @@ define(["util"], function (util) {
         }
 
         if ("valid" in response) {
-          var _dict = Object.assign({}, topLocals, locals);
-          var validCode = '"use strict"\n' + this.format(response.valid, _dict, true);
+          var _gatherDict = Object.assign({}, globalDict, dict);
+          var validCode = '"use strict"\n' + this.format(response.valid, _gatherDict, true);
           if (!eval(validCode)) return undefined;
         }
         return result;
@@ -231,21 +240,21 @@ define(["util"], function (util) {
     }, {
       key: "__handleString",
       value: function __handleString(data, response, keyName) {
-        var topLocals = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-        var locals = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+        var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
         var e = this.__getElement(data, response);
         if (!e) return undefined;
-        return this.__getValue(e, keyName, topLocals, locals);
+        return this.__getValue(e, keyName, globalDict, dict);
       }
     }, {
       key: "__getValue",
       value: function __getValue(element, keyName) {
-        var topLocals = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-        var locals = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var globalDict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+        var dict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
         if (util.type(element) == 'object' && "querySelector" in element) {
-          if (!keyName) return element.textContent;else if (keyName.match(/link$/i)) return this.fixurl(element.getAttribute("href"), topLocals.host);else if (keyName.match(/img$|image$/i)) return this.fixurl(element.getAttribute("data-src"), topLocals.host);else if (keyName.match(/html$/i)) return element.innerHTML.replace(/\bdata-src=(?=["'])/gi, "src=");else return element.textContent.trim();
+          if (!keyName) return element.textContent;else if (keyName.match(/link$/i)) return this.fixurl(element.getAttribute("href"), globalDict.host);else if (keyName.match(/img$|image$/i)) return this.fixurl(element.getAttribute("data-src"), globalDict.host);else if (keyName.match(/html$/i)) return element.innerHTML.replace(/\bdata-src=(?=["'])/gi, "src=");else return element.textContent.trim();
         } else {
           return element;
         }

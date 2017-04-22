@@ -5,11 +5,11 @@ define(function() {
   // **** ReadingRecord *****
   class ReadingRecord{
 
-    constructor(){
-      this.chapterIndex = 0;
-      this.pageScrollTop = 0;
-      this.chapterTitle = "";
-      this.options = {};
+    constructor({chapterIndex=0, chapterTitle="", pageScrollTop=0, options={}}={}){
+      this.chapterIndex = chapterIndex;
+      this.chapterTitle = chapterTitle;
+      this.pageScrollTop = pageScrollTop;
+      this.options = options;
     }
 
 

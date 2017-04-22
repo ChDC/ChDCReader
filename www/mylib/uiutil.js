@@ -37,15 +37,24 @@ define(["jquery"], function ($) {
     showError: function showError(msg, delay) {
       if (msg) this.showMessage(msg, delay, 'error');
     },
-    showMessageDialog: function showMessageDialog(title, msg, ok, cancel) {
-      var dialog = $('<div class="modal fade" id="modalMessage">' + '    <div class="modal-dialog">' + '      <div class="modal-content">' + '        <div class="modal-header">' + '          <h4 class="modal-title">' + '          </h4>' + '        </div>' + '        <div class="modal-body">' + '          <p class="modal-message"></p>' + '        </div>' + '        <div class="modal-footer">' + '          <button type="button" class="btn btn-default" btnCancel data-dismiss="modal">' + '            取消' + '          </button>' + '          <button type="button" class="btn btn-primary btnOK" data-dismiss="modal">' + '          确定' + '          </button>' + '        </div>' + '      </div>' + '    </div>' + '  </div>');
-      debugger;
+    showMessageDialog: function showMessageDialog(title, msg, okEvent, cancelEvent) {
+      var _ref = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {},
+          _ref$oktext = _ref.oktext,
+          oktext = _ref$oktext === undefined ? "确定" : _ref$oktext,
+          _ref$canceltext = _ref.canceltext,
+          canceltext = _ref$canceltext === undefined ? "取消" : _ref$canceltext;
+
+      var dialog = $("<div class=\"modal fade\" id=\"modalMessage\">\n          <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h4 class=\"modal-title\">\n                </h4>\n              </div>\n              <div class=\"modal-body\">\n                <p class=\"modal-message\"></p>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default btnCancel\" data-dismiss=\"modal\">\n                  " + canceltext + "\n                </button>\n                <button type=\"button\" class=\"btn btn-primary btnOK\" data-dismiss=\"modal\">\n                  " + oktext + "\n                </button>\n              </div>\n            </div>\n          </div>\n        </div>");
 
       $(document.body).append(dialog);
-      dialog.find('.btnOk').click(ok);
-      dialog.find('.btnCancel').click(cancel);
+
+      dialog.on('hidden.bs.modal', function () {
+        dialog.remove();
+      });
       dialog.find('.modal-title').text(title);
       dialog.find('.modal-message').text(msg);
+      dialog.find('.btnOK').click(okEvent);
+      dialog.find('.btnCancel').click(cancelEvent);
       dialog.modal('show');
     },
 

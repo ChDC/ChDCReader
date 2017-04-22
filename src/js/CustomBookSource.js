@@ -65,14 +65,14 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         return translate.toSimpleChinese(lc);
       },
 
-      // getBookCatalog(bsid, locals){
+      // getBookCatalog(bsid, dict){
 
       //   let self = this;
 
       //   return co(function*(){
-      //     let bookid = locals.bookid;
+      //     let bookid = dict.bookid;
 
-      //     let data = yield self.getBookInfo(bsid, locals.detailLink);
+      //     let data = yield self.getBookInfo(bsid, dict.detailLink);
       //     let lc = data.lastestChapterLink;
       //     if(!lc) return null;
       //     // 获取最新章节，然后从序号中获取总章节数目
@@ -83,17 +83,17 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
       //     let startIndexs = (new Array(n)).fill(0).map((e,i) => i*10)
 
       //     // 获取所有章节列表
-      //     let result = yield Promise.all(startIndexs.map(si => getPartCatalog(si, locals)));
+      //     let result = yield Promise.all(startIndexs.map(si => getPartCatalog(si, dict)));
       //     // 将结果按 linkid 排序
       //     result.sort((e1, e2) => e1[0].linkid - e2[0].linkid);
       //     // 合并结果并返回
       //     return result.reduce((s, e) => s.concat(e), []);
 
       //     // 获取每一部分章节
-      //     function getPartCatalog(startIndex, locals){
-      //       let catalogLink = `http://www.comico.com.tw/api/article_list.nhn?titleNo=${locals.bookid}&startIndex=${startIndex}`;
-      //       let dict = Object.assign({}, locals, {url: catalogLink});
-      //       return self.spider.get(self.sources[bsid].catalog, dict);
+      //     function getPartCatalog(startIndex, dict){
+      //       let catalogLink = `http://www.comico.com.tw/api/article_list.nhn?titleNo=${dict.bookid}&startIndex=${startIndex}`;
+      //       let gatcherDict = Object.assign({}, dict, {url: catalogLink});
+      //       return self.spider.get(self.sources[bsid].catalog, gatcherDict);
       //     }
       //   });
       // }

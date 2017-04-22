@@ -8,7 +8,7 @@ define(["util"], function(util){
     * type: 响应类型，可为 JSON 或 HTML，缺省为 HTML
     * cookies:
     request 也可为单一字符串，只指定 url，
-    若 request 缺省，则在 locals 的 url 属性中读取 url
+    若 request 缺省，则在 dict 的 url 属性中读取 url
 
     response 设置响应对象
     * 可以为三种 JSON 类型
@@ -69,13 +69,13 @@ define(["util"], function(util){
 
 
     // 从配置对象中抓取并获得结果
-    get({request, response}={}, locals={}){
+    get({request, response}={}, dict={}){
       if(!response)
         return Promise.reject(new Error("Empty response"));
 
       if(!request)
         request = {
-          "url": locals.url
+          "url": dict.url
         };
 
       if(util.type(request) == "string"){
@@ -92,8 +92,8 @@ define(["util"], function(util){
       let type = (request.type || "HTML").toLowerCase();
 
       // 获取 URL
-      let url = this.format(request.url, locals);
-      locals.host = url; // 用于修复获取到的 URL
+      let url = this.format(request.url, dict);
+      dict.host = url; // 用于修复获取到的 URL
 
       let requestPromise;
 
@@ -118,12 +118,12 @@ define(["util"], function(util){
               let html = document.createElement("div");
               html.innerHTML = data;
 
-              return this.__handleResponse(html, response, null,  locals);
+              return this.__handleResponse(html, response, null,  dict);
             });
         case "json":
           return requestPromise.then(data => {
             let json = JSON.parse(data);
-            return this.__handleResponse(json, response, null, locals);
+            return this.__handleResponse(json, response, null, dict);
           });
         default:
           throw new Error("Illegal type");
@@ -131,32 +131,32 @@ define(["util"], function(util){
     }
 
     // 处理响应
-    __handleResponse(data, response, keyName, topLocals={}, locals={}){
+    __handleResponse(data, response, keyName, globalDict={}, dict={}){
 
       if(!response) return undefined;
 
       switch(util.type(response)){
         case "array":
-          return this.__handleArray(data, response, keyName, topLocals, locals);
+          return this.__handleArray(data, response, keyName, globalDict, dict);
         case "object":
-          return this.__handleObject(data, response, keyName, topLocals, locals);
+          return this.__handleObject(data, response, keyName, globalDict, dict);
         case "string":
-          return this.__handleString(data, response, keyName, topLocals, locals);
+          return this.__handleString(data, response, keyName, globalDict, dict);
         default:
           throw new Error("Illegal type");
       }
     }
 
-    __handleArray(data, response, keyName, topLocals={}, locals={}){
+    __handleArray(data, response, keyName, globalDict={}, dict={}){
       let result = [];
       for(let m of response){
-        result.push(this.__handleResponse(data, m, keyName, topLocals, locals));
+        result.push(this.__handleResponse(data, m, keyName, globalDict, dict));
       }
       return result;
     }
 
     // 处理 object
-    __handleObject(data, response, keyName, topLocals={}, locals={}){
+    __handleObject(data, response, keyName, globalDict={}, dict={}){
 
       const __privateHandleObject = (response) => {
         // object 类型
@@ -164,7 +164,7 @@ define(["util"], function(util){
         // let delay = [];
         for(let key in response){
           // TODO: 把 format 类型和带有 valid 验证功能的最后处理
-          result[key] = this.__handleResponse(data, response[key], key, topLocals, result);
+          result[key] = this.__handleResponse(data, response[key], key, globalDict, result);
         }
         return result;
       }
@@ -187,12 +187,12 @@ define(["util"], function(util){
           result = [];
           let list = this.__getAllElements(data, response.element);
           result = list.map(m =>
-              this.__handleResponse(m, response.children, keyName, topLocals, locals));
+              this.__handleResponse(m, response.children, keyName, globalDict, dict));
           if(response.valideach)
             result = result.filter(m => {
               // 有验证的类型
-              let dict = Object.assign({}, topLocals, util.type(m) == "object" ? m : {});
-              const validCode = '"use strict"\n' + this.format(response.valideach, dict, true);
+              let gatherDict = Object.assign({}, globalDict, util.type(m) == "object" ? m : {});
+              const validCode = '"use strict"\n' + this.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
         }
@@ -220,12 +220,21 @@ define(["util"], function(util){
               result = result.replace(/\bdata-src=(?=["'])/gi, "src=");
           }
           else
-            result = this.__getValue(e, keyName, topLocals, locals);
+            result = this.__getValue(e, keyName, globalDict, dict);
 
+          if(!result) return result;
           // 用 remove 键指定删除一些值
           if(response.remove){
             let regex = new RegExp(response.remove, 'gi');
             result = result.replace(regex, '');
+          }
+
+          // 使用 extract 提取最终结果
+          if(response.extract){
+            let regex = new RegExp(response.extract, 'i'); // 只匹配地址一个结果
+            let matcher = result.match(regex);
+            if(!matcher) return undefined;
+            result = matcher[1];
           }
         }
         break;
@@ -234,7 +243,7 @@ define(["util"], function(util){
             return response.default;
           let e = this.__getElement(data, response.element);
           if(!e) return response.default;
-          let v = this.__getValue(e, keyName, topLocals, locals);
+          let v = this.__getValue(e, keyName, globalDict, dict);
 
           if(v && response.true && v.match(response.true))
             result = true;
@@ -248,8 +257,8 @@ define(["util"], function(util){
           // 合成结果
           if(!response.value)
             return undefined;
-          let dict = Object.assign({}, topLocals, locals);
-          result = this.format(response.value, dict);
+          let gatherDict = Object.assign({}, globalDict, dict);
+          result = this.format(response.value, gatherDict);
         }
         break;
         default: {
@@ -260,29 +269,29 @@ define(["util"], function(util){
 
       if("valid" in response){
         // 有验证的类型
-        let dict = Object.assign({}, topLocals, locals);
-        const validCode = '"use strict"\n' + this.format(response.valid, dict, true);
+        let gatherDict = Object.assign({}, globalDict, dict);
+        const validCode = '"use strict"\n' + this.format(response.valid, gatherDict, true);
         if(!eval(validCode))
           return undefined; // 验证失败，返回空值
       }
       return result;
     }
 
-    __handleString(data, response, keyName, topLocals={}, locals={}){
+    __handleString(data, response, keyName, globalDict={}, dict={}){
       let e = this.__getElement(data, response);
       if(!e) return undefined;
-      return this.__getValue(e, keyName, topLocals, locals);
+      return this.__getValue(e, keyName, globalDict, dict);
     }
 
     // 获取值
-    __getValue(element, keyName, topLocals={}, locals={}){
+    __getValue(element, keyName, globalDict={}, dict={}){
       if(util.type(element) == 'object' && "querySelector" in element){
         if(!keyName)
           return element.textContent;
         else if(keyName.match(/link$/i))
-          return this.fixurl(element.getAttribute("href"), topLocals.host);
+          return this.fixurl(element.getAttribute("href"), globalDict.host);
         else if(keyName.match(/img$|image$/i))
-          return this.fixurl(element.getAttribute("data-src"), topLocals.host);
+          return this.fixurl(element.getAttribute("data-src"), globalDict.host);
         else if(keyName.match(/html$/i))
           return element.innerHTML.replace(/\bdata-src=(?=["'])/gi, "src=");
         else

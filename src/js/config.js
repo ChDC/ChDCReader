@@ -19,6 +19,7 @@ requirejs.config({
     "common": "common",
     "mocha": "../lib/mocha/mocha",
     "chai": "../lib/chai",
+    "cookie": "../lib/cookie",
 
     "util": "../mylib/util",
     "uiutil": "../mylib/uiutil",

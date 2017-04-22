@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], function ($, app, Page, util, uiutil, Infinitelist) {
+define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "ReadingRecord"], function ($, app, Page, util, uiutil, Infinitelist, ReadingRecord) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -22,20 +22,47 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
       _this.readingRecord = null;
       _this.chapterList = null;
       _this.lastSavePageScrollTop = 0;
-      return _this;
+
+      _this.isNewBook = true;return _this;
     }
 
     _createClass(MyPage, [{
       key: "onClose",
       value: function onClose() {
+        var _this2 = this;
+
         this.chapterList.close();
+
+        if (this.isNewBook) {
+          if (!app.bookShelf.hasBook(this.book)) {
+            uiutil.showMessageDialog("加入书架", "\u662F\u5426\u5C06" + this.book.name + " \u52A0\u5165\u4E66\u67B6\uFF1F", function () {
+              app.bookShelf.addBook(_this2.book, _this2.readingRecord);
+              app.bookShelf.save().then(function () {
+                uiutil.showMessage("添加成功！");
+                _this2.fireEvent("myclose");
+              });
+            }, function () {
+              _this2.fireEvent("myclose");
+            });
+          } else {
+            this.fireEvent("myclose");
+          }
+        }
       }
     }, {
       key: "onLoad",
-      value: function onLoad(params, p) {
-        this.book = params.book;
+      value: function onLoad(params) {
+        var bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
+        if (bookAndReadRecordInBookShelf) {
+          this.book = bookAndReadRecordInBookShelf.book;
+          this.readingRecord = bookAndReadRecordInBookShelf.readingRecord;
+          this.isNewBook = false;
+        } else {
+          this.book = params.book;
+          this.readingRecord = params.readingRecord || new ReadingRecord();
+        }
+
         this.book.checkBookSources();
-        this.readingRecord = params.readingRecord;
         this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
 
         this.loadView();
@@ -55,7 +82,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this2 = this;
+        var _this3 = this;
 
         $(".chapterContainer").on("click", function (event) {
           $('.toolbar').toggle();
@@ -75,7 +102,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         });
 
         $("#btnCatalog").click(function (e) {
-          return _this2.loadCatalog();
+          return _this3.loadCatalog();
         });
         $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
 
@@ -85,13 +112,13 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
         });
         $("#btnBadChapter").click(function (e) {
-          _this2.tmpOptions = {
-            excludes: [_this2.readingRecord.options.contentSourceId]
+          _this3.tmpOptions = {
+            excludes: [_this3.readingRecord.options.contentSourceId]
           };
-          _this2.refreshChapterList();
+          _this3.refreshChapterList();
         });
         $("#btnRefresh").click(function (e) {
-          _this2.refreshChapterList();
+          _this3.refreshChapterList();
         });
         $("#btnSortReversed").click(function (e) {
           var list = $('#listCatalog');
@@ -100,53 +127,68 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
 
         $("#btnChangeMainSource").click(function () {
           $("#modalBookSource").modal('show');
-          _this2.loadBookSource();
+          _this3.loadBookSource();
         });
         $('#modalCatalog').on('shown.bs.modal', function (e) {
-          var targetChapter = $('#listCatalog > [data-index=' + _this2.readingRecord.chapterIndex + ']');
-          var top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
-          $('#listCatalogContainer').scrollTop(top);
+          var targetChapter = $('#listCatalog > [data-index=' + _this3.readingRecord.chapterIndex + ']');
+          if (targetChapter && targetChapter.length > 0) {
+            var top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
+            $('#listCatalogContainer').scrollTop(top);
+          }
         });
-        $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
+        $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
         $("#btnRefreshCatalog").click(function () {
-          return _this2.loadCatalog(true);
+          return _this3.loadCatalog(true);
         });
+
+        if (this.isNewBook) {
+          $(".btnAddtoBookShelf").show().click(function (e) {
+            app.bookShelf.addBook(_this3.book);
+            $(event.currentTarget).css("display", "none");
+            app.bookShelf.save().then(function () {
+              uiutil.showMessage("添加成功！");
+            }).catch(function (error) {
+              $(event.currentTarget).css("display", "block");
+            });
+          });
+        }
       }
     }, {
       key: "loadBookSource",
       value: function loadBookSource() {
-        var _this3 = this;
+        var _this4 = this;
 
         var changeMainContentSourceClickEvent = function changeMainContentSourceClickEvent(event) {
           var target = event.currentTarget;
           if (!target) return;
           var bid = $(target).data('bsid');
-          var oldMainSource = _this3.book.mainSourceId;
-          _this3.book.setMainSourceId(bid).then(function (book) {
+          var oldMainSource = _this4.book.mainSourceId;
+
+          _this4.book.setMainSourceId(bid).then(function (book) {
             app.bookShelf.save();
 
             $("#modalCatalog").modal('hide');
 
-            $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(_this3.book.mainSourceId));
-            if (_this3.readingRecord.chapterIndex) {
-              _this3.book.fuzzySearch(_this3.book.mainSourceId, _this3.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
+            $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this4.book.mainSourceId).name);
+            if (_this4.readingRecord.chapterIndex) {
+              _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
                 var chapter = _ref.chapter,
                     index = _ref.index;
 
-                _this3.readingRecord.chapterIndex = index;
-                _this3.readingRecord.chapterTitle = chapter.title;
+                _this4.readingRecord.chapterIndex = index;
+                _this4.readingRecord.chapterTitle = chapter.title;
 
                 loadCurrentChapter(0);
               }).catch(function (error) {
-                _this3.readingRecord.reset();
+                _this4.readingRecord.reset();
 
                 loadCurrentChapter(0);
               });
             } else {
-              _this3.refreshChapterList();
+              _this4.refreshChapterList();
             }
 
-            _this3.book.refreshBookInfo();
+            _this4.book.refreshBookInfo();
           }).catch(function (error) {
             return uiutil.showError(app.error.getMessage(error));
           });
@@ -165,7 +207,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
 
             if (bsk == this.book.mainSourceId) continue;
             var nlbse = listBookSourceEntry.clone();
-            nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSourceName(bsk));
+            nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
             var lastestChapter = "";
 
             nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
@@ -193,7 +235,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }, {
       key: "loadCatalog",
       value: function loadCatalog(forceRefresh) {
-        var _this4 = this;
+        var _this5 = this;
 
         var listCatalogEntryClick = function listCatalogEntryClick(event) {
           var target = event.currentTarget;
@@ -201,8 +243,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
 
           target = $(target);
           var chapterIndex = parseInt(target.attr('data-index'));
-          _this4.readingRecord.chapterIndex = chapterIndex;
-          _this4.refreshChapterList();
+          _this5.readingRecord.chapterIndex = chapterIndex;
+          _this5.refreshChapterList();
         };
 
         app.showLoading();
@@ -217,9 +259,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
             lce.text(value.title);
 
             lce.attr("data-index", i);
-            lce.click(listCatalogEntryClick.bind(_this4));
+            lce.click(listCatalogEntryClick.bind(_this5));
             listCatalog.append(lce);
-            if (i == _this4.readingRecord.chapterIndex) lce.addClass("current-chapter");else if (!value.link) lce.addClass("vip-chapter");
+            if (i == _this5.readingRecord.chapterIndex) lce.addClass("current-chapter");else if (!value.link) lce.addClass("vip-chapter");
           });
           app.hideLoading();
         }).catch(function (error) {
@@ -230,7 +272,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }, {
       key: "refreshChapterList",
       value: function refreshChapterList() {
-        var _this5 = this;
+        var _this6 = this;
 
         app.showLoading();
         if (this.chapterList) this.chapterList.close();
@@ -239,10 +281,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
           var index = newValue.data('chapterIndex');
           var title = newValue.data('chapterTitle');
           var options = newValue.data('options');
-          _this5.readingRecord.setReadingRecord(index, title, options);
-          _this5.readingRecord.pageScrollTop = _this5.chapterList.getPageScorllTop();
-
-          $(".labelContentSource").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
+          _this6.readingRecord.setReadingRecord(index, title, options);
+          _this6.readingRecord.pageScrollTop = _this6.chapterList.getPageScorllTop();
+          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
           $(".labelChapterTitle").text(title);
           app.hideLoading();
         };
@@ -252,7 +293,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
     }, {
       key: "onNewChapterItem",
       value: function onNewChapterItem(event, be, direction) {
-        var _this6 = this;
+        var _this7 = this;
 
         var opts = Object.assign({}, this.tmpOptions);
         this.tmpOptions = null;
@@ -274,7 +315,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
               index = _ref2.index,
               options = _ref2.options;
 
-          var newItem = _this6.buildChapter(chapter, title, index, options);
+          var newItem = _this7.buildChapter(chapter, title, index, options);
           return { newItem: newItem };
         }).catch(function (error) {
           app.hideLoading();
@@ -307,7 +348,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist'], funct
         content.find('img').addClass('content-img').on('error', uiutil.imgonerror);
 
         nc.find(".chapter-content").html(content);
-
 
         nc.data('chapterIndex', index);
         nc.data('chapterTitle', title);

@@ -12,12 +12,12 @@ define(["jquery", "co"], function ($, co) {
     function Infinitelist(container, itemList, onNewListItem, onNewListItemFinished) {
       _classCallCheck(this, Infinitelist);
 
-      this.container = container;
-      this.itemList = itemList;
+      this.__container = container;
+      this.__itemList = itemList;
       this.onNewListItem = onNewListItem;
       this.onNewListItemFinished = onNewListItemFinished;
 
-      this.currentItem = null;
+      this.__currentItem = null;
 
       this.DOWN_THRESHOLD = 3;
       this.UP_THRESHOLD = 1;
@@ -28,7 +28,7 @@ define(["jquery", "co"], function ($, co) {
       this.__lastCurrentChangeCheckScrollY = null;
       this.onCurrentItemChanged = null;
 
-      this.isCheckingBoundary = false;
+      this.__isCheckingBoundary = false;
 
       this.__scrollEventBindThis = this.__scrollEvent.bind(this);
     }
@@ -36,7 +36,7 @@ define(["jquery", "co"], function ($, co) {
     _createClass(Infinitelist, [{
       key: "getPageScorllTop",
       value: function getPageScorllTop() {
-        if (this.currentItem) return this.container.scrollTop() - this.currentItem.position().top;else return 0;
+        if (this.__currentItem) return this.__container.scrollTop() - this.__currentItem.position().top;else return 0;
       }
     }, {
       key: "nextItem",
@@ -44,11 +44,11 @@ define(["jquery", "co"], function ($, co) {
         var i = this.__getCurrentItemIndex();
         if (i < 0) return;
 
-        var ics = this.itemList.children();
+        var ics = this.__itemList.children();
         i++;
         if (i < ics.length) {
           var ni = ics.eq(i);
-          this.container.scrollTop(ni.position().top);
+          this.__container.scrollTop(ni.position().top);
         }
       }
     }, {
@@ -57,11 +57,11 @@ define(["jquery", "co"], function ($, co) {
         var i = this.__getCurrentItemIndex();
         if (i < 0) return;
 
-        var ics = this.itemList.children();
+        var ics = this.__itemList.children();
         i--;
         if (i >= 0) {
           var ni = ics.eq(i);
-          this.container.scrollTop(ni.position().top);
+          this.__container.scrollTop(ni.position().top);
         }
       }
     }, {
@@ -72,12 +72,12 @@ define(["jquery", "co"], function ($, co) {
     }, {
       key: "close",
       value: function close() {
-        this.container.off('scroll', this.__scrollEventBindThis);
-        this.itemList.empty();
+        this.__container.off('scroll', this.__scrollEventBindThis);
+        this.__itemList.empty();
 
-        this.container = null;
-        this.itemList = null;
-        this.currentItem = null;
+        this.__container = null;
+        this.__itemList = null;
+        this.__currentItem = null;
         this.onNewListItem = null;
         this.onNewListItemFinished = null;
         this.onCurrentItemChanged = null;
@@ -87,7 +87,7 @@ define(["jquery", "co"], function ($, co) {
       key: "computeCurrentItems",
       value: function computeCurrentItems() {
         var wh = $(window).height();
-        var items = this.itemList.children();
+        var items = this.__itemList.children();
         var result = [];
         for (var i = 0; i < items.length; i++) {
           var item = items.eq(i);
@@ -104,14 +104,14 @@ define(["jquery", "co"], function ($, co) {
     }, {
       key: "__getCurrentItemIndex",
       value: function __getCurrentItemIndex() {
-        if (!this.currentItem) return -1;
-        var ics = this.itemList.children();
-        return Array.prototype.indexOf.bind(ics)(this.currentItem[0]);
+        if (!this.__currentItem) return -1;
+        var ics = this.__itemList.children();
+        return Array.prototype.indexOf.bind(ics)(this.__currentItem[0]);
       }
     }, {
       key: "__scrollEvent",
       value: function __scrollEvent(event) {
-        var scrollY = this.container.scrollTop();
+        var scrollY = this.__container.scrollTop();
 
         if (this.__lastCurrentChangeCheckScrollY == null) {
           this.__checkCurrentItemChange();
@@ -136,14 +136,14 @@ define(["jquery", "co"], function ($, co) {
       value: function __checkCurrentItemChange() {
         var _this = this;
 
-        this.__lastCurrentChangeCheckScrollY = this.container.scrollTop();
-        if (!this.currentItem) {
+        this.__lastCurrentChangeCheckScrollY = this.__container.scrollTop();
+        if (!this.__currentItem) {
           return;
         }
         var cis = this.computeCurrentItems();
 
         var i = cis.findIndex(function (e) {
-          return Infinitelist.__itemEqual(e, _this.currentItem);
+          return Infinitelist.__itemEqual(e, _this.__currentItem);
         });
         if (i < 0) {
           this.setCurrentItem(cis[0]);
@@ -152,10 +152,10 @@ define(["jquery", "co"], function ($, co) {
     }, {
       key: "setCurrentItem",
       value: function setCurrentItem(newCurrentItem) {
-        var oldValue = this.currentItem;
+        var oldValue = this.__currentItem;
         if (Infinitelist.__itemEqual(newCurrentItem, oldValue)) return;
 
-        this.currentItem = newCurrentItem;
+        this.__currentItem = newCurrentItem;
         if (this.onCurrentItemChanged) {
           this.onCurrentItemChanged(this, newCurrentItem, oldValue);
         }
@@ -163,11 +163,11 @@ define(["jquery", "co"], function ($, co) {
     }, {
       key: "checkBoundary",
       value: function checkBoundary() {
-        if (this.isCheckingBoundary) return;
-        this.isCheckingBoundary = true;
-        this.container.off('scroll', this.__scrollEventBindThis);
+        if (this.__isCheckingBoundary) return;
+        this.__isCheckingBoundary = true;
+        this.__container.off('scroll', this.__scrollEventBindThis);
 
-        var curScrollY = this.container.scrollTop();
+        var curScrollY = this.__container.scrollTop();
         var scrollDirection = 1;
         if (this.__lastCheckScrollY) {
           scrollDirection = curScrollY > this.__lastCheckScrollY ? 1 : -1;
@@ -188,8 +188,8 @@ define(["jquery", "co"], function ($, co) {
                   return self.__checkBoundary(-scrollDirection, true);
 
                 case 4:
-                  self.container.on('scroll', self.__scrollEventBindThis);
-                  self.isCheckingBoundary = false;
+                  self.__container.on('scroll', self.__scrollEventBindThis);
+                  self.__isCheckingBoundary = false;
 
                 case 6:
                 case "end":
@@ -209,7 +209,7 @@ define(["jquery", "co"], function ($, co) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 clearOutBoundary = function clearOutBoundary() {
-                  var ies = self.itemList.children();
+                  var ies = self.__itemList.children();
                   var cii = self.__getCurrentItemIndex();
                   if (direction < 0) {
                     for (var i = 0; i < ies.length; i++) {
@@ -217,9 +217,9 @@ define(["jquery", "co"], function ($, co) {
                       if (!isOutBoundary(item)) break;
                       if (i >= cii - 1) break;
                       var itemHeight = item.outerHeight(true);
-                      var cs = self.container.scrollTop();
+                      var cs = self.__container.scrollTop();
                       item.remove();
-                      self.container.scrollTop(cs - itemHeight);
+                      self.__container.scrollTop(cs - itemHeight);
                     }
                   } else {
                     for (var _i = ies.length - 1; _i >= 0; _i--) {
@@ -238,17 +238,17 @@ define(["jquery", "co"], function ($, co) {
                     if (direction >= 0) result = item.offset().top + item.outerHeight(true) > (self.DOWN_THRESHOLD + 1) * wh;else result = item.offset().top < -self.UP_THRESHOLD * wh;
                     return result;
                   }
-                  if (!self.container) return true;
+                  if (!self.__container) return true;
 
                   var be = getBoundaryItem();
                   if (!be) return false;
 
-                  var result = be.data(direction + 'end') || !Infinitelist.__itemEqual(self.currentItem, be) && isOnBoundary(be);
+                  var result = be.data(direction + 'end') || !Infinitelist.__itemEqual(self.__currentItem, be) && isOnBoundary(be);
                   return result;
                 };
 
                 getBoundaryItem = function getBoundaryItem() {
-                  var es = self.itemList.children();
+                  var es = self.__itemList.children();
                   if (es.length <= 0) return null;
                   return direction >= 0 ? es.last() : es.first();
                 };
@@ -268,7 +268,7 @@ define(["jquery", "co"], function ($, co) {
                   break;
                 }
 
-                es = self.itemList.children();
+                es = self.__itemList.children();
                 be = null;
 
                 if (es.length > 0) {
@@ -303,12 +303,12 @@ define(["jquery", "co"], function ($, co) {
                 }
 
                 if (direction >= 0) {
-                  self.itemList.append(newItem);
+                  self.__itemList.append(newItem);
                 } else {
-                  cs = self.container.scrollTop();
+                  cs = self.__container.scrollTop();
 
-                  self.itemList.prepend(newItem);
-                  self.container.scrollTop(cs + newItem.outerHeight(true));
+                  self.__itemList.prepend(newItem);
+                  self.__container.scrollTop(cs + newItem.outerHeight(true));
                 }
 
                 imgs = newItem.find('img');

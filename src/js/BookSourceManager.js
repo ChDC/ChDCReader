@@ -6,11 +6,23 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
     constructor(configFileOrConfig){
 
-      this.sources;
-      this.spider = new Spider();
+      this.__sources;
+      this.__spider = new Spider();
 
       this.loadConfig(configFileOrConfig);
       this.addCustomSourceFeature();
+    }
+
+    // 获取和指定的 bsid 相同 type 的所有 sources
+    getBookSourcesBySameType(bsid){
+      if(!bsid || !(bsid in this.__sources)) return null;
+      let result = {};
+      let type = this.__sources[bsid].type;
+      for(let key in this.__sources){
+        if(this.__sources[key].type == type)
+          result[key] = this.__sources[key];
+      }
+      return result;
     }
 
     init(){
@@ -23,16 +35,18 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       if(configFileOrConfig && typeof configFileOrConfig == 'string'){
         return util.getJSON(configFileOrConfig)
           .then(data => {
-            this.sources = data;
+            this.__sources = {};
+            for(let key of data.valid)
+              this.__sources[key] = data.sources[key];
           })
           .then(() => this.init())
-          .then(() => this.sources);
+          .then(() => this.__sources);
       }
       else if(configFileOrConfig){
-        this.sources = configFileOrConfig;
+        this.__sources = configFileOrConfig;
       }
       return this.init()
-          .then(() => this.sources);
+          .then(() => this.__sources);
     }
 
     // 把拦截函数功能添加到类中
@@ -84,7 +98,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     getBook(bsid, bookName, bookAuthor){
       util.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
 
-      if(!bsid || !bookName || !bookAuthor || !(bsid in this.sources))
+      if(!bsid || !bookName || !bookAuthor || !(bsid in this.__sources))
         return Promise.reject(401);
 
       // 通过当前书名和作者名搜索添加源
@@ -151,16 +165,38 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         .then(handleResult);
     }
 
+    // 从获取的数据中提取 Book
+    __createBook(bs, m){
+      m.cover = m.coverImg;
+
+      const book = Book.createBook(m, this);
+      book.sources = {}; // 内容来源
+      const bss = new BookSource(book, this, bs.id, bs.contentSourceWeight);
+
+      if("bookid" in m) bss.bookid = m.bookid;
+      if("detailLink" in m) bss.detailLink = m.detailLink;
+      if("catalogLink" in m) bss.catalogLink = m.catalogLink;
+      if(m.lastestChapter){
+        bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
+      }
+
+      bss.searched = true;
+      book.sources[bs.id] = bss;
+
+      book.mainSourceId = bs.id;  // 主要来源
+      return book;
+    }
+
     // 搜索书籍
     searchBook(bsid, keyword){
 
       util.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
 
       const self = this;
-      const bs = this.sources[bsid];
+      const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bs.search, {keyword: keyword})
+      return this.__spider.get(bs.search, {keyword: keyword})
         .then(getBooks);
 
       function getBooks(data){
@@ -168,28 +204,9 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         const books = [];
 
         for(let m of data){
-          m.cover = m.coverImg;
-          const book = Book.createBook(m, self);
-          if(!checkBook(book))
+          if(!checkBook(m))
             continue;
-
-          book.sources = {}; // 内容来源
-
-          const bss = new BookSource(book, self, bsid, bs.contentSourceWeight);
-
-          if(m.bookid) bss.bookid = m.bookid;
-
-          bss.detailLink = m.detailLink;
-          bss.catalogLink = m.catalogLink;
-          if(m.lastestChapter){
-            bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
-          }
-
-          bss.searched = true;
-          book.sources[bsid] = bss;
-
-          book.mainSourceId = bsid;  // 主要来源
-          books.push(book);
+          books.push(self.__createBook(bs, m));
         }
         return books;
       }
@@ -209,57 +226,57 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }
 
     // 使用详情页链接刷新书籍信息
-    getBookInfo(bsid, detailLink){
+    getBookInfo(bsid, dict){
 
-      util.log(`BookSourceManager: Get Book Info from ${bsid} with link "${detailLink}"`);
+      util.log(`BookSourceManager: Get Book Info from ${bsid}`);
 
-      const bs = this.sources[bsid];
+      const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bs.detail, {url: detailLink, detailLink: detailLink})
-        .then(data => {
-          data.cover = data.coverImg;
-          delete data.coverImg;
-          return data;
+      return this.__spider.get(bs.detail, dict)
+        .then(m => {
+          m.bookid = dict.bookid;
+          let book = this.__createBook(bs, m);
+          return book;
         });
     }
 
     // 获取最新章节
-    getLastestChapter(bsid, detailLink){
-      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid} with link "${detailLink}"`);
+    getLastestChapter(bsid, dict){
+      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid}"`);
 
-      const bsm = this.sources[bsid];
+      const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bsm.detail, {url: detailLink, detailLink: detailLink})
+      return this.__spider.get(bsm.detail, dict)
         .then(data => {
           return data.lastestChapter.replace(/^最新更新\s+/, '');
         });
     }
 
     // 从某个网页获取目录链接
-    getBookCatalogLink(bsid, locals){
+    getBookCatalogLink(bsid, dict){
 
       util.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
 
-      const bs = this.sources[bsid];
+      const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
       if(!bs.catalogLink)
         return Promise.resolve(null);
 
-      return this.spider.get(bs.catalogLink, locals);
+      return this.__spider.get(bs.catalogLink, dict);
     }
 
     // 获取书籍目录
-    getBookCatalog(bsid, locals){
+    getBookCatalog(bsid, dict){
 
       util.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
 
-      const bsm = this.sources[bsid];
+      const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.spider.get(bsm.catalog, locals)
+      return this.__spider.get(bsm.catalog, dict)
         .then(data => {
 
           const catalog = [];
@@ -281,14 +298,14 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       if(!chapter.link) return Promise.reject(206);
 
-      const bsm = this.sources[bsid];
+      const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
 
-      return this.spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
+      return this.__spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
         .then(data => {
           const c = new Chapter();
-          c.content = this.spider.clearHtml(data.contentHTML);
+          c.content = this.__spider.clearHtml(data.contentHTML);
 
           if(!c.content){
             // 没有章节内容就返回错误
@@ -303,28 +320,18 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
     // 按主源权重从大到小排序的数组
     getSourcesKeysByMainSourceWeight(){
-      let object = this.sources;
+      let object = this.__sources;
       let key = "mainSourceWeight";
       return Object.entries(object).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
     }
 
-    // 获取内容源的名字
-    getBookSourceName(bsid){
+    // 获取指定的 booksource
+    getBookSource(bsid){
       try{
-        return this.sources[bsid].name;
+        return this.__sources[bsid];
       }
       catch(e){
-        return "";
-      }
-    }
-
-    // 获取内容源的类型
-    getBookSourceType(bsid){
-      try{
-        return this.sources[bsid].type;
-      }
-      catch(e){
-        return "";
+        return {};
       }
     }
 
@@ -335,7 +342,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
           "comics": "漫画",
           "novel": "小说"
         }
-        return typeName[this.sources[bsid].type];
+        return typeName[this.__sources[bsid].type];
       }
       catch(e){
         return "";

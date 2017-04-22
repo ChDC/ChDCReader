@@ -1,0 +1,12 @@
+/*********** Color ***************/
+
+body, .modal-content{
+    background-color: #252526;
+    background-image: none;
+    /*color: #3399ff;*/
+    color: #f1f1cf;
+}
+
+.btn-link{
+    color: #fff;
+}

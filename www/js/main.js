@@ -134,6 +134,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       document.addEventListener("pause", function () {
         app.bookShelf.save();
       }, false);
+      if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
     onUpdateInstalled: function onUpdateInstalled() {
       uiutil.showMessage("资源更新成功！");

@@ -45,9 +45,9 @@ def main():
 
     opt, args = parser.parse_args()
 
-    # opt.url = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/'
-    # opt.dir = 'www'
-    # opt.md5 = 'www/chcp.manifest'
+    opt.url = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/dev/'
+    opt.dir = 'www'
+    opt.md5 = 'www/chcp.manifest'
 
     if not opt.url or not opt.dir or not opt.md5:
         parser.print_help()

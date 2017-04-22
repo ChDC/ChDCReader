@@ -3,7 +3,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
   class MyPage extends Page{
 
-    onLoad(params, baseurl){
+    onLoad(params){
       this.loadView();
     }
 
@@ -20,7 +20,6 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
         nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
 
         nb.find(".book-name").text(book.name);
-        // nb.find(".book-lastestchapter").text("最新章节：" + (book.getLastestChapter()? book.getLastestChapter() : "无"));
         nb.find(".book-author").text(book.author);
         nb.find(".book-catagory").text(book.catagory);
         nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
@@ -49,7 +48,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
         nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {
               book: book
             }));
-        nb.find(".book-booksource").text(app.bookSourceManager.getBookSourceName(book.mainSourceId));
+        nb.find(".book-booksource").text(app.bookSourceManager.getBookSource(book.mainSourceId).name);
         bs.append(nb);
       }
     }
@@ -101,7 +100,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
       // 添加书源搜索
       for(const bskey of keys)
       {
-        const bsName = app.bookSourceManager.getBookSourceName(bskey);
+        const bsName = app.bookSourceManager.getBookSource(bskey).name;
         const newOption = `<option value ="${bskey}">${bsName}</option>`;
         bookSource.append(newOption);
       }

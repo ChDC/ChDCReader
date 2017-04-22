@@ -30,7 +30,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       value: function onResume() {
         var _this2 = this;
 
-        if (app.bookShelf.loaded) {
+        if (app.bookShelf.isLoaded()) {
           this.loadBooks(".bookshelf", app.bookShelf);
         } else {
           app.bookShelf.load(app.bookSourceManager).then(function () {
@@ -82,7 +82,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           var nb = b.clone();
           if (book.cover) nb.find(".book-cover").attr("src", book.cover);
           nb.find(".book-name").text(book.name);
-          if (app.bookSourceManager.getBookSourceType(book.mainSourceId) == 'comics') nb.find(".book-name").addClass('type-comics');
+          if (app.bookSourceManager.getBookSource(book.mainSourceId).type == 'comics') nb.find(".book-name").addClass('type-comics');
           nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
           book.getLastestChapter().then(function (_ref) {
@@ -95,7 +95,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           });
 
           nb.find('.book-cover, .book-info').click(function () {
-            return app.page.showPage("readbook", value);
+            return app.page.showPage("readbook", { book: value.book, readingRecord: value.readingRecord });
           });
 
           nb.find('.btnBookMenu').click(function (event) {
@@ -139,6 +139,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         });
         $(".btnSearch").click(function (e) {
           return app.page.showPage("search");
+        });
+        $(".btnExplore").click(function (e) {
+          return app.page.showPage("explorebook");
         });
       }
     }]);

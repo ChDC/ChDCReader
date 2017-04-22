@@ -95,7 +95,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
       it('测试获取书籍信息', ()=>{
         return Promise.all(books.map(book => {
-          return bsm.getBookInfo(bsid, book.detailLink)
+          return bsm.getBookInfo(bsid, book)
             .then(b => {
               equalBook(bsid, book, b);
             })
@@ -104,7 +104,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
       it('测试最新章节', ()=>{
         return Promise.all(books.map(book => {
-          return bsm.getLastestChapter(bsid, book.detailLink)
+          return bsm.getLastestChapter(bsid, book)
             .then(lc => {
               equal(true, lc.length > 0);
             })

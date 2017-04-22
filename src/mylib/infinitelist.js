@@ -5,14 +5,14 @@ define(["jquery", "co"], function($, co) {
   class Infinitelist{
 
     constructor(container, itemList, onNewListItem, onNewListItemFinished){
-      this.container = container; // 容器
-      this.itemList = itemList; // 元素列表
+      this.__container = container; // 容器
+      this.__itemList = itemList; // 元素列表
       this.onNewListItem = onNewListItem; // 获取列表元素的函数
       this.onNewListItemFinished = onNewListItemFinished; // 获取列表元素完成的函数
 
-      // self.container.on('scroll', self.__scrollEventBindThis);
+      // self.__container.on('scroll', self.__scrollEventBindThis);
 
-      this.currentItem = null; // 当前元素
+      this.__currentItem = null; // 当前元素
 
       this.DOWN_THRESHOLD = 3; // 向下加载长度的阈值
       this.UP_THRESHOLD = 1; // 向下加载长度的阈值
@@ -25,7 +25,7 @@ define(["jquery", "co"], function($, co) {
       // 当前正在呈现的元素改变的事件
       this.onCurrentItemChanged = null;
       // 是否正在检查边界
-      this.isCheckingBoundary = false;
+      this.__isCheckingBoundary = false;
 
       this.__scrollEventBindThis = this.__scrollEvent.bind(this);
     }
@@ -33,8 +33,8 @@ define(["jquery", "co"], function($, co) {
 
     // 获取页内的滚动位置
     getPageScorllTop(){
-      if(this.currentItem)
-        return this.container.scrollTop() - this.currentItem.position().top;
+      if(this.__currentItem)
+        return this.__container.scrollTop() - this.__currentItem.position().top;
       else
         return 0;
     }
@@ -45,11 +45,11 @@ define(["jquery", "co"], function($, co) {
       if(i < 0)
         return;
 
-      const ics = this.itemList.children();
+      const ics = this.__itemList.children();
       i++;
       if(i < ics.length){
         const ni = ics.eq(i);
-        this.container.scrollTop(ni.position().top);
+        this.__container.scrollTop(ni.position().top);
       }
     }
 
@@ -59,11 +59,11 @@ define(["jquery", "co"], function($, co) {
       if(i < 0)
         return;
 
-      const ics = this.itemList.children();
+      const ics = this.__itemList.children();
       i--;
       if(i >= 0){
         const ni = ics.eq(i);
-        this.container.scrollTop(ni.position().top);
+        this.__container.scrollTop(ni.position().top);
       }
     }
 
@@ -74,12 +74,12 @@ define(["jquery", "co"], function($, co) {
 
     // 关闭
     close(){
-      this.container.off('scroll', this.__scrollEventBindThis);
-      this.itemList.empty();
+      this.__container.off('scroll', this.__scrollEventBindThis);
+      this.__itemList.empty();
 
-      this.container = null;
-      this.itemList = null;
-      this.currentItem = null;
+      this.__container = null;
+      this.__itemList = null;
+      this.__currentItem = null;
       this.onNewListItem = null;
       this.onNewListItemFinished = null;
       this.onCurrentItemChanged = null;
@@ -89,7 +89,7 @@ define(["jquery", "co"], function($, co) {
     // 清空列表数据
     computeCurrentItems(){
       const wh = $(window).height();
-      const items = this.itemList.children();
+      const items = this.__itemList.children();
       const result = [];
       for(let i = 0; i < items.length; i++)
       {
@@ -111,16 +111,16 @@ define(["jquery", "co"], function($, co) {
 
     // 获取当前元素的索引
     __getCurrentItemIndex(){
-      if(!this.currentItem)
+      if(!this.__currentItem)
         return -1;
-      const ics = this.itemList.children();
-      return Array.prototype.indexOf.bind(ics)(this.currentItem[0]);
+      const ics = this.__itemList.children();
+      return Array.prototype.indexOf.bind(ics)(this.__currentItem[0]);
     }
 
 
     // 容器的滚动事件
     __scrollEvent(event){
-      const scrollY = this.container.scrollTop();
+      const scrollY = this.__container.scrollTop();
 
       if(this.__lastCurrentChangeCheckScrollY == null){
         this.__checkCurrentItemChange();
@@ -145,13 +145,13 @@ define(["jquery", "co"], function($, co) {
 
     // 检查当前元素是否改变
     __checkCurrentItemChange(){
-      this.__lastCurrentChangeCheckScrollY = this.container.scrollTop();
-      if(!this.currentItem){
+      this.__lastCurrentChangeCheckScrollY = this.__container.scrollTop();
+      if(!this.__currentItem){
         return;
       }
       const cis = this.computeCurrentItems();
 
-      const i = cis.findIndex(e => Infinitelist.__itemEqual(e, this.currentItem));
+      const i = cis.findIndex(e => Infinitelist.__itemEqual(e, this.__currentItem));
       if(i < 0){
         this.setCurrentItem(cis[0]);
       }
@@ -160,11 +160,11 @@ define(["jquery", "co"], function($, co) {
 
     // 设置当前元素
     setCurrentItem(newCurrentItem){
-      const oldValue = this.currentItem;
+      const oldValue = this.__currentItem;
       if(Infinitelist.__itemEqual(newCurrentItem, oldValue))
         return;
 
-      this.currentItem = newCurrentItem;
+      this.__currentItem = newCurrentItem;
       if(this.onCurrentItemChanged){
         this.onCurrentItemChanged(this, newCurrentItem, oldValue);
       }
@@ -174,11 +174,11 @@ define(["jquery", "co"], function($, co) {
     // 向下、上检查
     checkBoundary(){
       // 加锁
-      if(this.isCheckingBoundary) return;
-      this.isCheckingBoundary = true;
-      this.container.off('scroll', this.__scrollEventBindThis);
+      if(this.__isCheckingBoundary) return;
+      this.__isCheckingBoundary = true;
+      this.__container.off('scroll', this.__scrollEventBindThis);
 
-      const curScrollY = this.container.scrollTop();
+      const curScrollY = this.__container.scrollTop();
       let scrollDirection = 1;
       if(this.__lastCheckScrollY){
         scrollDirection = curScrollY > this.__lastCheckScrollY ? 1 : -1;
@@ -191,8 +191,8 @@ define(["jquery", "co"], function($, co) {
         yield self.__checkBoundary(-scrollDirection, true);
 
         // 解锁
-        self.container.on('scroll', self.__scrollEventBindThis);
-        self.isCheckingBoundary = false;
+        self.__container.on('scroll', self.__scrollEventBindThis);
+        self.__isCheckingBoundary = false;
       });
     }
 
@@ -211,7 +211,7 @@ define(["jquery", "co"], function($, co) {
       }
 
       function getBoundaryItem(){
-        const es = self.itemList.children();
+        const es = self.__itemList.children();
         if(es.length <= 0)
           return null;
         return direction >= 0 ? es.last() : es.first();
@@ -227,7 +227,7 @@ define(["jquery", "co"], function($, co) {
             result = item.offset().top < -self.UP_THRESHOLD * wh;
           return result;
         }
-        if(!self.container)
+        if(!self.__container)
           return true;
 
         const be = getBoundaryItem();
@@ -235,12 +235,12 @@ define(["jquery", "co"], function($, co) {
           return false;
         // 边界元素被标记为端 或者 在边界内
         const result = be.data(direction + 'end') ||
-          !Infinitelist.__itemEqual(self.currentItem, be) && isOnBoundary(be);
+          !Infinitelist.__itemEqual(self.__currentItem, be) && isOnBoundary(be);
         return result;
       }
 
       function clearOutBoundary(){
-        const ies = self.itemList.children();
+        const ies = self.__itemList.children();
         const cii = self.__getCurrentItemIndex();
         if(direction < 0){
           for(let i = 0; i < ies.length; i++){
@@ -250,9 +250,9 @@ define(["jquery", "co"], function($, co) {
             if(i >= cii - 1)
               break;
             const itemHeight = item.outerHeight(true);
-            const cs = self.container.scrollTop();
+            const cs = self.__container.scrollTop();
             item.remove();
-            self.container.scrollTop(cs - itemHeight);
+            self.__container.scrollTop(cs - itemHeight);
           }
         }
         else{
@@ -270,7 +270,7 @@ define(["jquery", "co"], function($, co) {
 
       const self = this;
       while(!isBoundarySatisfied()){
-        const es = self.itemList.children();
+        const es = self.__itemList.children();
         let be = null;
         if(es.length > 0){
           be = direction >= 0 ? es.last() : es.first();
@@ -296,12 +296,12 @@ define(["jquery", "co"], function($, co) {
         }
 
         if(direction >= 0){
-          self.itemList.append(newItem);
+          self.__itemList.append(newItem);
         }
         else{
-          const cs = self.container.scrollTop();
-          self.itemList.prepend(newItem);
-          self.container.scrollTop(cs + newItem.outerHeight(true));
+          const cs = self.__container.scrollTop();
+          self.__itemList.prepend(newItem);
+          self.__container.scrollTop(cs + newItem.outerHeight(true));
         }
 
         // 将所有的图片的 onload 事件都设置好

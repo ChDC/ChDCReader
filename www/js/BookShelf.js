@@ -11,11 +11,16 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
     function BookShelf() {
       _classCallCheck(this, BookShelf);
 
-      this.loaded = false;
+      this.__loaded = false;
       this.books = [];
     }
 
     _createClass(BookShelf, [{
+      key: 'isLoaded',
+      value: function isLoaded() {
+        return this.__loaded;
+      }
+    }, {
       key: '__getSaveCatalogLocation',
       value: function __getSaveCatalogLocation(bookName, bookAuthor, sourceId) {
         return 'catalog_' + bookName + '.' + bookAuthor + '_' + sourceId;
@@ -48,7 +53,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
             }
           }
           return Promise.all(tasks).then(function () {
-            self.loaded = true;
+            self.__loaded = true;
           });
         }
 
@@ -103,17 +108,18 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
       }
     }, {
       key: 'addBook',
-      value: function addBook(book) {
+      value: function addBook(book, readingRecord) {
         if (!this.hasBook(book)) {
           this.books.push({
             book: book,
-            readingRecord: new ReadingRecord()
+            readingRecord: readingRecord || new ReadingRecord()
           });
         }
       }
     }, {
       key: 'hasBook',
       value: function hasBook(book) {
+        if (!book) return book;
         return this.books.find(function (e) {
           var b = e.book;
           return b.name == book.name && b.author == book.author && b.mainSourceId == book.mainSourceId;

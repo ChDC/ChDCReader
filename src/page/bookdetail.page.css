@@ -1,14 +1,15 @@
 
 /*********** Location ***************/
 
-.container{
-    padding: 5px 15px 5px 15px;
-}
-
 .book{
     border-style: solid;
     border-width: 0 0 1px 0;
     border-color: #aaa;
+    padding: 10px 10px;
+}
+
+.book-chapters-div{
+    padding: 20px;
 }
 
 .book-chapters-div h4 {
@@ -25,11 +26,13 @@
     margin: 5px 10px;
 }
 
+.book-chapter{
+    width: 100%;
+}
+
 
 /*********** Color ***************/
 .btn-link{
     color: #fff;
 }
-
-
 

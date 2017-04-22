@@ -1,48 +1,47 @@
+<div class="titlebar row">
+  <button class="btn btn-link col-xs-3 btnBookShelf">书架</button>
+  <button class="btn btn-link col-xs-3 btnExplore">发现</button>
+  <button class="btn btn-link col-xs-3 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+
+  <div class="btn-group col-xs-3">
+    <button type="button" class="btn btn-link dropdown-toggle btnSettings " data-toggle="dropdown">:</button>
+    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+      <li id="btnCheckUpdate"><a>检查更新</a></li>
+      <li id="btnTest"><a href="test.html">测试</a></li>
+      <li id="btnToggleDebugMode"><a>调试模式</a></li>
+      <li class="divider"></li>
+      <li><a>设置</a></li>
+    </ul>
+  </div>
+</div>
+
+
 <div class="container">
-  <div class="row header">
-    <button class="btn btn-link col-xs-3 btnBookShelf">书架</button>
-    <button class="btn btn-link col-xs-3 btnFind">发现</button>
-    <button class="btn btn-link col-xs-3 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+  <ul class="bookshelf">
 
-    <div class="btn-group col-xs-3">
-      <button type="button" class="btn btn-link dropdown-toggle btnSettings " data-toggle="dropdown">:</button>
-      <ul class="dropdown-menu dropdown-menu-right" role="menu">
-        <li id="btnCheckUpdate"><a>检查更新</a></li>
-        <li id="btnTest"><a href="test.html">测试</a></li>
-        <li id="btnToggleDebugMode"><a>调试模式</a></li>
-        <li class="divider"></li>
-        <li><a>设置</a></li>
-      </ul>
+  </ul>
+
+</div>
+
+<div class="template">
+  <li class="media book card">
+    <div class="media-left">
+      <img class="book-cover media-left" src="img/book_cover.png" alt="">
     </div>
-
-  </div>
-
-  <div class="bookshelf">
-
-  </div>
-
-  <!-- Modal 更换内容源 -->
-
-  <div class="template">
-    <div class="media book">
-      <div class="media-left">
-        <img class="book-cover media-left" src="img/book_cover.png" alt="">
+    <div class="media-body">
+      <div class="btn-group float-right">
+        <button type="button" class="btn btn-link btnBookMenu" data-toggle="dropdown">:</button>
+        <ul class="dropdown-menu dropdown-menu-right " role="menu">
+          <li class="btnRemoveBook"><a>删除本书</a></li>
+          <li class="btnTopMost"><a>置顶</a></li>
+          <!-- <li class="divider"></li> -->
+        </ul>
       </div>
-      <div class="media-body">
-        <div class="btn-group float-right">
-          <button type="button" class="btn btn-link btnBookMenu" data-toggle="dropdown">:</button>
-          <ul class="dropdown-menu dropdown-menu-right " role="menu">
-            <li class="btnRemoveBook"><a>删除本书</a></li>
-            <li class="btnTopMost"><a>置顶</a></li>
-            <!-- <li class="divider"></li> -->
-          </ul>
-        </div>
-        <div class="book-info">
-          <h4 class="book-name">书籍标题</h4>
-          <p class="book-lastestchapter">最新章节</p>
-          <p class="book-readingchapter">读到</p>
-        </div>
+      <div class="book-info">
+        <h4 class="book-name">书籍标题</h4>
+        <p class="book-lastestchapter">最新章节</p>
+        <p class="book-readingchapter">读到</p>
       </div>
     </div>
-  </div>
-<div>
+  </li>
+</div>

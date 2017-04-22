@@ -1,0 +1,31 @@
+
+/*********** Location ***************/
+
+.header{
+    width:100%;
+    margin:0;
+}
+
+.booksource-logo{
+    width: 100%;
+    margin: 10px 0;
+}
+
+.error{
+    font-weight: bold;
+}
+
+.list-item{
+    padding: 10px 20px;
+    text-align: center;
+    border-bottom: 1px #e1e1e1 solid;
+}
+
+
+/*********** Color ***************/
+.btn-link{
+    color: #fff;
+}
+
+
+

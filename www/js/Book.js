@@ -39,7 +39,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
           if (bs) {
             resolve(bs);
           } else {
-            var bsm = _this.bookSourceManager.sources[bookSourceId];
+            var bsm = _this.bookSourceManager.getBookSource(bookSourceId);
             if (bsm) {
               var bss = new BookSource(_this, _this.bookSourceManager, bookSourceId, bsm.contentSourceWeight);
               _this.sources[bookSourceId] = bss;
@@ -69,10 +69,17 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
     }, {
       key: "checkBookSources",
       value: function checkBookSources() {
-        var sources = this.bookSourceManager.sources;
+        var sources = this.bookSourceManager.getBookSourcesBySameType(this.mainSourceId);
+
         for (var k in sources) {
           if (!(k in this.sources)) {
             this.sources[k] = new BookSource(this, this.bookSourceManager, k, sources[k].contentSourceWeight);
+          }
+        }
+
+        for (var _k in this.sources) {
+          if (!(_k in sources)) {
+            delete this.sources[_k];
           }
         }
       }
@@ -84,7 +91,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         return new Promise(function (resolve, reject) {
           if (_this2.mainSourceId == bookSourceId) return;
 
-          if (bookSourceId && bookSourceId in _this2.bookSourceManager.sources) {
+          if (bookSourceId && bookSourceId in _this2.bookSourceManager.getBookSourcesBySameType(_this2.mainSourceId)) {
             _this2.mainSourceId = bookSourceId;
             resolve(_this2);
           } else {

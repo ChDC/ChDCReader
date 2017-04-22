@@ -10,18 +10,15 @@ define(["jquery", "util"], function ($, util) {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         container: $("[data-page-container]"),
         theme: "",
-        currentPage: undefined,
         baseurl: "page"
       };
 
       _classCallCheck(this, PageManager);
 
-      this.pageStack = [];
-      this.jsStorage = {};
-      this.container = options.container;
-      this.baseurl = options.baseurl;
-      this.currentPage = options.currentPage;
-      this.theme = options.theme;
+      this.__pageStack = [];
+      this.__container = options.container;
+      this.__baseurl = options.baseurl;
+      this.__theme = options.theme;
 
       window.onpopstate = this.__popState.bind(this);
     }
@@ -32,15 +29,17 @@ define(["jquery", "util"], function ($, util) {
     }, {
       key: "setTheme",
       value: function setTheme(theme) {
-        if (this.theme != theme) {
-          this.theme = theme;
+        if (this.__theme != theme) {
+          this.__theme = theme;
 
-          if (!this.currentPage) return;
+          var curpage = this.getPage();
+          if (!curpage) return;
 
-          var urls = this.getURLs(this.currentPage);
-          var cssthemeelemnt = this.container.find(".page-content-container style.csstheme");
-          this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
+          var urls = this.getURLs(curpage.name);
+          var cssthemeelemnt = this.__container.find(".page-content-container style.csstheme");
+          return this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
         }
+        return Promise.resolve();
       }
     }, {
       key: "__changeThemeContent",
@@ -48,26 +47,36 @@ define(["jquery", "util"], function ($, util) {
 
         if (cssThemeUrl) {
           cssthemeelemnt.data('url', cssThemeUrl);
-          $.get(cssThemeUrl, function (cssContent) {
+          return $.get(cssThemeUrl, function (cssContent) {
             return cssthemeelemnt.text(cssContent);
           }).fail(function () {
             return cssthemeelemnt.text("");
           });
         } else {
           cssthemeelemnt.text("").data('url', "");
+          return Promise.resolve();
         }
       }
     }, {
       key: "getURLs",
       value: function getURLs(name) {
-        var baseurl = this.baseurl + "/" + name + ".page";
+        var baseurl = this.__baseurl + "/" + name + ".page";
         return {
           baseurl: baseurl,
           htmlurl: baseurl + ".html",
           cssurl: baseurl + ".css",
-          cssthemeurl: this.theme ? baseurl + "." + this.theme + ".css" : "",
+          cssthemeurl: this.__theme ? baseurl + "." + this.__theme + ".css" : "",
           jsurl: baseurl + ".js"
         };
+      }
+    }, {
+      key: "getPage",
+      value: function getPage(name) {
+        if (!name) return this.__pageStack[0];
+
+        return this.__pageStack.find(function (e) {
+          return e.name == name;
+        });
       }
     }, {
       key: "showPage",
@@ -76,79 +85,50 @@ define(["jquery", "util"], function ($, util) {
 
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-        var i = this.pageStack.findIndex(function (e) {
-          return e.page == name;
+        var i = this.__pageStack.findIndex(function (e) {
+          return e.name == name;
         });
-
-        if (i >= 0) {
-          debugger;
-          this.container.children().detach();
-          this.__closePage(this.currentPage);
-          var popPage = null;
-          while ((popPage = this.pageStack.pop()) != null && popPage.page != name) {
-            this.__closePage(popPage.page);
-          }
-          this.pageStack.push(popPage);
-          this.__popPage();
-          return;
-        }
+        if (i == 0) return Promise.reject(new Error("the current page is the page"));else if (i > 0) return this.closePage(this.__pageStack[i - 1].name);
 
         var urls = this.getURLs(name);
 
-        $.get(urls.htmlurl, function (content) {
+        return $.get(urls.htmlurl).then(function (content) {
           var contentContainer = $('<div class="page-content-container"></div>');
 
           contentContainer.append(content);
 
           $.get(urls.cssurl, function (cssContent) {
             contentContainer.append($("<style>").text(cssContent));
-
             contentContainer.append($('<style class="csstheme">').data('url', urls.cssthemeurl));
 
-            if (urls.cssthemeurl) {
-              $.get(urls.cssthemeurl, function (cssContent) {
-                contentContainer.find('style.csstheme').text(cssContent);
-              });
-            }
+            if (urls.cssthemeurl) $.get(urls.cssthemeurl, function (cssContent) {
+              contentContainer.find('style.csstheme').text(cssContent);
+            });
           });
 
-          if (options.clear === true) {
-            debugger;
-            _this.container.children().detach();
-            _this.__closePage(_this.currentPage);
-            var _popPage = null;
-            while ((_popPage = _this.pageStack.pop()) != null) {
-              _this.__closePage(_popPage.page);
-            }
-            _this.pageStack.length = 0;
-          } else {
-            var currentContentContainer = _this.container.children();
-            if (currentContentContainer.length > 0) {
-              _this.pageStack.push({
-                page: _this.currentPage,
-                params: params,
-                content: currentContentContainer
-              });
+          var curpage = _this.getPage();
+          if (curpage) curpage.jsPage.fireEvent('pause');
 
-              var page = _this.jsStorage[_this.currentPage];
-              page.__onPause();
-              if (page.onPause) page.onPause();
-            }
-          }
+          _this.__pageStack.unshift({
+            name: name,
+            params: params,
+            content: contentContainer,
+            jsPage: null
+          });
 
-          _this.container.children().detach();
-          _this.container.append(contentContainer);
+          _this.__container.children().detach();
+          _this.__container.append(contentContainer);
 
-          _this.currentPage = name;
           _this.__saveState(name, params);
-
-          requirejs([urls.jsurl], function (Page) {
-            var page = _this.__newPageFactory(Page, name);
-            _this.jsStorage[name] = page;
-            page.__onLoad();
-            if (page.onLoad) page.onLoad(params);
-            page.__onResume();
-            if (page.onResume) page.onResume();
+        }).then(function () {
+          return new Promise(function (resolve, reject) {
+            requirejs([urls.jsurl], function (Page) {
+              var page = _this.__newPageFactory(Page, name);
+              _this.getPage().jsPage = page;
+              page.fireEvent('load', params);
+              page.fireEvent('resume', params);
+              resolve(page);
+            });
           });
         });
       }
@@ -161,49 +141,32 @@ define(["jquery", "util"], function ($, util) {
         return page;
       }
     }, {
-      key: "__closePage",
-      value: function __closePage(p, params) {
-        var urls = this.getURLs(p);
-        var jsurl = urls.jsurl;
-        var executeOnPause = jsurl == this.getURLs(this.currentPage).jsurl;
-        var page = this.jsStorage[p];
-
-        if (executeOnPause) page.__onPause();
-        if (executeOnPause && page.onPause) {
-          page.onPause();
-        }
-        page.__onClose(params);
-        if (page.onClose) page.onClose(params);
-
-        delete this.jsStorage[p];
-      }
-    }, {
-      key: "__popPage",
-      value: function __popPage() {
-        var p = this.pageStack.pop();
-        if (!p) return;
-        this.currentPage = p.page;
-        var urls = this.getURLs(this.currentPage);
-
-        var cssthemeelemnt = p.content.find("style.csstheme");
-        var newcssthemeurl = urls.cssthemeurl;
-        if (cssthemeelemnt.data('url') != newcssthemeurl) {
-          this.__changeThemeContent(cssthemeelemnt, newcssthemeurl);
-        }
-
-        this.container.children().detach();
-        this.container.append(p.content);
-
-        var page = this.jsStorage[this.currentPage];
-
-        page.__onResume();
-        if (page.onResume) page.onResume();
-      }
-    }, {
       key: "closePage",
-      value: function closePage(params) {
-        this.__closePage(this.currentPage, params);
-        this.__popPage();
+      value: function closePage(name, params) {
+
+        var cp = this.getPage();
+        if (!cp) return Promise.reject(new Error("empty page stack"));
+        if (!name) name = cp.name;else if (!this.getPage(name)) return Promise.reject(new Error("don't exist this page"));
+
+        this.getPage().jsPage.fireEvent('pause', params);
+        this.__container.children().detach();
+
+        var popPage = void 0;
+        while ((popPage = this.__pageStack.shift()) && popPage.name != name) {
+          popPage.jsPage.fireEvent('close', params);
+        }popPage.jsPage.fireEvent('close', params);
+
+        var curPage = this.getPage();
+        if (!curPage) return Promise.resolve(null);
+
+        var urls = this.getURLs(curPage.name);
+
+        var cssthemeelemnt = curPage.content.find("style.csstheme");
+        if (cssthemeelemnt.data('url') != urls.cssthemeurl) this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
+
+        this.__container.append(curPage.content);
+        curPage.jsPage.fireEvent('resume');
+        return Promise.resolve(curPage.jsPage);
       }
     }, {
       key: "__saveState",
@@ -225,5 +188,6 @@ define(["jquery", "util"], function ($, util) {
   }();
 
   ;
+
   return PageManager;
 });
