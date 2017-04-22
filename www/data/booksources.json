@@ -165,89 +165,6 @@
       }
     },
     "qidian": {
-<<<<<<< HEAD
-        "id": "qidian",
-        "type": "novel",
-        "name": "起点中文网",
-        "contentSourceWeight": -10,
-        "mainSourceWeight": 20,
-        "host": "http://www.qidian.com/",
-        "search": {
-            "request": {
-                "url": "http://se.qidian.com/?kw={keyword}",
-                "timeout": 5
-            },
-            "response": {
-                "type": "array",
-                "element": "#result-list li[data-rid]",
-                "children": {
-                        "name": ".book-mid-info>h4>a",
-                        "author": ".book-mid-info .author>a.name",
-                        "catagory": ".book-mid-info .author a:nth-child(4)",
-                        "complete": {
-                            "element": ".book-mid-info .author span:last-child",
-                            "type": "boolean",
-                            "true": "完本",
-                            "false": "连载中"
-                        },
-                        "coverImg": ".book-img-box img",
-                        "introduce": ".book-mid-info .intro",
-                        "lastestChapter": ".book-mid-info .update>a",
-                        "detailLink": ".book-mid-info>h4>a",
-                        "bookid": {
-                            "type": "string",
-                            "element": ".book-mid-info>h4>a",
-                            "attribute": "data-bid"
-                        }
-                    }
-            }
-        },
-        "detail": {
-            "request": {
-                "url": "{detailLink}",
-                "timeout": 5
-            },
-            "response": {
-                "author": "div.book-info > h1 > span > a",
-                "catagory": "div.book-info > p.tag > a:nth-child(4)",
-                "complete": {
-                    "element": "div.book-info > p.tag > span:nth-child(1)",
-                    "type": "boolean",
-                    "true": "完本",
-                    "false": "连载"
-                },
-                "coverImg": "#bookImg > img",
-                "introduce": "div.book-intro > p",
-                "lastestChapter": "div.book-info-detail > div.book-state li.update a",
-                "name": "div.book-info > h1 > em"
-            }
-        },
-        "catalog": {
-            "request": {
-                "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
-                "type": "JSON"
-            },
-            "response": {
-                "type": "array",
-                "element": "data::vs#filter(\"$element.vN.indexOf(\\\"相关\\\") < 0\")::cs#concat",
-                "children": {
-                    "title": "cN",
-                    "linkid": "cU",
-                    "vip": "sS",
-                    "link": {
-                        "type": "format",
-                        "value": "http://read.qidian.com/chapter/{linkid}",
-                        "valid": "{vip}==1"
-                    }
-                }
-            }
-        },
-        "chapter": {
-            "response": {
-                "contentHTML": "div.read-content",
-                "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
-                "title": "div.text-head > h3"
-=======
       "id": "qidian",
       "type": "novel",
       "name": "起点中文网",
@@ -281,7 +198,6 @@
                 "element": ".book-mid-info>h4>a",
                 "attribute": "data-bid"
               }
->>>>>>> dev
             }
         }
       },
@@ -510,7 +426,6 @@
           "name": "#info > h1"
         }
       },
-
       "catalog": {
         "request": "{detailLink}",
         "response": {
