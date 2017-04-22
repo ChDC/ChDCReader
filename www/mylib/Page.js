@@ -45,7 +45,9 @@ define(function () {
                     this.__events[eventName].forEach(function (eh) {
                         try {
                             eh(e);
-                        } catch (error) {}
+                        } catch (error) {
+                            console.error(error);
+                        }
                     });
                 }
 

@@ -33,7 +33,7 @@ define(function(){
       // addEventListener
       if(eventName in this.__events){
         this.__events[eventName].forEach(eh => {
-          try{ eh(e) } catch(error){ }
+          try{ eh(e) } catch(error){ console.error(error); }
         });
       }
 
