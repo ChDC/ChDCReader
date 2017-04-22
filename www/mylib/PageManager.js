@@ -10,17 +10,14 @@ define(["jquery", "util"], function ($, util) {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
         container: $("[data-page-container]"),
         theme: "",
-        currentPage: undefined,
         baseurl: "page"
       };
 
       _classCallCheck(this, PageManager);
 
       this.__pageStack = [];
-      this.__jsStorage = {};
       this.__container = options.container;
       this.__baseurl = options.baseurl;
-      this.__currentPage = options.currentPage;
       this.__theme = options.theme;
 
       window.onpopstate = this.__popState.bind(this);
@@ -35,9 +32,10 @@ define(["jquery", "util"], function ($, util) {
         if (this.__theme != theme) {
           this.__theme = theme;
 
-          if (!this.__currentPage) return;
+          var curpage = this.getPage();
+          if (!curpage) return;
 
-          var urls = this.getURLs(this.__currentPage);
+          var urls = this.getURLs(curpage.name);
           var cssthemeelemnt = this.__container.find(".page-content-container style.csstheme");
           return this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
         }
@@ -72,6 +70,15 @@ define(["jquery", "util"], function ($, util) {
         };
       }
     }, {
+      key: "getPage",
+      value: function getPage(name) {
+        if (!name) return this.__pageStack[0];
+
+        return this.__pageStack.find(function (e) {
+          return e.name == name;
+        });
+      }
+    }, {
       key: "showPage",
       value: function showPage(name, params) {
         var _this = this;
@@ -79,19 +86,9 @@ define(["jquery", "util"], function ($, util) {
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
         var i = this.__pageStack.findIndex(function (e) {
-          return e.page == name;
+          return e.name == name;
         });
-
-        if (i >= 0) {
-          this.__container.children().detach();
-          this.__closePage(this.__currentPage);
-          var popPage = null;
-          while ((popPage = this.__pageStack.pop()) != null && popPage.page != name) {
-            this.__closePage(popPage.page);
-          }
-          this.__pageStack.push(popPage);
-          return Promise.resolve(this.__popPage());
-        }
+        if (i == 0) return Promise.reject(new Error("the current page is the page"));else if (i > 0) return this.closePage(this.__pageStack[i - 1].name);
 
         var urls = this.getURLs(name);
 
@@ -102,49 +99,32 @@ define(["jquery", "util"], function ($, util) {
 
           $.get(urls.cssurl, function (cssContent) {
             contentContainer.append($("<style>").text(cssContent));
-
             contentContainer.append($('<style class="csstheme">').data('url', urls.cssthemeurl));
 
-            if (urls.cssthemeurl) {
-              $.get(urls.cssthemeurl, function (cssContent) {
-                contentContainer.find('style.csstheme').text(cssContent);
-              });
-            }
+            if (urls.cssthemeurl) $.get(urls.cssthemeurl, function (cssContent) {
+              contentContainer.find('style.csstheme').text(cssContent);
+            });
           });
 
-          if (options.clear === true) {
-            debugger;
-            _this.__container.children().detach();
-            _this.__closePage(_this.__currentPage);
-            var _popPage = null;
-            while ((_popPage = _this.__pageStack.pop()) != null) {
-              _this.__closePage(_popPage.page);
-            }
-            _this.__pageStack.length = 0;
-          } else {
-            var currentContentContainer = _this.__container.children();
-            if (currentContentContainer.length > 0) {
-              _this.__pageStack.push({
-                page: _this.__currentPage,
-                params: params,
-                content: currentContentContainer
-              });
+          var curpage = _this.getPage();
+          if (curpage) curpage.jsPage.fireEvent('pause');
 
-              var page = _this.__jsStorage[_this.__currentPage];
-              page.fireEvent('pause');
-            }
-          }
+          _this.__pageStack.unshift({
+            name: name,
+            params: params,
+            content: contentContainer,
+            jsPage: null
+          });
 
           _this.__container.children().detach();
           _this.__container.append(contentContainer);
 
-          _this.__currentPage = name;
           _this.__saveState(name, params);
         }).then(function () {
           return new Promise(function (resolve, reject) {
             requirejs([urls.jsurl], function (Page) {
               var page = _this.__newPageFactory(Page, name);
-              _this.__jsStorage[name] = page;
+              _this.getPage().jsPage = page;
               page.fireEvent('load', params);
               page.fireEvent('resume', params);
               resolve(page);
@@ -161,45 +141,32 @@ define(["jquery", "util"], function ($, util) {
         return page;
       }
     }, {
-      key: "__closePage",
-      value: function __closePage(p, params) {
-        var urls = this.getURLs(p);
-        var jsurl = urls.jsurl;
-        var executeOnPause = jsurl == this.getURLs(this.__currentPage).jsurl;
-        var page = this.__jsStorage[p];
-
-        if (executeOnPause) page.fireEvent('pause', params);
-        page.fireEvent('close', params);
-        delete this.__jsStorage[p];
-      }
-    }, {
-      key: "__popPage",
-      value: function __popPage() {
-        var p = this.__pageStack.pop();
-        if (!p) return p;
-        this.__currentPage = p.page;
-        var urls = this.getURLs(this.__currentPage);
-
-        var cssthemeelemnt = p.content.find("style.csstheme");
-        var newcssthemeurl = urls.cssthemeurl;
-        if (cssthemeelemnt.data('url') != newcssthemeurl) {
-          this.__changeThemeContent(cssthemeelemnt, newcssthemeurl);
-        }
-
-        this.__container.children().detach();
-        this.__container.append(p.content);
-
-        var page = this.__jsStorage[this.__currentPage];
-
-        page.fireEvent('resume');
-        return page;
-      }
-    }, {
       key: "closePage",
-      value: function closePage(params) {
-        this.__closePage(this.__currentPage, params);
-        this.__popPage();
-        return Promise.resolve();
+      value: function closePage(name, params) {
+
+        var cp = this.getPage();
+        if (!cp) return Promise.reject(new Error("empty page stack"));
+        if (!name) name = cp.name;else if (!this.getPage(name)) return Promise.reject(new Error("don't exist this page"));
+
+        this.getPage().jsPage.fireEvent('pause', params);
+        this.__container.children().detach();
+
+        var popPage = void 0;
+        while ((popPage = this.__pageStack.shift()) && popPage.name != name) {
+          popPage.jsPage.fireEvent('close', params);
+        }popPage.jsPage.fireEvent('close', params);
+
+        var curPage = this.getPage();
+        if (!curPage) return Promise.resolve(null);
+
+        var urls = this.getURLs(curPage.name);
+
+        var cssthemeelemnt = curPage.content.find("style.csstheme");
+        if (cssthemeelemnt.data('url') != urls.cssthemeurl) this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
+
+        this.__container.append(curPage.content);
+        curPage.jsPage.fireEvent('resume');
+        return Promise.resolve(curPage.jsPage);
       }
     }, {
       key: "__saveState",
@@ -221,5 +188,6 @@ define(["jquery", "util"], function ($, util) {
   }();
 
   ;
+
   return PageManager;
 });

@@ -126,6 +126,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
             var matcher = url.match(config.matcher);
             if (!matcher) return "continue";
 
+            if (config.executeScript) ref.executeScript({ code: config.executeScript });
             ref.hide();
             var bookid = matcher[1];
             app.bookSourceManager.getBookInfo(bsid, { bookid: bookid }).then(function (book) {
@@ -147,7 +148,6 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
 
         ref.addEventListener('loadstop', function (e) {
           var url = e.url;
-          debugger;
           if (es.insertCSS) ref.insertCSS({ code: es.insertCSS });
           if (es.executeScript) ref.executeScript({ code: es.executeScript });
         });
