@@ -34,8 +34,9 @@ define(function () {
                 var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
                 if (!eventName) return;
-                e.currentTarget = this;
-                e.target = this;
+
+                if (!("currentTarget" in e)) e.currentTarget = this;
+                if (!("target" in e)) e.target = this;
 
                 var __onevent = "__on" + eventName[0].toUpperCase() + eventName.substring(1);
                 if (__onevent in this) this[__onevent](e);

@@ -21,8 +21,9 @@ define(function(){
 
     fireEvent(eventName, e={}){
       if(!eventName) return;
-      e.currentTarget = this;
-      e.target = this;
+
+      if(!("currentTarget" in e)) e.currentTarget = this;
+      if(!("target" in e)) e.target = this;
 
       // __onEvent
       let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
