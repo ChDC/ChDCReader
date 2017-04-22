@@ -6,7 +6,7 @@ define(["jquery", "util"], function($, util){
     constructor(options={
         container: $("[data-page-container]"),
         theme: "",
-        currentPage: undefined,
+        // currentPage: undefined,
         baseurl: "page"
       }){
 
@@ -14,7 +14,7 @@ define(["jquery", "util"], function($, util){
       this.__jsStorage = {};
       this.__container = options.container;  // 页面容器的选择器
       this.__baseurl = options.baseurl;    // 页面存储的默认目录名
-      this.__currentPage = options.currentPage;  // 当前页面信息
+      // this.__currentPage = options.currentPage;  // 当前页面信息
       this.__theme = options.theme; // 页面的 CSS 主题
 
       window.onpopstate = this.__popState.bind(this);
