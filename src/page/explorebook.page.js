@@ -47,20 +47,24 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
           let matcher = url.match(config.matcher);
           if(!matcher) continue;
           // 匹配了
-          if(config.executeScript)
-            ref.executeScript({ code: config.executeScript });
-          ref.hide();
-          let bookid = matcher[1];
-          app.bookSourceManager.getBookInfo(bsid, {bookid: bookid})
-            .then(book => {
-              app.page.showPage(pageName, {book: book})
-                .then(page => {
-                  page.addEventListener('myclose', () => {
-                    ref.show();
-                    ref.executeScript({ code: "history.back()" });
+          let action = () => {
+            ref.hide();
+            let bookid = matcher[1];
+            app.bookSourceManager.getBookInfo(bsid, {bookid: bookid})
+              .then(book => {
+                app.page.showPage(pageName, {book: book})
+                  .then(page => {
+                    page.addEventListener('myclose', () => {
+                      ref.show();
+                      ref.executeScript({ code: "history.back()" });
+                    });
                   });
-                });
-            });
+              });
+          }
+          if(config.executeScript)
+            ref.executeScript({ code: config.executeScript }, action);
+          else
+            action();
         }
       });
 

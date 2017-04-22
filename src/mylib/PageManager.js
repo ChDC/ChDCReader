@@ -108,18 +108,6 @@ define(["jquery", "util"], function($, util){
               });
           });
 
-          // if(options.clear === true){
-          //   debugger;
-          //   this.__container.children().detach();
-          //   this.__closePage(this.__currentPage);
-          //   let popPage = null;
-          //   while((popPage = this.__pageStack.pop()) != null){
-          //     this.__closePage(popPage.page);
-          //   }
-          //   this.__pageStack.length = 0;
-          //   // __showPage();
-          // }
-
           // 触发之前页面的暂停事件
           let curpage = this.getPage();
           if(curpage)
