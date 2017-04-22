@@ -1,6 +1,6 @@
 /*********** Color ***************/
 
-body{
+body, .modal-content{
     background-color: #252526;
     background-image: none;
     /*color: #3399ff;*/
@@ -10,6 +10,3 @@ body{
 .btn-link{
     color: #fff;
 }
-
-
-
