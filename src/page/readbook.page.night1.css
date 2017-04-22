@@ -1,6 +1,6 @@
 /*********** Color ***************/
 
-.mainView{
+.mainView, .toolbar.top, .toolbar.bottom, .modal-content{
     background-image: none;
     background-color: #252526;
     color: #f1f1cf;
@@ -25,10 +25,4 @@
 
 .mainViewFooter{
     color: #eee;
-}
-
-.toolbar.top, .toolbar.bottom, .modal-content{
-    background-color: #252526;
-    color: #f1f1cf;
-    /*color: #3399ff;*/
 }
