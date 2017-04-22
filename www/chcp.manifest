@@ -333,7 +333,7 @@
   },
   {
     "file": "page/bookdetail.page.night1.css",
-    "hash": "fb74747fb551838ecbb3ab75ed31e510"
+    "hash": "aef4556ef915aa1971f812e47e9aed21"
   },
   {
     "file": "page/bookshelf.page.css",
@@ -349,7 +349,7 @@
   },
   {
     "file": "page/bookshelf.page.night1.css",
-    "hash": "1bc1c1bf20b942408f00657a73f8ec62"
+    "hash": "a7b708d2d12c71c0396c4fede9652e61"
   },
   {
     "file": "page/explorebook.page.css",
@@ -365,7 +365,7 @@
   },
   {
     "file": "page/explorebook.page.night1.css",
-    "hash": "fb74747fb551838ecbb3ab75ed31e510"
+    "hash": "107714dfa436f538b2a06c7c461d7008"
   },
   {
     "file": "page/readbook.page.css",
@@ -381,7 +381,7 @@
   },
   {
     "file": "page/readbook.page.night1.css",
-    "hash": "4ce3b5fea2a37ff4d7b05c74ec74443f"
+    "hash": "ee24a7a7366ebeab3291fdeb7cc63096"
   },
   {
     "file": "page/search.page.css",
@@ -397,7 +397,7 @@
   },
   {
     "file": "page/search.page.night1.css",
-    "hash": "bbf027378948eef517632c4a1874f37d"
+    "hash": "9d05da2cdddd284ead9ec8b9f43ea5c5"
   },
   {
     "file": "test.html",
