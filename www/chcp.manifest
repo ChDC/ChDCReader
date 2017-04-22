@@ -1,11 +1,11 @@
 [
   {
     "file": "css/index.css",
-    "hash": "f6fbbd4bd1a424a7f5c7173ba6d48e3f"
+    "hash": "1233f49f9475626fc4300ed05349880a"
   },
   {
     "file": "data/booksources.json",
-    "hash": "2afbe261f8dd17143a85ec4426bfd382"
+    "hash": "be3e15eeea0c8f1e3c16259e962bfd9c"
   },
   {
     "file": "data/booksources.test.json",
@@ -20,12 +20,72 @@
     "hash": "eb7492d5e684220dfa4cbad314c75df4"
   },
   {
+    "file": "data/exploresource.json",
+    "hash": "90e3df38ce085efc661e8f3c4b063550"
+  },
+  {
     "file": "img/book_cover.png",
     "hash": "f291c93b7934d69e8ba400d72908c0ca"
   },
   {
     "file": "img/loading.gif",
     "hash": "aef3c727d3d44e0655f61894bd346d0c"
+  },
+  {
+    "file": "img/logo/chuangshi.png",
+    "hash": "e0e2b0551332ca70d17878977283055e"
+  },
+  {
+    "file": "img/logo/comico.png",
+    "hash": "b6db8ebd31569c21c0734892d4b9d6e3"
+  },
+  {
+    "file": "img/logo/comico1.png",
+    "hash": "7076f5a9a842c61b87857acf1e9d2117"
+  },
+  {
+    "file": "img/logo/favicon (1)_看图王.ico",
+    "hash": "f32f7ff936debb12b3cb052413837272"
+  },
+  {
+    "file": "img/logo/favicon (1)_看图王.png",
+    "hash": "3f405b17fc2bbb909b1ac78a44c74079"
+  },
+  {
+    "file": "img/logo/favicon (1).ico",
+    "hash": "f32f7ff936debb12b3cb052413837272"
+  },
+  {
+    "file": "img/logo/favicon_看图王.png",
+    "hash": "0311c9d82baf3a37c8226cf208b7908e"
+  },
+  {
+    "file": "img/logo/favicon.ico",
+    "hash": "383fc3e7b8123a9d6c94e4f2612b8c38"
+  },
+  {
+    "file": "img/logo/logo_comico_看图王.png",
+    "hash": "4afe09eaa38fea82f3d8059d45241194"
+  },
+  {
+    "file": "img/logo/logo_comico.gif",
+    "hash": "c8355eb56037688371e621794eb6b69e"
+  },
+  {
+    "file": "img/logo/qidian.png",
+    "hash": "0c60e43b9b0a41f5c1e2cdb9e8951e2a"
+  },
+  {
+    "file": "img/logo/qidian.png.crdownload",
+    "hash": "0c60e43b9b0a41f5c1e2cdb9e8951e2a"
+  },
+  {
+    "file": "img/logo/u17.png",
+    "hash": "fc75268da0866bb0204cc7e919507d0e"
+  },
+  {
+    "file": "img/logo/u17.png.crdownload",
+    "hash": "6a64766de05d91ff61cfd666421e6f26"
   },
   {
     "file": "img/readbg1.jpg",
@@ -45,19 +105,19 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "b6c0808163f51a6830258c5352d24449"
+    "hash": "1866810d83a8c25f91d5c4da81ab083d"
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "3e4831359d72cda3febd74f88236cd8d"
+    "hash": "43703bdc6ad735597b33592cfeaaff25"
   },
   {
     "file": "js/BookSource.js",
-    "hash": "8f18ad5136595d82bb7fccf5e6526a3b"
+    "hash": "020de8b91135a8a2d43b4b494c520ff1"
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "408d3e30e599c2a1c2ab6f23f1087b68"
+    "hash": "52647851f1cf6871dcec8595c0d46771"
   },
   {
     "file": "js/Chapter.js",
@@ -65,7 +125,7 @@
   },
   {
     "file": "js/config.js",
-    "hash": "fc22de1ebc2e729d45a14b8c27af4efc"
+    "hash": "2c50f778fb44afab19b1922ecc1cf4f0"
   },
   {
     "file": "js/CustomBookSource.js",
@@ -150,6 +210,10 @@
   {
     "file": "lib/co.js",
     "hash": "48636808794a5c4bf934a3289dca1e0c"
+  },
+  {
+    "file": "lib/cookie.js",
+    "hash": "6e9eb1f53afb135aedaf90739c867738"
   },
   {
     "file": "lib/jquery-3.1.1/jquery.min.js",
@@ -265,15 +329,15 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "33b426622d8acf5dc8905373c1249804"
+    "hash": "0f29bc88993dd77c9c81c6a6414ea02a"
   },
   {
     "file": "mylib/Page.js",
-    "hash": "c326b056f641b1c40a4f2b87e0f8f4a9"
+    "hash": "3f6675965c1b56557018622faa0d0ecb"
   },
   {
     "file": "mylib/PageManager.js",
-    "hash": "d5af4ea1e685ffb5a69e0b383a925a8e"
+    "hash": "fe16e5f26efd72c8ec8c8f507ac17e59"
   },
   {
     "file": "mylib/Spider.js",
@@ -285,7 +349,7 @@
   },
   {
     "file": "mylib/translate.js",
-    "hash": "59d42b76ea6eb7e816f768a583acc01e"
+    "hash": "ee1e367719d41faa9e0ab30f388e48ab"
   },
   {
     "file": "mylib/uiutil.js",
@@ -297,15 +361,15 @@
   },
   {
     "file": "page/bookdetail.page.css",
-    "hash": "010eff202557eeea0c42113600c5b762"
+    "hash": "4a9df5aadbffe3d9f722d0f65adbde49"
   },
   {
     "file": "page/bookdetail.page.html",
-    "hash": "b0cbd60b87d6a0891424476467da873e"
+    "hash": "2573dca5217d3957495ef076c3050a01"
   },
   {
     "file": "page/bookdetail.page.js",
-    "hash": "007e8d36a21781ad480ab5829a3e8cb9"
+    "hash": "6ee0dc9e81af9d3fb1ff8510b159285e"
   },
   {
     "file": "page/bookdetail.page.night1.css",
@@ -313,15 +377,15 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "67c5e5e0e8580c91d7ae6a5932daa928"
+    "hash": "da25f4b4f5c104939aeba5a587ce50b3"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "7f7a856a14302e0ceeeea16a7871924a"
+    "hash": "cd35e8ba3cd90e3b1305caec0bc92aff"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "80c113b11f23ee4222387cac31a01b4a"
+    "hash": "94faab989eb8830583c1469537bc67ef"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -329,15 +393,15 @@
   },
   {
     "file": "page/explorebook.page.css",
-    "hash": "504b925e339f00e2a20b62e129689adc"
+    "hash": "ca4a90bb43c2a2c0f036fd9cc4ed5220"
   },
   {
     "file": "page/explorebook.page.html",
-    "hash": "b0cbd60b87d6a0891424476467da873e"
+    "hash": "2dcb7cc5e71c23310386d1fc7dd8f7cc"
   },
   {
     "file": "page/explorebook.page.js",
-    "hash": "8ae21b7db46b1d6710e38f7a0a16a75d"
+    "hash": "a96a17ac297f4d68874992222a1f0dad"
   },
   {
     "file": "page/explorebook.page.night1.css",
@@ -345,15 +409,15 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "6e782af7d5c75f76317b1c1b56de3b5e"
+    "hash": "dd4cc713f24b31c12d6b8496043f38f2"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "173a3e1daa67beb0ada07f87e24dff4e"
+    "hash": "3303a1cf3d1eecaa62f2342a306607db"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "0ec94b14a1f8e77ee6190731fd9fed06"
+    "hash": "824d078d48b7773fd75827f8a2800fdb"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -361,15 +425,15 @@
   },
   {
     "file": "page/search.page.css",
-    "hash": "22e1ca98b6e7eebe54bb681ff98780b0"
+    "hash": "79577047f37dc3bf619bc477ea616ddc"
   },
   {
     "file": "page/search.page.html",
-    "hash": "dc1171a73939587bde593ccb7b82129e"
+    "hash": "1045cb4137f89877a6b7173a9767fdfc"
   },
   {
     "file": "page/search.page.js",
-    "hash": "c6f3f359f1964836483bd24fb0be1cb8"
+    "hash": "2a74d54c0346f8b83926fce294f8ff1a"
   },
   {
     "file": "page/search.page.night1.css",
