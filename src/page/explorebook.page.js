@@ -47,6 +47,8 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
           let matcher = url.match(config.matcher);
           if(!matcher) continue;
           // 匹配了
+          if(config.executeScript)
+            ref.executeScript({ code: config.executeScript });
           ref.hide();
           let bookid = matcher[1];
           app.bookSourceManager.getBookInfo(bsid, {bookid: bookid})
@@ -65,7 +67,6 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
       // loadstop
       ref.addEventListener('loadstop', function(e) {
         let url = e.url;
-        debugger;
         if(es.insertCSS)
           ref.insertCSS({code: es.insertCSS});
         if(es.executeScript)
