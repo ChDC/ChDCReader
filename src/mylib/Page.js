@@ -2,7 +2,7 @@ define(function(){
   class Page{
 
     constructor(){
-      this.events = {};
+      this.__events = {};
 
       this.__onDevicePauseHandler = (e) => {
         this.fireEvent("devicePause", e);
@@ -14,11 +14,9 @@ define(function(){
 
     addEventListener(eventName, handler){
       if(!eventName || !handler) return;
-      // if(!this.events)
-      //   this.events = {};
-      if(!(eventName in this.events))
-        this.events[eventName] = [];
-      this.events[eventName].push(handler);
+      if(!(eventName in this.__events))
+        this.__events[eventName] = [];
+      this.__events[eventName].push(handler);
     }
 
     fireEvent(eventName, e={}){
@@ -32,8 +30,8 @@ define(function(){
         this[__onevent](e);
 
       // addEventListener
-      if(eventName in this.events){
-        this.events[eventName].forEach(eh => {
+      if(eventName in this.__events){
+        this.__events[eventName].forEach(eh => {
           try{ eh(e) } catch(error){ }
         });
       }
@@ -46,10 +44,10 @@ define(function(){
 
     removeEventListener(eventName, handler){
       if(!eventName || !handler) return;
-      if(eventName in this.events){
-        let i = this.events[eventName].findIndex(m => m == handler);
+      if(eventName in this.__events){
+        let i = this.__events[eventName].findIndex(m => m == handler);
         if(i >= 0)
-          this.events[eventName].splice(i, 1);
+          this.__events[eventName].splice(i, 1);
       }
     }
 

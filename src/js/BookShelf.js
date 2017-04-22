@@ -5,11 +5,15 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
   class BookShelf{
 
     constructor(){
-      this.loaded = false; // 标记是否已经加载的数据
+      this.__loaded = false; // 标记是否已经加载的数据
       this.books = [];
       // this.bookmarks = []; // 书签
     }
 
+    // 是否已经加载了
+    isLoaded(){
+      return this.__loaded;
+    }
 
     // 获取存储目录的文件路径
     __getSaveCatalogLocation(bookName, bookAuthor, sourceId){
@@ -42,7 +46,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
           }
         }
         return Promise.all(tasks)
-          .then(()=>{self.loaded = true;});
+          .then(()=>{self.__loaded = true;});
       }
 
       return util.loadData("bookshelf")

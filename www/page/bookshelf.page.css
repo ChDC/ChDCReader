@@ -4,17 +4,8 @@
     margin-top:0;
 }
 
-.header{
-    width:100%;
-    margin:0;
-}
-
-.container{
-    padding:0;
-}
-
-#bookshelf{
-    padding:15px 15px 15px 15px;
+.bookshelf{
+    padding: 10px 0;
 }
 
 .book-cover{
@@ -48,18 +39,11 @@
     margin-left: 10px;
 }
 
-/*********** Color ***************/
 
-.header{
-    background-color: #EE0000;
-}
+/*********** Color ***************/
 
 .error{
     color: red;
-}
-
-.row.header > .btn-link{
-    color: #fff;
 }
 
 .bookshelf .book{

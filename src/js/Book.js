@@ -28,7 +28,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
           resolve(bs);
         }
         else{
-          const bsm = this.bookSourceManager.sources[bookSourceId];
+          const bsm = this.bookSourceManager.getBookSource(bookSourceId);
           if(bsm)
           {
             const bss = new BookSource(this, this.bookSourceManager, bookSourceId, bsm.contentSourceWeight);
@@ -54,12 +54,21 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
       return Object.entries(object).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
     }
 
-    // 检查源是否有缺失
+    // 检查源是否有缺失或多余
     checkBookSources(){
-      const sources = this.bookSourceManager.sources;
+      const sources = this.bookSourceManager.getBookSourcesBySameType(this.mainSourceId);
+
+      // 添加缺失
       for(const k in sources){
         if(!(k in this.sources)){
           this.sources[k] = new BookSource(this, this.bookSourceManager, k, sources[k].contentSourceWeight);
+        }
+      }
+
+      // 删除多余
+      for(const k in this.sources){
+        if(!(k in sources)){
+          delete this.sources[k];
         }
       }
     }
@@ -71,7 +80,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
         if(this.mainSourceId == bookSourceId)
           return;
 
-        if(bookSourceId && bookSourceId in this.bookSourceManager.sources){
+        if(bookSourceId && bookSourceId in this.bookSourceManager.getBookSourcesBySameType(this.mainSourceId)){
           this.mainSourceId = bookSourceId;
           resolve(this);
         }

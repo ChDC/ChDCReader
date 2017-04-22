@@ -17,19 +17,18 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
       this.book = book;
 
       this.id = id;
-      this.disable = false;
-      this.weight = weight;
-      this.searched = false;
-
       this.detailLink;
       this.catalogLink;
       this.bookid;
       this.catalog;
-
-      this.updatedCatalogTime = 0;
-      this.updatedLastestChapterTime = 0;
-      this.needSaveCatalog = false;
       this.lastestChapter = undefined;
+
+      this.weight = weight;
+      this.__disable = false;
+      this.__searched = false;
+      this.__updatedCatalogTime = 0;
+      this.__updatedLastestChapterTime = 0;
+      this.needSaveCatalog = false;
     }
 
     _createClass(BookSource, [{
@@ -39,15 +38,15 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
 
         util.log('BookSource: Get book source by searching book');
 
-        if (this.disable) return Promise.reject(404);
+        if (this.__disable) return Promise.reject(404);
 
         return this.bookSourceManager.getBook(this.id, this.book.name, this.book.author).then(function (book) {
           Object.assign(_this, book.sources[_this.id]);
           return _this;
         }).catch(function (error) {
           if (error == 404) {
-            _this.disable = true;
-            _this.searched = true;
+            _this.__disable = true;
+            _this.__searched = true;
           }
           return Promise.reject(error);
         });
@@ -56,11 +55,11 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
       key: '__getBookSourceDetailLink',
       value: function __getBookSourceDetailLink() {
 
-        if (!this.searched) return this.__getBookSource().then(function (bs) {
+        if (!this.__searched) return this.__getBookSource().then(function (bs) {
           return bs.detailLink;
         });
 
-        if (this.disable) return Promise.reject(404);
+        if (this.__disable) return Promise.reject(404);
 
         return Promise.resolve(this.detailLink);
       }
@@ -73,7 +72,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (this.searched) {
+                if (this.__searched) {
                   _context.next = 3;
                   break;
                 }
@@ -82,7 +81,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
                 return this.__getBookSource();
 
               case 3:
-                if (!this.disable) {
+                if (!this.__disable) {
                   _context.next = 5;
                   break;
                 }
@@ -118,7 +117,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(new Date().getTime() - this.updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
+                if (!(new Date().getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
                   _context2.next = 2;
                   break;
                 }
@@ -137,7 +136,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
                 catalog = _context2.sent;
 
                 this.catalog = catalog;
-                this.updatedCatalogTime = new Date().getTime();
+                this.__updatedCatalogTime = new Date().getTime();
                 this.needSaveCatalog = true;
                 return _context2.abrupt('return', catalog);
 
@@ -169,14 +168,14 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
       value: function refreshLastestChapter() {
         var _this4 = this;
 
-        if (new Date().getTime() - this.updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000) return [this.lastestChapter, false];
+        if (new Date().getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000) return [this.lastestChapter, false];
 
         util.log('Refresh LastestChapter!');
 
         return this.__getBookSourceDetailLink().then(function (detailLink) {
           return _this4.bookSourceManager.getLastestChapter(_this4.id, _this4);
         }).then(function (lastestChapter) {
-          _this4.updatedLastestChapterTime = new Date().getTime();
+          _this4.__updatedLastestChapterTime = new Date().getTime();
           var lastestChapterUpdated = false;
           if (_this4.lastestChapter != lastestChapter) {
             _this4.lastestChapter = lastestChapter;
@@ -275,7 +274,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
     refreshCatalogInterval: 600,
     refreshLastestChapterInterval: 600 };
 
-  BookSource.persistentInclude = ["id", "disable", "weight", "searched", "detailLink", "catalogLink", "bookid", "updatedCatalogTime", "updatedLastestChapterTime", "needSaveCatalog", "lastestChapter"];
+  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "needSaveCatalog", "lastestChapter"];
 
   return BookSource;
 });

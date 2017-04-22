@@ -131,10 +131,12 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         });
         $('#modalCatalog').on('shown.bs.modal', function (e) {
           var targetChapter = $('#listCatalog > [data-index=' + _this3.readingRecord.chapterIndex + ']');
-          var top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
-          $('#listCatalogContainer').scrollTop(top);
+          if (targetChapter && targetChapter.length > 0) {
+            var top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
+            $('#listCatalogContainer').scrollTop(top);
+          }
         });
-        $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
+        $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
         $("#btnRefreshCatalog").click(function () {
           return _this3.loadCatalog(true);
         });
@@ -167,7 +169,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
             $("#modalCatalog").modal('hide');
 
-            $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(_this4.book.mainSourceId));
+            $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this4.book.mainSourceId).name);
             if (_this4.readingRecord.chapterIndex) {
               _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
                 var chapter = _ref.chapter,
@@ -205,7 +207,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
             if (bsk == this.book.mainSourceId) continue;
             var nlbse = listBookSourceEntry.clone();
-            nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSourceName(bsk));
+            nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
             var lastestChapter = "";
 
             nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
@@ -281,7 +283,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           var options = newValue.data('options');
           _this6.readingRecord.setReadingRecord(index, title, options);
           _this6.readingRecord.pageScrollTop = _this6.chapterList.getPageScorllTop();
-          $(".labelContentSource").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
+          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
           $(".labelChapterTitle").text(title);
           app.hideLoading();
         };
@@ -346,7 +348,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         content.find('img').addClass('content-img').on('error', uiutil.imgonerror);
 
         nc.find(".chapter-content").html(content);
-
 
         nc.data('chapterIndex', index);
         nc.data('chapterTitle', title);

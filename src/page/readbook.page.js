@@ -119,11 +119,15 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       });
       $('#modalCatalog').on('shown.bs.modal', e => {
         const targetChapter = $('#listCatalog > [data-index=' + this.readingRecord.chapterIndex + ']');
-        const top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
-        $('#listCatalogContainer').scrollTop(top);
-        // $("#modalCatalog .modal-body").css("height", $());
+        if(targetChapter && targetChapter.length > 0)
+        {
+          const top = targetChapter.position().top - $("#listCatalogContainer").height() / 2;
+          $('#listCatalogContainer').scrollTop(top);
+          // $("#modalCatalog .modal-body").css("height", $());
+        }
+
       });
-      $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
+      $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
 
       if(this.isNewBook){
@@ -156,7 +160,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             // 隐藏目录窗口
             $("#modalCatalog").modal('hide');
             // 更新源之后
-            $(".labelMainSource").text(app.bookSourceManager.getBookSourceName(this.book.mainSourceId));
+            $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
             if(this.readingRecord.chapterIndex){
               this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, undefined, oldMainSource)
                 .then(({chapter, index}) => {
@@ -187,7 +191,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         if(bsk == this.book.mainSourceId)
           continue;
         const nlbse = listBookSourceEntry.clone();
-        nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSourceName(bsk));
+        nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
         const lastestChapter = "";
         // TODO: 最新章节
         nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
@@ -257,7 +261,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         const options = newValue.data('options');
         this.readingRecord.setReadingRecord(index, title, options);
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-        $(".labelContentSource").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
+        $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       }
@@ -319,7 +323,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         .on('error', uiutil.imgonerror);
 
       nc.find(".chapter-content").html(content);
-      // nc.find(".chapter-source").text(app.bookSourceManager.getBookSourceName(options.contentSourceId));
 
       nc.data('chapterIndex', index);
       nc.data('chapterTitle', title);

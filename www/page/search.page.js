@@ -43,7 +43,6 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
             nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
 
             nb.find(".book-name").text(book.name);
-
             nb.find(".book-author").text(book.author);
             nb.find(".book-catagory").text(book.catagory);
             nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
@@ -71,7 +70,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
                 book: book
               });
             });
-            nb.find(".book-booksource").text(app.bookSourceManager.getBookSourceName(book.mainSourceId));
+            nb.find(".book-booksource").text(app.bookSourceManager.getBookSource(book.mainSourceId).name);
             bs.append(nb);
           };
 
@@ -144,7 +143,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
           for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
             var bskey = _step2.value;
 
-            var bsName = app.bookSourceManager.getBookSourceName(bskey);
+            var bsName = app.bookSourceManager.getBookSource(bskey).name;
             var newOption = "<option value =\"" + bskey + "\">" + bsName + "</option>";
             bookSource.append(newOption);
           }

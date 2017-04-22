@@ -11,19 +11,18 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
       this.book = book; // 不持久化
 
       this.id = id; // 书源 ID
-      this.disable = false; // 表示当前书源是否可用
-      this.weight = weight; // 书源的权重
-      this.searched = false; // 本书是否已经被搜索到了
-
       this.detailLink; // 详情页链接
       this.catalogLink; // 目录页链接
       this.bookid; // 书籍 ID
       this.catalog; // 目录
-
-      this.updatedCatalogTime = 0; // 上次更新目录时间
-      this.updatedLastestChapterTime = 0; // 上次更新最新章节时间
-      this.needSaveCatalog = false; // 目录是否需要存储到本地
       this.lastestChapter = undefined;  // 最新的章节
+
+      this.weight = weight; // 书源的权重
+      this.__disable = false; // 表示当前书源是否可用
+      this.__searched = false; // 本书是否已经被搜索到了
+      this.__updatedCatalogTime = 0; // 上次更新目录时间 // 不持久化
+      this.__updatedLastestChapterTime = 0; // 上次更新最新章节时间 // 不持久化
+      this.needSaveCatalog = false; // 目录是否需要存储到本地
     }
 
 
@@ -32,7 +31,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
 
       util.log(`BookSource: Get book source by searching book`);
 
-      if(this.disable)
+      if(this.__disable)
         return Promise.reject(404);
 
       return this.bookSourceManager.getBook(this.id, this.book.name, this.book.author)
@@ -44,8 +43,8 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
         .catch(error => {
           if(error == 404){
             // 没找到该书就标记一下，下次直接跳过
-            this.disable = true;
-            this.searched = true;
+            this.__disable = true;
+            this.__searched = true;
           }
           return Promise.reject(error);
         });
@@ -55,11 +54,11 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     // 获取当前书籍指定的目录源的相信信息链接
     __getBookSourceDetailLink(){
 
-      if(!this.searched)
+      if(!this.__searched)
         return this.__getBookSource()
           .then(bs => bs.detailLink);
 
-      if(this.disable)
+      if(this.__disable)
         return Promise.reject(404);
 
       return Promise.resolve(this.detailLink);
@@ -67,9 +66,9 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
 
     // 获取当前书籍指定的目录页的链接
     *__getBookSourceCatalogLink(){
-      if(!this.searched)
+      if(!this.__searched)
         yield this.__getBookSource()
-      if(this.disable)
+      if(this.__disable)
         return Promise.reject(404);
 
       if(this.catalogLink != undefined)
@@ -84,14 +83,14 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     // 刷新目录
     *__refreshCatalog(){
 
-      if((new Date()).getTime() - this.updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
+      if((new Date()).getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
         return this.catalog;
 
       yield this.__getBookSourceCatalogLink();
 
       const catalog = yield this.bookSourceManager.getBookCatalog(this.id, this);
       this.catalog = catalog;
-      this.updatedCatalogTime = (new Date()).getTime();
+      this.__updatedCatalogTime = (new Date()).getTime();
       this.needSaveCatalog = true;
       return catalog;
     }
@@ -116,7 +115,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     // 获取书籍最新章节
     refreshLastestChapter(){
 
-      if((new Date()).getTime() - this.updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
+      if((new Date()).getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
         return [this.lastestChapter, false];
 
       util.log('Refresh LastestChapter!');
@@ -125,7 +124,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
         .then(detailLink =>
           this.bookSourceManager.getLastestChapter(this.id, this))
         .then(lastestChapter => {
-          this.updatedLastestChapterTime = (new Date()).getTime();
+          this.__updatedLastestChapterTime = (new Date()).getTime();
           let lastestChapterUpdated = false;
           if(this.lastestChapter != lastestChapter){
             this.lastestChapter = lastestChapter;
@@ -204,9 +203,9 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
   };
 
   // 用于标记持久化的属性
-  BookSource.persistentInclude = ["id", "disable", "weight", "searched", "detailLink",
+  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink",
               "catalogLink", "bookid", // 不持久化目录 "catalog",
-              "updatedCatalogTime", "updatedLastestChapterTime",
+              // "__updatedCatalogTime", "__updatedLastestChapterTime",
               "needSaveCatalog", "lastestChapter"];
 
   return BookSource;

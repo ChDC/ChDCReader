@@ -11,7 +11,7 @@ define(function () {
 
             _classCallCheck(this, Page);
 
-            this.events = {};
+            this.__events = {};
 
             this.__onDevicePauseHandler = function (e) {
                 _this.fireEvent("devicePause", e);
@@ -25,9 +25,8 @@ define(function () {
             key: "addEventListener",
             value: function addEventListener(eventName, handler) {
                 if (!eventName || !handler) return;
-
-                if (!(eventName in this.events)) this.events[eventName] = [];
-                this.events[eventName].push(handler);
+                if (!(eventName in this.__events)) this.__events[eventName] = [];
+                this.__events[eventName].push(handler);
             }
         }, {
             key: "fireEvent",
@@ -41,8 +40,8 @@ define(function () {
                 var __onevent = "__on" + eventName[0].toUpperCase() + eventName.substring(1);
                 if (__onevent in this) this[__onevent](e);
 
-                if (eventName in this.events) {
-                    this.events[eventName].forEach(function (eh) {
+                if (eventName in this.__events) {
+                    this.__events[eventName].forEach(function (eh) {
                         try {
                             eh(e);
                         } catch (error) {}
@@ -56,11 +55,11 @@ define(function () {
             key: "removeEventListener",
             value: function removeEventListener(eventName, handler) {
                 if (!eventName || !handler) return;
-                if (eventName in this.events) {
-                    var i = this.events[eventName].findIndex(function (m) {
+                if (eventName in this.__events) {
+                    var i = this.__events[eventName].findIndex(function (m) {
                         return m == handler;
                     });
-                    if (i >= 0) this.events[eventName].splice(i, 1);
+                    if (i >= 0) this.__events[eventName].splice(i, 1);
                 }
             }
         }, {

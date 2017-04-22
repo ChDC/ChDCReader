@@ -98,9 +98,13 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
     }, {
       key: "loadView",
       value: function loadView(params) {
+        var _this4 = this;
 
         this.loadBookDetail(".book", params.book);
         this.loadBookChapters(".book-chapters", params.book);
+        $('#btnClose').click(function (e) {
+          return _this4.close();
+        });
       }
     }]);
 

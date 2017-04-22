@@ -7,7 +7,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
     }
 
     onResume(){
-      if(app.bookShelf.loaded){
+      if(app.bookShelf.isLoaded()){
         this.loadBooks(".bookshelf", app.bookShelf);
       }
       else{
@@ -55,7 +55,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         if(book.cover)
           nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name);
-        if(app.bookSourceManager.getBookSourceType(book.mainSourceId) == 'comics')
+        if(app.bookSourceManager.getBookSource(book.mainSourceId).type == 'comics')
           nb.find(".book-name").addClass('type-comics');
         nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
