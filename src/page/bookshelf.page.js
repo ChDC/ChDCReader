@@ -126,6 +126,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
       $(".btnSearch").click(e => app.page.showPage("search"));
       $(".btnExplore").click(e => app.page.showPage("explorebook"));
+      $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
+      $("#btnToggleNightMode").click(e => {
+        app.theme.toggleNight();
+        $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
+      });
     }
 
   }
