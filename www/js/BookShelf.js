@@ -110,11 +110,59 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
       key: 'addBook',
       value: function addBook(book, readingRecord) {
         if (!this.hasBook(book)) {
-          this.books.push({
+          this.books.unshift({
             book: book,
-            readingRecord: readingRecord || new ReadingRecord()
-          });
+            readingRecord: readingRecord || new ReadingRecord(),
+            lockLocation: -1 });
+          this.sortBooks();
         }
+      }
+    }, {
+      key: 'toggleLockBook',
+      value: function toggleLockBook(bookshelfitem) {
+        if (this.isLockedBook(bookshelfitem)) bookshelfitem.lockLocation = -1;else bookshelfitem.lockLocation = this.books.indexOf(bookshelfitem);
+      }
+    }, {
+      key: 'isLockedBook',
+      value: function isLockedBook(bookshelfitem) {
+        return bookshelfitem.lockLocation >= 0;
+      }
+    }, {
+      key: 'sortBooks',
+      value: function sortBooks(functionOrArray) {
+        var _this2 = this;
+
+        var newOrder = void 0;
+        switch (util.type(functionOrArray)) {
+          case "function":
+            newOrder = Object.assign([], this.books);
+            newOrder.sort(functionOrArray);
+            break;
+
+          case "array":
+            if (!functionOrArray.every(function (e) {
+              return _this2.books.indexOf(e) >= 0;
+            })) return false;
+            newOrder = functionOrArray;
+            break;
+
+          default:
+            newOrder = this.books;
+            break;
+        }
+
+        var lockedItems = this.books.filter(function (e) {
+          return _this2.isLockedBook(e);
+        });
+        var result = newOrder.filter(function (e) {
+          return !_this2.isLockedBook(e);
+        });
+        lockedItems.forEach(function (e) {
+          if (e.lockLocation >= _this2.books.length) e.lockLocation = _this2.books.length - 1;
+          result.splice(e.lockLocation, 0, e);
+        });
+        this.books = result;
+        return true;
       }
     }, {
       key: 'hasBook',
@@ -127,13 +175,18 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
       }
     }, {
       key: 'removeBook',
-      value: function removeBook(index) {
-        var b = this.books[index].book;
-        for (var bsk in b.sources) {
-          var bs = b.sources[bsk];
-          util.removeData(this.__getSaveCatalogLocation(b.name, b.author, bsk));
+      value: function removeBook(book) {
+        var index = this.books.findIndex(function (e) {
+          return e.book == book;
+        });
+        if (index < 0) return;
+
+        for (var bsk in book.sources) {
+          var bs = book.sources[bsk];
+          util.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
         }
         this.books.splice(index, 1);
+        this.sortBooks();
       }
     }]);
 

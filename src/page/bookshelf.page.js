@@ -24,20 +24,35 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
     }
 
-    removeBook(event){
-      const target = $(event.currentTarget);
-      const i = target.data('book-index');
-      app.bookShelf.removeBook(i);
-      app.bookShelf.save()
-        .then(() => {
-          uiutil.showMessage("删除成功！");
-          this.loadBooks(".bookshelf", app.bookShelf);
-        })
-        .catch(error => {
-          uiutil.showError("删除失败！");
-          this.loadBooks(".bookshelf", app.bookShelf);
-        });
+    removeBook(book){
+      uiutil.showMessageDialog("确定", "确定要删除该书？",
+        () => {
+          const target = $(event.currentTarget);
+          app.bookShelf.removeBook(book);
+          this.refreshBooksOrder(".bookshelf", app.bookShelf);
+          app.bookShelf.save()
+            .then(() => {
+              uiutil.showMessage("删除成功！");
+            })
+            .catch(error => {
+              uiutil.showError("删除失败！");
+            });
+          });
       return false;
+    }
+
+    // 只更新 UI 不重新加载数据
+    refreshBooksOrder(id, bookShelf){
+      const books = bookShelf.books;
+      const bs = $(id);
+      let newOrders = [];
+      let children = bs.children();
+      Array.from(children).forEach(e => {
+        let i = books.indexOf($(e).data("bookshelfitem"));
+        newOrders[i] = e;
+      });
+      children.detach();
+      bs.append(newOrders);
     }
 
     // 加载书架列表
@@ -47,16 +62,15 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       bs.empty();
       const b = $(".template .book");
 
-      books.forEach((value, i) => {
+      books.forEach( value => {
         const readingRecord = value.readingRecord;
         const book = value.book;
 
         const nb = b.clone();
-        if(book.cover)
-          nb.find(".book-cover").attr("src", book.cover);
-        nb.find(".book-name").text(book.name);
-        if(app.bookSourceManager.getBookSource(book.mainSourceId).type == 'comics')
-          nb.find(".book-name").addClass('type-comics');
+        nb.data("bookshelfitem", value);
+        if(book.cover) nb.find(".book-cover").attr("src", book.cover);
+        nb.find(".book-name").text(book.name)
+          .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
         nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
 
         // 刷新最新章节
@@ -78,24 +92,24 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           return false;
         }).dropdown();
 
-        nb.data('book-index', i);
-
-        nb.find('.btnRemoveBook').click(this.removeBook.bind(this)).data('book-index', i);
+        nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
+        nb.find('.btnLockLocation').click((e) => {
+          app.bookShelf.toggleLockBook(value);
+          nb.find('.btnLockLocation > a').text(app.bookShelf.isLockedBook(value) ? "解锁位置" : "锁定位置");
+          app.bookShelf.save();
+        });
+        nb.find('.btnLockLocation > a').text(app.bookShelf.isLockedBook(value) ? "解锁位置" : "锁定位置");
         bs.append(nb);
       });
     };
 
     // 重新给所有书籍排序
-    sortBooksByElementOrde(){
-      const newBooks = [];
+    sortBooksByElementOrder(){
       const elements = $(".bookshelf").children();
-      const length = elements.length;
-
-      for(let i = 0; i < length; i++){
-        newBooks[i] = app.bookShelf.books[$(elements[i]).data('book-index')];
-      }
-      if(newBooks.length == app.bookShelf.books.length)
-        app.bookShelf.books = newBooks;
+      let newBooks = Array.from(elements).map(e => $(e).data('bookshelfitem'))
+      app.bookShelf.sortBooks(newBooks);
+      app.bookShelf.save();
+      this.refreshBooksOrder(".bookshelf", app.bookShelf);
     }
 
     loadView(){
@@ -106,13 +120,17 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
                 // Changed sorting within list
                 onUpdate: (event) => {
                   // 更新并保存顺序
-                  this.sortBooksByElementOrde();
+                  this.sortBooksByElementOrder();
                 },
               });
       $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
       $(".btnSearch").click(e => app.page.showPage("search"));
       $(".btnExplore").click(e => app.page.showPage("explorebook"));
-
+      $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
+      $("#btnToggleNightMode").click(e => {
+        app.theme.toggleNight();
+        $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
+      });
     }
 
   }
