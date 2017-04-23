@@ -81,12 +81,61 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
     // 添加书籍到书架中
     addBook(book, readingRecord){
       if(!this.hasBook(book)){
-        this.books.push({
+        // TODO 查找第一个没有被锁定的位置然后添加
+
+        // 默认添加到开头
+        this.books.unshift({
           book: book,
           readingRecord: readingRecord || new ReadingRecord(),
+          lockLocation: -1 // 是否锁定了位置
         });
+        this.sortBooks();
         // return this.save();
       }
+    }
+
+    toggleLockBook(bookshelfitem){
+      if(this.isLockedBook(bookshelfitem))
+        bookshelfitem.lockLocation = -1;
+      else
+        bookshelfitem.lockLocation = this.books.indexOf(bookshelfitem);
+    }
+
+    isLockedBook(bookshelfitem){
+      return bookshelfitem.lockLocation >= 0;
+    }
+
+    // 用特定的排序函数或者新的排序传递进行排序
+    sortBooks(functionOrArray){
+      let newOrder;
+      switch(util.type(functionOrArray)){
+        case "function":
+          newOrder = Object.assign([], this.books);
+          newOrder.sort(functionOrArray);
+          break;
+
+        case "array":
+          // 检查是否有效
+          if(!functionOrArray.every(e => this.books.indexOf(e) >= 0))
+            return false;
+          newOrder = functionOrArray;
+          break;
+
+        default:
+          newOrder = this.books;
+          break;
+      }
+
+      // 记录锁定的项目
+      let lockedItems = this.books.filter(e => this.isLockedBook(e));
+      let result = newOrder.filter(e => !this.isLockedBook(e));
+      lockedItems.forEach(e => {
+        if(e.lockLocation >= this.books.length)
+          e.lockLocation = this.books.length - 1;
+        result.splice(e.lockLocation, 0, e)
+      });
+      this.books = result;
+      return true;
     }
 
     // 判断书架中是否有某书
@@ -99,15 +148,19 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
       });
     }
 
-    // 判断书架中是否有某书
-    removeBook(index){
+    // 删除某书
+    removeBook(book){
+      let index = this.books.findIndex(e => e.book == book);
+      if(index < 0)
+        return;
+
       // 清除目录
-      const b = this.books[index].book;
-      for(const bsk in b.sources){
-        const bs = b.sources[bsk];
-        util.removeData(this.__getSaveCatalogLocation(b.name, b.author, bsk));
+      for(const bsk in book.sources){
+        const bs = book.sources[bsk];
+        util.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
       }
       this.books.splice(index, 1);
+      this.sortBooks();
       // TODO: 清空缓存章节
       // return this.save();
     }
