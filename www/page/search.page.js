@@ -66,9 +66,10 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
               });
             }
             nb.find(".btnDetail").click(function (e) {
-              return app.page.showPage("bookdetail", {
-                book: book
-              });
+              return app.page.showPage("bookdetail", { book: book });
+            });
+            nb.find(".btnSourcePage").click(function (e) {
+              return window.open(book.getDetailLink(), '_system');
             });
             nb.find(".book-booksource").text(app.bookSourceManager.getBookSource(book.mainSourceId).name);
             bs.append(nb);
@@ -98,9 +99,9 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
         var _this2 = this;
 
         app.showLoading();
-        var keyword = $(".keyword").val();
-        var bookSourceId = $(".bookSource").val();
-        $('.result').empty();
+        var keyword = $("#keyword").val();
+        var bookSourceId = $("#bookSource").val();
+        $('#result').empty();
         if (!keyword || !bookSourceId) {
           uiutil.showError("请输入要搜索的关键字");
           return;
@@ -109,7 +110,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
         if (bookSourceId == "#all#") {
           app.bookSourceManager.searchBookInAllBookSource(keyword).then(function (books) {
             app.hideLoading();
-            _this2.loadBooks(".result", books);
+            _this2.loadBooks("#result", books);
           }).catch(function (error) {
             app.hideLoading();
             uiutil.showError(app.error.getMessage(error));
@@ -119,7 +120,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
 
         app.bookSourceManager.searchBook(bookSourceId, keyword).then(function (books) {
           app.hideLoading();
-          _this2.loadBooks(".result", books);
+          _this2.loadBooks("#result", books);
         }).catch(function (error) {
           app.hideLoading();
           uiutil.showError(app.error.getMessage(error));
@@ -130,7 +131,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
       value: function loadView() {
         var _this3 = this;
 
-        var bookSource = $(".bookSource");
+        var bookSource = $("#bookSource");
         var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
 
         bookSource.append('<option value ="#all#">[全网搜索]</option>');
@@ -165,13 +166,13 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
         $("#btnClose").click(function (e) {
           return _this3.close();
         });
-        $(".btnSearch").click(function (e) {
+        $("#btnSearch").click(function (e) {
           return _this3.search();
         });
-        $(".keyword").on('keydown', function (event) {
+        $("#keyword").on('keydown', function (event) {
           return !(event.keyCode == 13 && _this3.search());
         });
-        $(".keyword").on('focus', function (event) {
+        $("#keyword").on('focus', function (event) {
           return event.currentTarget.select();
         });
       }

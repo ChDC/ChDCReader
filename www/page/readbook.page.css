@@ -27,7 +27,7 @@
     font-size: 0.8em;
 }
 
-.chapterContainer{
+#chapterContainer{
     padding: 0;
     position: absolute;
     /*height: 100%;*/
@@ -39,7 +39,7 @@
 }
 
 
-.chapters{
+#chapters{
     position: relative;
     width: 100%;
     list-style: none;
@@ -115,7 +115,7 @@
     left: 0px;
 }
 
-.btnNext, .btnLast, .btnAddtoBookShelf{
+#btnNext, #btnLast, #btnAddtoBookShelf{
     margin: 10px 20px;
     height: 60px;
     border-radius: 100px;
@@ -123,7 +123,7 @@
     /*top: -30px;*/
 }
 
-.btnAddtoBookShelf{
+#btnAddtoBookShelf{
     height: 65px;
     display: none;
 }
@@ -155,11 +155,11 @@
     /*color: #cacaca;*/
 }
 
-.btnNext, .btnLast{
+#btnNext, #btnLast{
     background-color: #ccc;
 }
 
-.btnAddtoBookShelf{
+#btnAddtoBookShelf{
     background-color: #fa3;
 }
 

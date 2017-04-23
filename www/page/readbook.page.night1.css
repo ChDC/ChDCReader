@@ -15,7 +15,7 @@
     background-color: transparent;
 }
 
-.btnNext, .btnLast{
+#btnNext, #btnLast{
     background-color: #ccc;
 }
 

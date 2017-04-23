@@ -1,17 +1,17 @@
 <div class="titlebar row">
-  <button class="btn btn-link col-xs-3 btnBookShelf">书架</button>
-  <button class="btn btn-link col-xs-3 btnExplore">发现</button>
-  <button class="btn btn-link col-xs-3 btnSearch"><span class="glyphicon glyphicon-search"></span></button>
+  <button class="btn btn-link col-xs-3" id="btnBookShelf">书架</button>
+  <button class="btn btn-link col-xs-3" id="btnExplore">发现</button>
+  <button class="btn btn-link col-xs-3" id="btnSearch"><span class="glyphicon glyphicon-search"></span></button>
 
   <div class="btn-group col-xs-3">
-    <button type="button" class="btn btn-link dropdown-toggle btnSettings " data-toggle="dropdown">:</button>
+    <button class="btn btn-link dropdown-toggle titlebar-menu" data-toggle="dropdown">:</button>
     <ul class="dropdown-menu dropdown-menu-right" role="menu">
       <li id="btnToggleNightMode"><a>夜间模式</a></li>
       <li id="btnCheckUpdate"><a>检查更新</a></li>
       <li id="btnTest"><a href="test.html">单元测试</a></li>
       <!-- <li id="btnToggleDebugMode"><a>调试模式</a></li> -->
       <li class="divider"></li>
-      <li><a>设置</a></li>
+      <li id="btnSettings"><a>设置</a></li>
     </ul>
   </div>
 </div>
@@ -19,9 +19,7 @@
 
 <div class="container">
   <ul class="bookshelf">
-
   </ul>
-
 </div>
 
 <div class="template">
@@ -33,8 +31,9 @@
       <div class="btn-group float-right">
         <button type="button" class="btn btn-link btnBookMenu" data-toggle="dropdown">:</button>
         <ul class="dropdown-menu dropdown-menu-right " role="menu">
-          <li class="btnRemoveBook"><a>删除本书</a></li>
           <li class="btnLockLocation"><a>锁定位置</a></li>
+          <li class="btnDetail"><a>书籍详情</a></li>
+          <li class="btnRemoveBook"><a>删除本书</a></li>
           <!-- <li class="divider"></li> -->
         </ul>
       </div>

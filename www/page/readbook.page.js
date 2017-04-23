@@ -22,7 +22,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       _this.readingRecord = null;
       _this.chapterList = null;
       _this.lastSavePageScrollTop = 0;
-
       _this.isNewBook = true;return _this;
     }
 
@@ -84,7 +83,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       value: function loadView() {
         var _this3 = this;
 
-        $(".chapterContainer").on("click", function (event) {
+        $("#chapterContainer").on("click", function (event) {
           $('.toolbar').toggle();
         });
         $(".toolbar").blur(function (e) {
@@ -94,8 +93,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           return $('.toolbar').hide();
         });
 
-        $(".btnNext").click(this.nextChapter.bind(this));
-        $(".btnLast").click(this.lastChapter.bind(this));
+        $("#btnNext").click(this.nextChapter.bind(this));
+        $("#btnLast").click(this.lastChapter.bind(this));
 
         $("#btnClose").click(function (e) {
           return app.page.closePage();
@@ -129,6 +128,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           $("#modalBookSource").modal('show');
           _this3.loadBookSource();
         });
+        $("#btnChangeContentSource").click(function () {
+          $("#modalBookSource").modal('show');
+          _this3.loadBookSource(true);
+        });
         $('#modalCatalog').on('shown.bs.modal', function (e) {
           var targetChapter = $('#listCatalog > [data-index=' + _this3.readingRecord.chapterIndex + ']');
           if (targetChapter && targetChapter.length > 0) {
@@ -136,13 +139,18 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             $('#listCatalogContainer').scrollTop(top);
           }
         });
+        $('#btnBookDetail').click(function (e) {
+          return app.page.showPage("bookdetail", { book: _this3.book });
+        });
         $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
         $("#btnRefreshCatalog").click(function () {
           return _this3.loadCatalog(true);
         });
-
+        $('#btnCatalogSourcePage').click(function (e) {
+          return window.open(_this3.book.getDetailLink(), '_system');
+        });
         if (this.isNewBook) {
-          $(".btnAddtoBookShelf").show().click(function (e) {
+          $("#btnAddtoBookShelf").show().click(function (e) {
             app.bookShelf.addBook(_this3.book);
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save().then(function () {
@@ -158,41 +166,59 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       value: function loadBookSource() {
         var _this4 = this;
 
-        var changeMainContentSourceClickEvent = function changeMainContentSourceClickEvent(event) {
+        var changeContentSource = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+
+        var sources = !changeContentSource ? this.book.getSourcesKeysByMainSourceWeight() : this.book.getSourcesKeysSortedByWeight();
+        var currentSourceId = changeContentSource ? this.readingRecord.options.contentSourceId : this.book.mainSourceId;
+
+        var changeContentSourceClickEvent = function changeContentSourceClickEvent(event) {
           var target = event.currentTarget;
           if (!target) return;
           var bid = $(target).data('bsid');
-          var oldMainSource = _this4.book.mainSourceId;
+
+          _this4.readingRecord.options.contentSourceId = bid;
+          _this4.readingRecord.options.contentSourceChapterIndex = null;
+
+          _this4.refreshChapterList();
+        };
+
+        var changeCatalogSourceClickEvent = function changeCatalogSourceClickEvent(event) {
+          var target = event.currentTarget;
+          if (!target) return;
+          var bid = $(target).data('bsid');
+          var oldMainSource = currentSourceId;
 
           _this4.book.setMainSourceId(bid).then(function (book) {
-            app.bookShelf.save();
-
-            $("#modalCatalog").modal('hide');
-
-            $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this4.book.mainSourceId).name);
-            if (_this4.readingRecord.chapterIndex) {
-              _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
-                var chapter = _ref.chapter,
-                    index = _ref.index;
-
-                _this4.readingRecord.chapterIndex = index;
-                _this4.readingRecord.chapterTitle = chapter.title;
-
-                loadCurrentChapter(0);
-              }).catch(function (error) {
-                _this4.readingRecord.reset();
-
-                loadCurrentChapter(0);
-              });
-            } else {
-              _this4.refreshChapterList();
-            }
-
-            _this4.book.refreshBookInfo();
+            return app.bookShelf.save();
           }).catch(function (error) {
             return uiutil.showError(app.error.getMessage(error));
           });
+
+          $("#modalCatalog").modal('hide');
+
+          $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this4.book.mainSourceId).name);
+
+          if (_this4.readingRecord.chapterIndex) {
+            _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
+              var chapter = _ref.chapter,
+                  index = _ref.index;
+
+              _this4.readingRecord.chapterIndex = index;
+              _this4.readingRecord.chapterTitle = chapter.title;
+              _this4.refreshChapterList();
+            }).catch(function (error) {
+              _this4.readingRecord.reset();
+              _this4.refreshChapterList();
+            });
+          } else {
+            _this4.refreshChapterList();
+          }
+
+          _this4.book.refreshBookInfo();
         };
+
+        var nlbseClickEvent = changeContentSource ? changeContentSourceClickEvent : changeCatalogSourceClickEvent;
 
         var listBookSource = $("#listBookSource");
         listBookSource.empty();
@@ -202,17 +228,14 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         var _iteratorError = undefined;
 
         try {
-          for (var _iterator = this.book.getSourcesKeysByMainSourceWeight()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (var _iterator = sources[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var bsk = _step.value;
 
-            if (bsk == this.book.mainSourceId) continue;
+            if (bsk == currentSourceId) continue;
             var nlbse = listBookSourceEntry.clone();
             nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
-            var lastestChapter = "";
-
-            nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
             nlbse.data("bsid", bsk);
-            nlbse.click(changeMainContentSourceClickEvent.bind(this));
+            nlbse.click(nlbseClickEvent.bind(this));
             listBookSource.append(nlbse);
           }
         } catch (err) {
@@ -276,7 +299,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
         app.showLoading();
         if (this.chapterList) this.chapterList.close();
-        this.chapterList = new Infinitelist($('.chapterContainer'), $('.chapters'), this.onNewChapterItem.bind(this), this.onNewChapterItemFinished.bind(this));
+        this.chapterList = new Infinitelist($('#chapterContainer'), $('#chapters'), this.onNewChapterItem.bind(this), this.onNewChapterItemFinished.bind(this));
         this.chapterList.onCurrentItemChanged = function (event, newValue, oldValue) {
           var index = newValue.data('chapterIndex');
           var title = newValue.data('chapterTitle');
@@ -284,6 +307,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           _this6.readingRecord.setReadingRecord(index, title, options);
           _this6.readingRecord.pageScrollTop = _this6.chapterList.getPageScorllTop();
           $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
+
+          $('#btnContentSourcePage').click(function (e) {
+            return window.open(_this6.book.getDetailLink(options.contentSourceId), '_system');
+          });
           $(".labelChapterTitle").text(title);
           app.hideLoading();
         };
@@ -331,8 +358,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       key: "onNewChapterItemFinished",
       value: function onNewChapterItemFinished(event, be, direction) {
         if (!be && this.lastSavePageScrollTop) {
-          var cs = $('.chapterContainer').scrollTop();
-          $('.chapterContainer').scrollTop(cs + this.lastSavePageScrollTop);
+          var cs = $('#chapterContainer').scrollTop();
+          $('#chapterContainer').scrollTop(cs + this.lastSavePageScrollTop);
           this.lastSavePageScrollTop = 0;
         }
       }

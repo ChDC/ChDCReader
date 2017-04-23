@@ -30,13 +30,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       value: function onResume() {
         var _this2 = this;
 
-        if (app.bookShelf.isLoaded()) {
-          this.loadBooks(".bookshelf", app.bookShelf);
-        } else {
-          app.bookShelf.load(app.bookSourceManager).then(function () {
-            return _this2.loadBooks(".bookshelf", app.bookShelf);
-          });
-        }
+        if (app.bookShelf.isLoaded()) this.loadBooks(".bookshelf", app.bookShelf);else app.bookShelf.load(app.bookSourceManager).then(function () {
+          return _this2.loadBooks(".bookshelf", app.bookShelf);
+        });
       }
     }, {
       key: "onDeviceResume",
@@ -117,6 +113,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
             return false;
           }).dropdown();
 
+          nb.find('.btnDetail').click(function (e) {
+            return app.page.showPage("bookdetail", { book: value.book });
+          });
           nb.find('.btnRemoveBook').click(function (e) {
             return _this4.removeBook(book);
           });
@@ -156,10 +155,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         $("#btnCheckUpdate").click(function (e) {
           return app.chekcUpdate(true, true);
         });
-        $(".btnSearch").click(function (e) {
+        $("#btnSearch").click(function (e) {
           return app.page.showPage("search");
         });
-        $(".btnExplore").click(function (e) {
+        $("#btnExplore").click(function (e) {
           return app.page.showPage("explorebook");
         });
         $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式" : "夜间模式");

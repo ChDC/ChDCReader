@@ -22,7 +22,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
       key: "onLoad",
       value: function onLoad(params) {
         this.book = params.book;
-        this.loadView(params);
+        this.loadView();
       }
     }, {
       key: "readbookpageclose",
@@ -31,30 +31,24 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
       }
     }, {
       key: "loadBookDetail",
-      value: function loadBookDetail(id, book) {
+      value: function loadBookDetail(book) {
         var _this2 = this;
 
-        var nb = $(id);
-        if (book.cover) nb.find(".book-cover").attr("src", book.cover);
-        nb.find(".book-name").text(book.name);
+        if (book.cover) $("#book-cover").attr("src", book.cover);
+        $("#book-name").text(book.name);
+        $("#book-author").text(book.author);
+        $("#book-catagory").text(book.catagory);
+        $("#book-complete").text(book.complete ? "完结" : "连载中");
+        $("#book-introduce").text(book.introduce);
 
-        nb.find(".book-author").text(book.author);
-        nb.find(".book-catagory").text(book.catagory);
-        nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
-        nb.find(".book-introduce").text(book.introduce);
-
-        nb.find(".btnRead").click(function (e) {
-          return app.page.showPage("readbook", {
-            book: book
-          }).then(function (page) {
+        $("#btnRead").click(function (e) {
+          return app.page.showPage("readbook", { book: book }).then(function (page) {
             page.addEventListener('myclose', _this2.readbookpageclose.bind(_this2));
           });
         });
 
-        if (app.bookShelf.hasBook(book)) {
-          nb.find(".btnAddToBookshelf").hide();
-        } else {
-          nb.find(".btnAddToBookshelf").click(function (e) {
+        if (app.bookShelf.hasBook(book)) $("#btnAddToBookshelf").hide();else {
+          $("#btnAddToBookshelf").click(function (e) {
             app.bookShelf.addBook(book);
 
             $(event.currentTarget).attr("disabled", "disabled");
@@ -97,13 +91,16 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
       }
     }, {
       key: "loadView",
-      value: function loadView(params) {
+      value: function loadView() {
         var _this4 = this;
 
-        this.loadBookDetail(".book", params.book);
-        this.loadBookChapters(".book-chapters", params.book);
+        this.loadBookDetail(this.book);
+        this.loadBookChapters("#book-chapters", this.book);
         $('#btnClose').click(function (e) {
           return _this4.close();
+        });
+        $("#btnSourcePage").click(function (e) {
+          return window.open(_this4.book.getDetailLink(), '_system');
         });
       }
     }]);

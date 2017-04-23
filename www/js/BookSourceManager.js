@@ -541,10 +541,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       }
     }, {
       key: "getSourcesKeysByMainSourceWeight",
-      value: function getSourcesKeysByMainSourceWeight() {
-        var object = this.__sources;
+      value: function getSourcesKeysByMainSourceWeight(bsid) {
+        var sources = bsid ? this.getBookSourcesBySameType(bsid) : this.__sources;
         var key = "mainSourceWeight";
-        return Object.entries(object).sort(function (e1, e2) {
+        return Object.entries(sources).sort(function (e1, e2) {
           return -e1[1][key] + e2[1][key];
         }).map(function (e) {
           return e[0];
