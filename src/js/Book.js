@@ -57,7 +57,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
     }
 
     // 按内容源权重从大到小排序的数组
-    getSourcesKeysSortedByWeight(configFileOrConfig){
+    getSourcesKeysSortedByWeight(){
       let object = this.sources;
       let key = "weight";
       return Object.entries(object).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组

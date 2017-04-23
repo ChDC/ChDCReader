@@ -4,8 +4,8 @@
       <span class="labelChapterTitle float-left"></span>
       <span class="labelContentSource float-right"></span>
     </div>
-    <div class="chapterContainer">
-      <ul class="chapters">
+    <div id="chapterContainer">
+      <ul id="chapters">
       </ul>
     </div>
     <div class="mainViewFooter">
@@ -17,22 +17,22 @@
     <button class="toolbar-button btn btn-link" id="btnClose"><i class="glyphicon glyphicon-chevron-left"></i><!--返回--></button>
     <div class="float-right">
       <span class="labelContentSource"></span>
-      <button class="toolbar-button btn btn-link" id="btnContentSourcesSettings">换源</button> |
-      <button class="toolbar-button btn btn-link btnSourcePage">原网页</button> |
+      <button class="toolbar-button btn btn-link" id="btnChangeContentSource">换源</button> |
+      <button id="btnContentSourcePage" class="toolbar-button btn btn-link">原网页</button> |
       <button id="btnBadChapter" class="toolbar-button btn btn-link">劣质章节</button> |
       <button id="btnRefresh" class="toolbar-button btn btn-link">刷新</button>
     </div>
   </div>
   <div class="toolbar addtoBookShelf" >
-    <div class="btnAddtoBookShelf float-right">
+    <div id="btnAddtoBookShelf" class="float-right">
       <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-circle-arrow-right"></i><br/>加入书架</button>
     </div>
   </div>
   <div class="toolbar lastAndNextChapter" >
-    <div class="btnLast float-left">
+    <div id="btnLast" class="float-left">
       <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-circle-arrow-left"></i><br/>上一章</button>
     </div>
-    <div class="btnNext float-right">
+    <div id="btnNext" class="float-right">
       <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-circle-arrow-right"></i><br/>下一章</button>
     </div>
   </div>
@@ -46,7 +46,7 @@
           <td>
             <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-hdd"></i><br/>缓存</button>
           </td>
-          <td>
+          <td id="btnSettings">
             <button class="toolbar-button btn btn-link"   data-toggle="modal" data-target="#modalSettings"><i class="glyphicon glyphicon-bookmark"></i><br/>设置</button>
           </td>
           <td id="btnToggleNight">
@@ -55,7 +55,6 @@
           <td id="btnCatalog">
             <button class="toolbar-button btn btn-link"  data-toggle="modal" data-target="#modalCatalog"><i class="glyphicon glyphicon-list"></i><br/>目录</button>
           </td>
-
         </tr>
       </tbody>
     </table>
@@ -96,7 +95,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="myModalLabel">更换目录源</h4>
+          <h4 class="modal-title" id="modalBookSourceLabel">更换目录源</h4>
         </div>
         <div class="modal-body">
           <ul id="listBookSource" class="list">
@@ -110,7 +109,7 @@
     </div>
   </div>
 
-    <!-- Modal 设置阅读页面 -->
+  <!-- Modal 设置阅读页面 -->
   <div class="modal fade" id="modalSettings" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -135,9 +134,6 @@
 
   <li class="listBookSourceEntry" data-dismiss="modal">
     <h4 class="bookSourceTitle">起点中文网</h4>
-    <p>
-      <span>最新章节：</span>
-      <span class="bookSourceLastestChapter"></span></p>
   </li>
 
   <li class="chapter">

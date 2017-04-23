@@ -20,7 +20,7 @@
     border-width: 0 0 1px 0;
 }
 
-.btnSettings{
+.titlebar-menu{
     text-align: right;
     width: 100%;
 }
@@ -39,6 +39,9 @@
     margin-left: 10px;
 }
 
+.book, .book .media-body{
+    overflow: visible;
+}
 
 /*********** Color ***************/
 

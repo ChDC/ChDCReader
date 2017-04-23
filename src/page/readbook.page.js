@@ -11,7 +11,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       this.readingRecord = null; // 正在读的记录
       this.chapterList = null; // 无限列表
       this.lastSavePageScrollTop = 0;
-
       this.isNewBook = true; // 标记是否是未加入书架的新书
     }
 
@@ -72,15 +71,15 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
     loadView(){
       // 弹出工具栏
-      $(".chapterContainer").on("click", event => {
+      $("#chapterContainer").on("click", event => {
           // 弹出工具栏
           $('.toolbar').toggle();
       });
       $(".toolbar").blur((e) => $('.toolbar').hide());
       $(".toolbar").click((e) => $('.toolbar').hide());
 
-      $(".btnNext").click(this.nextChapter.bind(this));
-      $(".btnLast").click(this.lastChapter.bind(this));
+      $("#btnNext").click(this.nextChapter.bind(this));
+      $("#btnLast").click(this.lastChapter.bind(this));
 
       // 按钮事件
       $("#btnClose").click((e) => app.page.closePage());
@@ -117,6 +116,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         $("#modalBookSource").modal('show');
         this.loadBookSource();
       });
+      $("#btnChangeContentSource").click(() => {
+        $("#modalBookSource").modal('show');
+        this.loadBookSource(true);
+      });
       $('#modalCatalog').on('shown.bs.modal', e => {
         const targetChapter = $('#listCatalog > [data-index=' + this.readingRecord.chapterIndex + ']');
         if(targetChapter && targetChapter.length > 0)
@@ -131,7 +134,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
       $('#btnCatalogSourcePage').click(e => window.open(this.book.getDetailLink(), '_system'));
       if(this.isNewBook){
-        $(".btnAddtoBookShelf").show().click(e => {
+        $("#btnAddtoBookShelf").show().click(e => {
             app.bookShelf.addBook(this.book);
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save()
@@ -146,57 +149,71 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
     };
 
     // 加载目录源列表
-    loadBookSource(){
-      let changeMainContentSourceClickEvent = (event) => {
+    loadBookSource(changeContentSource=false){
+
+      let sources = !changeContentSource ? this.book.getSourcesKeysByMainSourceWeight() : this.book.getSourcesKeysSortedByWeight();
+      let currentSourceId = changeContentSource ? this.readingRecord.options.contentSourceId : this.book.mainSourceId;
+
+      let changeContentSourceClickEvent = (event) => {
         const target = event.currentTarget;
-        if(!target)
-          return;
+        if(!target) return;
         const bid = $(target).data('bsid');
-        const oldMainSource = this.book.mainSourceId;
+
+        this.readingRecord.options.contentSourceId = bid;
+        this.readingRecord.options.contentSourceChapterIndex = null;
+
+        // 刷新当前章节
+        this.refreshChapterList();
+      };
+
+      let changeCatalogSourceClickEvent = (event) => {
+        const target = event.currentTarget;
+        if(!target) return;
+        const bid = $(target).data('bsid');
+        const oldMainSource = currentSourceId;
+
         // 切换主源
         this.book.setMainSourceId(bid)
-          .then(book => {
-            app.bookShelf.save();
-            // 隐藏目录窗口
-            $("#modalCatalog").modal('hide');
-            // 更新源之后
-            $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
-            if(this.readingRecord.chapterIndex){
-              this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, undefined, oldMainSource)
-                .then(({chapter, index}) => {
-                  this.readingRecord.chapterIndex = index;
-                  this.readingRecord.chapterTitle = chapter.title;
-                  // 刷新当前章节信息
-                  loadCurrentChapter(0);
-                })
-                .catch(error => {
-                  this.readingRecord.reset();
-                  // 刷新当前章节信息
-                  loadCurrentChapter(0);
-                });
-            }
-            else{
-              this.refreshChapterList();
-            }
-            // 更新书籍信息
-            this.book.refreshBookInfo();
-          })
+          .then(book => app.bookShelf.save())
           .catch(error => uiutil.showError(app.error.getMessage(error)));
+
+        // 隐藏目录窗口
+        $("#modalCatalog").modal('hide');
+        // 更新源之后
+        $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
+
+        // 从新的目录源中搜索之前的阅读记录
+        if(this.readingRecord.chapterIndex){
+          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, undefined, oldMainSource)
+            .then(({chapter, index}) => {
+              this.readingRecord.chapterIndex = index;
+              this.readingRecord.chapterTitle = chapter.title;
+              this.refreshChapterList();
+            })
+            .catch(error => {
+              this.readingRecord.reset();
+              this.refreshChapterList();
+            });
+        }
+        else{
+          this.refreshChapterList();
+        }
+        // 更新书籍信息
+        this.book.refreshBookInfo();
       }
+
+      let nlbseClickEvent = changeContentSource ? changeContentSourceClickEvent : changeCatalogSourceClickEvent;
 
       const listBookSource = $("#listBookSource");
       listBookSource.empty();
       const listBookSourceEntry = $(".template .listBookSourceEntry");
-      for(const bsk of this.book.getSourcesKeysByMainSourceWeight()){
-        if(bsk == this.book.mainSourceId)
+      for(const bsk of sources){
+        if(bsk == currentSourceId)
           continue;
         const nlbse = listBookSourceEntry.clone();
         nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
-        const lastestChapter = "";
-        // TODO: 最新章节
-        nlbse.find(".bookSourceLastestChapter").text(lastestChapter);
         nlbse.data("bsid", bsk);
-        nlbse.click(changeMainContentSourceClickEvent.bind(this));
+        nlbse.click(nlbseClickEvent.bind(this));
         listBookSource.append(nlbse);
       };
     }
@@ -250,8 +267,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       if(this.chapterList)
         this.chapterList.close();
       this.chapterList = new Infinitelist(
-        $('.chapterContainer'),
-        $('.chapters'),
+        $('#chapterContainer'),
+        $('#chapters'),
         this.onNewChapterItem.bind(this),
         this.onNewChapterItemFinished.bind(this)
       );
@@ -263,7 +280,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
         $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
 
-        $('.btnSourcePage').click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
+        $('#btnContentSourcePage').click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       }
@@ -307,8 +324,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
     onNewChapterItemFinished(event, be, direction){
       if(!be && this.lastSavePageScrollTop){
-        const cs = $('.chapterContainer').scrollTop();
-        $('.chapterContainer').scrollTop(cs + this.lastSavePageScrollTop);
+        const cs = $('#chapterContainer').scrollTop();
+        $('#chapterContainer').scrollTop(cs + this.lastSavePageScrollTop);
         this.lastSavePageScrollTop = 0;
       }
     }

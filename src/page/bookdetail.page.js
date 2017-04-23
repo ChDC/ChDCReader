@@ -5,9 +5,8 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
 
     onLoad(params){
       this.book = params.book;
-      this.loadView(params);
+      this.loadView();
     }
-
 
     readbookpageclose(){
       if(app.bookShelf.hasBook(this.book))
@@ -15,29 +14,24 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
     }
 
     // 加载书籍详情
-    loadBookDetail(id, book){
-      const nb = $(id);
+    loadBookDetail(book){
       if(book.cover)
-        nb.find(".book-cover").attr("src", book.cover);
-      nb.find(".book-name").text(book.name);
-      // nb.find(".book-lastestchapter").text("最新章节：" + (book.getLastestChapter()? book.getLastestChapter() : "无"));
-      nb.find(".book-author").text(book.author);
-      nb.find(".book-catagory").text(book.catagory);
-      nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
-      nb.find(".book-introduce").text(book.introduce);
+        $("#book-cover").attr("src", book.cover);
+      $("#book-name").text(book.name);
+      $("#book-author").text(book.author);
+      $("#book-catagory").text(book.catagory);
+      $("#book-complete").text(book.complete ? "完结" : "连载中");
+      $("#book-introduce").text(book.introduce);
 
-      nb.find(".btnRead").click( e => app.page.showPage("readbook", {
-          book: book
-        })
+      $("#btnRead").click( e => app.page.showPage("readbook", {book: book})
         .then(page => {
           page.addEventListener('myclose', this.readbookpageclose.bind(this));
         }));
 
-      if(app.bookShelf.hasBook(book)){
-        nb.find(".btnAddToBookshelf").hide();
-      }
+      if(app.bookShelf.hasBook(book))
+        $("#btnAddToBookshelf").hide();
       else{
-        nb.find(".btnAddToBookshelf").click(e => {
+        $("#btnAddToBookshelf").click(e => {
           app.bookShelf.addBook(book);
 
           $(event.currentTarget).attr("disabled", "disabled");
@@ -82,12 +76,12 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
         .catch(error => uiutil.showError(app.error.getMessage(error)));
     }
 
-    loadView(params){
+    loadView(){
 
-      this.loadBookDetail(".book", params.book);
-      this.loadBookChapters(".book-chapters", params.book);
+      this.loadBookDetail(this.book);
+      this.loadBookChapters("#book-chapters", this.book);
       $('#btnClose').click(e => this.close());
-      $(".btnSourcePage").click(e => window.open(params.book.getDetailLink(), '_system'));
+      $("#btnSourcePage").click(e => window.open(this.book.getDetailLink(), '_system'));
     }
 
   }
