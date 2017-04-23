@@ -17,7 +17,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
     loadBookDetail(book){
       if(book.cover)
         $("#book-cover").attr("src", book.cover);
-      $("#book-name").text(book.name);
+      $("#book-name").text(book.name).click(e => window.open(this.book.getDetailLink(), '_system'));
       $("#book-author").text(book.author);
       $("#book-catagory").text(book.catagory);
       $("#book-complete").text(book.complete ? "完结" : "连载中");
@@ -81,7 +81,6 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
       this.loadBookDetail(this.book);
       this.loadBookChapters("#book-chapters", this.book);
       $('#btnClose').click(e => this.close());
-      $("#btnSourcePage").click(e => window.open(this.book.getDetailLink(), '_system'));
     }
 
   }
