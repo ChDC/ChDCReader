@@ -116,7 +116,11 @@
             "complete": "isFinish",
             "coverImg": "imageUrl",
             "introduce": "copy",
-            "bookid": "titleNo"
+            "bookid": "titleNo",
+            "detailLink": {
+              "type": "format",
+              "valid": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
+            }
           }
         }
       },

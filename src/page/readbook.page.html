@@ -17,8 +17,8 @@
     <button class="toolbar-button btn btn-link" id="btnClose"><i class="glyphicon glyphicon-chevron-left"></i><!--返回--></button>
     <div class="float-right">
       <span class="labelContentSource"></span>
-      <button class="toolbar-button btn btn-link" id="btnContentSourcesSettings">设置</button> |
-      <button class="toolbar-button btn btn-link">原网页</button> |
+      <button class="toolbar-button btn btn-link" id="btnContentSourcesSettings">换源</button> |
+      <button class="toolbar-button btn btn-link btnSourcePage">原网页</button> |
       <button id="btnBadChapter" class="toolbar-button btn btn-link">劣质章节</button> |
       <button id="btnRefresh" class="toolbar-button btn btn-link">刷新</button>
     </div>
@@ -40,6 +40,9 @@
     <table class="toolbar-table">
       <tbody>
         <tr>
+          <td id="btnBookDetail">
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-hdd"></i><br/>详情</button>
+          </td>
           <td>
             <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-hdd"></i><br/>缓存</button>
           </td>
@@ -64,12 +67,13 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <!-- <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
+          <!-- <button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
           <div class="float-right">
             <span class="labelMainSource"></span>
-            <button type="button" class="btn btn-link modal-title" id="btnChangeMainSource">换源</button>|
-            <button type="button" class="btn btn-link modal-title" id="btnSortReversed">倒序</button>|
-            <button type="button" class="btn btn-link modal-title" id="btnRefreshCatalog">刷新</button>
+            <button class="btn btn-link modal-title" id="btnChangeMainSource">换源</button>|
+            <button class="btn btn-link modal-title" id="btnCatalogSourcePage">原网页</button> |
+            <button class="btn btn-link modal-title" id="btnSortReversed">倒序</button>|
+            <button class="btn btn-link modal-title" id="btnRefreshCatalog">刷新</button>
           </div>
           <h4 class="modal-title" id="myModalLabel">目录</h4>
         </div>
@@ -81,7 +85,7 @@
           </div>
         </div>
 <!--         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button class="btn btn-default" data-dismiss="modal">关闭</button>
         </div> -->
       </div>
     </div>
@@ -99,8 +103,8 @@
           </ul>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-          <!-- <button type="button" class="btn btn-primary">确定</button> -->
+          <button class="btn btn-default" data-dismiss="modal">关闭</button>
+          <!-- <button class="btn btn-primary">确定</button> -->
         </div>
       </div>
     </div>

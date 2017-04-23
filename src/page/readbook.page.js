@@ -125,11 +125,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           $('#listCatalogContainer').scrollTop(top);
           // $("#modalCatalog .modal-body").css("height", $());
         }
-
       });
+      $('#btnBookDetail').click(e => app.page.showPage("bookdetail", {book: this.book}));
       $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
-
+      $('#btnCatalogSourcePage').click(e => window.open(this.book.getDetailLink(), '_system'));
       if(this.isNewBook){
         $(".btnAddtoBookShelf").show().click(e => {
             app.bookShelf.addBook(this.book);
@@ -262,6 +262,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.readingRecord.setReadingRecord(index, title, options);
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
         $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
+
+        $('.btnSourcePage').click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       }

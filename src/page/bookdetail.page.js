@@ -87,6 +87,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
       this.loadBookDetail(".book", params.book);
       this.loadBookChapters(".book-chapters", params.book);
       $('#btnClose').click(e => this.close());
+      $(".btnSourcePage").click(e => window.open(params.book.getDetailLink(), '_system'));
     }
 
   }

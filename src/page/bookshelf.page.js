@@ -92,6 +92,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           return false;
         }).dropdown();
 
+        nb.find('.btnDetail').click(e => app.page.showPage("bookdetail", {book: value.book}));
         nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
         nb.find('.btnLockLocation').click((e) => {
           app.bookShelf.toggleLockBook(value);

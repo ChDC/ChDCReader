@@ -45,9 +45,8 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
               });
           });
         }
-        nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {
-              book: book
-            }));
+        nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {book: book}));
+        nb.find(".btnSourcePage").click(e => window.open(book.getDetailLink(), '_system'));
         nb.find(".book-booksource").text(app.bookSourceManager.getBookSource(book.mainSourceId).name);
         bs.append(nb);
       }
