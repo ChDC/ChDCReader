@@ -51,13 +51,24 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         });
       }
     }, {
+      key: "getDetailLink",
+      value: function getDetailLink() {
+        var bookSourceId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.mainSourceId;
+
+        try {
+          return this.sources[bookSourceId].detailLink;
+        } catch (error) {
+          return null;
+        }
+      }
+    }, {
       key: "getSourcesKeysByMainSourceWeight",
       value: function getSourcesKeysByMainSourceWeight() {
-        return this.bookSourceManager.getSourcesKeysByMainSourceWeight();
+        return this.bookSourceManager.getSourcesKeysByMainSourceWeight(this.mainSourceId);
       }
     }, {
       key: "getSourcesKeysSortedByWeight",
-      value: function getSourcesKeysSortedByWeight(configFileOrConfig) {
+      value: function getSourcesKeysSortedByWeight() {
         var object = this.sources;
         var key = "weight";
         return Object.entries(object).sort(function (e1, e2) {

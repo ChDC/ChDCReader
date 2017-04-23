@@ -7,7 +7,7 @@ body, .modal-content{
     color: #f1f1cf;
 }
 
-.bookSource option{
+#bookSource option{
     color: #000;
 }
 

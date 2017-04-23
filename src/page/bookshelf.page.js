@@ -7,13 +7,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
     }
 
     onResume(){
-      if(app.bookShelf.isLoaded()){
+      if(app.bookShelf.isLoaded())
         this.loadBooks(".bookshelf", app.bookShelf);
-      }
-      else{
+      else
         app.bookShelf.load(app.bookSourceManager)
           .then(() => this.loadBooks(".bookshelf", app.bookShelf));
-      }
     }
 
     onDeviceResume(){
@@ -92,6 +90,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           return false;
         }).dropdown();
 
+        nb.find('.btnDetail').click(e => app.page.showPage("bookdetail", {book: value.book}));
         nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
         nb.find('.btnLockLocation').click((e) => {
           app.bookShelf.toggleLockBook(value);
@@ -124,8 +123,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
                 },
               });
       $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
-      $(".btnSearch").click(e => app.page.showPage("search"));
-      $(".btnExplore").click(e => app.page.showPage("explorebook"));
+      $("#btnSearch").click(e => app.page.showPage("search"));
+      $("#btnExplore").click(e => app.page.showPage("explorebook"));
       $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
       $("#btnToggleNightMode").click(e => {
         app.theme.toggleNight();

@@ -319,10 +319,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }
 
     // 按主源权重从大到小排序的数组
-    getSourcesKeysByMainSourceWeight(){
-      let object = this.__sources;
+    getSourcesKeysByMainSourceWeight(bsid){
+      let sources = bsid ? this.getBookSourcesBySameType(bsid) : this.__sources;
       let key = "mainSourceWeight";
-      return Object.entries(object).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
+      return Object.entries(sources).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
     }
 
     // 获取指定的 booksource

@@ -1,23 +1,23 @@
 /*********** Location ***************/
 
-.keyword{
+#keyword{
     background-color: transparent;
     border-width: 0;
     color: white;
 }
 
-.bookSource {
+#bookSource {
     color: white;
     padding: 7px 5px;
     background-color: transparent;
     border-width: 0;
 }
 
-.btnSearch{
+#btnSearch{
     width: 40px;
 }
 
-.result{
+#result{
     padding: 0;
 }
 
@@ -43,8 +43,8 @@
     font-size: 80%;
 }
 
-.result .media-body button{
-    margin: 2px 3px;
+#result .media-body button{
+    margin: 2px 5px 2px 0px;
 }
 
 .book-type{
@@ -54,7 +54,7 @@
 /*********** Color ***************/
 
 
-.bookSource option{
+#bookSource option{
     color: #000;
 }
 

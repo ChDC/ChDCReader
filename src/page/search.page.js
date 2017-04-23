@@ -19,7 +19,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
         nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
 
-        nb.find(".book-name").text(book.name);
+        nb.find(".book-name").text(book.name).click(e => window.open(book.getDetailLink(), '_system'));
         nb.find(".book-author").text(book.author);
         nb.find(".book-catagory").text(book.catagory);
         nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
@@ -45,9 +45,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
               });
           });
         }
-        nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {
-              book: book
-            }));
+        nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {book: book}));
         nb.find(".book-booksource").text(app.bookSourceManager.getBookSource(book.mainSourceId).name);
         bs.append(nb);
       }
@@ -55,9 +53,9 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
     search(){
       app.showLoading();
-      const keyword = $(".keyword").val();
-      const bookSourceId = $(".bookSource").val();
-      $('.result').empty();
+      const keyword = $("#keyword").val();
+      const bookSourceId = $("#bookSource").val();
+      $('#result').empty();
       if(!keyword || !bookSourceId){
         uiutil.showError("请输入要搜索的关键字");
         return;
@@ -68,7 +66,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
         app.bookSourceManager.searchBookInAllBookSource(keyword)
           .then(books => {
             app.hideLoading();
-            this.loadBooks(".result", books);
+            this.loadBooks("#result", books);
           })
           .catch(error => {
             app.hideLoading();
@@ -81,7 +79,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
       app.bookSourceManager.searchBook(bookSourceId, keyword)
         .then(books => {
           app.hideLoading();
-          this.loadBooks(".result", books);
+          this.loadBooks("#result", books);
         })
         .catch(error => {
           app.hideLoading();
@@ -91,7 +89,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
     loadView(){
       // 添加选项
-      const bookSource = $(".bookSource");
+      const bookSource = $("#bookSource");
       const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
 
       // 添加特殊搜索
@@ -107,9 +105,9 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
 
 
       $("#btnClose").click(e => this.close());
-      $(".btnSearch").click(e => this.search());
-      $(".keyword").on('keydown', event => !(event.keyCode==13 && this.search()));
-      $(".keyword").on('focus', event => event.currentTarget.select());
+      $("#btnSearch").click(e => this.search());
+      $("#keyword").on('keydown', event => !(event.keyCode==13 && this.search()));
+      $("#keyword").on('focus', event => event.currentTarget.select());
     }
   }
 
