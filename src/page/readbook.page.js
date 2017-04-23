@@ -130,9 +130,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         }
       });
       $('#btnBookDetail').click(e => app.page.showPage("bookdetail", {book: this.book}));
-      $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
+      $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name)
+          .click(e => window.open(this.book.getDetailLink(), '_system'));
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
-      $('#btnCatalogSourcePage').click(e => window.open(this.book.getDetailLink(), '_system'));
       if(this.isNewBook){
         $("#btnAddtoBookShelf").show().click(e => {
             app.bookShelf.addBook(this.book);
@@ -153,7 +153,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
       let sources = !changeContentSource ? this.book.getSourcesKeysByMainSourceWeight() : this.book.getSourcesKeysSortedByWeight();
       let currentSourceId = changeContentSource ? this.readingRecord.options.contentSourceId : this.book.mainSourceId;
-
+      $('#modalBookSourceLabel').text(changeContentSource ? "更换内容源" : "更换目录源");
       let changeContentSourceClickEvent = (event) => {
         const target = event.currentTarget;
         if(!target) return;
@@ -211,7 +211,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         if(bsk == currentSourceId)
           continue;
         const nlbse = listBookSourceEntry.clone();
-        nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
+        nlbse.text(app.bookSourceManager.getBookSource(bsk).name);
         nlbse.data("bsid", bsk);
         nlbse.click(nlbseClickEvent.bind(this));
         listBookSource.append(nlbse);
@@ -278,9 +278,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         const options = newValue.data('options');
         this.readingRecord.setReadingRecord(index, title, options);
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-        $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
-
-        $('#btnContentSourcePage').click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
+        $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name)
+          .click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       }

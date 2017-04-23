@@ -91,7 +91,7 @@
 }
 
 
-.toolbar.top .btn{
+.toolbar.top .btn, #modalCatalog .btn{
     padding: 6px 6px;
 }
 

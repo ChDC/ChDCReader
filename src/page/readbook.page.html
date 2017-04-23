@@ -18,9 +18,8 @@
     <div class="float-right">
       <span class="labelContentSource"></span>
       <button class="toolbar-button btn btn-link" id="btnChangeContentSource">换源</button> |
-      <button id="btnContentSourcePage" class="toolbar-button btn btn-link">原网页</button> |
       <button id="btnBadChapter" class="toolbar-button btn btn-link">劣质章节</button> |
-      <button id="btnRefresh" class="toolbar-button btn btn-link">刷新</button>
+      <button id="btnRefresh" class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-refresh"></i></button>
     </div>
   </div>
   <div class="toolbar addtoBookShelf" >
@@ -41,13 +40,13 @@
       <tbody>
         <tr>
           <td id="btnBookDetail">
-            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-hdd"></i><br/>详情</button>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-book"></i><br/>详情</button>
           </td>
           <td>
-            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-hdd"></i><br/>缓存</button>
+            <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-download-alt"></i><br/>缓存</button>
           </td>
           <td id="btnSettings">
-            <button class="toolbar-button btn btn-link"   data-toggle="modal" data-target="#modalSettings"><i class="glyphicon glyphicon-bookmark"></i><br/>设置</button>
+            <button class="toolbar-button btn btn-link"   data-toggle="modal" data-target="#modalSettings"><i class="glyphicon glyphicon-cog"></i><br/>设置</button>
           </td>
           <td id="btnToggleNight">
             <button class="toolbar-button btn btn-link"><i class="glyphicon glyphicon-certificate"></i><br/><span id="labelNight">夜间</span></button>
@@ -70,9 +69,8 @@
           <div class="float-right">
             <span class="labelMainSource"></span>
             <button class="btn btn-link modal-title" id="btnChangeMainSource">换源</button>|
-            <button class="btn btn-link modal-title" id="btnCatalogSourcePage">原网页</button> |
-            <button class="btn btn-link modal-title" id="btnSortReversed">倒序</button>|
-            <button class="btn btn-link modal-title" id="btnRefreshCatalog">刷新</button>
+            <button class="btn btn-link modal-title" id="btnSortReversed"><i class="glyphicon glyphicon-sort"></i></button>|
+            <button class="btn btn-link modal-title" id="btnRefreshCatalog"><i class="glyphicon glyphicon-refresh"></i></button>
           </div>
           <h4 class="modal-title" id="myModalLabel">目录</h4>
         </div>
@@ -132,9 +130,7 @@
 <div class="template">
   <li class="listCatalogEntry" data-dismiss="modal">第一章</li>
 
-  <li class="listBookSourceEntry" data-dismiss="modal">
-    <h4 class="bookSourceTitle">起点中文网</h4>
-  </li>
+  <li class="listBookSourceEntry" data-dismiss="modal">起点中文网</li>
 
   <li class="chapter">
     <div class="chapter-header">
