@@ -128,8 +128,10 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
 
             var action = function action() {
               ref.hide();
+              app.showLoading();
               var bookid = matcher[1];
               app.bookSourceManager.getBookInfo(bsid, { bookid: bookid }).then(function (book) {
+                app.hideLoading();
                 app.page.showPage(pageName, { book: book }).then(function (page) {
                   page.addEventListener('myclose', function () {
                     ref.show();
