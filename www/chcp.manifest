@@ -1,7 +1,7 @@
 [
   {
     "file": "css/index.css",
-    "hash": "1233f49f9475626fc4300ed05349880a"
+    "hash": "21d4fa43f65d52a096846a2352c7c818"
   },
   {
     "file": "data/booksources.json",
@@ -41,7 +41,7 @@
   },
   {
     "file": "img/logo/qidian.png",
-    "hash": "0c60e43b9b0a41f5c1e2cdb9e8951e2a"
+    "hash": "4e322736d645278ca7bc1d85b776ab9f"
   },
   {
     "file": "img/logo/u17.png",
@@ -69,7 +69,7 @@
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "43703bdc6ad735597b33592cfeaaff25"
+    "hash": "8dd8952d4b37c8c486f6ea9a395bd89b"
   },
   {
     "file": "js/BookSource.js",
@@ -341,11 +341,11 @@
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "cd35e8ba3cd90e3b1305caec0bc92aff"
+    "hash": "ec99db1da3738fa716def63c3ba8a2bc"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "94faab989eb8830583c1469537bc67ef"
+    "hash": "ee2b04982ee34dcea8b8233ab9009305"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -369,7 +369,7 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "dd4cc713f24b31c12d6b8496043f38f2"
+    "hash": "0762d1fb311ce91dee43f5c15f7a8993"
   },
   {
     "file": "page/readbook.page.html",
