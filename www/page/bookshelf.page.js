@@ -162,6 +162,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         $(".btnExplore").click(function (e) {
           return app.page.showPage("explorebook");
         });
+        $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式" : "夜间模式");
+        $("#btnToggleNightMode").click(function (e) {
+          app.theme.toggleNight();
+          $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式" : "夜间模式");
+        });
       }
     }]);
 
