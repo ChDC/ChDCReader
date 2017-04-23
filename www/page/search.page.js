@@ -42,7 +42,9 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
 
             nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
 
-            nb.find(".book-name").text(book.name);
+            nb.find(".book-name").text(book.name).click(function (e) {
+              return window.open(book.getDetailLink(), '_system');
+            });
             nb.find(".book-author").text(book.author);
             nb.find(".book-catagory").text(book.catagory);
             nb.find(".book-complete").text(book.complete ? "完结" : "连载中");
@@ -67,9 +69,6 @@ define(["jquery", "main", "Page", "util", "uiutil"], function ($, app, Page, uti
             }
             nb.find(".btnDetail").click(function (e) {
               return app.page.showPage("bookdetail", { book: book });
-            });
-            nb.find(".btnSourcePage").click(function (e) {
-              return window.open(book.getDetailLink(), '_system');
             });
             nb.find(".book-booksource").text(app.bookSourceManager.getBookSource(book.mainSourceId).name);
             bs.append(nb);

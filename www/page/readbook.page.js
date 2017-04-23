@@ -142,12 +142,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         $('#btnBookDetail').click(function (e) {
           return app.page.showPage("bookdetail", { book: _this3.book });
         });
-        $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name);
+        $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name).click(function (e) {
+          return window.open(_this3.book.getDetailLink(), '_system');
+        });
         $("#btnRefreshCatalog").click(function () {
           return _this3.loadCatalog(true);
-        });
-        $('#btnCatalogSourcePage').click(function (e) {
-          return window.open(_this3.book.getDetailLink(), '_system');
         });
         if (this.isNewBook) {
           $("#btnAddtoBookShelf").show().click(function (e) {
@@ -171,7 +170,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
         var sources = !changeContentSource ? this.book.getSourcesKeysByMainSourceWeight() : this.book.getSourcesKeysSortedByWeight();
         var currentSourceId = changeContentSource ? this.readingRecord.options.contentSourceId : this.book.mainSourceId;
-
+        $('#modalBookSourceLabel').text(changeContentSource ? "更换内容源" : "更换目录源");
         var changeContentSourceClickEvent = function changeContentSourceClickEvent(event) {
           var target = event.currentTarget;
           if (!target) return;
@@ -233,7 +232,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
             if (bsk == currentSourceId) continue;
             var nlbse = listBookSourceEntry.clone();
-            nlbse.find(".bookSourceTitle").text(app.bookSourceManager.getBookSource(bsk).name);
+            nlbse.text(app.bookSourceManager.getBookSource(bsk).name);
             nlbse.data("bsid", bsk);
             nlbse.click(nlbseClickEvent.bind(this));
             listBookSource.append(nlbse);
@@ -306,9 +305,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           var options = newValue.data('options');
           _this6.readingRecord.setReadingRecord(index, title, options);
           _this6.readingRecord.pageScrollTop = _this6.chapterList.getPageScorllTop();
-          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name);
-
-          $('#btnContentSourcePage').click(function (e) {
+          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name).click(function (e) {
             return window.open(_this6.book.getDetailLink(options.contentSourceId), '_system');
           });
           $(".labelChapterTitle").text(title);

@@ -35,7 +35,9 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
         var _this2 = this;
 
         if (book.cover) $("#book-cover").attr("src", book.cover);
-        $("#book-name").text(book.name);
+        $("#book-name").text(book.name).click(function (e) {
+          return window.open(_this2.book.getDetailLink(), '_system');
+        });
         $("#book-author").text(book.author);
         $("#book-catagory").text(book.catagory);
         $("#book-complete").text(book.complete ? "完结" : "连载中");
@@ -98,9 +100,6 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
         this.loadBookChapters("#book-chapters", this.book);
         $('#btnClose').click(function (e) {
           return _this4.close();
-        });
-        $("#btnSourcePage").click(function (e) {
-          return window.open(_this4.book.getDetailLink(), '_system');
         });
       }
     }]);
