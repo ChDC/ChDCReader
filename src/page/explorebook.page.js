@@ -49,9 +49,11 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
           // 匹配了
           let action = () => {
             ref.hide();
+            app.showLoading();
             let bookid = matcher[1];
             app.bookSourceManager.getBookInfo(bsid, {bookid: bookid})
               .then(book => {
+                app.hideLoading();
                 app.page.showPage(pageName, {book: book})
                   .then(page => {
                     page.addEventListener('myclose', () => {
