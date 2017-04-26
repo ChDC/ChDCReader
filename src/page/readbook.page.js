@@ -135,7 +135,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
       if(this.isNewBook){
         $("#btnAddtoBookShelf").show().click(e => {
-            app.bookShelf.addBook(this.book);
+            app.bookShelf.addBook(this.book, this.readingRecord);
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save()
               .then(() => {
