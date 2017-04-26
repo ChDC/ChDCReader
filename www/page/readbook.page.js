@@ -150,7 +150,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         });
         if (this.isNewBook) {
           $("#btnAddtoBookShelf").show().click(function (e) {
-            app.bookShelf.addBook(_this3.book);
+            app.bookShelf.addBook(_this3.book, _this3.readingRecord);
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save().then(function () {
               uiutil.showMessage("添加成功！");
