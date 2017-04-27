@@ -105,7 +105,12 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
     getCatalog(forceRefresh, bookSourceId){
 
       return this.getBookSource(bookSourceId)
-        .then(bs => bs.getCatalog(forceRefresh));
+        .then(bs => bs.getCatalog(forceRefresh))
+        .then(catalog => {
+          if(!catalog || catalog.length <= 0)
+            return Promise.reject(501);
+          return catalog;
+        });
     }
 
     // 使用详情页链接刷新书籍信息
@@ -139,10 +144,6 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
 
         for(let i = 0; i < 2; i++){
           const catalog = yield self.getCatalog(forceRefresh, bookSourceId);
-
-          if(!catalog || catalog.length <= 0){
-            return Promise.reject(501);
-          }
 
           if(chapterIndex >= 0 && chapterIndex < catalog.length){
             // 存在于目录中
@@ -179,17 +180,10 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
         // 获取目录源的目录
         const catalog = yield self.getCatalog(forceRefresh, bookSourceId);
 
-        if(!catalog || catalog.length <= 0){
-          return Promise.reject(501);
-        }
         // 获取源B 的目录
         for(let i = 0; i < 2; i++){
 
           const catalogB = yield self.getCatalog(forceRefresh, sourceB);
-
-          if(!catalogB || catalogB.length <= 0){
-            return Promise.reject(501);
-          }
 
           const matchs = [
             [util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],

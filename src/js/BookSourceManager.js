@@ -280,7 +280,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       return this.__spider.get(bsm.catalog, dict)
         .then(data => {
-
           const catalog = [];
           for(let c of data){
             const chapter = new Chapter();
