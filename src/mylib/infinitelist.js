@@ -86,6 +86,10 @@ define(["jquery", "co"], function($, co) {
       this.__lastCheckScrollY = null;
     }
 
+    getCurrentItem(){
+      return this.__currentItem;
+    }
+
     // 清空列表数据
     computeCurrentItems(){
       const wh = $(window).height();

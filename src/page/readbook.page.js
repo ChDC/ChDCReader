@@ -146,6 +146,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
               });
           });
       }
+      $('#chapterContainer').on("scroll", e => {
+        let percent = this.chapterList.getPageScorllTop() / this.chapterList.getCurrentItem().height() * 100;
+        $(".labelChatperPercent").text(`${parseInt(percent)} %`);
+      });
     };
 
     // 加载目录源列表
@@ -303,6 +307,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         Object.assign(opts, this.readingRecord.options);
         chapterIndex = this.readingRecord.chapterIndex;
       }
+
+      this.book.getCatalog()
+        .then(catalog => $(".labelBookPercent").text(`${parseInt(chapterIndex / catalog.length * 100)} %`));
 
       return this.book.getChapter(chapterIndex, opts)
         .then(({chapter, title, index, options}) => {
