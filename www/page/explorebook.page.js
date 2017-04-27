@@ -118,6 +118,9 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
 
         ref.addEventListener("loadstart", function (e) {
           var url = e.url;
+
+          if (es.executeScriptOnLoadStart) ref.executeScript({ code: es.executeScriptOnLoadStart });
+
           var _arr = ["readbook"];
 
           var _loop2 = function _loop2() {
@@ -153,7 +156,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
         ref.addEventListener('loadstop', function (e) {
           var url = e.url;
           if (es.insertCSS) ref.insertCSS({ code: es.insertCSS });
-          if (es.executeScript) ref.executeScript({ code: es.executeScript });
+          if (es.executeScriptOnLoadStop) ref.executeScript({ code: es.executeScriptOnLoadStop });
         });
 
         ref.addEventListener('exit', function (e) {
