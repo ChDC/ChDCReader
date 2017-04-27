@@ -21,7 +21,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "edaf1cb505c829462a2618002b4845f6"
+    "hash": "60588cf707ec09c47f30aab0acf5e1b1"
   },
   {
     "file": "img/book_cover.png",
@@ -365,7 +365,7 @@
   },
   {
     "file": "page/explorebook.page.js",
-    "hash": "a8c09cd31d1839185ace2de007c4978d"
+    "hash": "635a2cea578bc4239d436ae3b5cdd9d2"
   },
   {
     "file": "page/explorebook.page.night1.css",

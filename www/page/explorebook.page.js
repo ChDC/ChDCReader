@@ -155,6 +155,10 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
           if (es.insertCSS) ref.insertCSS({ code: es.insertCSS });
           if (es.executeScript) ref.executeScript({ code: es.executeScript });
         });
+
+        ref.addEventListener('exit', function (e) {
+          if (es.executeScriptOnExit) ref.executeScript({ code: es.executeScriptOnExit });
+        });
       }
     }]);
 
