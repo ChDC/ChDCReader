@@ -265,7 +265,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "0f29bc88993dd77c9c81c6a6414ea02a"
+    "hash": "aaf6d19331793c52c4793a9d5cfb6b80"
   },
   {
     "file": "mylib/Page.js",
@@ -345,15 +345,15 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "d934f460bc4bb91edad8c5037bf05c0f"
+    "hash": "aa0a95e0f9640bd2020c70b2dadaa021"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "6d07a61b521e208024f800bb4d30a65e"
+    "hash": "b2e0f0715f3954c222b3c8bd7a29a3e3"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "b18952763355859ffcd5c29d817fff91"
+    "hash": "192dfcf120ebf3a3a5a2fa11855819c0"
   },
   {
     "file": "page/readbook.page.night1.css",

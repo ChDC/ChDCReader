@@ -159,6 +159,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             });
           });
         }
+        $('#chapterContainer').on("scroll", function (e) {
+          var percent = _this3.chapterList.getPageScorllTop() / _this3.chapterList.getCurrentItem().height() * 100;
+          $(".labelChatperPercent").text(parseInt(percent) + " %");
+        });
       }
     }, {
       key: "loadBookSource",
@@ -332,6 +336,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           Object.assign(opts, this.readingRecord.options);
           chapterIndex = this.readingRecord.chapterIndex;
         }
+
+        this.book.getCatalog().then(function (catalog) {
+          return $(".labelBookPercent").text(parseInt(chapterIndex / catalog.length * 100) + " %");
+        });
 
         return this.book.getChapter(chapterIndex, opts).then(function (_ref2) {
           var chapter = _ref2.chapter,

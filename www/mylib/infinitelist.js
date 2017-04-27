@@ -84,6 +84,11 @@ define(["jquery", "co"], function ($, co) {
         this.__lastCheckScrollY = null;
       }
     }, {
+      key: "getCurrentItem",
+      value: function getCurrentItem() {
+        return this.__currentItem;
+      }
+    }, {
       key: "computeCurrentItems",
       value: function computeCurrentItems() {
         var wh = $(window).height();
