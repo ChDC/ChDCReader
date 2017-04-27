@@ -199,7 +199,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       value: function getBook(bsid, bookName, bookAuthor) {
         util.log("BookSourceManager: Get book \"" + bookName + "\" from " + bsid);
 
-        if (!bsid || !bookName || !bookAuthor || !(bsid in this.__sources)) return Promise.reject(401);
+        if (!bsid || !bookName || !(bsid in this.__sources)) return Promise.reject(401);
 
         return this.searchBook(bsid, bookName).then(function (books) {
           var book = books.find(function (e) {
@@ -374,6 +374,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
             for (var _iterator8 = data[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
               var m = _step8.value;
 
+              m.author = m.author || "";
               if (!checkBook(m)) continue;
               books.push(self.__createBook(bs, m));
             }
@@ -439,6 +440,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
         return this.__spider.get(bs.detail, dict).then(function (m) {
           m.bookid = dict.bookid;
+          m.author = m.author || "";
           var book = _this4.__createBook(bs, m);
           return book;
         });

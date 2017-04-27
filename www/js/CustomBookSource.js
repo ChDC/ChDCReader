@@ -43,6 +43,34 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         return translate.toSimpleChinese(lc);
       }
     },
+
+    qq: {
+      getChapter: function getChapter(bsid) {
+        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+
+        if (!chapter.link) return Promise.reject(206);
+
+        var link = chapter.link;
+        var matcher = link.match(/index\/id\/(\d+)\/cid\/(\d+)/i);
+        if (!matcher) return Promise.reject(206);
+        link = "http://m.ac.qq.com/chapter/index/id/" + matcher[1] + "/cid/" + matcher[2] + "?style=plain";
+
+        return util.get(link).then(function (html) {
+          if (!html) return null;
+          html = String(html).replace(/<\!--.*?--\>/g, "").replace(/(^[ \t\r\n]+|[ \t\r\n]+$)/g, "").substring(1);
+          var data = JSON.parse(atob(html));
+
+          chapter.content = data.picture.map(function (e) {
+            return "<img src=\"" + e.url + "\">";
+          }).join('\n');
+          return chapter;
+        });
+      }
+    },
+
     u17: {
       getChapter: function getChapter(bsid) {
         var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
