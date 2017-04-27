@@ -84,10 +84,10 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
       });
 
       // exit
-      ref.addEventListener('exit', function(e) {
-        if(es.executeScriptOnExit)
-          ref.executeScript({ code: es.executeScriptOnExit});
-      });
+      // ref.addEventListener('exit', function(e) {
+      //   if(es.executeScriptOnExit)
+      //     ref.executeScript({ code: es.executeScriptOnExit});
+      // });
     }
   }
 
