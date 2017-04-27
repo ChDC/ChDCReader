@@ -480,7 +480,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         if (!bsm) return Promise.reject("Illegal booksource!");
 
         return this.__spider.get(bsm.catalog, dict).then(function (data) {
-
           var catalog = [];
           var _iteratorNormalCompletion10 = true;
           var _didIteratorError10 = false;
