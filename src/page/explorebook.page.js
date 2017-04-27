@@ -42,6 +42,10 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
       // loadstart
       ref.addEventListener("loadstart", (e) => {
         let url = e.url;
+
+        if(es.executeScriptOnLoadStart)
+          ref.executeScript({ code: es.executeScriptOnLoadStart});
+
         for(let pageName of ["readbook"]){
           let config = es[pageName];
           let matcher = url.match(config.matcher);
@@ -75,9 +79,15 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
         let url = e.url;
         if(es.insertCSS)
           ref.insertCSS({code: es.insertCSS});
-        if(es.executeScript)
-          ref.executeScript({ code: es.executeScript});
+        if(es.executeScriptOnLoadStop)
+          ref.executeScript({ code: es.executeScriptOnLoadStop});
       });
+
+      // exit
+      // ref.addEventListener('exit', function(e) {
+      //   if(es.executeScriptOnExit)
+      //     ref.executeScript({ code: es.executeScriptOnExit});
+      // });
     }
   }
 

@@ -1,8 +1,8 @@
-"use strict";
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -11,13 +11,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 define(["util"], function (util) {
   var Spider = function () {
     function Spider() {
+      var _this = this;
+
       _classCallCheck(this, Spider);
+
+      this.secureAttributeList = [['src', 'data-src']];
+
+      this.fixurlAttributeList = ['href', "data-src"];
+      this.specialKey2AttributeList = [[/link$/i, "href"], [/img$|image$/i, "data-src"], [/html$/i, function (element) {
+        return _this.__reverseTransformHTMLTagProperty(element.innerHTML);
+      }]];
     }
 
     _createClass(Spider, [{
-      key: "get",
+      key: 'get',
       value: function get() {
-        var _this = this;
+        var _this2 = this;
 
         var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
             request = _ref.request,
@@ -60,24 +69,24 @@ define(["util"], function (util) {
         switch (type) {
           case "html":
             return requestPromise.then(function (data) {
-              data = _this.filterHtmlContent(data);
-              data = _this.__transformHTMLTagProperty(data);
+              data = _this2.filterHtmlContent(data);
+              data = _this2.__transformHTMLTagProperty(data);
               var html = document.createElement("div");
               html.innerHTML = data;
 
-              return _this.__handleResponse(html, response, null, dict);
+              return _this2.__handleResponse(html, response, null, dict);
             });
           case "json":
             return requestPromise.then(function (data) {
               var json = JSON.parse(data);
-              return _this.__handleResponse(json, response, null, dict);
+              return _this2.__handleResponse(json, response, null, dict);
             });
           default:
             throw new Error("Illegal type");
         }
       }
     }, {
-      key: "__handleResponse",
+      key: '__handleResponse',
       value: function __handleResponse(data, response, keyName) {
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -97,7 +106,7 @@ define(["util"], function (util) {
         }
       }
     }, {
-      key: "__handleArray",
+      key: '__handleArray',
       value: function __handleArray(data, response, keyName) {
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -131,9 +140,9 @@ define(["util"], function (util) {
         return result;
       }
     }, {
-      key: "__handleObject",
+      key: '__handleObject',
       value: function __handleObject(data, response, keyName) {
-        var _this2 = this;
+        var _this3 = this;
 
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -143,7 +152,7 @@ define(["util"], function (util) {
           var result = {};
 
           for (var key in response) {
-            result[key] = _this2.__handleResponse(data, response[key], key, globalDict, result);
+            result[key] = _this3.__handleResponse(data, response[key], key, globalDict, result);
           }
           return result;
         };
@@ -164,11 +173,11 @@ define(["util"], function (util) {
               result = [];
               var list = this.__getAllElements(data, response.element);
               result = list.map(function (m) {
-                return _this2.__handleResponse(m, response.children, keyName, globalDict, dict);
+                return _this3.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
                 var gatherDict = Object.assign({}, globalDict, util.type(m) == "object" ? m : {});
-                var validCode = '"use strict"\n' + _this2.format(response.valideach, gatherDict, true);
+                var validCode = '"use strict"\n' + _this3.format(response.valideach, gatherDict, true);
                 return eval(validCode);
               });
             }
@@ -187,9 +196,14 @@ define(["util"], function (util) {
               if (!e) return undefined;
               if (response.attribute) {
                 var attr = void 0;
-                if (response.attribute == 'src') attr = 'data-src';else attr = response.attribute;
+                var transAttrbite = this.secureAttributeList.find(function (e) {
+                  return e[0] == response.attribute;
+                });
+                if (transAttrbite) attr = transAttrbite[1];else attr = response.attribute;
                 result = e.getAttribute(attr);
-                if (attr == 'innerHTML') result = result.replace(/\bdata-src=(?=["'])/gi, "src=");
+
+                if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
+                if (attr == 'innerHTML') result = this.__reverseTransformHTMLTagProperty(result);
               } else result = this.__getValue(e, keyName, globalDict, dict);
 
               if (!result) return result;
@@ -238,7 +252,7 @@ define(["util"], function (util) {
         return result;
       }
     }, {
-      key: "__handleString",
+      key: '__handleString',
       value: function __handleString(data, response, keyName) {
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -248,19 +262,58 @@ define(["util"], function (util) {
         return this.__getValue(e, keyName, globalDict, dict);
       }
     }, {
-      key: "__getValue",
+      key: '__getValue',
       value: function __getValue(element, keyName) {
         var globalDict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var dict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
         if (util.type(element) == 'object' && "querySelector" in element) {
-          if (!keyName) return element.textContent;else if (keyName.match(/link$/i)) return this.fixurl(element.getAttribute("href"), globalDict.host);else if (keyName.match(/img$|image$/i)) return this.fixurl(element.getAttribute("data-src"), globalDict.host);else if (keyName.match(/html$/i)) return element.innerHTML.replace(/\bdata-src=(?=["'])/gi, "src=");else return element.textContent.trim();
+          var result = void 0;
+          if (!keyName) return element.textContent.trim();
+
+          var matched = false;
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = this.specialKey2AttributeList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var _step2$value = _slicedToArray(_step2.value, 2),
+                  pattern = _step2$value[0],
+                  attr = _step2$value[1];
+
+              if (keyName.match(pattern)) {
+                matched = true;
+                if (util.type(attr) == "string") {
+                  result = element.getAttribute(attr);
+
+                  if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
+                } else if (util.type(attr) == "function") result = attr(element);
+              }
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+
+          if (!matched) result = element.textContent.trim();
+          return result;
         } else {
           return element;
         }
       }
     }, {
-      key: "__getElement",
+      key: '__getElement',
       value: function __getElement(element, selector) {
         if (!element || !selector) return undefined;
 
@@ -271,7 +324,7 @@ define(["util"], function (util) {
         }
       }
     }, {
-      key: "__getAllElements",
+      key: '__getAllElements',
       value: function __getAllElements(element, selector) {
         if (!element || !selector) return undefined;
 
@@ -282,12 +335,12 @@ define(["util"], function (util) {
         }
       }
     }, {
-      key: "__getDataFromObject",
+      key: '__getDataFromObject',
       value: function __getDataFromObject(obj, key) {
 
         function operatorFilter(element, args) {
           var codeStart = '"use strict"\n';
-          var env = "var $element=" + JSON.stringify(element) + ";\n";
+          var env = 'var $element=' + JSON.stringify(element) + ';\n';
           var code = codeStart + env + args[0];
           return eval(code);
         }
@@ -312,13 +365,13 @@ define(["util"], function (util) {
         if (!obj || !key) return obj;
         var keys = key.split('::');
         var result = obj;
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
         try {
           var _loop = function _loop() {
-            var key = _step2.value;
+            var key = _step3.value;
 
             var _splitKeyAndOperatorA = splitKeyAndOperatorAndArgs(key),
                 _splitKeyAndOperatorA2 = _slicedToArray(_splitKeyAndOperatorA, 3),
@@ -350,22 +403,22 @@ define(["util"], function (util) {
             }
           };
 
-          for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          for (var _iterator3 = keys[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
             var _ret = _loop();
 
-            if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
           }
         } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
             }
           } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -373,7 +426,7 @@ define(["util"], function (util) {
         return result;
       }
     }, {
-      key: "fixurl",
+      key: 'fixurl',
       value: function fixurl(url, host) {
         if (!url || url.match("^https?://")) return url;
 
@@ -384,7 +437,7 @@ define(["util"], function (util) {
 
           if (url.match("^/")) {
             host = host.replace(/\/.*$/, "");
-            url = "" + scheme + host + url;
+            url = '' + scheme + host + url;
           } else {
             host = host.replace(/\/[^\/]*$/, "");
             var m2 = url.match(/^\.\.\//g);
@@ -394,13 +447,13 @@ define(["util"], function (util) {
                 host = host.replace(/\/[^\/]*$/, "");
               }
             }
-            url = "" + scheme + host + "/" + url;
+            url = '' + scheme + host + '/' + url;
           }
         }
         return url;
       }
     }, {
-      key: "format",
+      key: 'format',
       value: function format(string) {
         var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var stringify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
@@ -408,12 +461,12 @@ define(["util"], function (util) {
         if (!string) return string;
 
         var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-          return p1 in object ? stringify ? JSON.stringify(object[p1]) : object[p1] : "{" + p1 + "}";
+          return p1 in object ? stringify ? JSON.stringify(object[p1]) : object[p1] : '{' + p1 + '}';
         });
         return result;
       }
     }, {
-      key: "clearHtml",
+      key: 'clearHtml',
       value: function clearHtml(html) {
         if (!html) return html;
 
@@ -438,9 +491,9 @@ define(["util"], function (util) {
         return html;
       }
     }, {
-      key: "filterHtmlContent",
+      key: 'filterHtmlContent',
       value: function filterHtmlContent(html) {
-        var _this3 = this;
+        var _this4 = this;
 
         if (!html) return html;
 
@@ -449,30 +502,90 @@ define(["util"], function (util) {
 
         var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
         html = blackList.reduce(function (html, be) {
-          return _this3.__filterElement(html, be);
+          return _this4.__filterElement(html, be);
         }, html);
         return html;
       }
     }, {
-      key: "__transformHTMLTagProperty",
+      key: '__transformHTMLTagProperty',
       value: function __transformHTMLTagProperty(html) {
         if (!html) return html;
 
-        html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
+
+        try {
+          for (var _iterator4 = this.secureAttributeList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var _step4$value = _slicedToArray(_step4.value, 2),
+                src = _step4$value[0],
+                dest = _step4$value[1];
+
+            html = html.replace(new RegExp('\\b' + src + '=(?=["\'])', 'gi'), dest + '=');
+          }
+        } catch (err) {
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+              _iterator4.return();
+            }
+          } finally {
+            if (_didIteratorError4) {
+              throw _iteratorError4;
+            }
+          }
+        }
+
         return html;
       }
     }, {
-      key: "__filterElement",
+      key: '__reverseTransformHTMLTagProperty',
+      value: function __reverseTransformHTMLTagProperty(html) {
+        if (!html) return html;
+
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
+
+        try {
+          for (var _iterator5 = this.secureAttributeList[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var _step5$value = _slicedToArray(_step5.value, 2),
+                src = _step5$value[0],
+                dest = _step5$value[1];
+
+            html = html.replace(new RegExp('\\b' + dest + '=(?=["\'])', 'gi'), src + '=');
+          }
+        } catch (err) {
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+              _iterator5.return();
+            }
+          } finally {
+            if (_didIteratorError5) {
+              throw _iteratorError5;
+            }
+          }
+        }
+
+        return html;
+      }
+    }, {
+      key: '__filterElement',
       value: function __filterElement(html, element) {
         var endElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : element;
 
 
         if (!html || !element) return html;
 
-        var pattern = "<" + element + "( [^>]*?)?>[\\s\\S]*?</" + endElement + ">";
+        var pattern = '<' + element + '( [^>]*?)?>[\\s\\S]*?</' + endElement + '>';
         html = html.replace(new RegExp(pattern, 'gi'), '');
 
-        pattern = "<" + element + "([^>]*?)?>";
+        pattern = '<' + element + '([^>]*?)?>';
         html = html.replace(new RegExp(pattern, 'gi'), '');
         return html;
       }

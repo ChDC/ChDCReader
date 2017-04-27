@@ -98,7 +98,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     getBook(bsid, bookName, bookAuthor){
       util.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
 
-      if(!bsid || !bookName || !bookAuthor || !(bsid in this.__sources))
+      if(!bsid || !bookName || !(bsid in this.__sources))
         return Promise.reject(401);
 
       // 通过当前书名和作者名搜索添加源
@@ -204,6 +204,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         const books = [];
 
         for(let m of data){
+          m.author = m.author || "";
           if(!checkBook(m))
             continue;
           books.push(self.__createBook(bs, m));
@@ -236,6 +237,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       return this.__spider.get(bs.detail, dict)
         .then(m => {
           m.bookid = dict.bookid;
+          m.author = m.author || "";
           let book = this.__createBook(bs, m);
           return book;
         });
@@ -278,7 +280,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       return this.__spider.get(bsm.catalog, dict)
         .then(data => {
-
           const catalog = [];
           for(let c of data){
             const chapter = new Chapter();

@@ -1,7 +1,91 @@
 {
 
-  "valid": ["u17", "comico", "qidian", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
+  "valid": ["u17", "comico", "qq", "qidian", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
   "sources": {
+    "qq": {
+      "id": "qq",
+      "type": "comics",
+      "name": "腾讯动漫",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 20,
+      "host": "http://ac.qq.com/",
+      "search": {
+        "request": {
+          "url": "http://m.ac.qq.com/search/result?t=1493260500155&word={keyword}&page=1&pageSize=100&style=items"
+        },
+        "response": {
+          "type": "array",
+          "element": "li",
+          "children": {
+            "name": ".comic-title",
+            "author": "",
+            "catagory": ".comic-tag",
+            "complete": {
+              "type": "boolean",
+              "element": ".comic-update",
+              "true": "更新",
+              "false": "全",
+              "default": false
+            },
+            "coverImg": ".cover-image",
+            "introduce": ".comic-desc",
+            "detailLink": ".comic-link",
+            "bookid": {
+              "type": "string",
+              "element": ".comic-link",
+              "attribute": "href",
+              "extract": "http://m.ac.qq.com/comic/index/id/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://ac.qq.com/Comic/comicInfo/id/{bookid}",
+        "response": {
+          "author": "",
+          "catagory": "#tags-show",
+          "complete": {
+            "type": "boolean",
+            "element": "div.works-cover > label",
+            "true": "连载中",
+            "default": false
+          },
+          "coverImg": "div.works-cover.ui-left > a > img",
+          "introduce": "p.works-intro-short",
+          "lastestChapter": "#chapter > div.works-chapter-top > ul > li:nth-child(2) > a",
+          "name": "div.works-intro-head > h2 > strong"
+        }
+      },
+      "catalog": {
+        "request": {
+          "url": "http://ac.qq.com/Comic/comicInfo/id/{bookid}"
+        },
+        "response":{
+          "type": "array",
+          "element": ".chapter-page-all span",
+          "children": {
+            "title": "a",
+            "vip": {
+              "type": "string",
+              "element": "i",
+              "attribute": "class"
+            },
+            "link": {
+              "type": "string",
+              "element": "a",
+              "valid": "!{vip} || !({vip}.includes('ui-icon-pay'))"
+            }
+          }
+        }
+      },
+      "chapter": {
+        "response": {
+          "contentHTML": "._view",
+          "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
+        }
+      }
+    },
+
     "u17": {
       "id": "u17",
       "type": "comics",
