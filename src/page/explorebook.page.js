@@ -78,6 +78,12 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
         if(es.executeScript)
           ref.executeScript({ code: es.executeScript});
       });
+
+      // exit
+      ref.addEventListener('exit', function(e) {
+        if(es.executeScriptOnExit)
+          ref.executeScript({ code: es.executeScriptOnExit});
+      });
     }
   }
 
