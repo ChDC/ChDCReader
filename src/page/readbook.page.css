@@ -18,13 +18,16 @@
     font-size: 0.8em;
 }
 
-.mainViewHeader span{
+.mainViewHeader span, .mainViewFooter span{
     margin: 5px;
 }
 
 .mainViewFooter{
     height: 25px;
     font-size: 0.8em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 #chapterContainer{
@@ -165,13 +168,13 @@
     background-color: #fa3;
 }
 
-.mainViewHeader{
+.mainViewHeader, .mainViewFooter{
     color: gray;
 }
 
-.mainViewFooter{
+/*.mainViewFooter{
     color: #eee;
-}
+}*/
 
 .current-chapter{
     color: red;

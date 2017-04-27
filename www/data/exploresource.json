@@ -11,7 +11,7 @@
     "qidian": {
       "url": "http://m.qidian.com/",
       "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
-      "executeScriptOnLoadStart": "document.addEventListener('DOMContentLoaded', ()=>{ document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\"; })",
+      "executeScriptOnLoadStart": "document.addEventListener('DOMContentLoaded', function(){ document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\"; });window.onunload = function() { document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\"; };",
       "readbook": {
         "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+",
         "executeScript": "document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\";"
