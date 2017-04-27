@@ -1,6 +1,13 @@
 {
-  "valid": ["qidian", "u17", "comico"],
+  "valid": ["qidian", "u17", "comico", "qq"],
   "sources": {
+    "qq": {
+      "url": "http://m.ac.qq.com/",
+      "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
+      "readbook": {
+        "matcher": "^http://m.ac.qq.com/chapter/index/id/(\\d+)/cid/\\d+"
+      }
+    },
     "qidian": {
       "url": "http://m.qidian.com/",
       "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",

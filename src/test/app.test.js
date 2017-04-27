@@ -10,9 +10,9 @@ require(["../js/config"], function(){
         let testList = [
             "mocha",
             "BookSourceManager",
-            // "util",
-            // "translate",
-            // "Spider",
+            "util",
+            "translate",
+            "Spider",
         ];
 
         //---- 配置结束 ----

@@ -64,7 +64,19 @@ define(["util"], function(util){
   class Spider{
 
     constructor(){
+      // 为了防止浏览器自动获取资源而进行的属性转换列表
+      this.secureAttributeList = [
+        ['src', 'data-src'],
+      ];
 
+      this.fixurlAttributeList = ['href', "data-src"]; // 需要修复 url 的属性
+
+      // 如果给定的键名匹配下面的规则，就自动获取指定的属性
+      this.specialKey2AttributeList = [
+        [/link$/i, "href"],
+        [/img$|image$/i, "data-src"],
+        [/html$/i, (element) => this.__reverseTransformHTMLTagProperty(element.innerHTML)]
+      ];
     }
 
 
@@ -211,13 +223,17 @@ define(["util"], function(util){
           if(!e) return undefined;
           if(response.attribute){
             let attr;
-            if(response.attribute == 'src')
-              attr = 'data-src';
+            let transAttrbite = this.secureAttributeList.find(e => e[0] == response.attribute)
+            if(transAttrbite)
+              attr = transAttrbite[1];
             else
               attr = response.attribute;
             result = e.getAttribute(attr);
+            // 修复 url
+            if(this.fixurlAttributeList.indexOf(attr) >= 0)
+              result = this.fixurl(result, globalDict.host);
             if(attr == 'innerHTML')
-              result = result.replace(/\bdata-src=(?=["'])/gi, "src=");
+              result = this.__reverseTransformHTMLTagProperty(result);
           }
           else
             result = this.__getValue(e, keyName, globalDict, dict);
@@ -286,16 +302,27 @@ define(["util"], function(util){
     // 获取值
     __getValue(element, keyName, globalDict={}, dict={}){
       if(util.type(element) == 'object' && "querySelector" in element){
+        let result;
         if(!keyName)
-          return element.textContent;
-        else if(keyName.match(/link$/i))
-          return this.fixurl(element.getAttribute("href"), globalDict.host);
-        else if(keyName.match(/img$|image$/i))
-          return this.fixurl(element.getAttribute("data-src"), globalDict.host);
-        else if(keyName.match(/html$/i))
-          return element.innerHTML.replace(/\bdata-src=(?=["'])/gi, "src=");
-        else
           return element.textContent.trim();
+
+        let matched = false;
+        for(let [pattern, attr] of this.specialKey2AttributeList){
+          if(keyName.match(pattern)){
+            matched = true;
+            if(util.type(attr) == "string"){
+              result = element.getAttribute(attr);
+              // 修复 url
+              if(this.fixurlAttributeList.indexOf(attr) >= 0)
+                result = this.fixurl(result, globalDict.host);
+            }
+            else if(util.type(attr) == "function")
+              result = attr(element);
+          }
+        }
+        if(!matched)
+          result = element.textContent.trim();
+        return result;
       }
       else{
         // json
@@ -493,7 +520,18 @@ define(["util"], function(util){
       if(!html) return html;
 
       // 图片的 src 属性转换成 data-src 属性
-      html = html.replace(/\bsrc=(?=["'])/gi, "data-src=");
+      for(let [src, dest] of this.secureAttributeList)
+        html = html.replace(new RegExp(`\\b${src}=(?=["'])`, 'gi'), `${dest}=`);
+      return html;
+    }
+
+    // 将之前的转换逆转回来
+    __reverseTransformHTMLTagProperty(html){
+      if(!html) return html;
+
+      // 图片的 src 属性转换成 data-src 属性
+      for(let [src, dest] of this.secureAttributeList)
+        html = html.replace(new RegExp(`\\b${dest}=(?=["'])`, 'gi'), `${src}=`);
       return html;
     }
 

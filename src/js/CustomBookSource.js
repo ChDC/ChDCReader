@@ -98,6 +98,34 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
       //   });
       // }
     },
+
+    qq: {
+      getChapter(bsid, chapter={}){
+
+        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+
+        if(!chapter.link) return Promise.reject(206);
+
+        let link = chapter.link;
+        let matcher = link.match(/index\/id\/(\d+)\/cid\/(\d+)/i);
+        if(!matcher) return Promise.reject(206);
+        link = `http://m.ac.qq.com/chapter/index/id/${matcher[1]}/cid/${matcher[2]}?style=plain`;
+
+        return util.get(link)
+          .then(html => {
+            if(!html) return null;
+            html = String(html)
+              .replace(/<\!--.*?--\>/g, "")
+              .replace(/(^[ \t\r\n]+|[ \t\r\n]+$)/g, "")
+              .substring(1);
+            let data = JSON.parse(atob(html));
+            // 组合成 img 标签
+            chapter.content = data.picture.map(e => `<img src="${e.url}">`).join('\n');
+            return chapter;
+          });
+      }
+    },
+
     u17: {
       getChapter(bsid, chapter={}){
 
