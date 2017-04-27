@@ -11,11 +11,11 @@
     "qidian": {
       "url": "http://m.qidian.com/",
       "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
+      "executeScriptOnLoadStart": "document.addEventListener('DOMContentLoaded', ()=>{ document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\"; })",
       "readbook": {
         "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+",
         "executeScript": "document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\";"
-      },
-      "executeScriptOnExit": "document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\";"
+      }
     },
     "u17": {
       "url": "http://m.u17.com",
@@ -39,8 +39,7 @@
     "17k": {
       "url": "http://m.qidian.com/",
       "readbook": {
-        "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+.*",
-        "executeScript": "document.cookie=\"_csrfToken=;max-age=0;path=/;domain=.qidian.com\";"
+        "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+.*"
       }
     }
   }
