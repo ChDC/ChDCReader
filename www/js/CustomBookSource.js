@@ -100,6 +100,36 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
           return chapter;
         });
       }
+    },
+
+    "chuangshi": {
+      getChapter: function getChapter(bsid) {
+        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+
+        if (!chapter.link) return Promise.reject(206);
+
+        var url = "http://chuangshi.qq.com/index.php/Bookreader/462523/25?lang=zhs";
+        debugger;
+        return util.cordovaAjax("get", url, {}, 'json', { Referer: "http://chuangshi.qq.com/" }).then(function (data) {
+          debugger;
+          console.log(data);
+          var json = JSON.parse(html);
+          var content = decryptByBaseCode(json.Content, 30);
+        });
+
+        function decryptByBaseCode(text, base) {
+          if (!text) return text;
+          var arrStr = [],
+              arrText = text.split('\\');
+          for (var i = 1, len = arrText.length; i < len; i++) {
+            arrStr.push(String.fromCharCode(parseInt(arrText[i], base)));
+          }
+          return arrStr.join('');
+        }
+      }
     }
   };
 

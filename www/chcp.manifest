@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "438d2a9efe9729ba750f34675a603b05"
+    "hash": "2afdd59b3db0cf8486ef2842af005597"
   },
   {
     "file": "data/booksources.test.json",
@@ -81,7 +81,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "274c5b68750cb679a839309117dedc1e"
+    "hash": "98b1849ea91ac13fa7b8f91cf8ad039a"
   },
   {
     "file": "js/Chapter.js",
@@ -93,7 +93,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "d56ef66ab682f9a4059ed08cf7ad588a"
+    "hash": "5a31634a59a4ae0d2b0b830fd04e920f"
   },
   {
     "file": "js/draggable.js",
@@ -105,7 +105,7 @@
   },
   {
     "file": "js/main.js",
-    "hash": "4ab4c90024ee9a543b68f4911b9158e2"
+    "hash": "ea4e24b26f4489abd70e2f033aaf355b"
   },
   {
     "file": "js/Page.js",
@@ -305,7 +305,7 @@
   },
   {
     "file": "mylib/Spider.js",
-    "hash": "ba34fa05243e1309b34a9c02f0f2d267"
+    "hash": "ad668fd1559d85fbb5092fa31ed87452"
   },
   {
     "file": "mylib/Test.js",
@@ -321,7 +321,7 @@
   },
   {
     "file": "mylib/util.js",
-    "hash": "cc60537ba49cd8f13368e081e198ce0a"
+    "hash": "34ef48c0f75dd8191b82c2fc064f59fa"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -441,7 +441,7 @@
   },
   {
     "file": "test/Spider.test.js",
-    "hash": "14088c1ecbc7575b3e8ea02331b93395"
+    "hash": "b75018b83f0fc720a0f807ab301e9f10"
   },
   {
     "file": "test/translate.test.js",

@@ -1,6 +1,6 @@
 "use strict";
 
-define(["chai", "Spider"], function (chai, Spider) {
+define(["chai", 'util', "Spider"], function (chai, util, Spider) {
 
   var assert = chai.assert;
   var equal = assert.equal;
@@ -11,7 +11,7 @@ define(["chai", "Spider"], function (chai, Spider) {
     var config = void 0;
 
     before(function () {
-      spider = new Spider();
+      spider = new Spider(util.ajax.bind(util));
       config = {
         "request": "http://se.qidian.com/?kw={keyword}",
         "response": {

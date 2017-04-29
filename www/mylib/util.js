@@ -39,6 +39,48 @@ define(function () {
       var i = url.indexOf("?");
       if (i == -1) return url + '?' + params;else if (i < url.length - 1) return url + '&' + params;else return '' + url + params;
     },
+    ajax: function ajax(method, url, params, dataType, headers, options) {
+      return this.get(url, params, dataType, options);
+    },
+    cordovaAjax: function cordovaAjax() {
+      var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'get';
+      var url = arguments[1];
+      var params = arguments[2];
+      var dataType = arguments[3];
+      var headers = arguments[4];
+      var options = arguments[5];
+
+      if (typeof cordovaHTTP == 'undefined') return this.ajax(method, url, params, dataType, headers, options);
+      return new Promise(function (resolve, reject) {
+        if (!url) return reject(new Error("url is null"));
+
+        var func = void 0;
+        switch (method.toLowerCase()) {
+          case "get":
+            func = cordovaHTTP.get.bind(cordovaHTTP);
+            break;
+
+          case "post":
+            func = cordovaHTTP.post.bind(cordovaHTTP);
+            break;
+          default:
+            return reject(new Error("method is illegal"));
+        }
+
+        func(url, params, headers, function (response) {
+          switch (dataType) {
+            case "json":
+              resolve(JSON.parse(response.data));
+              break;
+            default:
+              resolve(response.data);
+              break;
+          }
+        }, function (response) {
+          reject(response.error);
+        });
+      });
+    },
     get: function get(url, params, dataType) {
       var _this = this;
 
@@ -48,16 +90,11 @@ define(function () {
 
       return new Promise(function (resolve, reject) {
         if (!url) return reject(new Error("url is null"));
-
         url = _this.__urlJoin(url, params);
-
         _this.log('Get: ' + url);
-
         url = encodeURI(url);
-
         var request = new XMLHttpRequest();
         request.open("GET", url);
-
         request.timeout = timeout * 1000;
 
         switch (dataType) {
