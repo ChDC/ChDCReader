@@ -394,7 +394,11 @@
       },
       "catalogLink":{
         "request": "{detailLink}",
-        "response": "div.BookInfo > div.Props > dl > dt > a"
+        "response": {
+          "type": "string",
+          "element": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
+          "attribute": "href"
+        }
       },
       "catalog": {
         "request": "{catalogLink}",
