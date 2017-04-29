@@ -473,7 +473,7 @@ define(function () {
         if (!string) return string;
 
         var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-          return p1 in object ? stringify ? JSON.stringify(object[p1]) : object[p1] : '{' + p1 + '}';
+          return object[p1] ? stringify ? JSON.stringify(object[p1]) : object[p1] : '';
         });
         return result;
       }

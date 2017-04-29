@@ -482,12 +482,12 @@ define(function(){
     }
 
     // 字符串格式化，类似于 Python 的 string.format
-    // stringify 为 true 表示将属性先 stringify 在放入
+    // stringify 为 true 表示将属性先 stringify 再放入
     format(string, object={}, stringify=false){
       if(!string) return string;
 
       const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          p1 in object ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : `{${p1}}`
+          object[p1] ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : ''
         )
       return result;
     }

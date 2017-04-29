@@ -203,7 +203,7 @@
             "bookid": "titleNo",
             "detailLink": {
               "type": "format",
-              "valid": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
+              "value": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
             }
           }
         }
@@ -363,7 +363,13 @@
             "introduce": "div.search_r_info > p.search_i > em",
             "lastestChapter": "div.search_r_info > p:nth-child(5) > a",
             "detailLink": "div.search_r_info > h1 > a",
-            "name": "div.search_r_info > h1 > a"
+            "name": "div.search_r_info > h1 > a",
+            "bookid": {
+              "type": "string",
+              "element": "div.search_r_info > h1 > a",
+              "attribute": "href",
+              "extract": "http://chuangshi.qq.com/bk/xh/(\\d+).html"
+            }
           }
         },
         "request": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
@@ -397,15 +403,23 @@
           "element": "div.indexbox ul > li",
           "children": {
             "title": "a",
-            "link": "a"
+            "cid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "(\\d+)"
+            },
+            "link": {
+              "type": "format",
+              "value": "http://chuangshi.qq.com/index.php/Bookreader/{bookid}/{cid}?lang=zhs"
+            }
           }
         }
       },
       "chapter": {
         "response": {
           "contentHTML": ".bookreadercontent",
-          "modifyTime": "#chaptercontainer > div > div.story_title > p > span:nth-child(3)",
-          "title": "#chaptercontainer > div > div.story_title > h1"
+          "title": "[data-node=\"chapterTitle\"]"
         }
       }
     },

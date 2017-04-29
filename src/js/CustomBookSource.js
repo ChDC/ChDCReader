@@ -138,15 +138,22 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
 
         if(!chapter.link) return Promise.reject(206);
 
-        let url = "http://chuangshi.qq.com/index.php/Bookreader/462523/25?lang=zhs";
-        debugger;
-        return util.cordovaAjax("get", url, {}, 'json',
-              { Referer: "http://chuangshi.qq.com/" })
-          .then(data => {
-            debugger;
-            console.log(data);
-            let json = JSON.parse(html);
+        return util.cordovaAjax("get", chapter.link, {}, 'json',
+              {
+                "Referer": "http://chuangshi.qq.com/",
+                "X-Requested-With": "XMLHttpRequest"
+              })
+          .then(json => {
             let content = decryptByBaseCode(json.Content, 30);
+            const bsm = this.__sources[bsid];
+            let data = this.__spider.parse(content, "html", bsm.chapter.response, url, {});
+            const c = new Chapter();
+            c.content = this.__spider.clearHtml(data.contentHTML);
+
+            if(!c.content) return Promise.reject(206);
+            c.link = chapter.link;
+            c.title = data.title;
+            return c;
           });
 
         function decryptByBaseCode(text, base) {

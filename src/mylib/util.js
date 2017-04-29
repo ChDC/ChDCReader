@@ -99,7 +99,7 @@ define(function(){
       return this.get(url, params, dataType, options);
     },
 
-    cordovaAjax(method='get', url, params, dataType, headers,
+    cordovaAjax(method='get', url, params={}, dataType, headers={},
                   options){
       if(typeof cordovaHTTP == 'undefined')
         return this.ajax(method, url, params, dataType, headers, options);
@@ -118,6 +118,9 @@ define(function(){
           default:
             return reject(new Error("method is illegal"));
         }
+
+        if(!('User-Agent' in headers))
+          headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
 
         func(url, params, headers,
           function(response) {
