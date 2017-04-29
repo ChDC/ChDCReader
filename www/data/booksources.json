@@ -368,7 +368,7 @@
               "type": "string",
               "element": "div.search_r_info > h1 > a",
               "attribute": "href",
-              "extract": "http://chuangshi.qq.com/bk/xh/(\\d+).html"
+              "extract": "(\\d+).html"
             }
           }
         },
@@ -394,7 +394,11 @@
       },
       "catalogLink":{
         "request": "{detailLink}",
-        "response": "div.BookInfo > div.Props > dl > dt > a"
+        "response": {
+          "type": "string",
+          "element": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
+          "attribute": "href"
+        }
       },
       "catalog": {
         "request": "{catalogLink}",
@@ -407,7 +411,7 @@
               "type": "string",
               "element": "a",
               "attribute": "href",
-              "extract": "(\\d+)"
+              "extract": "-(\\d+).html"
             },
             "link": {
               "type": "format",

@@ -278,18 +278,12 @@ define(function () {
       });
 
       if (maxWeightSet.length <= 1) return maxWeightSet[0].index;else {
-        var _ret = function () {
-          var minDistance = Math.min.apply(Math, _toConsumableArray(result.map(function (e) {
-            return e.distance;
-          })));
-          return {
-            v: maxWeightSet.find(function (e) {
-              return e.distance == minDistance;
-            }).index
-          };
-        }();
-
-        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+        var minDistance = Math.min.apply(Math, _toConsumableArray(result.map(function (e) {
+          return e.distance;
+        })));
+        return maxWeightSet.find(function (e) {
+          return e.distance == minDistance;
+        }).index;
       }
     },
     listMatchWithNeighbour: function listMatchWithNeighbour(listA, listB, indexA) {
@@ -577,7 +571,7 @@ define(function () {
                   var v = _step3.value;
 
                   var value = __persistent(v);
-                  if (value != undefined) children.push(value);
+                  if (value !== undefined) children.push(value);
                 }
               } catch (err) {
                 _didIteratorError3 = true;
@@ -615,7 +609,7 @@ define(function () {
                   var k = _step4.value;
 
                   var _value = __persistent(obj[k]);
-                  if (_value != undefined) _children.push('"' + k + '":' + _value);
+                  if (_value !== undefined) _children.push('"' + k + '":' + _value);
                 }
               } catch (err) {
                 _didIteratorError4 = true;

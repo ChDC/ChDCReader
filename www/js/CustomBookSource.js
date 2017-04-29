@@ -112,14 +112,13 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
 
         if (!chapter.link) return Promise.reject(206);
-
         return util.cordovaAjax("get", chapter.link, {}, 'json', {
           "Referer": "http://chuangshi.qq.com/",
           "X-Requested-With": "XMLHttpRequest"
         }).then(function (json) {
           var content = decryptByBaseCode(json.Content, 30);
           var bsm = _this.__sources[bsid];
-          var data = _this.__spider.parse(content, "html", bsm.chapter.response, url, {});
+          var data = _this.__spider.parse(content, "html", bsm.chapter.response, chapter.link, {});
           var c = new Chapter();
           c.content = _this.__spider.clearHtml(data.contentHTML);
 
