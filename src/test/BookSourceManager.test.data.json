@@ -236,6 +236,40 @@
    ],
    "chuangshi" : [
       {
+         "author" : "飘荡墨尔本",
+         "catalogLink" : "http://yunqi.qq.com/bk/xdyq/AGkEMV1gVjcAP1RsATYBbA-l.html",
+         "bookid" : "15005878",
+         "chapters" : [
+            {
+               "content" : "左再刚回国就过了笔试，可是考完之后，左再还是不太敢在国内开车。国内的驾驶座在左边，英国的驾驶座在右边，没在国内开过车的左再有点不习惯。",
+               "link" : "http://chuangshi.qq.com/index.php/Bookreader/15005878/31?lang=zhs",
+               "title" : "第二十六章 窗烛（2）"
+            }
+         ],
+         "complete" : false,
+         "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
+         "introduce" : "温州女孩左再",
+         "lastestChapter" : "",
+         "name" : "邂逅调香师"
+      },
+      {
+         "author" : "月离",
+         "catalogLink" : "http://yunqi.qq.com/bk/khkj/AGkENV1jVjQAO1RlATcBbA-l.html",
+         "chapters" : [
+            {
+               "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
+               "link" : "http://chuangshi.qq.com/index.php/Bookreader/11331168/22?lang=zhs",
+               "title" : "第十四章 肖薇"
+            }
+         ],
+         "complete" : true,
+         "cover" : "http://img1.write.qq.com/upload/cover/2016-01-20/cb_569f491f778dd.jpg",
+         "bookid": "11331168",
+         "introduce" : "你是我一个人的小少爷",
+         "lastestChapter" : "",
+         "name" : "完美邂逅：专宠傲娇贵公子"
+      },
+      {
          "author" : "天蚕土豆",
          "catalogLink" : "http://chuangshi.qq.com/bk/xh/AGwEMl1iVjIAOFRn-l.html",
          "chapters" : [
@@ -349,6 +383,38 @@
       }
    ],
    "qidian" : [
+      {
+         "author" : "月离",
+         "chapters" : [
+            {
+               "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
+               "link" : "http://read.qidian.com/chapter/6u3w2_ut08NH9vdK3C5yvw2/dB_RwQjbPcZp4rPq4Fd4KQ2",
+               "title" : "第十四章 肖薇"
+            }
+         ],
+         "complete" : true,
+         "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003429036/180",
+         "bookid": "1003429036",
+         "introduce" : "你是我一个人的小少爷",
+         "lastestChapter" : "",
+         "name" : "完美邂逅：专宠傲娇贵公子"
+      },
+      {
+         "author" : "飘荡墨尔本",
+         "bookid" : "1005005878",
+         "chapters" : [
+            {
+               "content" : "左再刚回国就过了笔试，可是考完之后，左再还是不太敢在国内开车。国内的驾驶座在左边，英国的驾驶座在右边，没在国内开过车的左再有点不习惯。",
+               "link" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/svkUayIjkdfgn4SMoDUcDQ2",
+               "title" : "第二十六章 窗烛（2）"
+            }
+         ],
+         "complete" : false,
+         "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
+         "introduce" : "温州女孩左再",
+         "lastestChapter" : "",
+         "name" : "邂逅调香师"
+      },
       {
          "author" : "耳根",
          "bookid" : "1003354631",

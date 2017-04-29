@@ -1,5 +1,5 @@
 {
-  "valid": ["qidian", "u17", "comico", "qq"],
+  "valid": ["qidian", "chuangshi", "u17", "comico", "qq"],
   "sources": {
     "qq": {
       "url": "http://m.ac.qq.com/",
@@ -29,9 +29,9 @@
       }
     },
     "chuangshi": {
-      "url": "http://chuangshi.qq.com",
+      "url": "http://ubook.qq.com",
       "readbook": {
-        "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+.*"
+        "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
       }
     },
     "17k": {
