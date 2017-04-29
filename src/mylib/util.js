@@ -1,4 +1,4 @@
-define(["jquery"], function($){
+define(function(){
   "use strict"
 
   return {
@@ -7,8 +7,23 @@ define(["jquery"], function($){
     */
     DEBUG: true,
 
+    /*
+    * 判断对象的类型
+    * null -> null
+    * undefined -> undefined
+    * [] -> array
+    * {} -> object
+    * '' -> string
+    * 0.1 -> number
+    * new Error() -> error
+    * ()->{} -> function
+    */
     type(obj){
-      return $.type(obj);
+      // return $.type(obj); // 只有这里用了 jquery
+      let type = typeof(obj);
+      if(type != 'object')
+        return type;
+      return obj.constructor.name.toLowerCase();
     },
 
     /*

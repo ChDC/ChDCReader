@@ -6,11 +6,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
     constructor(){
       super();
 
-      this.tmpOptions = null;  // 默认传递的选项参数
       this.book = null;
       this.readingRecord = null; // 正在读的记录
       this.chapterList = null; // 无限列表
-      this.lastSavePageScrollTop = 0;
       this.isNewBook = true; // 标记是否是未加入书架的新书
     }
 
@@ -53,8 +51,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       }
 
       this.book.checkBookSources();
-      this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
-
       this.loadView();
       this.refreshChapterList();
     }
@@ -79,7 +75,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       $(".toolbar").click((e) => $('.toolbar').hide());
 
       $("#btnNext").click(this.nextChapter.bind(this));
-      $("#btnLast").click(this.lastChapter.bind(this));
+      $("#btnLast").click(this.previousChapter.bind(this));
 
       // 按钮事件
       $("#btnClose").click((e) => app.page.closePage());
@@ -94,24 +90,18 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
       });
       $("#btnBadChapter").click(e => {
-        this.tmpOptions = {
+        this.refreshChapterList({
           excludes: [this.readingRecord.options.contentSourceId]
-        }
-        this.refreshChapterList();
+        });
       });
       $("#btnRefresh").click(e => {
-        // this.readingRecord.chapterIndex = chapterIndex;
         this.refreshChapterList();
       });
       $("#btnSortReversed").click((e) => {
         const list = $('#listCatalog');
         list.append(list.children().toArray().reverse());
       });
-      // TODO: 修改内容源
-      // $("#btnChangeMainContentSource").click(function(){
-      //     $("#modalBookSource").modal('show');
-      //     this.loadBookSource("mainContentSource");
-      // });
+
       $("#btnChangeMainSource").click(() => {
         $("#modalBookSource").modal('show');
         this.loadBookSource();
@@ -147,8 +137,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           });
       }
       $('#chapterContainer').on("scroll", e => {
-        let percent = this.chapterList.getPageScorllTop() / this.chapterList.getCurrentItem().height() * 100;
-        $(".labelChatperPercent").text(`${parseInt(percent)} %`);
+        $(".labelChatperPercent").text(`${parseInt(this.chapterList.getScrollRate()*100)} %`);
       });
     };
 
@@ -188,10 +177,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
         // 从新的目录源中搜索之前的阅读记录
         if(this.readingRecord.chapterIndex){
-          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, undefined, oldMainSource)
+          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.getChapterIndex(), undefined, oldMainSource)
             .then(({chapter, index}) => {
-              this.readingRecord.chapterIndex = index;
-              this.readingRecord.chapterTitle = chapter.title;
+              this.readingRecord.setReadingRecord(index, chapter.title, {});
               this.refreshChapterList();
             })
             .catch(error => {
@@ -232,7 +220,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
         target = $(target);
         const chapterIndex = parseInt(target.attr('data-index'));
-        this.readingRecord.chapterIndex = chapterIndex;
+        this.readingRecord.setReadingRecord(chapterIndex, "", {});
         this.refreshChapterList();
       }
 
@@ -265,25 +253,40 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         });
     }
 
-
-    refreshChapterList(){
+    refreshChapterList(options){
       app.showLoading();
-      if(this.chapterList)
-        this.chapterList.close();
+      let opts = Object.assign({}, this.readingRecord.getOptions(), options);
+      if(this.chapterList) this.chapterList.close();
       this.chapterList = new Infinitelist(
-        $('#chapterContainer'),
-        $('#chapters'),
-        this.onNewChapterItem.bind(this),
-        this.onNewChapterItemFinished.bind(this)
+        $('#chapterContainer')[0],
+        $('#chapters')[0],
+        this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)),
+        this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this))
       );
+      this.chapterList.onError = (o,e) => uiutil.showError(app.error.getMessage(e));
+      this.chapterList.onFirstNewItemFinished = (o,e) => {
+        app.hideLoading();
+        if(this.readingRecord.pageScrollTop){
+          const cs = $('#chapterContainer').scrollTop();
+          $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
+        }
+      };
+
       this.chapterList.onCurrentItemChanged = (event, newValue, oldValue) => {
+        newValue = $(newValue);
         const index = newValue.data('chapterIndex');
         const title = newValue.data('chapterTitle');
         const options = newValue.data('options');
-        this.readingRecord.setReadingRecord(index, title, options);
-        this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-        $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name)
-          .click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
+        if(index >= 0){
+          this.readingRecord.setReadingRecord(index, title, options);
+          // this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
+          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name)
+            .click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
+        }
+        else{
+          // 已经读完了
+          this.readingRecord.setFinished(true)
+        }
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       }
@@ -291,52 +294,28 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       this.chapterList.loadList();
     }
 
-    onNewChapterItem(event, be, direction){
+    buildLastPage(){
+      const nc = $('.template .chapter').clone();
+      if(!nc || nc.length <=0)
+        return null;
 
-      const opts = Object.assign({}, this.tmpOptions);
-      this.tmpOptions = null;
-      let chapterIndex = 0;
-      if(be){
-        Object.assign(opts, be.data('options'));
-        chapterIndex = be.data('chapterIndex') + (direction >= 0? 1 : -1);
-        if('contentSourceChapterIndex' in opts){
-          opts.contentSourceChapterIndex += direction >= 0? 1 : -1;
-        }
-      }
-      else{
-        Object.assign(opts, this.readingRecord.options);
-        chapterIndex = this.readingRecord.chapterIndex;
-      }
+      let title = '读完啦';
+      let content = new Array(123).fill("读完了读完了读完了读完了读完了读完了读完了读完了").join('\n');
+      nc.find(".chapter-title").text(title);
+      nc.find(".chapter-content").html(content);
+
+      nc.data('chapterIndex', -1);
+      nc.data('chapterTitle', title);
+      return nc[0];
+    }
+
+    buildChapter({chapter, index, options}={}){
+      if(!chapter) // 加载完成页面
+        return this.buildLastPage();
 
       this.book.getCatalog()
-        .then(catalog => $(".labelBookPercent").text(`${parseInt(chapterIndex / catalog.length * 100)} %`));
+        .then(catalog => $(".labelBookPercent").text(`${parseInt(index / catalog.length * 100)} %`));
 
-      return this.book.getChapter(chapterIndex, opts)
-        .then(({chapter, title, index, options}) => {
-          const newItem = this.buildChapter(chapter, title, index, options);
-          return {newItem};
-        })
-        .catch(error => {
-          app.hideLoading();
-          uiutil.showError(app.error.getMessage(error));
-          if(error == 202 || error == 203 || error == 201){
-            return {newItem: null, type: 1};
-          }
-          else{
-            return ({newItem: null});
-          }
-        });
-    }
-
-    onNewChapterItemFinished(event, be, direction){
-      if(!be && this.lastSavePageScrollTop){
-        const cs = $('#chapterContainer').scrollTop();
-        $('#chapterContainer').scrollTop(cs + this.lastSavePageScrollTop);
-        this.lastSavePageScrollTop = 0;
-      }
-    }
-
-    buildChapter(chapter, title, index, options){
       const nc = $('.template .chapter').clone();
       if(!nc || nc.length <=0)
         return null;
@@ -350,9 +329,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       nc.find(".chapter-content").html(content);
 
       nc.data('chapterIndex', index);
-      nc.data('chapterTitle', title);
+      nc.data('chapterTitle', chapter.title);
       nc.data('options', options);
-      return nc;
+      return nc[0];
     }
 
     // 下一章节
@@ -361,8 +340,8 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
     }
 
     // 上一章节
-    lastChapter(){
-      this.chapterList.lastItem();
+    previousChapter(){
+      this.chapterList.previousItem();
     }
   }
 

@@ -74,15 +74,12 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
           }
         }
       }
-
       return util.saveTextData("bookshelf", util.persistent(this));
     }
 
     // 添加书籍到书架中
     addBook(book, readingRecord){
       if(!this.hasBook(book)){
-        // TODO 查找第一个没有被锁定的位置然后添加
-
         // 默认添加到开头
         this.books.unshift({
           book: book,
