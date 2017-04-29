@@ -94,13 +94,6 @@
   {
     "file": "js/ReadingRecord.js",
     "hash": "d0928551be59ad5dbfb45d8784d61b8c"
-<<<<<<< HEAD
-=======
-  },
-  {
-    "file": "js/util.js",
-    "hash": "b213ab82acff050224ae78a7c54a96ab"
->>>>>>> dev
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -272,15 +265,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "hash": "aaf6d19331793c52c4793a9d5cfb6b80"
-=======
     "hash": "04e6472af8518a8457dc307984d1a244"
->>>>>>> dev
-=======
-    "hash": "04e6472af8518a8457dc307984d1a244"
->>>>>>> dev
   },
   {
     "file": "mylib/Page.js",
@@ -360,15 +345,7 @@
   },
   {
     "file": "page/readbook.page.css",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "hash": "aa0a95e0f9640bd2020c70b2dadaa021"
-=======
     "hash": "8729de9c600772c07f18c340b16eeead"
->>>>>>> dev
-=======
-    "hash": "8729de9c600772c07f18c340b16eeead"
->>>>>>> dev
   },
   {
     "file": "page/readbook.page.html",
@@ -376,15 +353,7 @@
   },
   {
     "file": "page/readbook.page.js",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "hash": "192dfcf120ebf3a3a5a2fa11855819c0"
-=======
     "hash": "0f911359dc05bde3187a9882be338fbb"
->>>>>>> dev
-=======
-    "hash": "0f911359dc05bde3187a9882be338fbb"
->>>>>>> dev
   },
   {
     "file": "page/readbook.page.night1.css",
