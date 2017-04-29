@@ -11,6 +11,7 @@ define(["util"], function (util) {
     this.link = undefined;
     this.title = undefined;
     this.content = undefined;
+    this.volume = undefined;
   };
 
   Chapter.equalTitle = function (chapterA, chapterB) {

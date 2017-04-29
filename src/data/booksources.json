@@ -1,7 +1,97 @@
 {
 
-  "valid": ["u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
+  "valid": ["sfnovel", "u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
   "sources": {
+    "sfnovel": {
+      "id": "sfnovel",
+      "type": "novel",
+      "name": "SF轻小说",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 20,
+      "host": "http://book.sfacg.com/",
+      "search": {
+        "request": {
+          "url": "http://s.sfacg.com/?Key={keyword}&S=1&SS=0"
+        },
+        "response": {
+          "type": "array",
+          "element": "table.comic_cover > tbody > tr > td > ul",
+          "children": {
+            "name": "a",
+            "author": {
+              "type": "string",
+              "element": "li:nth-child(2)",
+              "extract": "综合信息：\\s*([^/]*)/"
+            },
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "img",
+            "introduce": {
+              "type": "string",
+              "element": "li:nth-child(2)",
+              "extract": "\\d\\d:\\d\\d:\\d\\d\\s*(.*)"
+            },
+            "detailLink": "a",
+            "bookid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "http://book.sfacg.com/Novel/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://book.sfacg.com/Novel/{bookid}",
+        "response": {
+          "author": "div.author-info > div.author-name > span",
+          "catagory": "div.count-detail > div:nth-child(1) > span:nth-child(1)",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#hasTicket > div.left-part > div > div.pic > a > img",
+          "introduce": "div.summary-content > p",
+          "lastestChapter": "div.chapter-info > h3 > a",
+          "name": "div.summary-content > h1 > span.text"
+        }
+      },
+      "catalog": {
+        "request": {
+          "url": "http://book.sfacg.com/Novel/{bookid}/MainIndex/"
+        },
+        "response":{
+          "type": "array",
+          "element": "div.catalog-list > ul > li",
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "vip": {
+              "type": "string",
+              "element": "a > span",
+              "attribute": "class"
+            },
+            "link": {
+              "type": "string",
+              "element": "a",
+              "valid": "!{vip} || !({vip}.includes('icn_vip'))"
+            }
+          }
+        }
+      },
+      "chapter": {
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
     "qq": {
       "id": "qq",
       "type": "comics",
@@ -107,8 +197,8 @@
             "complete": {
               "type": "boolean",
               "element": "div > div.info > p.cf > i",
-              "true": "连载中",
-              "false": "完结",
+              "true": "连载",
+              "false": "完",
               "default": false
             },
             "coverImg": "div > div.cover > a > img",
@@ -274,8 +364,8 @@
               "complete": {
                 "element": ".book-mid-info .author span:last-child",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
               "coverImg": ".book-img-box img",
               "introduce": ".book-mid-info .intro",
@@ -300,7 +390,7 @@
           "complete": {
             "element": "div.book-info > p.tag > span:nth-child(1)",
             "type": "boolean",
-            "true": "完本",
+            "true": "完",
             "false": "连载"
           },
           "coverImg": "#bookImg > img",
@@ -356,8 +446,9 @@
             "complete": {
                 "element": "div.search_r_img > p > i",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载"
+                "true": "完",
+                "false": "连载",
+                "default": false
               },
             "coverImg": "div.search_r_img > a > img",
             "introduce": "div.search_r_info > p.search_i > em",
@@ -375,7 +466,7 @@
         "request": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
       },
       "detail": {
-        "request": "{detailLink}",
+        "request": "http://chuangshi.qq.com/bk/xh/{bookid}.html",
         "response": {
           "catalogLink": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
           "author": "div.autherinfo > div.au_name > p:nth-child(2) > a",
@@ -383,8 +474,8 @@
           "complete": {
                 "element": "div.mainbox > div.main1 > div.title > i:nth-child(3)",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
           "coverImg": "div.mainbox > div.main2 > div.left > div.cover > a > img",
           "introduce": "div.mainbox > div.main2 > div.left > div.info",
@@ -460,8 +551,8 @@
           "complete": {
                 "element": "div.BookInfo > div.Info > div.label > a:nth-child(1) > span",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
           "coverImg": "div.BookInfo > div.Props > div > a > img",
           "introduce": "div.BookInfo > div.Info.Sign > dl > dd > div:nth-child(1) > a",
@@ -828,8 +919,8 @@
           "complete": {
                 "element": "#author > i:nth-child(3)",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
           "coverImg": "div.novelinfo img",
           "introduce": "#intro",

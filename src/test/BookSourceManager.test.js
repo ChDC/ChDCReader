@@ -25,10 +25,10 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
 
   // 小说书源测试
-  let bsids = ["qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = ["sfnovel", "qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
-  // for(let bsid of ['qq']){
+  // for(let bsid of ['sfnovel']){
 
     function equalBook(bsid, book, b){
       assert.isObject(b);

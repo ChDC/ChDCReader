@@ -24,7 +24,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
     });
   });
 
-  var bsids = ["qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  var bsids = ["sfnovel", "qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
