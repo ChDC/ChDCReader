@@ -1,24 +1,26 @@
-"use strict";
+'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-define(["jquery"], function ($) {
+define(function () {
   "use strict";
 
   return {
     DEBUG: true,
 
     type: function type(obj) {
-      return $.type(obj);
+      var type = typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
+      if (type != 'object') return type;
+      return obj.constructor.name.toLowerCase();
     },
     log: function log(content, detailContent) {
-      var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
+      var msg = '[' + new Date().toLocaleString() + '] ' + content + (detailContent ? ': ' + detailContent : '');
       console.log(msg);
     },
     error: function error(content, detailContent) {
-      var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
+      var msg = '[' + new Date().toLocaleString() + '] ' + content + (detailContent ? ': ' + detailContent : '');
       console.error(msg);
     },
     __urlJoin: function __urlJoin(url, params) {
@@ -27,7 +29,7 @@ define(["jquery"], function ($) {
 
       var r = [];
       for (var k in params) {
-        r.push(k + "=" + params[k]);
+        r.push(k + '=' + params[k]);
       };
 
       if (r.length <= 0) return url;
@@ -35,7 +37,7 @@ define(["jquery"], function ($) {
       params = r.join("&");
 
       var i = url.indexOf("?");
-      if (i == -1) return url + "?" + params;else if (i < url.length - 1) return url + "&" + params;else return "" + url + params;
+      if (i == -1) return url + '?' + params;else if (i < url.length - 1) return url + '&' + params;else return '' + url + params;
     },
     get: function get(url, params, dataType) {
       var _this = this;
@@ -49,7 +51,7 @@ define(["jquery"], function ($) {
 
         url = _this.__urlJoin(url, params);
 
-        _this.log("Get: " + url);
+        _this.log('Get: ' + url);
 
         url = encodeURI(url);
 
@@ -77,12 +79,12 @@ define(["jquery"], function ($) {
         };
 
         request.ontimeout = function () {
-          _this.error("Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
+          _this.error('Fail to get: ' + url + ', \u7F51\u7EDC\u8D85\u65F6');
           reject(new Error("Request Timeout"));
         };
 
         request.onabort = function () {
-          _this.error("Fail to get: " + url + ", \u4F20\u8F93\u4E2D\u65AD");
+          _this.error('Fail to get: ' + url + ', \u4F20\u8F93\u4E2D\u65AD');
           reject(new Error("Request Abort"));
         };
 
@@ -118,7 +120,7 @@ define(["jquery"], function ($) {
     html2text: function html2text(html) {
 
       function replaceElement(html, element, replaceString) {
-        var pattern = "<" + element + "(?: [^>]*?)?>[\\s\u3000]*([\\s\\S]*?)[\\s\u3000]*</" + element + ">";
+        var pattern = '<' + element + '(?: [^>]*?)?>[\\s\u3000]*([\\s\\S]*?)[\\s\u3000]*</' + element + '>';
         html = html.replace(new RegExp(pattern, 'gi'), replaceString);
         return html;
       };
@@ -142,9 +144,9 @@ define(["jquery"], function ($) {
     text2html: function text2html(text, className) {
       if (!text) return text;
 
-      var pStart = className ? "<p class=\"" + className + "\">" : '<p>';
+      var pStart = className ? '<p class="' + className + '">' : '<p>';
       var lines = text.split("\n").map(function (line) {
-        return "" + pStart + line.replace(/ /g, '&nbsp;') + "</p>";
+        return '' + pStart + line.replace(/ /g, '&nbsp;') + '</p>';
       });
       return lines.join('\n');
     },
@@ -248,7 +250,7 @@ define(["jquery"], function ($) {
           };
         }();
 
-        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
       }
     },
     listMatchWithNeighbour: function listMatchWithNeighbour(listA, listB, indexA) {
@@ -523,7 +525,7 @@ define(["jquery"], function ($) {
     },
     persistent: function persistent(o) {
       function __persistent(obj) {
-        switch (typeof obj === "undefined" ? "undefined" : _typeof(obj)) {
+        switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
           case "object":
             if (Array.prototype.isPrototypeOf(obj)) {
               var children = [];
@@ -574,7 +576,7 @@ define(["jquery"], function ($) {
                   var k = _step4.value;
 
                   var _value = __persistent(obj[k]);
-                  if (_value != undefined) _children.push("\"" + k + "\":" + _value);
+                  if (_value != undefined) _children.push('"' + k + '":' + _value);
                 }
               } catch (err) {
                 _didIteratorError4 = true;

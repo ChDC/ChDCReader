@@ -17,11 +17,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
       var _this = _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).call(this));
 
-      _this.tmpOptions = null;
       _this.book = null;
       _this.readingRecord = null;
       _this.chapterList = null;
-      _this.lastSavePageScrollTop = 0;
       _this.isNewBook = true;return _this;
     }
 
@@ -62,8 +60,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         }
 
         this.book.checkBookSources();
-        this.lastSavePageScrollTop = this.readingRecord.pageScrollTop;
-
         this.loadView();
         this.refreshChapterList();
       }
@@ -94,7 +90,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         });
 
         $("#btnNext").click(this.nextChapter.bind(this));
-        $("#btnLast").click(this.lastChapter.bind(this));
+        $("#btnLast").click(this.previousChapter.bind(this));
 
         $("#btnClose").click(function (e) {
           return app.page.closePage();
@@ -111,10 +107,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
         });
         $("#btnBadChapter").click(function (e) {
-          _this3.tmpOptions = {
+          _this3.refreshChapterList({
             excludes: [_this3.readingRecord.options.contentSourceId]
-          };
-          _this3.refreshChapterList();
+          });
         });
         $("#btnRefresh").click(function (e) {
           _this3.refreshChapterList();
@@ -159,6 +154,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             });
           });
         }
+        $('#chapterContainer').on("scroll", function (e) {
+          $(".labelChatperPercent").text(parseInt(_this3.chapterList.getScrollRate() * 100) + " %");
+        });
       }
     }, {
       key: "loadBookSource",
@@ -199,12 +197,11 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this4.book.mainSourceId).name);
 
           if (_this4.readingRecord.chapterIndex) {
-            _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.chapterIndex, undefined, oldMainSource).then(function (_ref) {
+            _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.getChapterIndex(), undefined, oldMainSource).then(function (_ref) {
               var chapter = _ref.chapter,
                   index = _ref.index;
 
-              _this4.readingRecord.chapterIndex = index;
-              _this4.readingRecord.chapterTitle = chapter.title;
+              _this4.readingRecord.setReadingRecord(index, chapter.title, {});
               _this4.refreshChapterList();
             }).catch(function (error) {
               _this4.readingRecord.reset();
@@ -265,7 +262,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
           target = $(target);
           var chapterIndex = parseInt(target.attr('data-index'));
-          _this5.readingRecord.chapterIndex = chapterIndex;
+          _this5.readingRecord.setReadingRecord(chapterIndex, "", {});
           _this5.refreshChapterList();
         };
 
@@ -293,21 +290,38 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       }
     }, {
       key: "refreshChapterList",
-      value: function refreshChapterList() {
+      value: function refreshChapterList(options) {
         var _this6 = this;
 
         app.showLoading();
+        var opts = Object.assign({}, this.readingRecord.getOptions(), options);
         if (this.chapterList) this.chapterList.close();
-        this.chapterList = new Infinitelist($('#chapterContainer'), $('#chapters'), this.onNewChapterItem.bind(this), this.onNewChapterItemFinished.bind(this));
+        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)));
+        this.chapterList.onError = function (o, e) {
+          return uiutil.showError(app.error.getMessage(e));
+        };
+        this.chapterList.onFirstNewItemFinished = function (o, e) {
+          app.hideLoading();
+          if (_this6.readingRecord.pageScrollTop) {
+            var cs = $('#chapterContainer').scrollTop();
+            $('#chapterContainer').scrollTop(cs + _this6.readingRecord.pageScrollTop);
+          }
+        };
+
         this.chapterList.onCurrentItemChanged = function (event, newValue, oldValue) {
+          newValue = $(newValue);
           var index = newValue.data('chapterIndex');
           var title = newValue.data('chapterTitle');
           var options = newValue.data('options');
-          _this6.readingRecord.setReadingRecord(index, title, options);
-          _this6.readingRecord.pageScrollTop = _this6.chapterList.getPageScorllTop();
-          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name).click(function (e) {
-            return window.open(_this6.book.getDetailLink(options.contentSourceId), '_system');
-          });
+          if (index >= 0) {
+            _this6.readingRecord.setReadingRecord(index, title, options);
+
+            $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name).click(function (e) {
+              return window.open(_this6.book.getDetailLink(options.contentSourceId), '_system');
+            });
+          } else {
+            _this6.readingRecord.setFinished(true);
+          }
           $(".labelChapterTitle").text(title);
           app.hideLoading();
         };
@@ -315,54 +329,34 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.chapterList.loadList();
       }
     }, {
-      key: "onNewChapterItem",
-      value: function onNewChapterItem(event, be, direction) {
-        var _this7 = this;
+      key: "buildLastPage",
+      value: function buildLastPage() {
+        var nc = $('.template .chapter').clone();
+        if (!nc || nc.length <= 0) return null;
 
-        var opts = Object.assign({}, this.tmpOptions);
-        this.tmpOptions = null;
-        var chapterIndex = 0;
-        if (be) {
-          Object.assign(opts, be.data('options'));
-          chapterIndex = be.data('chapterIndex') + (direction >= 0 ? 1 : -1);
-          if ('contentSourceChapterIndex' in opts) {
-            opts.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
-          }
-        } else {
-          Object.assign(opts, this.readingRecord.options);
-          chapterIndex = this.readingRecord.chapterIndex;
-        }
+        var title = '读完啦';
+        var content = new Array(123).fill("读完了读完了读完了读完了读完了读完了读完了读完了").join('\n');
+        nc.find(".chapter-title").text(title);
+        nc.find(".chapter-content").html(content);
 
-        return this.book.getChapter(chapterIndex, opts).then(function (_ref2) {
-          var chapter = _ref2.chapter,
-              title = _ref2.title,
-              index = _ref2.index,
-              options = _ref2.options;
-
-          var newItem = _this7.buildChapter(chapter, title, index, options);
-          return { newItem: newItem };
-        }).catch(function (error) {
-          app.hideLoading();
-          uiutil.showError(app.error.getMessage(error));
-          if (error == 202 || error == 203 || error == 201) {
-            return { newItem: null, type: 1 };
-          } else {
-            return { newItem: null };
-          }
-        });
-      }
-    }, {
-      key: "onNewChapterItemFinished",
-      value: function onNewChapterItemFinished(event, be, direction) {
-        if (!be && this.lastSavePageScrollTop) {
-          var cs = $('#chapterContainer').scrollTop();
-          $('#chapterContainer').scrollTop(cs + this.lastSavePageScrollTop);
-          this.lastSavePageScrollTop = 0;
-        }
+        nc.data('chapterIndex', -1);
+        nc.data('chapterTitle', title);
+        return nc[0];
       }
     }, {
       key: "buildChapter",
-      value: function buildChapter(chapter, title, index, options) {
+      value: function buildChapter() {
+        var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            chapter = _ref2.chapter,
+            index = _ref2.index,
+            options = _ref2.options;
+
+        if (!chapter) return this.buildLastPage();
+
+        this.book.getCatalog().then(function (catalog) {
+          return $(".labelBookPercent").text(parseInt(index / catalog.length * 100) + " %");
+        });
+
         var nc = $('.template .chapter').clone();
         if (!nc || nc.length <= 0) return null;
         nc.find(".chapter-title").text(chapter.title);
@@ -374,9 +368,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         nc.find(".chapter-content").html(content);
 
         nc.data('chapterIndex', index);
-        nc.data('chapterTitle', title);
+        nc.data('chapterTitle', chapter.title);
         nc.data('options', options);
-        return nc;
+        return nc[0];
       }
     }, {
       key: "nextChapter",
@@ -384,9 +378,9 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.chapterList.nextItem();
       }
     }, {
-      key: "lastChapter",
-      value: function lastChapter() {
-        this.chapterList.lastItem();
+      key: "previousChapter",
+      value: function previousChapter() {
+        this.chapterList.previousItem();
       }
     }]);
 

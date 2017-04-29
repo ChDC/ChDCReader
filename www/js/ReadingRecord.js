@@ -4,7 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(function () {
+define(['Chapter'], function (Chapter) {
   "use strict";
 
   var ReadingRecord = function () {
@@ -23,15 +23,30 @@ define(function () {
 
       this.chapterIndex = chapterIndex;
       this.chapterTitle = chapterTitle;
+      this.isFinished = false;
       this.pageScrollTop = pageScrollTop;
       this.options = options;
     }
 
     _createClass(ReadingRecord, [{
+      key: "getChapterIndex",
+      value: function getChapterIndex() {
+        return this.isFinished ? this.chapterIndex + 1 : this.chapterIndex;
+      }
+    }, {
+      key: "getOptions",
+      value: function getOptions() {
+        if (!this.isFinished) return this.options;
+        debugger;
+        var opts = Object.assign({}, this.options);
+        opts.contentSourceChapterIndex += 1;
+        return opts;
+      }
+    }, {
       key: "reset",
       value: function reset() {
-        this.chapterIndex = 0;
         this.chapterTitle = "";
+        this.chapterIndex = 0;
         this.pageScrollTop = 0;
         this.options = {};
       }
@@ -41,6 +56,31 @@ define(function () {
         this.chapterIndex = chapterIndex;
         this.chapterTitle = chapterTitle;
         this.options = options;
+        this.isFinished = false;
+      }
+    }, {
+      key: "setFinished",
+      value: function setFinished(isFinished) {
+        this.isFinished = isFinished;
+        if (isFinished) {
+          this.pageScrollTop = 0;
+        }
+      }
+    }, {
+      key: "equalChapter",
+      value: function equalChapter(chapter) {
+        return this.equalChapterTitle(chapter.title);
+      }
+    }, {
+      key: "equalChapterTitle",
+      value: function equalChapterTitle(chapterTitle) {
+        return Chapter.equalTitle2(chapterTitle, this.chapterTitle);
+      }
+    }, {
+      key: "getReadingRecordStatus",
+      value: function getReadingRecordStatus() {
+        var s = this.isFinished ? "读完" : "读到";
+        return s + "\uFF1A" + this.chapterTitle;
       }
     }]);
 

@@ -69,11 +69,11 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "28500bb600fd2cf697134386051e0b93"
+    "hash": "6f1df4f7301db1841878b9535560b159"
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "8dd8952d4b37c8c486f6ea9a395bd89b"
+    "hash": "86f84b75865dd0b50f5756571c719958"
   },
   {
     "file": "js/BookSource.js",
@@ -117,7 +117,7 @@
   },
   {
     "file": "js/ReadingRecord.js",
-    "hash": "be1ca4e789b315260e0d081566fc19d4"
+    "hash": "b3e60852cc7f1fb5fae2f1f1fd7c17f0"
   },
   {
     "file": "js/util.js",
@@ -293,7 +293,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "0f29bc88993dd77c9c81c6a6414ea02a"
+    "hash": "23830429f8f66b60f400d83b99e3b1c4"
   },
   {
     "file": "mylib/Page.js",
@@ -305,7 +305,7 @@
   },
   {
     "file": "mylib/Spider.js",
-    "hash": "87911caf22ee5fe492dd6ecfe188d313"
+    "hash": "ba34fa05243e1309b34a9c02f0f2d267"
   },
   {
     "file": "mylib/Test.js",
@@ -321,7 +321,7 @@
   },
   {
     "file": "mylib/util.js",
-    "hash": "2a0c4d643d788bbb6562803c9c4fe3fd"
+    "hash": "cc60537ba49cd8f13368e081e198ce0a"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -349,7 +349,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "c9277d38a346e8874f2ccd12937a7844"
+    "hash": "c4c59703f54ab3b12daf6565b9a3d309"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -373,15 +373,15 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "d934f460bc4bb91edad8c5037bf05c0f"
+    "hash": "aa0a95e0f9640bd2020c70b2dadaa021"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "6d07a61b521e208024f800bb4d30a65e"
+    "hash": "b2e0f0715f3954c222b3c8bd7a29a3e3"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "b18952763355859ffcd5c29d817fff91"
+    "hash": "f3a582879c46cb143a544a307970e66a"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -429,7 +429,7 @@
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "9411e3e98b2c398e95df8fdf268cb42a"
+    "hash": "7c579fc5664c53d0fd05fa00c196b6d1"
   },
   {
     "file": "test/main.test.js",
