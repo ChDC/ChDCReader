@@ -117,7 +117,7 @@
   },
   {
     "file": "js/ReadingRecord.js",
-    "hash": "b3e60852cc7f1fb5fae2f1f1fd7c17f0"
+    "hash": "d0928551be59ad5dbfb45d8784d61b8c"
   },
   {
     "file": "js/util.js",
@@ -293,7 +293,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "23830429f8f66b60f400d83b99e3b1c4"
+    "hash": "04e6472af8518a8457dc307984d1a244"
   },
   {
     "file": "mylib/Page.js",
@@ -373,7 +373,7 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "aa0a95e0f9640bd2020c70b2dadaa021"
+    "hash": "8729de9c600772c07f18c340b16eeead"
   },
   {
     "file": "page/readbook.page.html",
@@ -381,7 +381,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "f3a582879c46cb143a544a307970e66a"
+    "hash": "0f911359dc05bde3187a9882be338fbb"
   },
   {
     "file": "page/readbook.page.night1.css",

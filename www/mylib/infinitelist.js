@@ -20,7 +20,6 @@ define(["co"], function (co) {
       this.nextItemGenerator = nextItemGenerator;
       this.options = options;
 
-      this.onFirstNewItemFinished = undefined;
       this.onNewItemFinished = undefined;
       this.onNoNewItemToLoad = undefined;
       this.onError = undefined;
@@ -389,13 +388,11 @@ define(["co"], function (co) {
                 }));
 
               case 30:
-
-                if (isFirstItem && this.onFirstNewItemFinished) this.onFirstNewItemFinished(this, newItem, direction);
                 if (newItem && this.onNewItemFinished) this.onNewItemFinished(this, newItem, direction);
 
                 return _context2.abrupt("return", Promise.resolve(newItem));
 
-              case 33:
+              case 32:
               case "end":
                 return _context2.stop();
             }

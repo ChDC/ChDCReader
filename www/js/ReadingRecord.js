@@ -37,7 +37,6 @@ define(['Chapter'], function (Chapter) {
       key: "getOptions",
       value: function getOptions() {
         if (!this.isFinished) return this.options;
-        debugger;
         var opts = Object.assign({}, this.options);
         opts.contentSourceChapterIndex += 1;
         return opts;
@@ -56,6 +55,7 @@ define(['Chapter'], function (Chapter) {
         this.chapterIndex = chapterIndex;
         this.chapterTitle = chapterTitle;
         this.options = options;
+        this.pageScrollTop = 0;
         this.isFinished = false;
       }
     }, {

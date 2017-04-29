@@ -300,22 +300,21 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.chapterList.onError = function (o, e) {
           return uiutil.showError(app.error.getMessage(e));
         };
-        this.chapterList.onFirstNewItemFinished = function (o, e) {
-          app.hideLoading();
-          if (_this6.readingRecord.pageScrollTop) {
-            var cs = $('#chapterContainer').scrollTop();
-            $('#chapterContainer').scrollTop(cs + _this6.readingRecord.pageScrollTop);
-          }
-        };
 
         this.chapterList.onCurrentItemChanged = function (event, newValue, oldValue) {
           newValue = $(newValue);
+          if (!oldValue) {
+            app.hideLoading();
+            if (_this6.readingRecord.pageScrollTop) {
+              var cs = $('#chapterContainer').scrollTop();
+              $('#chapterContainer').scrollTop(cs + _this6.readingRecord.pageScrollTop);
+            }
+          }
           var index = newValue.data('chapterIndex');
           var title = newValue.data('chapterTitle');
           var options = newValue.data('options');
           if (index >= 0) {
             _this6.readingRecord.setReadingRecord(index, title, options);
-
             $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name).click(function (e) {
               return window.open(_this6.book.getDetailLink(options.contentSourceId), '_system');
             });
@@ -335,7 +334,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         if (!nc || nc.length <= 0) return null;
 
         var title = '读完啦';
-        var content = new Array(123).fill("读完了读完了读完了读完了读完了读完了读完了读完了").join('\n');
+        var content = "\n        <h2>\u60A8\u5DF2\u7ECF\u8BFB\u5B8C\u4E86\u672C\u4E66\u7684\u6240\u6709\u66F4\u65B0\uFF01</h2>\n        <h2>\u60F3\u8981\u66F4\u5FEB\u7684\u8BFB\u5230\u672C\u4E66\u7684\u66F4\u65B0\uFF0C\u8BF7\u53BB\u672C\u4E66\u7684\u5B98\u65B9\u7F51\u7AD9\uFF1A</h2>\n        <h2><a href=\"" + this.book.getDetailLink() + "\">\u5B98\u65B9\u7F51\u7AD9</a></h2>\n        <hr/>\n        <h2>\u60A8\u5DF2\u7ECF\u8BFB\u5B8C\u4E86\u672C\u4E66\u7684\u6240\u6709\u66F4\u65B0\uFF01</h2>\n        <h2>\u60F3\u8981\u66F4\u5FEB\u7684\u8BFB\u5230\u672C\u4E66\u7684\u66F4\u65B0\uFF0C\u8BF7\u53BB\u672C\u4E66\u7684\u5B98\u65B9\u7F51\u7AD9\uFF1A</h2>\n        <h2><a href=\"" + this.book.getDetailLink() + "\">\u5B98\u65B9\u7F51\u7AD9</a></h2>\n        <hr/>\n        <h2>\u60A8\u5DF2\u7ECF\u8BFB\u5B8C\u4E86\u672C\u4E66\u7684\u6240\u6709\u66F4\u65B0\uFF01</h2>\n        <h2>\u60F3\u8981\u66F4\u5FEB\u7684\u8BFB\u5230\u672C\u4E66\u7684\u66F4\u65B0\uFF0C\u8BF7\u53BB\u672C\u4E66\u7684\u5B98\u65B9\u7F51\u7AD9\uFF1A</h2>\n        <h2><a href=\"" + this.book.getDetailLink() + "\">\u5B98\u65B9\u7F51\u7AD9</a></h2>\n        <hr/>\n      ";
         nc.find(".chapter-title").text(title);
         nc.find(".chapter-content").html(content);
 
