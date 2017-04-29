@@ -198,8 +198,8 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
   }
 
   BookSource.settings = {
-    refreshCatalogInterval: 60 * 60 * 24, // 单位秒，也就是一天
-    refreshLastestChapterInterval: 60 * 60 * 24 // 单位秒，也就是一天
+    refreshCatalogInterval: 60 * 60 * 1, // 单位秒，也就是一个小时
+    refreshLastestChapterInterval: 60 * 60 * 1 // 单位秒，也就是一个小时
   };
 
   // 用于标记持久化的属性
