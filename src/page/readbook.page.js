@@ -264,13 +264,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this))
       );
       this.chapterList.onError = (o,e) => uiutil.showError(app.error.getMessage(e));
-      // this.chapterList.onFirstNewItemFinished = (o,e) => {
-      //   app.hideLoading();
-      //   if(this.readingRecord.pageScrollTop){
-      //     const cs = $('#chapterContainer').scrollTop();
-      //     $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
-      //   }
-      // };
 
       this.chapterList.onCurrentItemChanged = (event, newValue, oldValue) => {
         newValue = $(newValue);
@@ -307,7 +300,20 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         return null;
 
       let title = '读完啦';
-      let content = new Array(123).fill("读完了读完了读完了读完了读完了读完了读完了读完了").join('\n');
+      let content = `
+        <h2>您已经读完了本书的所有更新！</h2>
+        <h2>想要更快的读到本书的更新，请去本书的官方网站：</h2>
+        <h2><a href="${this.book.getDetailLink()}">官方网站</a></h2>
+        <hr/>
+        <h2>您已经读完了本书的所有更新！</h2>
+        <h2>想要更快的读到本书的更新，请去本书的官方网站：</h2>
+        <h2><a href="${this.book.getDetailLink()}">官方网站</a></h2>
+        <hr/>
+        <h2>您已经读完了本书的所有更新！</h2>
+        <h2>想要更快的读到本书的更新，请去本书的官方网站：</h2>
+        <h2><a href="${this.book.getDetailLink()}">官方网站</a></h2>
+        <hr/>
+      `;
       nc.find(".chapter-title").text(title);
       nc.find(".chapter-content").html(content);
 
