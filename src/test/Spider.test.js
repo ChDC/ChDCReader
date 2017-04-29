@@ -1,4 +1,4 @@
-define(["chai", "Spider"], function(chai, Spider){
+define(["chai", 'util', "Spider"], function(chai, util, Spider){
 
   /************************************
     测试用例规范：
@@ -16,7 +16,7 @@ define(["chai", "Spider"], function(chai, Spider){
     let config;
 
     before(() => {
-      spider = new Spider();
+      spider = new Spider(util.ajax.bind(util));
       config = {
         "request": "http://se.qidian.com/?kw={keyword}",
         "response": {

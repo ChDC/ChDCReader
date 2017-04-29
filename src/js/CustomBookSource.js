@@ -4,25 +4,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
   // 定义一个用于存放自定义获取信息的钩子的集合
   let customBookSource = {
 
-    // qidian: {
-    //   csrfToken: "",
-    //   getCSRToken(){
-    //     const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-    //     if(typeof cordovaHTTP != 'undefined'){
-    //       cordovaHTTP.get(url, {}, {},
-    //         function(response){
-    //           debugger;
-    //         },
-    //         function(e){
-    //           debugger;
-    //         });
-    //     }
-    //   },
-    //   init(){
-    //     return this.getCSRToken();
-    //   },
-    // },
-
     comico: {
 
       beforeSearchBook(){
@@ -147,6 +128,37 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
             chapter.content = imgs.map(img => `<img src="${img}">`).join('\n');
             return chapter;
           });
+      }
+    },
+
+    "chuangshi": {
+      getChapter(bsid, chapter={}){
+
+        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+
+        if(!chapter.link) return Promise.reject(206);
+
+        let url = "http://chuangshi.qq.com/index.php/Bookreader/462523/25?lang=zhs";
+        debugger;
+        return util.cordovaAjax("get", url, {}, 'json',
+              { Referer: "http://chuangshi.qq.com/" })
+          .then(data => {
+            debugger;
+            console.log(data);
+            let json = JSON.parse(html);
+            let content = decryptByBaseCode(json.Content, 30);
+          });
+
+        function decryptByBaseCode(text, base) {
+            if (!text) return text;
+            var arrStr = [],
+            arrText = text.split('\\');
+            for (var i = 1,
+            len = arrText.length; i < len; i++) {
+                arrStr.push(String.fromCharCode(parseInt(arrText[i], base)));
+            }
+            return arrStr.join('');
+        }
       }
     }
   };

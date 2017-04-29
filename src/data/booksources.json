@@ -1,6 +1,6 @@
 {
 
-  "valid": ["u17", "comico", "qq", "qidian", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
+  "valid": ["u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
   "sources": {
     "qq": {
       "id": "qq",
@@ -312,7 +312,8 @@
       "catalog": {
         "request": {
           "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
-          "type": "JSON"
+          "type": "JSON",
+          "ajax": "cordova"
         },
         "response": {
           "type": "array",

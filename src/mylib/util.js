@@ -94,24 +94,62 @@ define(function(){
     //         });
     // },
 
+    ajax(method, url, params, dataType, headers,
+                  options){
+      return this.get(url, params, dataType, options);
+    },
+
+    cordovaAjax(method='get', url, params, dataType, headers,
+                  options){
+      if(typeof cordovaHTTP == 'undefined')
+        return this.ajax(method, url, params, dataType, headers, options);
+      return new Promise((resolve, reject) => {
+        if(!url) return reject(new Error("url is null"));
+
+        let func;
+        switch(method.toLowerCase()){
+          case "get":
+            func = cordovaHTTP.get.bind(cordovaHTTP);
+            break;
+
+          case "post":
+            func = cordovaHTTP.post.bind(cordovaHTTP);
+            break;
+          default:
+            return reject(new Error("method is illegal"));
+        }
+
+        func(url, params, headers,
+          function(response) {
+            switch(dataType){
+              case "json":
+                resolve(JSON.parse(response.data));
+                break;
+              default:
+                resolve(response.data);
+                break;
+            }
+          },
+          function(response) {
+            reject(response.error);
+          });
+      });
+    },
+
     /*
     * 原始的 HTTP Get
     * url: 完整的 URL
     * params: 参数
     */
     get(url, params, dataType, {timeout=5}={}) {
+
       return new Promise((resolve, reject) => {
         if(!url) return reject(new Error("url is null"));
-
         url = this.__urlJoin(url, params);
-
         this.log(`Get: ${url}`);
-
         url = encodeURI(url);
-
         let request = new XMLHttpRequest();
         request.open("GET", url);
-
         request.timeout = timeout * 1000;
 
         switch(dataType){

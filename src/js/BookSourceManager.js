@@ -7,7 +7,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     constructor(configFileOrConfig){
 
       this.__sources;
-      this.__spider = new Spider();
+      this.__spider = new Spider({
+        "default": util.ajax.bind(util),
+        "cordova": util.cordovaAjax.bind(util),
+      });
 
       this.loadConfig(configFileOrConfig);
       this.addCustomSourceFeature();
@@ -301,7 +304,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
-
 
       return this.__spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
         .then(data => {
