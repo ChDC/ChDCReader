@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "0d8b5cc0bbde6c82e2328ddd739ce4be"
+    "hash": "7c98b9198571f0be6bc45f04e8d4d8ba"
   },
   {
     "file": "data/booksources.test.json",
@@ -69,7 +69,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "5bd7e5d87720aaa46672a004a0fae9c8"
+    "hash": "b0a5c8fa914066b77e028bea40e215ef"
   },
   {
     "file": "js/BookShelf.js",
@@ -93,7 +93,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "9063854f537870990ba4f207a74db67e"
+    "hash": "371babb1ba5b93dc1e058be01ef40bd5"
   },
   {
     "file": "js/draggable.js",
