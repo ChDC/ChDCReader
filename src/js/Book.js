@@ -470,8 +470,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
 
       return co(function*(){
         for(let i = 0; i < nextCount; i++){
-          let value = yield citer.next();
-          console.log(value);
+          yield citer.next();
         }
       });
 

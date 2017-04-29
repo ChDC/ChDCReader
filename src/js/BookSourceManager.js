@@ -180,7 +180,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
       }
 
-      bss.searched = true;
+      bss.__searched = true;
       book.sources[bs.id] = bss;
 
       book.mainSourceId = bs.id;  // 主要来源
