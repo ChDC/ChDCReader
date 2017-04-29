@@ -577,7 +577,7 @@ define(function () {
                   var v = _step3.value;
 
                   var value = __persistent(v);
-                  if (value != undefined) children.push(value);
+                  if (value !== undefined) children.push(value);
                 }
               } catch (err) {
                 _didIteratorError3 = true;
@@ -615,7 +615,7 @@ define(function () {
                   var k = _step4.value;
 
                   var _value = __persistent(obj[k]);
-                  if (_value != undefined) _children.push('"' + k + '":' + _value);
+                  if (_value !== undefined) _children.push('"' + k + '":' + _value);
                 }
               } catch (err) {
                 _didIteratorError4 = true;
