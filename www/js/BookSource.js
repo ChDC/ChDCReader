@@ -271,10 +271,10 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
   }();
 
   BookSource.settings = {
-    refreshCatalogInterval: 600,
-    refreshLastestChapterInterval: 600 };
+    refreshCatalogInterval: 60 * 60 * 1,
+    refreshLastestChapterInterval: 60 * 60 * 1 };
 
-  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "needSaveCatalog", "lastestChapter"];
+  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "__updatedCatalogTime", "__updatedLastestChapterTime", "needSaveCatalog", "lastestChapter"];
 
   return BookSource;
 });
