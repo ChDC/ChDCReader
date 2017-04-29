@@ -69,7 +69,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "6f1df4f7301db1841878b9535560b159"
+    "hash": "5bd7e5d87720aaa46672a004a0fae9c8"
   },
   {
     "file": "js/BookShelf.js",
@@ -81,7 +81,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "ecf4b1443e8b8cb33d83f7053e575e0a"
+    "hash": "274c5b68750cb679a839309117dedc1e"
   },
   {
     "file": "js/Chapter.js",

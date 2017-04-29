@@ -639,7 +639,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         var citer = this.buildChapterIterator(chapterIndex, 1, options);
 
         return co(regeneratorRuntime.mark(function _callee2() {
-          var i, value;
+          var i;
           return regeneratorRuntime.wrap(function _callee2$(_context5) {
             while (1) {
               switch (_context5.prev = _context5.next) {
@@ -648,7 +648,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                 case 1:
                   if (!(i < nextCount)) {
-                    _context5.next = 9;
+                    _context5.next = 7;
                     break;
                   }
 
@@ -656,16 +656,11 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                   return citer.next();
 
                 case 4:
-                  value = _context5.sent;
-
-                  console.log(value);
-
-                case 6:
                   i++;
                   _context5.next = 1;
                   break;
 
-                case 9:
+                case 7:
                 case "end":
                   return _context5.stop();
               }

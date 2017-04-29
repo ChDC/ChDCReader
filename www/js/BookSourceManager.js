@@ -344,7 +344,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
           bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');
         }
 
-        bss.searched = true;
+        bss.__searched = true;
         book.sources[bs.id] = bss;
 
         book.mainSourceId = bs.id;
