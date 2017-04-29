@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "7c98b9198571f0be6bc45f04e8d4d8ba"
+    "hash": "b1563c140285d97ed226754fa7fdc919"
   },
   {
     "file": "data/booksources.test.json",
@@ -21,7 +21,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "d77059d2b8be8edef1c4e6eab153b944"
+    "hash": "59dcfe3910e080d351c6eae4123ddc3b"
   },
   {
     "file": "img/book_cover.png",
@@ -46,6 +46,14 @@
   {
     "file": "img/logo/qq.png",
     "hash": "86933ad5cde0c76e4f48f730fe58629f"
+  },
+  {
+    "file": "img/logo/sfacg.png",
+    "hash": "320034ec92d2155fea2960a12663b4d7"
+  },
+  {
+    "file": "img/logo/sfnovel.png",
+    "hash": "320034ec92d2155fea2960a12663b4d7"
   },
   {
     "file": "img/logo/u17.png",
@@ -85,7 +93,7 @@
   },
   {
     "file": "js/Chapter.js",
-    "hash": "4fa4092e77f933f140f19bf551f9f9a4"
+    "hash": "99c75047e74576e423cbd115302e0222"
   },
   {
     "file": "js/config.js",
@@ -305,7 +313,7 @@
   },
   {
     "file": "mylib/Spider.js",
-    "hash": "0b1cf74fb96ef88d8df90b8e5854bbf1"
+    "hash": "42bfd42f62705fc6026577cadba48913"
   },
   {
     "file": "mylib/Test.js",
@@ -425,11 +433,11 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "1911bc1d73ce39dfe1bae7238f408cdf"
+    "hash": "dfe1e8c05ba77390df8411b72d87778e"
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "7c579fc5664c53d0fd05fa00c196b6d1"
+    "hash": "40cfd50dfad4af39c6b3da6173675012"
   },
   {
     "file": "test/main.test.js",
@@ -441,7 +449,7 @@
   },
   {
     "file": "test/Spider.test.js",
-    "hash": "bffe0e4a266795e8194af46486a29537"
+    "hash": "fb626ccfd4b731c9fe1a72dcb34b0914"
   },
   {
     "file": "test/translate.test.js",
