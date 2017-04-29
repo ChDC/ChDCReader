@@ -264,22 +264,29 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this))
       );
       this.chapterList.onError = (o,e) => uiutil.showError(app.error.getMessage(e));
-      this.chapterList.onFirstNewItemFinished = (o,e) => {
-        app.hideLoading();
-        if(this.readingRecord.pageScrollTop){
-          const cs = $('#chapterContainer').scrollTop();
-          $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
-        }
-      };
+      // this.chapterList.onFirstNewItemFinished = (o,e) => {
+      //   app.hideLoading();
+      //   if(this.readingRecord.pageScrollTop){
+      //     const cs = $('#chapterContainer').scrollTop();
+      //     $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
+      //   }
+      // };
 
       this.chapterList.onCurrentItemChanged = (event, newValue, oldValue) => {
         newValue = $(newValue);
+        if(!oldValue){
+          // 当前是第一个元素
+          app.hideLoading();
+          if(this.readingRecord.pageScrollTop){
+            const cs = $('#chapterContainer').scrollTop();
+            $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
+          }
+        }
         const index = newValue.data('chapterIndex');
         const title = newValue.data('chapterTitle');
         const options = newValue.data('options');
         if(index >= 0){
           this.readingRecord.setReadingRecord(index, title, options);
-          // this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
           $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name)
             .click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
         }

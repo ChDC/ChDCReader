@@ -24,7 +24,6 @@ define(['Chapter'], function(Chapter) {
     getOptions(){
       if(!this.isFinished)
         return this.options;
-      debugger;
       let opts = Object.assign({}, this.options);
       opts.contentSourceChapterIndex += 1;
       return opts;
@@ -43,6 +42,7 @@ define(['Chapter'], function(Chapter) {
       this.chapterIndex = chapterIndex;
       this.chapterTitle = chapterTitle;
       this.options = options;
+      this.pageScrollTop = 0;
       this.isFinished = false;
     }
 

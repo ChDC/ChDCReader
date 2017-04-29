@@ -17,7 +17,7 @@ define(["co"], function(co) {
       this.options = options;
 
       // 事件
-      this.onFirstNewItemFinished = undefined; // 当获取第一个列表元素完成的函数
+      // this.onFirstNewItemFinished = undefined; // 当获取第一个列表元素完成的函数
       this.onNewItemFinished = undefined; // 获取列表元素完成的函数
       this.onNoNewItemToLoad = undefined; // 当没有元素可以获取到的时候触发
       this.onError = undefined;
@@ -339,8 +339,8 @@ define(["co"], function(co) {
           })));
       }
 
-      if(isFirstItem && this.onFirstNewItemFinished)
-        this.onFirstNewItemFinished(this, newItem, direction);
+      // if(isFirstItem && this.onFirstNewItemFinished)
+      //   this.onFirstNewItemFinished(this, newItem, direction);
       if(newItem && this.onNewItemFinished)
         this.onNewItemFinished(this, newItem, direction);
 
