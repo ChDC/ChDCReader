@@ -368,7 +368,7 @@
               "type": "string",
               "element": "div.search_r_info > h1 > a",
               "attribute": "href",
-              "extract": "http://chuangshi.qq.com/bk/xh/(\\d+).html"
+              "extract": "(\\d+).html"
             }
           }
         },
