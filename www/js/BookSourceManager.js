@@ -14,7 +14,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       _classCallCheck(this, BookSourceManager);
 
       this.__sources;
-      this.__spider = new Spider();
+      this.__spider = new Spider({
+        "default": util.ajax.bind(util),
+        "cordova": util.cordovaAjax.bind(util)
+      });
 
       this.loadConfig(configFileOrConfig);
       this.addCustomSourceFeature();
@@ -344,7 +347,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
           bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');
         }
 
-        bss.searched = true;
+        bss.__searched = true;
         book.sources[bs.id] = bss;
 
         book.mainSourceId = bs.id;

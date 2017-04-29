@@ -489,7 +489,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                             break;
                           }
 
-                          return _context2.abrupt("return", Promise.reject(_context2.t1));
+                          throw _context2.t1;
 
                         case 38:
                           _context2.next = 40;
@@ -612,12 +612,11 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         return {
           next: function next() {
             if (finished) return Promise.resolve({ done: true });
-            return self.getChapter(chapterIndex, options).then(function (c) {
-              return map(c);
-            }).then(function (c) {
+            return self.getChapter(chapterIndex, options).then(function (result) {
+              Object.assign(options, result.options);
               chapterIndex += direction >= 0 ? 1 : -1;
               options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
-              return { value: c, done: false };
+              return { value: map(result), done: false };
             }).catch(function (error) {
               if (error == 203 || error == 202) {
                 finished = true;
@@ -639,7 +638,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         var citer = this.buildChapterIterator(chapterIndex, 1, options);
 
         return co(regeneratorRuntime.mark(function _callee2() {
-          var i, value;
+          var i;
           return regeneratorRuntime.wrap(function _callee2$(_context5) {
             while (1) {
               switch (_context5.prev = _context5.next) {
@@ -648,7 +647,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                 case 1:
                   if (!(i < nextCount)) {
-                    _context5.next = 9;
+                    _context5.next = 7;
                     break;
                   }
 
@@ -656,16 +655,11 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                   return citer.next();
 
                 case 4:
-                  value = _context5.sent;
-
-                  console.log(value);
-
-                case 6:
                   i++;
                   _context5.next = 1;
                   break;
 
-                case 9:
+                case 7:
                 case "end":
                   return _context5.stop();
               }

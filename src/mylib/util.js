@@ -94,24 +94,65 @@ define(function(){
     //         });
     // },
 
+    ajax(method, url, params, dataType, headers,
+                  options){
+      return this.get(url, params, dataType, options);
+    },
+
+    cordovaAjax(method='get', url, params={}, dataType, headers={},
+                  options){
+      if(typeof cordovaHTTP == 'undefined')
+        return this.ajax(method, url, params, dataType, headers, options);
+      return new Promise((resolve, reject) => {
+        if(!url) return reject(new Error("url is null"));
+
+        let func;
+        switch(method.toLowerCase()){
+          case "get":
+            func = cordovaHTTP.get.bind(cordovaHTTP);
+            break;
+
+          case "post":
+            func = cordovaHTTP.post.bind(cordovaHTTP);
+            break;
+          default:
+            return reject(new Error("method is illegal"));
+        }
+
+        if(!('User-Agent' in headers))
+          headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
+
+        func(url, params, headers,
+          function(response) {
+            switch(dataType){
+              case "json":
+                resolve(JSON.parse(response.data));
+                break;
+              default:
+                resolve(response.data);
+                break;
+            }
+          },
+          function(response) {
+            reject(response.error);
+          });
+      });
+    },
+
     /*
     * 原始的 HTTP Get
     * url: 完整的 URL
     * params: 参数
     */
     get(url, params, dataType, {timeout=5}={}) {
+
       return new Promise((resolve, reject) => {
         if(!url) return reject(new Error("url is null"));
-
         url = this.__urlJoin(url, params);
-
         this.log(`Get: ${url}`);
-
         url = encodeURI(url);
-
         let request = new XMLHttpRequest();
         request.open("GET", url);
-
         request.timeout = timeout * 1000;
 
         switch(dataType){
@@ -625,7 +666,7 @@ define(function(){
               let children = [];
               for(let v of obj){
                 let value = __persistent(v);
-                if(value != undefined)
+                if(value !== undefined)
                   children.push(value);
               }
               return '[' + children.join(",") + ']';
@@ -646,7 +687,7 @@ define(function(){
               let children = [];
               for(let k of keys){
                 let value = __persistent(obj[k]);
-                if(value != undefined)
+                if(value !== undefined)
                   children.push(`"${k}":${value}`);
               }
               return '{' + children.join(",") + '}';

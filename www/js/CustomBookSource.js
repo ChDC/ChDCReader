@@ -100,6 +100,44 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
           return chapter;
         });
       }
+    },
+
+    "chuangshi": {
+      getChapter: function getChapter(bsid) {
+        var _this = this;
+
+        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+
+        if (!chapter.link) return Promise.reject(206);
+        return util.cordovaAjax("get", chapter.link, {}, 'json', {
+          "Referer": "http://chuangshi.qq.com/",
+          "X-Requested-With": "XMLHttpRequest"
+        }).then(function (json) {
+          var content = decryptByBaseCode(json.Content, 30);
+          var bsm = _this.__sources[bsid];
+          var data = _this.__spider.parse(content, "html", bsm.chapter.response, chapter.link, {});
+          var c = new Chapter();
+          c.content = _this.__spider.clearHtml(data.contentHTML);
+
+          if (!c.content) return Promise.reject(206);
+          c.link = chapter.link;
+          c.title = data.title;
+          return c;
+        });
+
+        function decryptByBaseCode(text, base) {
+          if (!text) return text;
+          var arrStr = [],
+              arrText = text.split('\\');
+          for (var i = 1, len = arrText.length; i < len; i++) {
+            arrStr.push(String.fromCharCode(parseInt(arrText[i], base)));
+          }
+          return arrStr.join('');
+        }
+      }
     }
   };
 

@@ -8,12 +8,14 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["util"], function (util) {
+define(function () {
   var Spider = function () {
-    function Spider() {
+    function Spider(ajax) {
       var _this = this;
 
       _classCallCheck(this, Spider);
+
+      this.ajax = ajax;
 
       this.secureAttributeList = [['src', 'data-src']];
 
@@ -40,7 +42,7 @@ define(["util"], function (util) {
           "url": dict.url
         };
 
-        if (util.type(request) == "string") {
+        if (this.type(request) == "string") {
           request = {
             "url": request
           };
@@ -50,37 +52,46 @@ define(["util"], function (util) {
 
         var method = (request.method || "GET").toLowerCase();
         var type = (request.type || "HTML").toLowerCase();
+        var headers = request.headers || {};
 
         var url = this.format(request.url, dict);
-        dict.host = url;
 
-        var requestPromise = void 0;
-
-        switch (method) {
-          case "post":
+        var ajax = void 0;
+        switch (this.type(this.ajax)) {
+          case "function":
+            ajax = this.ajax;
             break;
-          case "get":
-            requestPromise = util.get(url, request.params, null, { timeout: request.timeout });
+          case "object":
+            if (request.ajax && request.ajax in this.ajax) ajax = this.ajax[request.ajax];else if ('default' in this.ajax) ajax = this.ajax['default'];else if ('' in this.ajax) ajax = this.ajax[''];else throw new Error("cat't find the ajax");
+            break;
+          case "array":
+            if (request.ajax && request.ajax in this.ajax) ajax = this.ajax[request.ajax];else ajax = this.ajax[0];
             break;
           default:
-            throw new Error("Illegal type");
+            throw new Error("illegal ajax");
+            break;
         }
+        return ajax(method, url, request.params, undefined, headers, { timeout: request.timeout }).then(function (data) {
+          return _this2.parse(data, type, response, url, dict);
+        });
+      }
+    }, {
+      key: 'parse',
+      value: function parse(data, type, response, host) {
+        var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+
+        dict.host = host;
 
         switch (type) {
           case "html":
-            return requestPromise.then(function (data) {
-              data = _this2.filterHtmlContent(data);
-              data = _this2.__transformHTMLTagProperty(data);
-              var html = document.createElement("div");
-              html.innerHTML = data;
-
-              return _this2.__handleResponse(html, response, null, dict);
-            });
+            data = this.filterHtmlContent(data);
+            data = this.__transformHTMLTagProperty(data);
+            var html = document.createElement("div");
+            html.innerHTML = data;
+            return this.__handleResponse(html, response, null, dict);
           case "json":
-            return requestPromise.then(function (data) {
-              var json = JSON.parse(data);
-              return _this2.__handleResponse(json, response, null, dict);
-            });
+            var json = JSON.parse(data);
+            return this.__handleResponse(json, response, null, dict);
           default:
             throw new Error("Illegal type");
         }
@@ -94,7 +105,7 @@ define(["util"], function (util) {
 
         if (!response) return undefined;
 
-        switch (util.type(response)) {
+        switch (this.type(response)) {
           case "array":
             return this.__handleArray(data, response, keyName, globalDict, dict);
           case "object":
@@ -176,7 +187,7 @@ define(["util"], function (util) {
                 return _this3.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                var gatherDict = Object.assign({}, globalDict, util.type(m) == "object" ? m : {});
+                var gatherDict = Object.assign({}, globalDict, _this3.type(m) == "object" ? m : {});
                 var validCode = '"use strict"\n' + _this3.format(response.valideach, gatherDict, true);
                 return eval(validCode);
               });
@@ -284,11 +295,11 @@ define(["util"], function (util) {
 
               if (keyName.match(pattern)) {
                 matched = true;
-                if (util.type(attr) == "string") {
+                if (this.type(attr) == "string") {
                   result = element.getAttribute(attr);
 
                   if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
-                } else if (util.type(attr) == "function") result = attr(element);
+                } else if (this.type(attr) == "function") result = attr(element);
               }
             }
           } catch (err) {
@@ -337,6 +348,7 @@ define(["util"], function (util) {
     }, {
       key: '__getDataFromObject',
       value: function __getDataFromObject(obj, key) {
+        var _this4 = this;
 
         function operatorFilter(element, args) {
           var codeStart = '"use strict"\n';
@@ -383,7 +395,7 @@ define(["util"], function (util) {
                 v: undefined
               };
 
-            if (util.type(result) == 'array') {
+            if (_this4.type(result) == 'array') {
               if (operator == 'concat') result = result.reduce(function (s, m) {
                 return s.concat(m[k]);
               }, []);else if (operator == "filter") result = result.map(function (m) {
@@ -396,7 +408,7 @@ define(["util"], function (util) {
             } else {
               if (operator == "filter") {
                 result = result[k];
-                if (util.type(result) == 'array') result = result.filter(function (e) {
+                if (_this4.type(result) == 'array') result = result.filter(function (e) {
                   return operatorFilter(e, args);
                 });
               } else result = result[k];
@@ -461,7 +473,7 @@ define(["util"], function (util) {
         if (!string) return string;
 
         var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-          return p1 in object ? stringify ? JSON.stringify(object[p1]) : object[p1] : '{' + p1 + '}';
+          return object[p1] !== undefined ? stringify ? JSON.stringify(object[p1]) : object[p1] : '';
         });
         return result;
       }
@@ -493,7 +505,7 @@ define(["util"], function (util) {
     }, {
       key: 'filterHtmlContent',
       value: function filterHtmlContent(html) {
-        var _this4 = this;
+        var _this5 = this;
 
         if (!html) return html;
 
@@ -502,7 +514,7 @@ define(["util"], function (util) {
 
         var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
         html = blackList.reduce(function (html, be) {
-          return _this4.__filterElement(html, be);
+          return _this5.__filterElement(html, be);
         }, html);
         return html;
       }
@@ -588,6 +600,13 @@ define(["util"], function (util) {
         pattern = '<' + element + '([^>]*?)?>';
         html = html.replace(new RegExp(pattern, 'gi'), '');
         return html;
+      }
+    }, {
+      key: 'type',
+      value: function type(obj) {
+        var type = typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
+        if (type != 'object') return type;
+        return obj.constructor.name.toLowerCase();
       }
     }]);
 

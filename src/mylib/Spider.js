@@ -1,4 +1,4 @@
-define(["util"], function(util){
+define(function(){
   /******* 格式说明 ************
 
     request 设置请求
@@ -63,7 +63,17 @@ define(["util"], function(util){
 
   class Spider{
 
-    constructor(){
+    // ajax：用于发送 HTTP 请求的对象
+    // 可以设置为 map，在 request 中用 ajax 来指定使用哪个 ajax，默认使用 default 键指定的 ajax
+    // * method: "POST", "GET"
+    // * url
+    // * data
+    // * dataType -> String: json
+    // * headers -> Object
+    // * options -> Object
+    //    * timeout
+    constructor(ajax){
+      this.ajax = ajax;
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.secureAttributeList = [
         ['src', 'data-src'],
@@ -90,7 +100,7 @@ define(["util"], function(util){
           "url": dict.url
         };
 
-      if(util.type(request) == "string"){
+      if(this.type(request) == "string"){
         request = {
           "url": request
         };
@@ -102,41 +112,56 @@ define(["util"], function(util){
       // 补充缺省值
       let method = (request.method || "GET").toLowerCase();
       let type = (request.type || "HTML").toLowerCase();
+      let headers = request.headers || {};
 
       // 获取 URL
       let url = this.format(request.url, dict);
-      dict.host = url; // 用于修复获取到的 URL
 
-      let requestPromise;
-
-      switch(method){
-        case "post":
-          // TODO: POST
+      let ajax;
+      switch(this.type(this.ajax)){
+        case "function":
+          ajax = this.ajax;
           break;
-        case "get":
-          requestPromise = util.get(url, request.params, null,
-                  {timeout: request.timeout});
+        case "object":
+          if(request.ajax && request.ajax in this.ajax)
+            ajax = this.ajax[request.ajax];
+          else if('default' in this.ajax)
+            ajax = this.ajax['default'];
+          else if('' in this.ajax)
+            ajax = this.ajax[''];
+          else
+            throw new Error("cat't find the ajax");
+          break;
+        case "array":
+          if(request.ajax && request.ajax in this.ajax)
+            ajax = this.ajax[request.ajax];
+          else
+            ajax = this.ajax[0];
           break;
         default:
-          throw new Error("Illegal type");
+          throw new Error("illegal ajax");
+          break;
       }
+      return ajax(method, url, request.params, undefined, headers,
+                  {timeout: request.timeout})
+        .then(data => this.parse(data, type, response, url, dict));
+    }
+
+    // 解析数据
+    parse(data, type, response, host, dict={}){
+      // 获取 URL
+      dict.host = host; // 用于修复获取到的 URL
 
       switch(type){
         case "html":
-          return requestPromise
-            .then(data => {
-              data = this.filterHtmlContent(data);
-              data = this.__transformHTMLTagProperty(data);
-              let html = document.createElement("div");
-              html.innerHTML = data;
-
-              return this.__handleResponse(html, response, null,  dict);
-            });
+          data = this.filterHtmlContent(data);
+          data = this.__transformHTMLTagProperty(data);
+          let html = document.createElement("div");
+          html.innerHTML = data;
+          return this.__handleResponse(html, response, null,  dict);
         case "json":
-          return requestPromise.then(data => {
-            let json = JSON.parse(data);
-            return this.__handleResponse(json, response, null, dict);
-          });
+          let json = JSON.parse(data);
+          return this.__handleResponse(json, response, null, dict);
         default:
           throw new Error("Illegal type");
       }
@@ -147,7 +172,7 @@ define(["util"], function(util){
 
       if(!response) return undefined;
 
-      switch(util.type(response)){
+      switch(this.type(response)){
         case "array":
           return this.__handleArray(data, response, keyName, globalDict, dict);
         case "object":
@@ -203,7 +228,7 @@ define(["util"], function(util){
           if(response.valideach)
             result = result.filter(m => {
               // 有验证的类型
-              let gatherDict = Object.assign({}, globalDict, util.type(m) == "object" ? m : {});
+              let gatherDict = Object.assign({}, globalDict, this.type(m) == "object" ? m : {});
               const validCode = '"use strict"\n' + this.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
@@ -310,13 +335,13 @@ define(["util"], function(util){
         for(let [pattern, attr] of this.specialKey2AttributeList){
           if(keyName.match(pattern)){
             matched = true;
-            if(util.type(attr) == "string"){
+            if(this.type(attr) == "string"){
               result = element.getAttribute(attr);
               // 修复 url
               if(this.fixurlAttributeList.indexOf(attr) >= 0)
                 result = this.fixurl(result, globalDict.host);
             }
-            else if(util.type(attr) == "function")
+            else if(this.type(attr) == "function")
               result = attr(element);
           }
         }
@@ -393,7 +418,7 @@ define(["util"], function(util){
 
         if(!result) return undefined;
 
-        if(util.type(result) == 'array'){
+        if(this.type(result) == 'array'){
           // 多个值的情况
           if(operator == 'concat')
             result = result.reduce((s, m) => s.concat(m[k]), []);
@@ -407,7 +432,7 @@ define(["util"], function(util){
           // 单个值的情况
           if(operator == "filter"){
             result = result[k];
-            if(util.type(result) == 'array')
+            if(this.type(result) == 'array')
               result = result.filter(e => operatorFilter(e, args));
           }
           else
@@ -457,12 +482,12 @@ define(["util"], function(util){
     }
 
     // 字符串格式化，类似于 Python 的 string.format
-    // stringify 为 true 表示将属性先 stringify 在放入
+    // stringify 为 true 表示将属性先 stringify 再放入
     format(string, object={}, stringify=false){
       if(!string) return string;
 
       const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          p1 in object ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : `{${p1}}`
+          object[p1] !== undefined ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : ''
         )
       return result;
     }
@@ -546,6 +571,25 @@ define(["util"], function(util){
       pattern = `<${element}([^>]*?)?>`;
       html = html.replace(new RegExp(pattern, 'gi'), '');
       return html;
+    }
+
+    /*
+    * 判断对象的类型
+    * null -> null
+    * undefined -> undefined
+    * [] -> array
+    * {} -> object
+    * '' -> string
+    * 0.1 -> number
+    * new Error() -> error
+    * ()->{} -> function
+    */
+    type(obj){
+      // return $.type(obj); // 只有这里用了 jquery
+      let type = typeof(obj);
+      if(type != 'object')
+        return type;
+      return obj.constructor.name.toLowerCase();
     }
 
   }

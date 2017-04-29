@@ -241,13 +241,14 @@
          "chapters" : [
             {
                "content" : "的",
-               "link" : "http://chuangshi.qq.com/bk/xh/AGwEMl1iVjIAOFRn-r-8.html",
+               "link" : "http://chuangshi.qq.com/index.php/Bookreader/462523/8?lang=zhs",
                "title" : "第八章 柳阳"
             }
          ],
          "complete" : false,
          "cover" : "http://img1.write.qq.com/upload/cover/2013-05-01/cm_4d00258637d3464c3ea19f932d58d1d0.jpg",
          "detailLink" : "http://chuangshi.qq.com/bk/xh/462523.html?sword=大主宰",
+         "bookid": "462523",
          "introduce" : "大千世界，位面交汇，万族林",
          "lastestChapter" : "",
          "name" : "大主宰"

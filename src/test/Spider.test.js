@@ -1,4 +1,4 @@
-define(["chai", "Spider"], function(chai, Spider){
+define(["chai", 'util', "Spider"], function(chai, util, Spider){
 
   /************************************
     测试用例规范：
@@ -16,7 +16,7 @@ define(["chai", "Spider"], function(chai, Spider){
     let config;
 
     before(() => {
-      spider = new Spider();
+      spider = new Spider(util.ajax.bind(util));
       config = {
         "request": "http://se.qidian.com/?kw={keyword}",
         "response": {
@@ -51,9 +51,9 @@ define(["chai", "Spider"], function(chai, Spider){
       equal(null, spider.format());
       equal('', spider.format(''));
       equal('', spider.format('', {}));
-      equal('abc{def}', spider.format('abc{def}'));
+      equal('abc', spider.format('abc{def}'));
       equal('abc123', spider.format('abc{def}', {def: 123}));
-      equal('abc{def}', spider.format('abc{def}', {}));
+      equal('abc', spider.format('abc{def}', {}));
 
       equal('abc"123"', spider.format('abc{def}', {def: "123"}, true));
       equal('abc123', spider.format('abc{def}', {def: "123"}, false));

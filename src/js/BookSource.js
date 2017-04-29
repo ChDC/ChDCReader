@@ -51,7 +51,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     }
 
 
-    // 获取当前书籍指定的目录源的相信信息链接
+    // 获取当前书籍指定的目录源的详细信息链接
     __getBookSourceDetailLink(){
 
       if(!this.__searched)

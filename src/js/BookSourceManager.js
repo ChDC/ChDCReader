@@ -7,7 +7,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     constructor(configFileOrConfig){
 
       this.__sources;
-      this.__spider = new Spider();
+      this.__spider = new Spider({
+        "default": util.ajax.bind(util),
+        "cordova": util.cordovaAjax.bind(util),
+      });
 
       this.loadConfig(configFileOrConfig);
       this.addCustomSourceFeature();
@@ -180,7 +183,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
       }
 
-      bss.searched = true;
+      bss.__searched = true;
       book.sources[bs.id] = bss;
 
       book.mainSourceId = bs.id;  // 主要来源
@@ -301,7 +304,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
-
 
       return this.__spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
         .then(data => {

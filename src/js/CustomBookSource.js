@@ -4,25 +4,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
   // 定义一个用于存放自定义获取信息的钩子的集合
   let customBookSource = {
 
-    // qidian: {
-    //   csrfToken: "",
-    //   getCSRToken(){
-    //     const url = "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=2750457";
-    //     if(typeof cordovaHTTP != 'undefined'){
-    //       cordovaHTTP.get(url, {}, {},
-    //         function(response){
-    //           debugger;
-    //         },
-    //         function(e){
-    //           debugger;
-    //         });
-    //     }
-    //   },
-    //   init(){
-    //     return this.getCSRToken();
-    //   },
-    // },
-
     comico: {
 
       beforeSearchBook(){
@@ -147,6 +128,43 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
             chapter.content = imgs.map(img => `<img src="${img}">`).join('\n');
             return chapter;
           });
+      }
+    },
+
+    "chuangshi": {
+      getChapter(bsid, chapter={}){
+
+        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+
+        if(!chapter.link) return Promise.reject(206);
+        return util.cordovaAjax("get", chapter.link, {}, 'json',
+              {
+                "Referer": "http://chuangshi.qq.com/",
+                "X-Requested-With": "XMLHttpRequest"
+              })
+          .then(json => {
+            let content = decryptByBaseCode(json.Content, 30);
+            const bsm = this.__sources[bsid];
+            let data = this.__spider.parse(content, "html", bsm.chapter.response, chapter.link, {});
+            const c = new Chapter();
+            c.content = this.__spider.clearHtml(data.contentHTML);
+
+            if(!c.content) return Promise.reject(206);
+            c.link = chapter.link;
+            c.title = data.title;
+            return c;
+          });
+
+        function decryptByBaseCode(text, base) {
+            if (!text) return text;
+            var arrStr = [],
+            arrText = text.split('\\');
+            for (var i = 1,
+            len = arrText.length; i < len; i++) {
+                arrStr.push(String.fromCharCode(parseInt(arrText[i], base)));
+            }
+            return arrStr.join('');
+        }
       }
     }
   };

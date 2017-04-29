@@ -49,7 +49,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       },
       getMessage: function getMessage(errorCode) {
         if (errorCode in this.__error) return this.__error[errorCode];
-        if (util.type(errorCode) == "error") return errorCode.message;
+        return errorCode.message;
       }
     },
 
