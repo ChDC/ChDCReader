@@ -1,6 +1,12 @@
 {
-  "valid": ["qidian", "chuangshi", "u17", "comico", "qq"],
+  "valid": ["qidian", "chuangshi", "sfnovel", "u17", "comico", "qq"],
   "sources": {
+    "sfnovel": {
+      "url": "http://m.sfacg.com/",
+      "readbook": {
+        "matcher": "^http://m.sfacg.com/b/\\d+"
+      }
+    },
     "qq": {
       "url": "http://m.ac.qq.com/",
       "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",

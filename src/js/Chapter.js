@@ -8,6 +8,7 @@ define(["util"], function(util) {
       this.link = undefined;    // 链接
       this.title = undefined;    // 标题
       this.content = undefined;  // 内容
+      this.volume = undefined; // 章节所属的卷
       // this.modifyTime = undefined;  // 修改时间
     }
 

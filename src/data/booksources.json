@@ -1,7 +1,97 @@
 {
 
-  "valid": ["u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
+  "valid": ["sfnovel", "u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
   "sources": {
+    "sfnovel": {
+      "id": "sfnovel",
+      "type": "novel",
+      "name": "SF轻小说",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 20,
+      "host": "http://book.sfacg.com/",
+      "search": {
+        "request": {
+          "url": "http://s.sfacg.com/?Key={keyword}&S=1&SS=0"
+        },
+        "response": {
+          "type": "array",
+          "element": "table.comic_cover > tbody > tr > td > ul",
+          "children": {
+            "name": "a",
+            "author": {
+              "type": "string",
+              "element": "li:nth-child(2)",
+              "extract": "综合信息：\\s*([^/]*)/"
+            },
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "img",
+            "introduce": {
+              "type": "string",
+              "element": "li:nth-child(2)",
+              "extract": "\\d\\d:\\d\\d:\\d\\d\\s*(.*)"
+            },
+            "detailLink": "a",
+            "bookid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "http://book.sfacg.com/Novel/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://book.sfacg.com/Novel/{bookid}",
+        "response": {
+          "author": "div.author-info > div.author-name > span",
+          "catagory": "div.count-detail > div:nth-child(1) > span:nth-child(1)",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#hasTicket > div.left-part > div > div.pic > a > img",
+          "introduce": "div.summary-content > p",
+          "lastestChapter": "div.chapter-info > h3 > a",
+          "name": "div.summary-content > h1 > span.text"
+        }
+      },
+      "catalog": {
+        "request": {
+          "url": "http://book.sfacg.com/Novel/{bookid}/MainIndex/"
+        },
+        "response":{
+          "type": "array",
+          "element": "div.catalog-list > ul > li",
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "vip": {
+              "type": "string",
+              "element": "a > span",
+              "attribute": "class"
+            },
+            "link": {
+              "type": "string",
+              "element": "a",
+              "valid": "!{vip} || !({vip}.includes('icn_vip'))"
+            }
+          }
+        }
+      },
+      "chapter": {
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
     "qq": {
       "id": "qq",
       "type": "comics",

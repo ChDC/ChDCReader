@@ -487,7 +487,9 @@ define(function(){
       if(!string) return string;
 
       const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          object[p1] !== undefined ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : ''
+          object[p1] !== undefined ?
+          ( stringify ? JSON.stringify(object[p1]) : object[p1])
+          : ( stringify ? JSON.stringify(object[p1]) : '')
         )
       return result;
     }

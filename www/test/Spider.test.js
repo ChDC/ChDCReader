@@ -48,6 +48,7 @@ define(["chai", 'util', "Spider"], function (chai, util, Spider) {
       equal('abc', spider.format('abc{def}'));
       equal('abc123', spider.format('abc{def}', { def: 123 }));
       equal('abc', spider.format('abc{def}', {}));
+      equal('abcundefined', spider.format('abc{def}', {}, true));
 
       equal('abc"123"', spider.format('abc{def}', { def: "123" }, true));
       equal('abc123', spider.format('abc{def}', { def: "123" }, false));
