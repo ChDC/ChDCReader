@@ -145,7 +145,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
           .then(json => {
             let content = decryptByBaseCode(json.Content, 30);
             const bsm = this.__sources[bsid];
-            let data = this.__spider.parse(content, "html", bsm.chapter.response, url, {});
+            let data = this.__spider.parse(content, "html", bsm.chapter.response, chapter.link, {});
             const c = new Chapter();
             c.content = this.__spider.clearHtml(data.contentHTML);
 

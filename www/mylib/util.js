@@ -278,18 +278,12 @@ define(function () {
       });
 
       if (maxWeightSet.length <= 1) return maxWeightSet[0].index;else {
-        var _ret = function () {
-          var minDistance = Math.min.apply(Math, _toConsumableArray(result.map(function (e) {
-            return e.distance;
-          })));
-          return {
-            v: maxWeightSet.find(function (e) {
-              return e.distance == minDistance;
-            }).index
-          };
-        }();
-
-        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+        var minDistance = Math.min.apply(Math, _toConsumableArray(result.map(function (e) {
+          return e.distance;
+        })));
+        return maxWeightSet.find(function (e) {
+          return e.distance == minDistance;
+        }).index;
       }
     },
     listMatchWithNeighbour: function listMatchWithNeighbour(listA, listB, indexA) {

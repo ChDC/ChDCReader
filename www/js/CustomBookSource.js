@@ -118,7 +118,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         }).then(function (json) {
           var content = decryptByBaseCode(json.Content, 30);
           var bsm = _this.__sources[bsid];
-          var data = _this.__spider.parse(content, "html", bsm.chapter.response, url, {});
+          var data = _this.__spider.parse(content, "html", bsm.chapter.response, chapter.link, {});
           var c = new Chapter();
           c.content = _this.__spider.clearHtml(data.contentHTML);
 

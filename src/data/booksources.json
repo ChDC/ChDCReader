@@ -411,7 +411,7 @@
               "type": "string",
               "element": "a",
               "attribute": "href",
-              "extract": "(\\d+)"
+              "extract": "-(\\d+).html"
             },
             "link": {
               "type": "format",

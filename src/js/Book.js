@@ -348,7 +348,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
             }
             catch(error){
               if(error != 201 || forceRefresh)
-                return Promise.reject(error);
+                throw error;
               result = yield self.fuzzySearch(sourceB, index, true, bookSourceId);
             }
             const {chapter: chapterBB, index: indexB} = result;

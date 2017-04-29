@@ -489,7 +489,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                             break;
                           }
 
-                          return _context2.abrupt("return", Promise.reject(_context2.t1));
+                          throw _context2.t1;
 
                         case 38:
                           _context2.next = 40;
