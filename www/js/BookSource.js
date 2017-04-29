@@ -112,12 +112,13 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
     }, {
       key: '__refreshCatalog',
       value: regeneratorRuntime.mark(function __refreshCatalog() {
+        var forceRefresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         var catalog;
         return regeneratorRuntime.wrap(function __refreshCatalog$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(new Date().getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
+                if (!(!forceRefresh && new Date().getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
                   _context2.next = 2;
                   break;
                 }
@@ -161,14 +162,17 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
       value: function getCatalog(forceRefresh) {
         if (!forceRefresh && this.catalog) return Promise.resolve(this.catalog);
 
-        return co(this.__refreshCatalog());
+        return co(this.__refreshCatalog(forceRefresh));
       }
     }, {
       key: 'refreshLastestChapter',
       value: function refreshLastestChapter() {
         var _this4 = this;
 
-        if (new Date().getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000) return [this.lastestChapter, false];
+        var forceRefresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+
+        if (!forceRefresh && new Date().getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000) return [this.lastestChapter, false];
 
         util.log('Refresh LastestChapter!');
 
@@ -271,10 +275,10 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
   }();
 
   BookSource.settings = {
-    refreshCatalogInterval: 600,
-    refreshLastestChapterInterval: 600 };
+    refreshCatalogInterval: 60 * 60 * 1,
+    refreshLastestChapterInterval: 60 * 60 * 1 };
 
-  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "needSaveCatalog", "lastestChapter"];
+  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "__updatedCatalogTime", "__updatedLastestChapterTime", "needSaveCatalog", "lastestChapter"];
 
   return BookSource;
 });
