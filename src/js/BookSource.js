@@ -20,8 +20,8 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
       this.weight = weight; // 书源的权重
       this.__disable = false; // 表示当前书源是否可用
       this.__searched = false; // 本书是否已经被搜索到了
-      this.__updatedCatalogTime = 0; // 上次更新目录时间 // 不持久化
-      this.__updatedLastestChapterTime = 0; // 上次更新最新章节时间 // 不持久化
+      this.__updatedCatalogTime = 0; // 上次更新目录时间
+      this.__updatedLastestChapterTime = 0; // 上次更新最新章节时间
       this.needSaveCatalog = false; // 目录是否需要存储到本地
     }
 
@@ -81,9 +81,9 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     }
 
     // 刷新目录
-    *__refreshCatalog(){
+    *__refreshCatalog(forceRefresh=false){
 
-      if((new Date()).getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
+      if(!forceRefresh && (new Date()).getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
         return this.catalog;
 
       yield this.__getBookSourceCatalogLink();
@@ -109,13 +109,13 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
       if(!forceRefresh && this.catalog)
         return Promise.resolve(this.catalog);
 
-      return co(this.__refreshCatalog());
+      return co(this.__refreshCatalog(forceRefresh));
     }
 
     // 获取书籍最新章节
-    refreshLastestChapter(){
+    refreshLastestChapter(forceRefresh=false){
 
-      if((new Date()).getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
+      if(!forceRefresh && (new Date()).getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
         return [this.lastestChapter, false];
 
       util.log('Refresh LastestChapter!');
