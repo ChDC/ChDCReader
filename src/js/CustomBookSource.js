@@ -137,7 +137,6 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
         if(!chapter.link) return Promise.reject(206);
-
         return util.cordovaAjax("get", chapter.link, {}, 'json',
               {
                 "Referer": "http://chuangshi.qq.com/",

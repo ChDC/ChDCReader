@@ -666,7 +666,7 @@ define(function(){
               let children = [];
               for(let v of obj){
                 let value = __persistent(v);
-                if(value != undefined)
+                if(value !== undefined)
                   children.push(value);
               }
               return '[' + children.join(",") + ']';
@@ -687,7 +687,7 @@ define(function(){
               let children = [];
               for(let k of keys){
                 let value = __persistent(obj[k]);
-                if(value != undefined)
+                if(value !== undefined)
                   children.push(`"${k}":${value}`);
               }
               return '{' + children.join(",") + '}';
