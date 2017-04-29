@@ -612,12 +612,11 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         return {
           next: function next() {
             if (finished) return Promise.resolve({ done: true });
-            return self.getChapter(chapterIndex, options).then(function (c) {
-              return map(c);
-            }).then(function (c) {
+            return self.getChapter(chapterIndex, options).then(function (result) {
+              Object.assign(options, result.options);
               chapterIndex += direction >= 0 ? 1 : -1;
               options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
-              return { value: c, done: false };
+              return { value: map(result), done: false };
             }).catch(function (error) {
               if (error == 203 || error == 202) {
                 finished = true;
