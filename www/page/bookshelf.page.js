@@ -40,11 +40,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         this.onResume();
       }
     }, {
-      key: "isReadingLastestChapter",
-      value: function isReadingLastestChapter(lastestChapter, readingRecord) {
-        return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
-      }
-    }, {
       key: "removeBook",
       value: function removeBook(book) {
         var _this3 = this;
@@ -93,13 +88,13 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
           nb.data("bookshelfitem", value);
           if (book.cover) nb.find(".book-cover").attr("src", book.cover);
           nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
-          nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
+          nb.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
 
           book.getLastestChapter().then(function (_ref) {
             var _ref2 = _slicedToArray(_ref, 1),
                 lastestChapter = _ref2[0];
 
-            nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).addClass(_this4.isReadingLastestChapter(lastestChapter, readingRecord) ? "" : 'unread-chapter');
+            nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).addClass(readingRecord.equalChapterTitle(lastestChapter) ? "" : 'unread-chapter');
 
             book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
           });

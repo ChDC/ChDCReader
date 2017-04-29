@@ -18,10 +18,6 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       this.onResume();
     }
 
-    isReadingLastestChapter(lastestChapter, readingRecord){
-      return Chapter.equalTitle2(lastestChapter, readingRecord.chapterTitle);
-    }
-
     removeBook(book){
       uiutil.showMessageDialog("确定", "确定要删除该书？",
         () => {
@@ -69,14 +65,14 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
         if(book.cover) nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name)
           .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
-        nb.find(".book-readingchapter").text('读到：' + readingRecord.chapterTitle);
+        nb.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
 
         // 刷新最新章节
         book.getLastestChapter()
           .then(([lastestChapter]) => {
             nb.find(".book-lastestchapter")
               .text("最新：" + (lastestChapter? lastestChapter : "无"))
-              .addClass(this.isReadingLastestChapter(lastestChapter, readingRecord) ? "" : 'unread-chapter');
+              .addClass(readingRecord.equalChapterTitle(lastestChapter) ? "" : 'unread-chapter');
 
             // 缓存后面章节内容
             book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);

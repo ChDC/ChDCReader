@@ -267,7 +267,7 @@ define(["util"], function (util) {
         var globalDict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var dict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-        if (util.type(element) == 'object' && "querySelector" in element) {
+        if (element && element.querySelector) {
           var result = void 0;
           if (!keyName) return element.textContent.trim();
 

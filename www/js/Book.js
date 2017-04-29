@@ -146,62 +146,9 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
           return Promise.reject(203);
         }
 
-        var self = this;
-        return co(regeneratorRuntime.mark(function _callee() {
-          var i, catalog;
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  i = 0;
-
-                case 1:
-                  if (!(i < 2)) {
-                    _context.next = 17;
-                    break;
-                  }
-
-                  _context.next = 4;
-                  return self.getCatalog(forceRefresh, bookSourceId);
-
-                case 4:
-                  catalog = _context.sent;
-
-                  if (!(chapterIndex >= 0 && chapterIndex < catalog.length)) {
-                    _context.next = 9;
-                    break;
-                  }
-
-                  return _context.abrupt("return", Promise.resolve({ chapter: catalog[chapterIndex], index: chapterIndex, catalog: catalog }));
-
-                case 9:
-                  if (!(chapterIndex >= catalog.length)) {
-                    _context.next = 13;
-                    break;
-                  }
-
-                  forceRefresh = true;
-                  _context.next = 14;
-                  break;
-
-                case 13:
-                  return _context.abrupt("return", Promise.reject(203));
-
-                case 14:
-                  i++;
-                  _context.next = 1;
-                  break;
-
-                case 17:
-                  return _context.abrupt("return", Promise.reject(202));
-
-                case 18:
-                case "end":
-                  return _context.stop();
-              }
-            }
-          }, _callee, this);
-        }));
+        return this.getCatalog(forceRefresh, bookSourceId).then(function (catalog) {
+          if (chapterIndex >= 0 && chapterIndex < catalog.length) return catalog[chapterIndex];else if (chapterIndex >= catalog.length) return Promise.reject(202);else return Promise.reject(203);
+        });
       }
     }, {
       key: "fuzzySearch",
@@ -210,45 +157,39 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
 
         if (bookSourceId == sourceB) {
-          return this.index(index, forceRefresh, sourceB);
+          return this.index(index, forceRefresh, sourceB).then(function (chapter) {
+            return { "chapter": chapter, "index": index };
+          });
         }
 
         var self = this;
-        return co(regeneratorRuntime.mark(function _callee2() {
-          var catalog, i, catalogB, matchs, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, match, _match, matchFunc, compareFunc, indexB, chapterB;
+        return co(regeneratorRuntime.mark(function _callee() {
+          var catalog, catalogB, matchs, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, match, _match, matchFunc, compareFunc, indexB, chapterB;
 
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
-              switch (_context2.prev = _context2.next) {
+              switch (_context.prev = _context.next) {
                 case 0:
-                  _context2.next = 2;
+                  _context.next = 2;
                   return self.getCatalog(forceRefresh, bookSourceId);
 
                 case 2:
-                  catalog = _context2.sent;
-                  i = 0;
-
-                case 4:
-                  if (!(i < 2)) {
-                    _context2.next = 45;
-                    break;
-                  }
-
-                  _context2.next = 7;
+                  catalog = _context.sent;
+                  _context.next = 5;
                   return self.getCatalog(forceRefresh, sourceB);
 
-                case 7:
-                  catalogB = _context2.sent;
+                case 5:
+                  catalogB = _context.sent;
                   matchs = [[util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)], [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)], [util.listMatchWithNeighbour.bind(util), Chapter.equalTitleWithoutNum.bind(Chapter)]];
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;
-                  _context2.prev = 12;
+                  _context.prev = 10;
                   _iterator = matchs[Symbol.iterator]();
 
-                case 14:
+                case 12:
                   if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                    _context2.next = 27;
+                    _context.next = 25;
                     break;
                   }
 
@@ -257,72 +198,64 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                   indexB = matchFunc(catalog, catalogB, index, compareFunc);
 
                   if (!(indexB >= 0)) {
-                    _context2.next = 23;
+                    _context.next = 21;
                     break;
                   }
 
                   chapterB = catalogB[indexB];
-                  return _context2.abrupt("return", Promise.resolve({ chapter: chapterB, index: indexB, catalog: catalogB }));
+                  return _context.abrupt("return", Promise.resolve({ chapter: chapterB, index: indexB }));
 
-                case 23:
-                  return _context2.abrupt("continue", 24);
+                case 21:
+                  return _context.abrupt("continue", 22);
 
-                case 24:
+                case 22:
                   _iteratorNormalCompletion = true;
-                  _context2.next = 14;
+                  _context.next = 12;
+                  break;
+
+                case 25:
+                  _context.next = 31;
                   break;
 
                 case 27:
-                  _context2.next = 33;
-                  break;
-
-                case 29:
-                  _context2.prev = 29;
-                  _context2.t0 = _context2["catch"](12);
+                  _context.prev = 27;
+                  _context.t0 = _context["catch"](10);
                   _didIteratorError = true;
-                  _iteratorError = _context2.t0;
+                  _iteratorError = _context.t0;
 
-                case 33:
-                  _context2.prev = 33;
-                  _context2.prev = 34;
+                case 31:
+                  _context.prev = 31;
+                  _context.prev = 32;
 
                   if (!_iteratorNormalCompletion && _iterator.return) {
                     _iterator.return();
                   }
 
-                case 36:
-                  _context2.prev = 36;
+                case 34:
+                  _context.prev = 34;
 
                   if (!_didIteratorError) {
-                    _context2.next = 39;
+                    _context.next = 37;
                     break;
                   }
 
                   throw _iteratorError;
 
+                case 37:
+                  return _context.finish(34);
+
+                case 38:
+                  return _context.finish(31);
+
                 case 39:
-                  return _context2.finish(36);
+                  return _context.abrupt("return", Promise.reject(201));
 
                 case 40:
-                  return _context2.finish(33);
-
-                case 41:
-                  forceRefresh = true;
-
-                case 42:
-                  i++;
-                  _context2.next = 4;
-                  break;
-
-                case 45:
-                  return _context2.abrupt("return", Promise.reject(201));
-
-                case 46:
                 case "end":
-                  return _context2.stop();
+                  return _context.stop();
               }
             }
-          }, _callee2, this, [[12, 29, 33, 41], [34,, 36, 40]]);
+          }, _callee, this, [[10, 27, 31, 39], [32,, 34, 38]]);
         }));
       }
     }, {
@@ -337,92 +270,113 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         options = Object.assign({}, options);
         options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
-        return this.index(chapterIndex, options.forceRefresh, options.bookSourceId).then(function (_ref) {
-          var chapter = _ref.chapter,
-              index = _ref.index,
-              catalog = _ref.catalog;
-          return co(_this4.__getChapterFromContentSources(catalog, chapterIndex, options));
+        return this.index(chapterIndex, options.forceRefresh, options.bookSourceId).catch(function (error) {
+          if (error != 202 || options.forceRefresh) return Promise.reject(error);
+          options.forceRefresh = true;
+
+          return _this4.index(chapterIndex, options.forceRefresh, options.bookSourceId);
+        }).then(function (chapter) {
+          return co(_this4.__getChapterFromContentSources(chapterIndex, options));
         });
       }
     }, {
       key: "__getChapterFromContentSources",
-      value: regeneratorRuntime.mark(function __getChapterFromContentSources(catalog, index, _ref2) {
-        var _ref2$bookSourceId = _ref2.bookSourceId,
-            bookSourceId = _ref2$bookSourceId === undefined ? this.mainSourceId : _ref2$bookSourceId,
-            _ref2$count = _ref2.count,
-            count = _ref2$count === undefined ? 1 : _ref2$count,
-            excludes = _ref2.excludes,
-            contentSourceId = _ref2.contentSourceId,
-            contentSourceChapterIndex = _ref2.contentSourceChapterIndex,
-            onlyCacheNoLoad = _ref2.onlyCacheNoLoad,
-            _ref2$noInfluenceWeig = _ref2.noInfluenceWeight,
-            noInfluenceWeight = _ref2$noInfluenceWeig === undefined ? false : _ref2$noInfluenceWeig,
-            forceRefresh = _ref2.forceRefresh;
+      value: regeneratorRuntime.mark(function __getChapterFromContentSources(index, _ref) {
+        var _ref$bookSourceId = _ref.bookSourceId,
+            bookSourceId = _ref$bookSourceId === undefined ? this.mainSourceId : _ref$bookSourceId,
+            _ref$count = _ref.count,
+            count = _ref$count === undefined ? 1 : _ref$count,
+            excludes = _ref.excludes,
+            contentSourceId = _ref.contentSourceId,
+            contentSourceChapterIndex = _ref.contentSourceChapterIndex,
+            onlyCacheNoLoad = _ref.onlyCacheNoLoad,
+            _ref$noInfluenceWeigh = _ref.noInfluenceWeight,
+            noInfluenceWeight = _ref$noInfluenceWeigh === undefined ? false : _ref$noInfluenceWeigh,
+            forceRefresh = _ref.forceRefresh;
 
-        var _marked, chapterA, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
+        var _marked, catalog, chapterA, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
 
-        return regeneratorRuntime.wrap(function __getChapterFromContentSources$(_context5) {
+        return regeneratorRuntime.wrap(function __getChapterFromContentSources$(_context4) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 getChapterFromSelectBookSourceAndSelectSourceChapterIndex = function getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex) {
-                  var _ref4, chapterB, indexB, catalogB, bs;
-
-                  return regeneratorRuntime.wrap(function getChapterFromSelectBookSourceAndSelectSourceChapterIndex$(_context4) {
+                  var chapterB, bs;
+                  return regeneratorRuntime.wrap(function getChapterFromSelectBookSourceAndSelectSourceChapterIndex$(_context3) {
                     while (1) {
-                      switch (_context4.prev = _context4.next) {
+                      switch (_context3.prev = _context3.next) {
                         case 0:
 
                           if (!noInfluenceWeight) self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
 
-                          _context4.next = 3;
+                          chapterB = void 0;
+                          _context3.prev = 2;
+                          _context3.next = 5;
                           return self.index(contentSourceChapterIndex, forceRefresh, contentSourceId);
 
-                        case 3:
-                          _ref4 = _context4.sent;
-                          chapterB = _ref4.chapter;
-                          indexB = _ref4.index;
-                          catalogB = _ref4.catalog;
+                        case 5:
+                          chapterB = _context3.sent;
+                          _context3.next = 15;
+                          break;
 
+                        case 8:
+                          _context3.prev = 8;
+                          _context3.t0 = _context3["catch"](2);
+
+                          if (!(_context3.t0 != 202 || forceRefresh)) {
+                            _context3.next = 12;
+                            break;
+                          }
+
+                          throw _context3.t0;
+
+                        case 12:
+                          _context3.next = 14;
+                          return self.index(contentSourceChapterIndex, true, contentSourceId);
+
+                        case 14:
+                          chapterB = _context3.sent;
+
+                        case 15:
                           if (Chapter.equalTitle(chapterA, chapterB)) {
-                            _context4.next = 9;
+                            _context3.next = 17;
                             break;
                           }
 
                           throw new Error();
 
-                        case 9:
-                          _context4.next = 11;
+                        case 17:
+                          _context3.next = 19;
                           return self.getBookSource(contentSourceId);
 
-                        case 11:
-                          bs = _context4.sent;
-                          _context4.next = 14;
+                        case 19:
+                          bs = _context3.sent;
+                          _context3.next = 22;
                           return bs.getChapter(chapterB, onlyCacheNoLoad);
 
-                        case 14:
-                          chapterB = _context4.sent;
+                        case 22:
+                          chapterB = _context3.sent;
 
                           addChapterToResult(chapterB, contentSourceChapterIndex, contentSourceId);
                           remainCount--;
 
                           if (!(remainCount > 0)) {
-                            _context4.next = 22;
+                            _context3.next = 30;
                             break;
                           }
 
                           debugger;
-                          return _context4.abrupt("return", handleWithNormalMethod());
+                          return _context3.abrupt("return", handleWithNormalMethod());
 
-                        case 22:
-                          return _context4.abrupt("return", submitResult());
+                        case 30:
+                          return _context3.abrupt("return", submitResult());
 
-                        case 23:
+                        case 31:
                         case "end":
-                          return _context4.stop();
+                          return _context3.stop();
                       }
                     }
-                  }, _marked[1], this);
+                  }, _marked[1], this, [[2, 8]]);
                 };
 
                 handleWithNormalMethod = function handleWithNormalMethod(error) {
@@ -431,23 +385,23 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                 };
 
                 getChapterFromContentSources2 = function getChapterFromContentSources2(includeSource) {
-                  var contentSources, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, exclude, i, _i, sourceB, _ref3, chapterBB, indexB, catalogB, bs, chapterB;
+                  var contentSources, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, exclude, i, _i, sourceB, _result, _result2, chapterBB, indexB, bs, chapterB;
 
-                  return regeneratorRuntime.wrap(function getChapterFromContentSources2$(_context3) {
+                  return regeneratorRuntime.wrap(function getChapterFromContentSources2$(_context2) {
                     while (1) {
-                      switch (_context3.prev = _context3.next) {
+                      switch (_context2.prev = _context2.next) {
                         case 0:
                           contentSources = self.getSourcesKeysSortedByWeight().reverse();
 
                           if (!excludes) {
-                            _context3.next = 21;
+                            _context2.next = 21;
                             break;
                           }
 
                           _iteratorNormalCompletion2 = true;
                           _didIteratorError2 = false;
                           _iteratorError2 = undefined;
-                          _context3.prev = 5;
+                          _context2.prev = 5;
 
                           for (_iterator2 = excludes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                             exclude = _step2.value;
@@ -456,38 +410,38 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                             contentSources.splice(i, 1);
                             if (!noInfluenceWeight) self.sources[exclude].weight += EXECLUDE_WEIGHT;
                           }
-                          _context3.next = 13;
+                          _context2.next = 13;
                           break;
 
                         case 9:
-                          _context3.prev = 9;
-                          _context3.t0 = _context3["catch"](5);
+                          _context2.prev = 9;
+                          _context2.t0 = _context2["catch"](5);
                           _didIteratorError2 = true;
-                          _iteratorError2 = _context3.t0;
+                          _iteratorError2 = _context2.t0;
 
                         case 13:
-                          _context3.prev = 13;
-                          _context3.prev = 14;
+                          _context2.prev = 13;
+                          _context2.prev = 14;
 
                           if (!_iteratorNormalCompletion2 && _iterator2.return) {
                             _iterator2.return();
                           }
 
                         case 16:
-                          _context3.prev = 16;
+                          _context2.prev = 16;
 
                           if (!_didIteratorError2) {
-                            _context3.next = 19;
+                            _context2.next = 19;
                             break;
                           }
 
                           throw _iteratorError2;
 
                         case 19:
-                          return _context3.finish(16);
+                          return _context2.finish(16);
 
                         case 20:
-                          return _context3.finish(13);
+                          return _context2.finish(13);
 
                         case 21:
                           if (includeSource) {
@@ -501,65 +455,87 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                         case 22:
                           if (!(contentSources.length > 0 && remainCount > 0)) {
-                            _context3.next = 49;
+                            _context2.next = 58;
                             break;
                           }
 
                           sourceB = contentSources.pop();
 
                           if (sourceB) {
-                            _context3.next = 26;
+                            _context2.next = 26;
                             break;
                           }
 
-                          return _context3.abrupt("continue", 22);
+                          return _context2.abrupt("continue", 22);
 
                         case 26:
-                          _context3.prev = 26;
-                          _context3.next = 29;
+                          _context2.prev = 26;
+                          _result = void 0;
+                          _context2.prev = 28;
+                          _context2.next = 31;
                           return self.fuzzySearch(sourceB, index, forceRefresh, bookSourceId);
 
-                        case 29:
-                          _ref3 = _context3.sent;
-                          chapterBB = _ref3.chapter;
-                          indexB = _ref3.index;
-                          catalogB = _ref3.catalog;
-                          _context3.next = 35;
-                          return self.getBookSource(sourceB);
+                        case 31:
+                          _result = _context2.sent;
+                          _context2.next = 41;
+                          break;
 
-                        case 35:
-                          bs = _context3.sent;
-                          _context3.next = 38;
-                          return bs.getChapter(chapterBB, onlyCacheNoLoad);
+                        case 34:
+                          _context2.prev = 34;
+                          _context2.t1 = _context2["catch"](28);
+
+                          if (!(_context2.t1 != 201 || forceRefresh)) {
+                            _context2.next = 38;
+                            break;
+                          }
+
+                          return _context2.abrupt("return", Promise.reject(_context2.t1));
 
                         case 38:
-                          chapterB = _context3.sent;
+                          _context2.next = 40;
+                          return self.fuzzySearch(sourceB, index, true, bookSourceId);
+
+                        case 40:
+                          _result = _context2.sent;
+
+                        case 41:
+                          _result2 = _result, chapterBB = _result2.chapter, indexB = _result2.index;
+                          _context2.next = 44;
+                          return self.getBookSource(sourceB);
+
+                        case 44:
+                          bs = _context2.sent;
+                          _context2.next = 47;
+                          return bs.getChapter(chapterBB, onlyCacheNoLoad);
+
+                        case 47:
+                          chapterB = _context2.sent;
 
                           addChapterToResult(chapterB, indexB, sourceB);
                           remainCount--;
-                          _context3.next = 47;
+                          _context2.next = 56;
                           break;
 
-                        case 43:
-                          _context3.prev = 43;
-                          _context3.t1 = _context3["catch"](26);
+                        case 52:
+                          _context2.prev = 52;
+                          _context2.t2 = _context2["catch"](26);
 
-                          errorCodeList.push(_context3.t1);
+                          errorCodeList.push(_context2.t2);
                           if (!noInfluenceWeight) self.sources[sourceB].weight += NOTFOUND_WEIGHT;
 
-                        case 47:
-                          _context3.next = 22;
+                        case 56:
+                          _context2.next = 22;
                           break;
 
-                        case 49:
-                          return _context3.abrupt("return", submitResult());
+                        case 58:
+                          return _context2.abrupt("return", submitResult());
 
-                        case 50:
+                        case 59:
                         case "end":
-                          return _context3.stop();
+                          return _context2.stop();
                       }
                     }
-                  }, _marked[0], this, [[5, 9, 13, 21], [14,, 16, 20], [26, 43]]);
+                  }, _marked[0], this, [[5, 9, 13, 21], [14,, 16, 20], [26, 52], [28, 34]]);
                 };
 
                 submitResult = function submitResult() {
@@ -589,6 +565,11 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                 };
 
                 _marked = [getChapterFromContentSources2, getChapterFromSelectBookSourceAndSelectSourceChapterIndex].map(regeneratorRuntime.mark);
+                _context4.next = 8;
+                return this.getCatalog(forceRefresh, bookSourceId);
+
+              case 8:
+                catalog = _context4.sent;
                 chapterA = catalog[index];
                 result = [];
                 errorCodeList = [];
@@ -602,68 +583,51 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
                 if (excludes && excludes.includes(contentSourceId)) contentSourceId = null;
 
                 if (!(contentSourceId && typeof contentSourceChapterIndex == 'number')) {
-                  _context5.next = 20;
+                  _context4.next = 23;
                   break;
                 }
 
-                return _context5.abrupt("return", co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex)).catch(handleWithNormalMethod));
+                return _context4.abrupt("return", co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex)).catch(handleWithNormalMethod));
 
-              case 20:
-                return _context5.abrupt("return", co(getChapterFromContentSources2(contentSourceId)));
+              case 23:
+                return _context4.abrupt("return", co(getChapterFromContentSources2(contentSourceId)));
 
-              case 21:
+              case 24:
               case "end":
-                return _context5.stop();
+                return _context4.stop();
             }
           }
         }, __getChapterFromContentSources, this);
       })
     }, {
-      key: "getChapters",
-      value: regeneratorRuntime.mark(function getChapters(chapterIndex, nextCount, direction, options) {
-        var i;
-        return regeneratorRuntime.wrap(function getChapters$(_context6) {
-          while (1) {
-            switch (_context6.prev = _context6.next) {
-              case 0:
-                if (!(nextCount < 0)) {
-                  _context6.next = 2;
-                  break;
-                }
+      key: "buildChapterIterator",
+      value: function buildChapterIterator(chapterIndex, direction, options) {
+        var map = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (e) {
+          return e;
+        };
 
-                return _context6.abrupt("return");
-
-              case 2:
-
-                options = Object.assign({}, options);
-
-                i = 0;
-
-              case 4:
-                if (!(i < nextCount)) {
-                  _context6.next = 12;
-                  break;
-                }
-
-                _context6.next = 7;
-                return this.getChapter(chapterIndex, options);
-
-              case 7:
-                chapterIndex += direction >= 0 ? 1 : -1;
-                options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
-
-              case 9:
-                i++;
-                _context6.next = 4;
-                break;
-
-              case 12:
-              case "end":
-                return _context6.stop();
-            }
+        options = Object.assign({}, options);
+        var self = this;
+        var finished = false;
+        return {
+          next: function next() {
+            if (finished) return Promise.resolve({ done: true });
+            return self.getChapter(chapterIndex, options).then(function (c) {
+              return map(c);
+            }).then(function (c) {
+              chapterIndex += direction >= 0 ? 1 : -1;
+              options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
+              return { value: c, done: false };
+            }).catch(function (error) {
+              if (error == 203 || error == 202) {
+                finished = true;
+                return Promise.resolve({ value: map(undefined), done: true });
+              }
+              throw error;
+            });
           }
-        }, getChapters, this);
-      })
+        };
+      }
     }, {
       key: "cacheChapter",
       value: function cacheChapter(chapterIndex, nextCount, options) {
@@ -672,7 +636,42 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         options.noInfluenceWeight = true;
         options.onlyCacheNoLoad = true;
 
-        return co(this.getChapters(chapterIndex, nextCount, 1, options));
+        var citer = this.buildChapterIterator(chapterIndex, 1, options);
+
+        return co(regeneratorRuntime.mark(function _callee2() {
+          var i, value;
+          return regeneratorRuntime.wrap(function _callee2$(_context5) {
+            while (1) {
+              switch (_context5.prev = _context5.next) {
+                case 0:
+                  i = 0;
+
+                case 1:
+                  if (!(i < nextCount)) {
+                    _context5.next = 9;
+                    break;
+                  }
+
+                  _context5.next = 4;
+                  return citer.next();
+
+                case 4:
+                  value = _context5.sent;
+
+                  console.log(value);
+
+                case 6:
+                  i++;
+                  _context5.next = 1;
+                  break;
+
+                case 9:
+                case "end":
+                  return _context5.stop();
+              }
+            }
+          }, _callee2, this);
+        }));
       }
     }, {
       key: "getLastestChapter",

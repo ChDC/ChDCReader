@@ -301,7 +301,7 @@ define(["util"], function(util){
 
     // 获取值
     __getValue(element, keyName, globalDict={}, dict={}){
-      if(util.type(element) == 'object' && "querySelector" in element){
+      if(element && element.querySelector){
         let result;
         if(!keyName)
           return element.textContent.trim();

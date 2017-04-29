@@ -103,7 +103,6 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
             }
           }
         }
-
         return util.saveTextData("bookshelf", util.persistent(this));
       }
     }, {

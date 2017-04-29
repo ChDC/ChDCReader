@@ -61,11 +61,11 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "28500bb600fd2cf697134386051e0b93"
+    "hash": "6f1df4f7301db1841878b9535560b159"
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "8dd8952d4b37c8c486f6ea9a395bd89b"
+    "hash": "86f84b75865dd0b50f5756571c719958"
   },
   {
     "file": "js/BookSource.js",
@@ -93,7 +93,7 @@
   },
   {
     "file": "js/ReadingRecord.js",
-    "hash": "be1ca4e789b315260e0d081566fc19d4"
+    "hash": "d0928551be59ad5dbfb45d8784d61b8c"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -265,7 +265,11 @@
   },
   {
     "file": "mylib/infinitelist.js",
+<<<<<<< HEAD
     "hash": "aaf6d19331793c52c4793a9d5cfb6b80"
+=======
+    "hash": "04e6472af8518a8457dc307984d1a244"
+>>>>>>> dev
   },
   {
     "file": "mylib/Page.js",
@@ -277,7 +281,7 @@
   },
   {
     "file": "mylib/Spider.js",
-    "hash": "87911caf22ee5fe492dd6ecfe188d313"
+    "hash": "ba34fa05243e1309b34a9c02f0f2d267"
   },
   {
     "file": "mylib/Test.js",
@@ -293,7 +297,7 @@
   },
   {
     "file": "mylib/util.js",
-    "hash": "2a0c4d643d788bbb6562803c9c4fe3fd"
+    "hash": "cc60537ba49cd8f13368e081e198ce0a"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -321,7 +325,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "c9277d38a346e8874f2ccd12937a7844"
+    "hash": "c4c59703f54ab3b12daf6565b9a3d309"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -345,7 +349,11 @@
   },
   {
     "file": "page/readbook.page.css",
+<<<<<<< HEAD
     "hash": "aa0a95e0f9640bd2020c70b2dadaa021"
+=======
+    "hash": "8729de9c600772c07f18c340b16eeead"
+>>>>>>> dev
   },
   {
     "file": "page/readbook.page.html",
@@ -353,7 +361,11 @@
   },
   {
     "file": "page/readbook.page.js",
+<<<<<<< HEAD
     "hash": "192dfcf120ebf3a3a5a2fa11855819c0"
+=======
+    "hash": "0f911359dc05bde3187a9882be338fbb"
+>>>>>>> dev
   },
   {
     "file": "page/readbook.page.night1.css",

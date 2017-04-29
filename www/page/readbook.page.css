@@ -145,6 +145,10 @@
     border: 1px red solid;
 }
 
+h2{
+    text-align: center;
+}
+
 /*********** Color ***************/
 /*.toolbar.top, .toolbar.bottom{
     background-color: #181818;
