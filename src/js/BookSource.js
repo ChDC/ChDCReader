@@ -198,14 +198,14 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
   }
 
   BookSource.settings = {
-    refreshCatalogInterval: 600, // 单位秒
-    refreshLastestChapterInterval: 600 // 单位秒
+    refreshCatalogInterval: 60 * 60 * 1, // 单位秒，也就是一个小时
+    refreshLastestChapterInterval: 60 * 60 * 1 // 单位秒，也就是一个小时
   };
 
   // 用于标记持久化的属性
   BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink",
               "catalogLink", "bookid", // 不持久化目录 "catalog",
-              // "__updatedCatalogTime", "__updatedLastestChapterTime",
+              "__updatedCatalogTime", "__updatedLastestChapterTime",
               "needSaveCatalog", "lastestChapter"];
 
   return BookSource;
