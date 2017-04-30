@@ -180,7 +180,7 @@ define(["co", "utils", "Chapter", "BookSource"], function (co, utils, Chapter, B
 
                 case 5:
                   catalogB = _context.sent;
-                  matchs = [[utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)], [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)], [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitleWithoutNum.bind(Chapter)]];
+                  matchs = [[utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)], [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)]];
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;

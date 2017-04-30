@@ -511,20 +511,6 @@ define(function () {
         return Promise.resolve(key in s);
       }
     },
-    stripString: function stripString(str) {
-      if (!str) return str;
-
-      str = str.replace(/（.*?）/g, '');
-      str = str.replace(/\(.*?\)/g, '');
-      str = str.replace(/【.*?】/g, '');
-
-      str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
-
-      str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
-
-      str = str.replace(/\s/g, '');
-      return str;
-    },
     arrayCount: function arrayCount(array) {
       if (!array) return array;
       var counter = {};

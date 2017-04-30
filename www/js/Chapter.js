@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["utils"], function (utils) {
+define(function () {
   "use strict";
 
   var Chapter = function () {
@@ -19,7 +19,7 @@ define(["utils"], function (utils) {
     }
 
     _createClass(Chapter, [{
-      key: "isVIP",
+      key: 'isVIP',
       value: function isVIP() {
         return !this.cid && !this.link && this.title;
       }
@@ -33,25 +33,46 @@ define(["utils"], function (utils) {
   };
 
   Chapter.equalTitle2 = function (chapterTitleA, chapterTitleB) {
+
+    if (chapterTitleA == chapterTitleB) return true;
     if (!chapterTitleA || !chapterTitleB) return false;
 
-    var cA = utils.stripString(chapterTitleA);
-    var cB = utils.stripString(chapterTitleB);
-    return cA == cB;
+    var cs = [chapterTitleA, chapterTitleB];
+
+    cs = cs.map(Chapter.stripString);
+    if (cs[0] == cs[1]) return true;
+
+    var nums = '零一二两三四五六七八九';
+    cs = cs.map(function (c) {
+      return c.replace(/[十百千万亿]/gi, '').replace(new RegExp('[' + nums + ']', 'gi'), function (m) {
+        var i = nums.indexOf(m);
+        return i <= 2 ? i : i - 1;
+      });
+    });
+    if (cs[0] == cs[1]) return true;
+
+    var numPattern = /第[0123456789零一二两三四五六七八九十百千万亿\d]+[章节卷]/g;
+    cs = cs.map(function (c) {
+      return c.replace(numPattern, '');
+    });
+    if (cs[0] == cs[1]) return true;
+
+    return false;
   };
 
-  Chapter.equalTitleWithoutNum = function (chapterA, chapterB) {
-    var chapterTitleA = chapterA.title;
-    var chapterTitleB = chapterB.title;
+  Chapter.stripString = function (str) {
+    if (!str) return str;
 
-    if (!chapterTitleA || !chapterTitleB) return false;
+    str = str.replace(/（.*?）/g, '');
+    str = str.replace(/\(.*?\)/g, '');
+    str = str.replace(/【.*?】/g, '');
 
-    var numPattern = /第[零一二两三四五六七八九十百千万亿\d]+章/g;
-    chapterTitleA = chapterTitleA.replace(numPattern, '');
-    chapterTitleB = chapterTitleB.replace(numPattern, '');
-    var cA = utils.stripString(chapterTitleA);
-    var cB = utils.stripString(chapterTitleB);
-    return cA == cB;
+    str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
+
+    str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
+
+    str = str.replace(/\s/g, '');
+    return str;
   };
 
   return Chapter;

@@ -305,9 +305,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           newValue = $(newValue);
           if (!oldValue) {
             app.hideLoading();
-            if (_this6.readingRecord.pageScrollTop) {
+            if (_this6.readingRecord.getPageScrollTop()) {
               var cs = $('#chapterContainer').scrollTop();
-              $('#chapterContainer').scrollTop(cs + _this6.readingRecord.pageScrollTop);
+              $('#chapterContainer').scrollTop(cs + _this6.readingRecord.getPageScrollTop());
             }
           }
           var index = newValue.data('chapterIndex');

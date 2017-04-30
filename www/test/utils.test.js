@@ -132,12 +132,6 @@ define(["chai", "utils"], function (chai, utils) {
       return Promise.all([p1, p2]);
     });
 
-    it('stripString', function () {
-      equal(undefined, utils.stripString());
-      equal('', utils.stripString(''));
-      equal('第一章好的啊', utils.stripString('第一章 好的啊【啊啊】(test)'));
-    });
-
     it('arrayCount', function () {
       equal(null, utils.arrayCount());
       assert.lengthOf(utils.arrayCount([]), 0);

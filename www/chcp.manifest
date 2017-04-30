@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "c05211dd5149924e6f43ca7e41cc9f70"
+    "hash": "dd056026560f85e8ca204c446444e7d1"
   },
   {
     "file": "data/booksources.test.json",
@@ -81,7 +81,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "5264522fadb936468e89dfe62a5373a8"
+    "hash": "d8eddcea066372047cf691ae2730f6b4"
   },
   {
     "file": "js/BookShelf.js",
@@ -89,7 +89,7 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "466b34a2c16a2b90e9d1cce5e7386dfd"
+    "hash": "9c19a3d1994afb155746a820f3a44551"
   },
   {
     "file": "js/BookSourceManager.js",
@@ -97,7 +97,7 @@
   },
   {
     "file": "js/Chapter.js",
-    "hash": "b177b4d78ab5f8e27839615a7ef60a51"
+    "hash": "229417f603da298a07cdf8b31c0c89cd"
   },
   {
     "file": "js/config.js",
@@ -129,7 +129,7 @@
   },
   {
     "file": "js/ReadingRecord.js",
-    "hash": "d0928551be59ad5dbfb45d8784d61b8c"
+    "hash": "fd93632975582c733c105fc92ebe7b61"
   },
   {
     "file": "js/util.js",
@@ -333,7 +333,7 @@
   },
   {
     "file": "mylib/utils.js",
-    "hash": "45241c2384dc7b53ad3ed208c60a7f4c"
+    "hash": "66f9058904d9bcb44881517ef1c7b0e7"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -393,7 +393,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "26207d87e25a3dd00ce4c7ddeda2d6a1"
+    "hash": "627ed835f7efc400ce14278dec34d8a8"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -421,7 +421,7 @@
   },
   {
     "file": "test/app.test.js",
-    "hash": "42eb4345c32f0bfd270e7c3080b2d051"
+    "hash": "12a4facbbba1fb58a7cf0852866b0eaa"
   },
   {
     "file": "test/Book.test.js",
@@ -444,6 +444,10 @@
     "hash": "c7b9542e6ab3004a5df0d64081240f05"
   },
   {
+    "file": "test/Chapter.test.js",
+    "hash": "33e01ab59688b2fe8450bb68629d2442"
+  },
+  {
     "file": "test/main.test.js",
     "hash": "124f01b0239d46ce219c32ff4a6d1754"
   },
@@ -461,6 +465,6 @@
   },
   {
     "file": "test/utils.test.js",
-    "hash": "28ca7dcd1eb0f82218fc0734219ba806"
+    "hash": "fa1150334cd71841850751880aafc15e"
   }
 ]

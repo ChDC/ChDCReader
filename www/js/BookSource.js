@@ -69,7 +69,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
 
         if (this.catalogLink === undefined) return this.bookSourceManager.getBookCatalogLink(this.id, this).then(function (cl) {
           return _this3.catalogLink = cl;
-        });
+        });else return Promise.resolve();
       }
     }, {
       key: 'getCatalog',

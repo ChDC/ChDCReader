@@ -1006,7 +1006,7 @@
       "id": "daizhuzai",
       "type": "novel",
       "name": "大主宰小说网",
-      "contentSourceWeight": -10,
+      "contentSourceWeight": 99,
       "mainSourceWeight": -10,
       "host": "http://www.daizhuzai.com/",
       "search": {
