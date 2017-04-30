@@ -288,6 +288,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
             const chapter = new Chapter();
             chapter.title = c.title;
             chapter.link = c.link;
+            chapter.cid = c.cid;
             catalog.push(chapter);
           }
 
@@ -298,7 +299,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
     // 从网络上获取章节内容
     getChapter(bsid, dict={}){
 
-      utils.log(`BookSourceManager: Load Chpater content from ${bsid}"`);
+      utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
       if(!dict.link && !dict.cid) return Promise.reject(206);
 

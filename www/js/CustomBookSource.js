@@ -49,7 +49,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
         if (!dict.link && !dict.cid) return Promise.reject(206);
 
@@ -83,7 +83,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
         if (!dict.link && !dict.cid) return Promise.reject(206);
 
@@ -129,7 +129,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
         if (!dict.link && !dict.cid) return Promise.reject(206);
 
@@ -188,12 +188,13 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
 
         var self = this;
         return co(regeneratorRuntime.mark(function _callee() {
-          var catalog, link, json, total, pageNos;
+          var result, link, json, total, pageNos, catalog, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, c, chapter;
+
           return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  catalog = [];
+                  result = [];
                   link = self.__spider.format(linkTmp, { bookid: dict.bookid, pageNo: 1 });
                   _context.next = 4;
                   return utils.getJSON(link);
@@ -203,7 +204,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
                   total = json.total;
 
                   dict.maxfreechapter = json.book.maxfreechapter;
-                  catalog[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
+                  result[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
 
                   pageNos = new Array(Math.ceil(total / 100) - 1).fill(0).map(function (e, i) {
                     return i + 2;
@@ -212,21 +213,72 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
                   return Promise.all(pageNos.map(function (pageNo) {
                     var gatcherDict = Object.assign({ pageNo: pageNo }, dict);
                     return self.__spider.get(bs.catalog, gatcherDict).then(function (cs) {
-                      catalog[pageNo - 1] = cs;
+                      result[pageNo - 1] = cs;
                     });
                   }));
 
                 case 11:
-                  return _context.abrupt("return", catalog.reduce(function (s, e) {
+                  result = result.reduce(function (s, e) {
                     return s.concat(e);
-                  }, []));
+                  }, []);
 
-                case 12:
+                  catalog = [];
+                  _iteratorNormalCompletion = true;
+                  _didIteratorError = false;
+                  _iteratorError = undefined;
+                  _context.prev = 16;
+
+                  for (_iterator = result[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    c = _step.value;
+                    chapter = new Chapter();
+
+                    chapter.title = c.title;
+                    chapter.link = c.link;
+                    chapter.cid = c.cid;
+                    catalog.push(chapter);
+                  }
+                  _context.next = 24;
+                  break;
+
+                case 20:
+                  _context.prev = 20;
+                  _context.t0 = _context["catch"](16);
+                  _didIteratorError = true;
+                  _iteratorError = _context.t0;
+
+                case 24:
+                  _context.prev = 24;
+                  _context.prev = 25;
+
+                  if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                  }
+
+                case 27:
+                  _context.prev = 27;
+
+                  if (!_didIteratorError) {
+                    _context.next = 30;
+                    break;
+                  }
+
+                  throw _iteratorError;
+
+                case 30:
+                  return _context.finish(27);
+
+                case 31:
+                  return _context.finish(24);
+
+                case 32:
+                  return _context.abrupt("return", catalog);
+
+                case 33:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, this);
+          }, _callee, this, [[16, 20, 24, 32], [25,, 27, 31]]);
         }));
       }
     },

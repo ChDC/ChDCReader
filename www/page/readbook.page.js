@@ -32,7 +32,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         if (this.isNewBook) {
           if (!app.bookShelf.hasBook(this.book)) {
-            uiutils.showMessageDialog("加入书架", "\u662F\u5426\u5C06" + this.book.name + " \u52A0\u5165\u4E66\u67B6\uFF1F", function () {
+            uiutils.showMessageDialog("加入书架", "\u662F\u5426\u5C06 " + this.book.name + " \u52A0\u5165\u4E66\u67B6\uFF1F", function () {
               app.bookShelf.addBook(_this2.book, _this2.readingRecord);
               app.bookShelf.save().then(function () {
                 uiutils.showMessage("添加成功！");

@@ -50,7 +50,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
     "qqac": {
       getChapter(bsid, dict={}){
 
-        utils.log(`BookSourceManager: Load Chpater content from ${bsid}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
         if(!dict.link && !dict.cid) return Promise.reject(206);
 
@@ -85,7 +85,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
       getChapter(bsid, dict={}){
 
 
-        utils.log(`BookSourceManager: Load Chpater content from ${bsid}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
         if(!dict.link && !dict.cid) return Promise.reject(206);
 
@@ -122,7 +122,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
     "chuangshi": {
       getChapter(bsid, dict={}){
 
-        utils.log(`BookSourceManager: Load Chpater content from ${bsid}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
         if(!dict.link && !dict.cid) return Promise.reject(206);
 
@@ -185,7 +185,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
 
         let self = this;
         return co(function*(){
-          let catalog = [];
+          let result = [];
           // 获取章节总数和免费章节数目
           // maxfreechapter
           let link = self.__spider.format(linkTmp, {bookid: dict.bookid, pageNo: 1});
@@ -193,7 +193,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
 
           let total = json.total;
           dict.maxfreechapter = json.book.maxfreechapter;
-          catalog[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
+          result[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
 
           let pageNos = (new Array(Math.ceil(total / 100) - 1)).fill(0).map((e,i) => i+2)
 
@@ -202,11 +202,21 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
             let gatcherDict = Object.assign({pageNo: pageNo}, dict);
             return self.__spider.get(bs.catalog, gatcherDict)
               .then(cs => {
-                catalog[pageNo - 1] = cs;
+                result[pageNo - 1] = cs;
               });
           }));
           // 合并结果并返回
-          return catalog.reduce((s, e) => s.concat(e), []);
+          result = result.reduce((s, e) => s.concat(e), []);
+
+          const catalog = [];
+          for(let c of result){
+            const chapter = new Chapter();
+            chapter.title = c.title;
+            chapter.link = c.link;
+            chapter.cid = c.cid;
+            catalog.push(chapter);
+          }
+          return catalog;
         });
       }
     },

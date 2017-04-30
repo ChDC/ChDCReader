@@ -499,6 +499,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
               var chapter = new Chapter();
               chapter.title = c.title;
               chapter.link = c.link;
+              chapter.cid = c.cid;
               catalog.push(chapter);
             }
           } catch (err) {
@@ -527,7 +528,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
         if (!dict.link && !dict.cid) return Promise.reject(206);
 

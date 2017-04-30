@@ -17,7 +17,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       // 询问是否加入书架
       if(this.isNewBook){
         if(!app.bookShelf.hasBook(this.book)){ // 书架中没有本书
-          uiutils.showMessageDialog("加入书架", `是否将${this.book.name} 加入书架？`,
+          uiutils.showMessageDialog("加入书架", `是否将 ${this.book.name} 加入书架？`,
               () => {
                 app.bookShelf.addBook(this.book, this.readingRecord);
                 app.bookShelf.save()

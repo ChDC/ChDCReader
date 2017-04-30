@@ -118,7 +118,8 @@ define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceM
               assert.isArray(catalog);
               equal(true, catalog.length > 0);
               book.chapters.forEach(chapter => {
-                equal(true, catalog.findIndex(e => e.title == chapter.title) >= 0);
+                equal(true, catalog.findIndex(e =>
+                  e.title == chapter.title && e.link == chapter.link && e.cid == chapter.cid) >= 0);
               });
             })
         }));

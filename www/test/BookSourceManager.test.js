@@ -105,7 +105,7 @@ define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSource
               equal(true, catalog.length > 0);
               book.chapters.forEach(function (chapter) {
                 equal(true, catalog.findIndex(function (e) {
-                  return e.title == chapter.title;
+                  return e.title == chapter.title && e.link == chapter.link && e.cid == chapter.cid;
                 }) >= 0);
               });
             });
