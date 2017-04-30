@@ -1,4 +1,4 @@
-define(['co', "utils", 'Book', "ReadingRecord"], function(co, utils, Book, ReadingRecord) {
+define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, Book, Chapter, ReadingRecord) {
   "use strict"
 
   // **** BookShelf *****
@@ -32,7 +32,7 @@ define(['co', "utils", 'Book', "ReadingRecord"], function(co, utils, Book, Readi
         // 更新目录文件
         utils.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
           .then(data => {
-            bs.catalog = data;
+            bs.catalog = utils.arrayCast(data, Chapter);
           })
           .catch(error => error); // 忽略错误
       }
