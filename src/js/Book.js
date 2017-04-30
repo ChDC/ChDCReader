@@ -176,7 +176,7 @@ define(["co", "utils", "Chapter", "BookSource"], function(co, utils, Chapter, Bo
         const matchs = [
           [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
           [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)],
-          [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitleWithoutNum.bind(Chapter)],
+          // [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitleWithoutNum.bind(Chapter)],
         ];
 
         for(const match of matchs){

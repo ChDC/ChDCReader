@@ -612,25 +612,6 @@ define(function(){
       }
     },
 
-    // 比较去掉所有空格和标点符号之后的所有符号
-    stripString(str){
-      if(!str) return str;
-
-      // 去除括号括起来的文字
-      str = str.replace(/（.*?）/g, '');
-      str = str.replace(/\(.*?\)/g, '');
-      str = str.replace(/【.*?】/g, '');
-
-      // 去除英文字符串
-      str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
-      // 去除中文字符串
-      str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
-
-      // 去除空白字符
-      str = str.replace(/\s/g, '');
-      return str;
-    },
-
     // 给数组计数
     arrayCount(array){
       if(!array) return array;

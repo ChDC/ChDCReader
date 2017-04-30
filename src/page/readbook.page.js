@@ -270,9 +270,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         if(!oldValue){
           // 当前是第一个元素
           app.hideLoading();
-          if(this.readingRecord.pageScrollTop){
+          if(this.readingRecord.getPageScrollTop()){
             const cs = $('#chapterContainer').scrollTop();
-            $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
+            $('#chapterContainer').scrollTop(cs + this.readingRecord.getPageScrollTop());
           }
         }
         const index = newValue.data('chapterIndex');

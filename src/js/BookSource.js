@@ -65,6 +65,8 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
       if(this.catalogLink === undefined)
         return this.bookSourceManager.getBookCatalogLink(this.id, this)
           .then(cl => (this.catalogLink = cl));
+      else
+        return Promise.resolve();
     }
 
     // 获取目录
