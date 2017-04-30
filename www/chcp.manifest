@@ -37,11 +37,11 @@
   },
   {
     "file": "img/logo/comico.png",
-    "hash": "b6db8ebd31569c21c0734892d4b9d6e3"
+    "hash": "9e574e0f6fed11eccac57a80cf1af0a0"
   },
   {
     "file": "img/logo/qidian.png",
-    "hash": "4e322736d645278ca7bc1d85b776ab9f"
+    "hash": "6e280189abc61077e9271a3d9af114f9"
   },
   {
     "file": "img/logo/qq.png",
@@ -49,7 +49,11 @@
   },
   {
     "file": "img/logo/qqac.png",
-    "hash": "86933ad5cde0c76e4f48f730fe58629f"
+    "hash": "0e8d129db454d925b4fce66dd41ba5de"
+  },
+  {
+    "file": "img/logo/qqbook.png",
+    "hash": "28e2ad7490be716b69f426fc6b7e322f"
   },
   {
     "file": "img/logo/sfacg.png",
@@ -57,11 +61,11 @@
   },
   {
     "file": "img/logo/sfnovel.png",
-    "hash": "320034ec92d2155fea2960a12663b4d7"
+    "hash": "7f46fe889b49e7499505b19ff30137ea"
   },
   {
     "file": "img/logo/u17.png",
-    "hash": "fc75268da0866bb0204cc7e919507d0e"
+    "hash": "e2422ee7222a2e39c6edf2d5f42570fb"
   },
   {
     "file": "img/readbg1.jpg",
@@ -93,7 +97,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "f508af136a5fe61f9f22a1d59e06ba92"
+    "hash": "e2fe88307565329765440ea2d1fbcce1"
   },
   {
     "file": "js/Chapter.js",
@@ -317,7 +321,7 @@
   },
   {
     "file": "mylib/Spider.js",
-    "hash": "f4719b212513304af05fc9c8845230b7"
+    "hash": "7ad38acb390cca820b4e3af57d674094"
   },
   {
     "file": "mylib/Test.js",
@@ -333,7 +337,7 @@
   },
   {
     "file": "mylib/utils.js",
-    "hash": "66f9058904d9bcb44881517ef1c7b0e7"
+    "hash": "582289333196a2d6582978d2f8a0924b"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -457,7 +461,7 @@
   },
   {
     "file": "test/Spider.test.js",
-    "hash": "a25e62942f6320758a21feb60cddee8e"
+    "hash": "c317297c842cbd84c7a74d6f91e9c897"
   },
   {
     "file": "test/translate.test.js",
@@ -465,6 +469,6 @@
   },
   {
     "file": "test/utils.test.js",
-    "hash": "fa1150334cd71841850751880aafc15e"
+    "hash": "5e3e099fbec8d28e4f1bc47d0ef1352e"
   }
 ]

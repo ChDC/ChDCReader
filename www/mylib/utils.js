@@ -156,39 +156,6 @@ define(function () {
       }
       return params;
     },
-    html2text: function html2text(html) {
-
-      function replaceElement(html, element, replaceString) {
-        var pattern = '<' + element + '(?: [^>]*?)?>[\\s\u3000]*([\\s\\S]*?)[\\s\u3000]*</' + element + '>';
-        html = html.replace(new RegExp(pattern, 'gi'), replaceString);
-        return html;
-      };
-
-      if (!html) return html;
-
-      html = html.replace(/&nbsp;/gi, ' ');
-
-      var temp = html.replace(/\s*(<br ?\/?>\s*){2,}/gi, '\n');
-      if (temp.search(/\s*<br ?\/?>\s*/) >= 0) html = html.replace(/\s*<br ?\/?>\s*/gi, '\n');else html = temp;
-
-      html = replaceElement(html, 'p', '$1\n');
-      html = replaceElement(html, 'span', '$1');
-      html = replaceElement(html, 'b', '$1');
-      html = replaceElement(html, 'i', '$1');
-
-      html = html.replace(/<(\\w+)( [^>]*?)?>[\\s\\S]*?<\/$1>/gi, '');
-      html = html.replace(/<\\w+([^>]*?)?>/gi, '');
-      return html.trim();
-    },
-    text2html: function text2html(text, className) {
-      if (!text) return text;
-
-      var pStart = className ? '<p class="' + className + '">' : '<p>';
-      var lines = text.split("\n").map(function (line) {
-        return '' + pStart + line.replace(/ /g, '&nbsp;') + '</p>';
-      });
-      return lines.join('\n');
-    },
     objectCast: function objectCast(obj, ClassFunction) {
       if (!obj || !ClassFunction) return obj;
 

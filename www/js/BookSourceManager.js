@@ -537,7 +537,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
 
         return this.__spider.get(bsm.chapter, dict).then(function (data) {
           var c = new Chapter();
-          c.content = _this5.__spider.clearHtml(data.contentHTML);
+          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = _this5.__spider.text2html(data.contentHTML);else c.content = _this5.__spider.clearHtml(data.contentHTML);
           if (!c.content) return Promise.reject(206);
 
           c.title = data.title ? data.title : dict.title;

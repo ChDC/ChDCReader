@@ -50,22 +50,6 @@ define(["chai", "utils"], function (chai, utils) {
       assert.isTrue('test' in o4);
     });
 
-    it('html2text', function () {
-      equal(undefined, utils.html2text());
-      equal("test1", utils.html2text('<p class="test">test1</p>'));
-      equal("test1", utils.html2text('t<span>es</span>t<b>1</b><br/>'));
-      equal("test1\ntest2", utils.html2text('test1<br/>test2'));
-      equal("test1", utils.html2text('<p class="test">test1</p>'));
-    });
-
-    it('text2html', function () {
-      equal(undefined, utils.text2html());
-      equal('<p>test</p>', utils.text2html('test'));
-      equal('<p class="abc">test</p>', utils.text2html('test', 'abc'));
-      equal('<p class="abc def">test</p>', utils.text2html('test', "abc def"));
-      equal('<p>test</p>\n<p>test2</p>', utils.text2html('test\ntest2'));
-    });
-
     it('objectCast', function () {
       equal(undefined, utils.objectCast());
       equal('{}', JSON.stringify(utils.objectCast({})));

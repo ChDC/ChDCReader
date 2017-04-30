@@ -614,6 +614,20 @@ define(function () {
         if (type != 'object') return type;
         return obj.constructor.name.toLowerCase();
       }
+    }, {
+      key: 'text2html',
+      value: function text2html(text) {
+        if (!text) return text;
+
+        var lines = text.split("\n").map(function (line) {
+          return '<p>' + escapeHTML(line.trim()) + '</p>';
+        });
+        return lines.join('\n');
+
+        function escapeHTML(t) {
+          return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/ /g, "&nbsp;").replace(/"/g, "&#34;").replace(/'/g, "&#39;");
+        }
+      }
     }]);
 
     return Spider;
