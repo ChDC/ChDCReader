@@ -125,6 +125,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function ($, ap
 
           var _loop2 = function _loop2() {
             var pageName = _arr[_i];
+            if (!(pageName in es)) return "continue";
             var config = es[pageName];
             var matcher = url.match(config.matcher);
             if (!matcher) return "continue";

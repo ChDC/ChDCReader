@@ -47,6 +47,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
           ref.executeScript({ code: es.executeScriptOnLoadStart});
 
         for(let pageName of ["readbook", "bookdetail"]){
+          if(!(pageName in es)) continue;
           let config = es[pageName];
           let matcher = url.match(config.matcher);
           if(!matcher) continue;
