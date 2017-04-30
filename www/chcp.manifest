@@ -93,7 +93,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "9605c53d6f2f8fb4d42847b153fcdbee"
+    "hash": "f508af136a5fe61f9f22a1d59e06ba92"
   },
   {
     "file": "js/Chapter.js",
@@ -105,7 +105,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "f4fc1e1d2bef5b4fd90a16e724b9241f"
+    "hash": "750de1e990b9b813e4b49a14f8ffcb37"
   },
   {
     "file": "js/draggable.js",
@@ -393,7 +393,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "2fb7c7deb08b08950e4ccc388f7c53a8"
+    "hash": "26207d87e25a3dd00ce4c7ddeda2d6a1"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -441,7 +441,7 @@
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "45d889271591f6a793f578e3578cfa1e"
+    "hash": "c7b9542e6ab3004a5df0d64081240f05"
   },
   {
     "file": "test/main.test.js",
