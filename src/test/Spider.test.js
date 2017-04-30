@@ -90,6 +90,14 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
       assert.notInclude(spider.__filterElement(html, 'div'), 'div');
     });
 
+    it('text2html', () => {
+      equal(undefined, spider.text2html());
+      equal('<p>test</p>', spider.text2html('test'));
+      equal('<p>test</p>', spider.text2html('test'));
+      equal('<p>test</p>', spider.text2html('test'));
+      equal('<p>test</p>\n<p>test2</p>', spider.text2html('test\ntest2'));
+    });
+
     it('__transformHTMLTagProperty', () => {
       assert.equal("", spider.__transformHTMLTagProperty(""));
       assert.equal(null, spider.__transformHTMLTagProperty());

@@ -309,7 +309,10 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
       return this.__spider.get(bsm.chapter, dict)
         .then(data => {
           const c = new Chapter();
-          c.content = this.__spider.clearHtml(data.contentHTML);
+          if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
+            c.content = this.__spider.text2html(data.contentHTML);
+          else
+            c.content = this.__spider.clearHtml(data.contentHTML);
           if(!c.content) return Promise.reject(206);
 
           c.title = data.title ? data.title : dict.title;

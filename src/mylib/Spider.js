@@ -610,6 +610,25 @@ define(function(){
       return obj.constructor.name.toLowerCase();
     }
 
+    text2html(text){
+      if(!text) return text;
+
+      // 将每一行都加上 p 标签
+      const lines = text.split("\n")
+        .map(line => `<p>${escapeHTML(line.trim())}</p>`);
+      return lines.join('\n');
+
+      function escapeHTML(t) {
+        return t
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/ /g, "&nbsp;")
+          .replace(/"/g, "&#34;")
+          .replace(/'/g, "&#39;");
+      }
+    }
+
   }
 
   return Spider;
