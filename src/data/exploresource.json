@@ -1,5 +1,5 @@
 {
-  "valid": ["qidian", "chuangshi", "sfnovel", "u17", "comico", "qqac"],
+  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac"],
   "sources": {
     "sfnovel": {
       "url": "http://m.sfacg.com/",
@@ -35,6 +35,12 @@
       }
     },
     "chuangshi": {
+      "url": "http://ubook.qq.com",
+      "readbook": {
+        "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
+      }
+    },
+    "qqbook": {
       "url": "http://ubook.qq.com",
       "readbook": {
         "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"

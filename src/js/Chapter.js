@@ -5,6 +5,7 @@ define(["utils"], function(utils) {
   class Chapter{
 
     constructor(){
+      this.cid = undefined;  // 章节 id
       this.link = undefined;    // 链接
       this.title = undefined;    // 标题
       this.content = undefined;  // 内容
@@ -12,6 +13,10 @@ define(["utils"], function(utils) {
       // this.modifyTime = undefined;  // 修改时间
     }
 
+    // 判断是否是 VIP
+    isVIP(){
+      return !this.cid && !this.link && this.title;
+    }
   }
 
 

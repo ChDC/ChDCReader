@@ -24,7 +24,7 @@ define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSource
     });
   });
 
-  var bsids = ["sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  var bsids = ["qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -115,7 +115,7 @@ define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSource
         it('测试获取章节', function () {
           return Promise.all(books.map(function (book) {
             return Promise.all(book.chapters.map(function (chapter) {
-              return bsm.getChapter(bsid, chapter).then(function (c) {
+              return bsm.getChapter(bsid, Object.assign({}, book, chapter)).then(function (c) {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);
                 equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);

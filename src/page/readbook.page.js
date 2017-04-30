@@ -242,7 +242,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
             if(i == this.readingRecord.chapterIndex)
               // 标记当前章节
               lce.addClass("current-chapter");
-            else if(!value.link)
+            else if(value.isVIP())
               lce.addClass("vip-chapter");
           });
           app.hideLoading()

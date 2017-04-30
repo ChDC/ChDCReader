@@ -26,10 +26,13 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
     }
 
 
-    // 获取当前书籍的源
-    __getBookSource(){
+    // 确保当前源已经获取到足够的数据
+    __assertBookSource(){
 
-      utils.log(`BookSource: Get book source by searching book`);
+      utils.log(`BookSource: assert myself`);
+
+      if(this.__searched)
+        return Promise.resolve();
 
       if(this.__disable)
         return Promise.reject(404);
@@ -50,56 +53,18 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
         });
     }
 
-
-    // 获取当前书籍指定的目录源的详细信息链接
-    __getBookSourceDetailLink(){
-
-      if(!this.__searched)
-        return this.__getBookSource()
-          .then(bs => bs.detailLink);
-
-      if(this.__disable)
-        return Promise.reject(404);
-
-      return Promise.resolve(this.detailLink);
-    }
-
-    // 获取当前书籍指定的目录页的链接
-    *__getBookSourceCatalogLink(){
-      if(!this.__searched)
-        yield this.__getBookSource();
-      if(this.__disable)
-        return Promise.reject(404);
-
-      if(this.catalogLink != undefined)
-        return Promise.resolve(this.catalogLink);
-      return this.bookSourceManager.getBookCatalogLink(this.id, this)
-        .then(cl => {
-          this.catalogLink = cl;
-          return cl;
-        });
-    }
-
-    // 刷新目录
-    *__refreshCatalog(forceRefresh=false){
-
-      if(!forceRefresh && (new Date()).getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
-        return this.catalog;
-
-      yield this.__getBookSourceCatalogLink();
-
-      const catalog = yield this.bookSourceManager.getBookCatalog(this.id, this);
-      this.catalog = catalog;
-      this.__updatedCatalogTime = (new Date()).getTime();
-      this.needSaveCatalog = true;
-      return catalog;
-    }
-
     // 获取书籍信息
     getBookInfo(){
-      return this.__getBookSourceDetailLink()
-        .then(detailLink =>
+      return this.__assertBookSource()
+        .then(() =>
         this.bookSourceManager.getBookInfo(this.id, this));
+    }
+
+    // 确保当前书籍指定的目录页的链接
+    __assertBookSourceCatalogLink(){
+      if(this.catalogLink === undefined)
+        return this.bookSourceManager.getBookCatalogLink(this.id, this)
+          .then(cl => (this.catalogLink = cl));
     }
 
     // 获取目录
@@ -109,7 +74,20 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
       if(!forceRefresh && this.catalog)
         return Promise.resolve(this.catalog);
 
-      return co(this.__refreshCatalog(forceRefresh));
+      let self = this;
+      return co(function*(){
+        yield self.__assertBookSource();
+        if(!forceRefresh && (new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
+          return self.catalog;
+
+        yield self.__assertBookSourceCatalogLink();
+
+        const catalog = yield self.bookSourceManager.getBookCatalog(self.id, self);
+        self.catalog = catalog;
+        self.__updatedCatalogTime = (new Date()).getTime();
+        self.needSaveCatalog = true;
+        return catalog;
+      });
     }
 
     // 获取书籍最新章节
@@ -120,8 +98,8 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
 
       utils.log('Refresh LastestChapter!');
 
-      return this.__getBookSourceDetailLink()
-        .then(detailLink =>
+      return this.__assertBookSource()
+        .then(() =>
           this.bookSourceManager.getLastestChapter(this.id, this))
         .then(lastestChapter => {
           this.__updatedLastestChapterTime = (new Date()).getTime();
@@ -140,13 +118,14 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
     // * onlyCacheNoLoad 只缓存章节，不加载章节
     getChapter(chapter, onlyCacheNoLoad){
       // 从缓存中获取章节内容
-      return co(this.__getCacheChapter(chapter.title, onlyCacheNoLoad))
+      return this.__assertBookSource()
+        .then(() => co(this.__getCacheChapter(chapter.title, onlyCacheNoLoad)))
         .then(c => onlyCacheNoLoad? chapter: c)
         .catch(error => {
           if(error != 207)
             throw error;
           // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
-          return this.bookSourceManager.getChapter(this.id, chapter)
+          return this.bookSourceManager.getChapter(this.id, Object.assign({}, this, chapter))
             .then(chapter => // 缓存该章节
               this.__cacheChapter(chapter));
         });

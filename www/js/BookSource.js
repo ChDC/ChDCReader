@@ -32,11 +32,13 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
     }
 
     _createClass(BookSource, [{
-      key: '__getBookSource',
-      value: function __getBookSource() {
+      key: '__assertBookSource',
+      value: function __assertBookSource() {
         var _this = this;
 
-        utils.log('BookSource: Get book source by searching book');
+        utils.log('BookSource: assert myself');
+
+        if (this.__searched) return Promise.resolve();
 
         if (this.__disable) return Promise.reject(404);
 
@@ -52,109 +54,21 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });
       }
     }, {
-      key: '__getBookSourceDetailLink',
-      value: function __getBookSourceDetailLink() {
-
-        if (!this.__searched) return this.__getBookSource().then(function (bs) {
-          return bs.detailLink;
-        });
-
-        if (this.__disable) return Promise.reject(404);
-
-        return Promise.resolve(this.detailLink);
-      }
-    }, {
-      key: '__getBookSourceCatalogLink',
-      value: regeneratorRuntime.mark(function __getBookSourceCatalogLink() {
-        var _this2 = this;
-
-        return regeneratorRuntime.wrap(function __getBookSourceCatalogLink$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                if (this.__searched) {
-                  _context.next = 3;
-                  break;
-                }
-
-                _context.next = 3;
-                return this.__getBookSource();
-
-              case 3:
-                if (!this.__disable) {
-                  _context.next = 5;
-                  break;
-                }
-
-                return _context.abrupt('return', Promise.reject(404));
-
-              case 5:
-                if (!(this.catalogLink != undefined)) {
-                  _context.next = 7;
-                  break;
-                }
-
-                return _context.abrupt('return', Promise.resolve(this.catalogLink));
-
-              case 7:
-                return _context.abrupt('return', this.bookSourceManager.getBookCatalogLink(this.id, this).then(function (cl) {
-                  _this2.catalogLink = cl;
-                  return cl;
-                }));
-
-              case 8:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, __getBookSourceCatalogLink, this);
-      })
-    }, {
-      key: '__refreshCatalog',
-      value: regeneratorRuntime.mark(function __refreshCatalog() {
-        var forceRefresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-        var catalog;
-        return regeneratorRuntime.wrap(function __refreshCatalog$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                if (!(!forceRefresh && new Date().getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
-                  _context2.next = 2;
-                  break;
-                }
-
-                return _context2.abrupt('return', this.catalog);
-
-              case 2:
-                _context2.next = 4;
-                return this.__getBookSourceCatalogLink();
-
-              case 4:
-                _context2.next = 6;
-                return this.bookSourceManager.getBookCatalog(this.id, this);
-
-              case 6:
-                catalog = _context2.sent;
-
-                this.catalog = catalog;
-                this.__updatedCatalogTime = new Date().getTime();
-                this.needSaveCatalog = true;
-                return _context2.abrupt('return', catalog);
-
-              case 11:
-              case 'end':
-                return _context2.stop();
-            }
-          }
-        }, __refreshCatalog, this);
-      })
-    }, {
       key: 'getBookInfo',
       value: function getBookInfo() {
+        var _this2 = this;
+
+        return this.__assertBookSource().then(function () {
+          return _this2.bookSourceManager.getBookInfo(_this2.id, _this2);
+        });
+      }
+    }, {
+      key: '__assertBookSourceCatalogLink',
+      value: function __assertBookSourceCatalogLink() {
         var _this3 = this;
 
-        return this.__getBookSourceDetailLink().then(function (detailLink) {
-          return _this3.bookSourceManager.getBookInfo(_this3.id, _this3);
+        if (this.catalogLink === undefined) return this.bookSourceManager.getBookCatalogLink(this.id, this).then(function (cl) {
+          return _this3.catalogLink = cl;
         });
       }
     }, {
@@ -162,7 +76,47 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
       value: function getCatalog(forceRefresh) {
         if (!forceRefresh && this.catalog) return Promise.resolve(this.catalog);
 
-        return co(this.__refreshCatalog(forceRefresh));
+        var self = this;
+        return co(regeneratorRuntime.mark(function _callee() {
+          var catalog;
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _context.next = 2;
+                  return self.__assertBookSource();
+
+                case 2:
+                  if (!(!forceRefresh && new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
+                    _context.next = 4;
+                    break;
+                  }
+
+                  return _context.abrupt('return', self.catalog);
+
+                case 4:
+                  _context.next = 6;
+                  return self.__assertBookSourceCatalogLink();
+
+                case 6:
+                  _context.next = 8;
+                  return self.bookSourceManager.getBookCatalog(self.id, self);
+
+                case 8:
+                  catalog = _context.sent;
+
+                  self.catalog = catalog;
+                  self.__updatedCatalogTime = new Date().getTime();
+                  self.needSaveCatalog = true;
+                  return _context.abrupt('return', catalog);
+
+                case 13:
+                case 'end':
+                  return _context.stop();
+              }
+            }
+          }, _callee, this);
+        }));
       }
     }, {
       key: 'refreshLastestChapter',
@@ -176,7 +130,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
 
         utils.log('Refresh LastestChapter!');
 
-        return this.__getBookSourceDetailLink().then(function (detailLink) {
+        return this.__assertBookSource().then(function () {
           return _this4.bookSourceManager.getLastestChapter(_this4.id, _this4);
         }).then(function (lastestChapter) {
           _this4.__updatedLastestChapterTime = new Date().getTime();
@@ -193,12 +147,14 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
       value: function getChapter(chapter, onlyCacheNoLoad) {
         var _this5 = this;
 
-        return co(this.__getCacheChapter(chapter.title, onlyCacheNoLoad)).then(function (c) {
+        return this.__assertBookSource().then(function () {
+          return co(_this5.__getCacheChapter(chapter.title, onlyCacheNoLoad));
+        }).then(function (c) {
           return onlyCacheNoLoad ? chapter : c;
         }).catch(function (error) {
           if (error != 207) throw error;
 
-          return _this5.bookSourceManager.getChapter(_this5.id, chapter).then(function (chapter) {
+          return _this5.bookSourceManager.getChapter(_this5.id, Object.assign({}, _this5, chapter)).then(function (chapter) {
             return _this5.__cacheChapter(chapter);
           });
         });
@@ -212,51 +168,51 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
       key: '__getCacheChapter',
       value: regeneratorRuntime.mark(function __getCacheChapter(title, onlyCacheNoLoad) {
         var dest, exists, data, chapter;
-        return regeneratorRuntime.wrap(function __getCacheChapter$(_context3) {
+        return regeneratorRuntime.wrap(function __getCacheChapter$(_context2) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 dest = this.__getCacheChapterLocation(title);
 
                 if (!onlyCacheNoLoad) {
-                  _context3.next = 6;
+                  _context2.next = 6;
                   break;
                 }
 
-                _context3.next = 4;
+                _context2.next = 4;
                 return utils.dataExists(dest, true);
 
               case 4:
-                exists = _context3.sent;
-                return _context3.abrupt('return', exists ? null : Promise.reject(207));
+                exists = _context2.sent;
+                return _context2.abrupt('return', exists ? null : Promise.reject(207));
 
               case 6:
-                _context3.prev = 6;
-                _context3.next = 9;
+                _context2.prev = 6;
+                _context2.next = 9;
                 return utils.loadData(dest, true);
 
               case 9:
-                data = _context3.sent;
+                data = _context2.sent;
 
                 if (data) {
-                  _context3.next = 12;
+                  _context2.next = 12;
                   break;
                 }
 
-                return _context3.abrupt('return', Promise.reject(207));
+                return _context2.abrupt('return', Promise.reject(207));
 
               case 12:
                 chapter = Object.assign(new Chapter(), data);
-                return _context3.abrupt('return', chapter);
+                return _context2.abrupt('return', chapter);
 
               case 16:
-                _context3.prev = 16;
-                _context3.t0 = _context3['catch'](6);
-                return _context3.abrupt('return', Promise.reject(207));
+                _context2.prev = 16;
+                _context2.t0 = _context2['catch'](6);
+                return _context2.abrupt('return', Promise.reject(207));
 
               case 19:
               case 'end':
-                return _context3.stop();
+                return _context2.stop();
             }
           }
         }, __getCacheChapter, this, [[6, 16]]);

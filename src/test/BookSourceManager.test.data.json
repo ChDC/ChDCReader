@@ -20,8 +20,9 @@
          "chapters" : [
             {
                "content" : "<img",
-               "link" : "http://m.ac.qq.com/chapter/index/id/522388/cid/110",
-               "title" : "第102弹 有难同当"
+               "cid": "110",
+               "title" : "第102弹 有难同当",
+               "link": "http://m.ac.qq.com/chapter/index/id/522388/cid/110?style=plain"
             }
          ],
          "bookid": "522388",
@@ -35,7 +36,7 @@
          "chapters" : [
             {
                "content" : "<img",
-               "link" : "http://www.u17.com/chapter/34539.html",
+               "cid" : "34539",
                "title" : "13 第十三章 武神躯 2010-12-08"
             }
          ],
@@ -48,7 +49,7 @@
          "chapters" : [
             {
                "content" : "<img",
-               "link" : "http://www.u17.com/chapter/464219.html",
+               "cid" : "464219",
                "title" : "第六十二话空瞑大帝的石棺 2016-02-07"
             }
          ],
@@ -63,8 +64,7 @@
          "chapters" : [
             {
                "content" : "<img",
-               "linkid": 104,
-               "link" : "http://www.comico.com.tw/detail.nhn?titleNo=1&articleNo=104",
+               "cid": "104",
                "title" : "report104. 泡沫之花"
             }
          ],
@@ -257,7 +257,7 @@
          "chapters" : [
             {
                "content" : "左再刚回国就过了笔试，可是考完之后，左再还是不太敢在国内开车。国内的驾驶座在左边，英国的驾驶座在右边，没在国内开过车的左再有点不习惯。",
-               "link" : "http://chuangshi.qq.com/index.php/Bookreader/15005878/31?lang=zhs",
+               "cid": "31",
                "title" : "第二十六章 窗烛（2）"
             }
          ],
@@ -273,7 +273,7 @@
          "chapters" : [
             {
                "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
-               "link" : "http://chuangshi.qq.com/index.php/Bookreader/11331168/22?lang=zhs",
+               "cid": "22",
                "title" : "第十四章 肖薇"
             }
          ],
@@ -290,7 +290,7 @@
          "chapters" : [
             {
                "content" : "的",
-               "link" : "http://chuangshi.qq.com/index.php/Bookreader/462523/8?lang=zhs",
+               "cid": "8",
                "title" : "第八章 柳阳"
             }
          ],
@@ -303,13 +303,80 @@
          "name" : "大主宰"
       }
    ],
+   "qqbook" : [
+      {
+         "author" : "恨世追魂",
+         "bookid" : "850274",
+         "chapters" : [
+            {
+               "content" : "由自主的楞了一下，甚至他的心里在一瞬间竟然出现了",
+               "cid" : "2",
+               "title" : "第2章 ：欺辱"
+            }
+         ],
+         "maxfreechapter": "139",
+         "complete" : false,
+         "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
+         "lastestChapter" : "",
+         "name" : "神魔变"
+      },
+      {
+         "maxfreechapter": "139",
+         "author" : "飘荡墨尔本",
+         "bookid" : "15005878",
+         "chapters" : [
+            {
+               "content" : "左再刚回国就过了笔试，可是考完之后，左再还是不太敢在国内开车。国内的驾驶座在左边，英国的驾驶座在右边，没在国内开过车的左再有点不习惯。",
+               "cid" : "26",
+               "title" : "第26章 窗烛（2）"
+            }
+         ],
+         "complete" : false,
+         "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
+         "lastestChapter" : "",
+         "name" : "邂逅调香师"
+      },
+      {
+         "maxfreechapter": "139",
+         "author" : "月离",
+         "chapters" : [
+            {
+               "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
+               "cid" : "14",
+               "title" : "第14章 肖薇"
+            }
+         ],
+         "complete" : false,
+         "cover" : "http://img1.write.qq.com/upload/cover/2016-01-20/cb_569f491f778dd.jpg",
+         "bookid": "11331168",
+         "lastestChapter" : "",
+         "name" : "完美邂逅：专宠傲娇贵公子"
+      },
+      {
+         "maxfreechapter": "139",
+         "author" : "天蚕土豆",
+         "chapters" : [
+            {
+               "content" : "的",
+               "cid" : "8",
+               "title" : "第8章 柳阳"
+            }
+         ],
+         "complete" : false,
+         "cover" : "http://img1.write.qq.com/upload/cover/2013-05-01/cm_4d00258637d3464c3ea19f932d58d1d0.jpg",
+         "bookid": "462523",
+         "introduce" : "大千世界",
+         "lastestChapter" : "",
+         "name" : "大主宰"
+      }
+   ],
    "daizhuzai" : [
       {
          "author" : "耳根",
          "chapters" : [
             {
                "content" : "的",
-               "link" : "http://www.daizhuzai.com/351/101.html",
+               "link" : "http://www.daizhuzai.com/novelsearch/reader/transcode/siteid/37/url/aHR0cDovL3d3dy5waWFvdGlhbi5jb20vaHRtbC83Lzc5ODEvNDg5NTkyNC5odG1s",
                "title" : "第九十八章 龙象化海经"
             }
          ],
@@ -325,7 +392,7 @@
          "chapters" : [
             {
                "content" : "的",
-               "link" : "http://www.daizhuzai.com/248/101.html",
+               "link" : "http://www.daizhuzai.com/novelsearch/reader/transcode/siteid/37/url/aHR0cDovL3d3dy5waWFvdGlhbi5jb20vaHRtbC83Lzc2MDQvNDU3MjcxMi5odG1s",
                "title" : "第九十七章黑了心的铁心源"
             }
          ],
@@ -341,7 +408,7 @@
          "chapters" : [
             {
                "content" : "的",
-               "link" : "http://www.daizhuzai.com/1/101.html",
+               "link" : "http://www.daizhuzai.com/novelsearch/reader/transcode/siteid/37/url/aHR0cDovL3d3dy5waWFvdGlhbi5jb20vaHRtbC80LzQzMTcvMjMzNjA3My5odG1s",
                "title" : "第九十五章 黑色卷轴"
             }
          ],
@@ -403,7 +470,7 @@
          "chapters" : [
             {
                "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
-               "link" : "http://read.qidian.com/chapter/6u3w2_ut08NH9vdK3C5yvw2/dB_RwQjbPcZp4rPq4Fd4KQ2",
+               "cid" : "6u3w2_ut08NH9vdK3C5yvw2/dB_RwQjbPcZp4rPq4Fd4KQ2",
                "title" : "第十四章 肖薇"
             }
          ],
@@ -420,7 +487,7 @@
          "chapters" : [
             {
                "content" : "左再刚回国就过了笔试，可是考完之后，左再还是不太敢在国内开车。国内的驾驶座在左边，英国的驾驶座在右边，没在国内开过车的左再有点不习惯。",
-               "link" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/svkUayIjkdfgn4SMoDUcDQ2",
+               "cid" : "7ouSWYzZUBVQv4sKnwMhGg2/svkUayIjkdfgn4SMoDUcDQ2",
                "title" : "第二十六章 窗烛（2）"
             }
          ],
@@ -436,13 +503,12 @@
          "chapters" : [
             {
                "content" : "众人大喜，看向白小纯时，已是喜欢到了极点，觉得这白小纯不但可爱，肚子里坏水还不少",
-               "link" : "http://read.qidian.com/chapter/rJgN8tJ_cVdRGoWu-UQg7Q2/N7RItTUlse2aGfXRMrUjdw2",
+               "cid" : "rJgN8tJ_cVdRGoWu-UQg7Q2/N7RItTUlse2aGfXRMrUjdw2",
                "title" : "第四章 炼灵"
             }
          ],
          "complete" : false,
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
-         "detailLink" : "http://book.qidian.com/info/1003354631",
          "introduce" : "一念成沧海，一念化桑田。一念斩千魔",
          "lastestChapter" : "",
          "name" : "一念永恒"
@@ -453,13 +519,12 @@
          "chapters" : [
             {
                "content" : "王柔花远没有铁心源那样自在，她如今正举着那根棒槌和一只雪白的狐狸对峙",
-               "link" : "http://read.qidian.com/chapter/2EOvKFDAVe01/o1CNvVz-KeMex0RJOkJclQ2",
+               "cid" : "2EOvKFDAVe01/o1CNvVz-KeMex0RJOkJclQ2",
                "title" : "第二章铁心源的运气"
             }
          ],
          "complete" : false,
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/3650892/150",
-         "detailLink" : "http://book.qidian.com/info/3650892",
          "introduce" : "人的第一要求就是活着，第二要求还是活着，",
          "lastestChapter" : "",
          "name" : "银狐"
@@ -470,13 +535,12 @@
          "chapters" : [
             {
                "content" : "北灵境分九域，各由一主掌控，",
-               "link" : "http://read.qidian.com/chapter/2OZih9MNQLg1/o2rSOd-S_DUex0RJOkJclQ2",
+               "cid" : "2OZih9MNQLg1/o2rSOd-S_DUex0RJOkJclQ2",
                "title" : "第三章 牧域"
             }
          ],
          "complete" : false,
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/2750457/150",
-         "detailLink" : "http://book.qidian.com/info/2750457",
          "introduce" : "大千世界，位面交汇，万族林立",
          "lastestChapter" : "",
          "name" : "大主宰"

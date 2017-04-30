@@ -1,18 +1,32 @@
 "use strict";
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 define(["utils"], function (utils) {
   "use strict";
 
-  var Chapter = function Chapter() {
-    _classCallCheck(this, Chapter);
+  var Chapter = function () {
+    function Chapter() {
+      _classCallCheck(this, Chapter);
 
-    this.link = undefined;
-    this.title = undefined;
-    this.content = undefined;
-    this.volume = undefined;
-  };
+      this.cid = undefined;
+      this.link = undefined;
+      this.title = undefined;
+      this.content = undefined;
+      this.volume = undefined;
+    }
+
+    _createClass(Chapter, [{
+      key: "isVIP",
+      value: function isVIP() {
+        return !this.cid && !this.link && this.title;
+      }
+    }]);
+
+    return Chapter;
+  }();
 
   Chapter.equalTitle = function (chapterA, chapterB) {
     return Chapter.equalTitle2(chapterA.title, chapterB.title);

@@ -90,7 +90,8 @@ define(function () {
             html.innerHTML = data;
             return this.__handleResponse(html, response, null, dict);
           case "json":
-            var json = JSON.parse(data);
+            var json = void 0;
+            if (this.type(data) != 'object') json = JSON.parse(data);else json = data;
             return this.__handleResponse(json, response, null, dict);
           default:
             throw new Error("Illegal type");
@@ -187,7 +188,7 @@ define(function () {
                 return _this3.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                var gatherDict = Object.assign({}, globalDict, _this3.type(m) == "object" ? m : {});
+                var gatherDict = Object.assign({}, globalDict, _this3.type(data) == "object" ? data : {}, _this3.type(m) == "object" ? m : {});
                 var validCode = '"use strict"\n' + _this3.format(response.valideach, gatherDict, true);
                 return eval(validCode);
               });
@@ -204,7 +205,7 @@ define(function () {
               if (!response.element) return undefined;
 
               var e = this.__getElement(data, response.element);
-              if (!e) return undefined;
+              if (e == undefined) return undefined;
               if (response.attribute) {
                 var attr = void 0;
                 var transAttrbite = this.secureAttributeList.find(function (e) {
@@ -217,7 +218,7 @@ define(function () {
                 if (attr == 'innerHTML') result = this.__reverseTransformHTMLTagProperty(result);
               } else result = this.__getValue(e, keyName, globalDict, dict);
 
-              if (!result) return result;
+              if (result == undefined) return result;
 
               if (response.remove) {
                 var regex = new RegExp(response.remove, 'gi');
@@ -236,16 +237,17 @@ define(function () {
             {
               if (!response.element) return response.default;
               var _e = this.__getElement(data, response.element);
-              if (!_e) return response.default;
+              if (_e == undefined) return response.default;
               var v = this.__getValue(_e, keyName, globalDict, dict);
+              if (v != undefined) v = v.toString();
 
-              if (v && response.true && v.match(response.true)) result = true;else if (v && response.false && v.match(response.false)) result = false;else result = response.default;
+              if (v != undefined && response.true && v.match(response.true)) result = true;else if (v != undefined && response.false && v.match(response.false)) result = false;else result = response.default;
             }
             break;
           case "format":
             {
               if (!response.value) return undefined;
-              var gatherDict = Object.assign({}, globalDict, dict);
+              var gatherDict = Object.assign({}, globalDict, this.type(data) == "object" ? data : {}, dict);
               result = this.format(response.value, gatherDict);
             }
             break;
@@ -256,7 +258,7 @@ define(function () {
         }
 
         if ("valid" in response) {
-          var _gatherDict = Object.assign({}, globalDict, dict);
+          var _gatherDict = Object.assign({}, globalDict, this.type(data) == "object" ? data : {}, dict);
           var validCode = '"use strict"\n' + this.format(response.valid, _gatherDict, true);
           if (!eval(validCode)) return undefined;
         }
@@ -269,7 +271,7 @@ define(function () {
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
         var e = this.__getElement(data, response);
-        if (!e) return undefined;
+        if (e == undefined) return undefined;
         return this.__getValue(e, keyName, globalDict, dict);
       }
     }, {
@@ -385,15 +387,15 @@ define(function () {
           var _loop = function _loop() {
             var key = _step3.value;
 
+            if (!result) return {
+                v: undefined
+              };
+
             var _splitKeyAndOperatorA = splitKeyAndOperatorAndArgs(key),
                 _splitKeyAndOperatorA2 = _slicedToArray(_splitKeyAndOperatorA, 3),
                 k = _splitKeyAndOperatorA2[0],
                 operator = _splitKeyAndOperatorA2[1],
                 args = _splitKeyAndOperatorA2[2];
-
-            if (!result) return {
-                v: undefined
-              };
 
             if (_this4.type(result) == 'array') {
               if (operator == 'concat') result = result.reduce(function (s, m) {

@@ -103,7 +103,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
             var self = _this2;
             _this2[cf] = function (bsid) {
               var beforeFunctions = ["before" + cf, "before" + cf[0].toUpperCase() + cf.slice(1)];
-              var args = arguments;
+              var argsPromise = Promise.resolve(arguments);
               var _iteratorNormalCompletion3 = true;
               var _didIteratorError3 = false;
               var _iteratorError3 = undefined;
@@ -113,7 +113,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
                   var bf = _step3.value;
 
                   if (bsid in customBookSource && bf in customBookSource[bsid]) {
-                    args = customBookSource[bsid][bf].apply(self, args);
+                    argsPromise = customBookSource[bsid][bf].apply(self, arguments);
                     break;
                   }
                 }
@@ -134,7 +134,11 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
 
               var promise = void 0;
 
-              if (bsid in customBookSource && cf in customBookSource[bsid]) promise = customBookSource[bsid][cf].apply(self, args);else promise = oldFunction.apply(self, args);
+              if (bsid in customBookSource && cf in customBookSource[bsid]) promise = argsPromise.then(function (args) {
+                return customBookSource[bsid][cf].apply(self, args);
+              });else promise = argsPromise.then(function (args) {
+                  return oldFunction.apply(self, args);
+                });
 
               var afterFunctions = ["after" + cf, "after" + cf[0].toUpperCase() + cf.slice(1)];
 
@@ -520,25 +524,24 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
       value: function getChapter(bsid) {
         var _this5 = this;
 
-        var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid + "\"");
 
-        if (!chapter.link) return Promise.reject(206);
+        if (!dict.link && !dict.cid) return Promise.reject(206);
 
         var bsm = this.__sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.__spider.get(bsm.chapter, { url: chapter.link, chapterLink: chapter.link }).then(function (data) {
+        return this.__spider.get(bsm.chapter, dict).then(function (data) {
           var c = new Chapter();
           c.content = _this5.__spider.clearHtml(data.contentHTML);
+          if (!c.content) return Promise.reject(206);
 
-          if (!c.content) {
-            return Promise.reject(206);
-          }
-          c.link = chapter.link;
-          c.title = data.title;
+          c.link = data.link ? data.link : dict.link;;
+          c.title = data.title ? data.title : dict.title;
+          c.cid = data.cid ? data.cid : dict.cid;
 
           return c;
         });

@@ -129,10 +129,10 @@ define(["co", "utils", "Chapter", "BookSource"], function (co, utils, Chapter, B
         return this.getBookSource(bookSourceId).then(function (bs) {
           return bs.getBookInfo();
         }).then(function (book) {
-          _this3.catagory = book.catagory;
-          _this3.cover = book.cover;
-          _this3.complete = book.complete;
-          _this3.introduce = book.introduce;
+          if (book.catagory) _this3.catagory = book.catagory;
+          if (book.cover) _this3.cover = book.cover;
+          if (book.complete) _this3.complete = book.complete;
+          if (book.introduce) _this3.introduce = book.introduce;
         });
       }
     }, {

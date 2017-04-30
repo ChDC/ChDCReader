@@ -120,10 +120,10 @@ define(["co", "utils", "Chapter", "BookSource"], function(co, utils, Chapter, Bo
       return this.getBookSource(bookSourceId)
         .then(bs => bs.getBookInfo())
         .then(book => {
-            this.catagory = book.catagory;  // 分类
-            this.cover = book.cover;  // 封面
-            this.complete = book.complete;  // 是否完结
-            this.introduce = book.introduce;  // 简介
+            if(book.catagory) this.catagory = book.catagory;  // 分类
+            if(book.cover) this.cover = book.cover;  // 封面
+            if(book.complete) this.complete = book.complete;  // 是否完结
+            if(book.introduce) this.introduce = book.introduce;  // 简介
           });
     }
 

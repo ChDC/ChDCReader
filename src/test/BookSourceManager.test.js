@@ -25,10 +25,10 @@ define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceM
 
 
   // 小说书源测试
-  let bsids = ["sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = ["qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
-  // for(let bsid of ['sfnovel']){
+  // for(let bsid of ['comico']){
 
     function equalBook(bsid, book, b){
       assert.isObject(b);
@@ -127,7 +127,7 @@ define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceM
       it('测试获取章节', ()=>{
         return Promise.all(books.map(book =>
           Promise.all(book.chapters.map(chapter =>
-            bsm.getChapter(bsid, chapter)
+            bsm.getChapter(bsid, Object.assign({}, book, chapter))
               .then(c => {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);

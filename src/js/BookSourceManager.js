@@ -66,10 +66,10 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           // 在调用系统函数之前，用自定义的 before* 函数处理参数
           // 如 beforegetBook 或 beforeGetBook 处理 getBook 函数
           let beforeFunctions = [`before${cf}`, `before${cf[0].toUpperCase()}${cf.slice(1)}`];
-          let args = arguments;
+          let argsPromise = Promise.resolve(arguments);
           for(let bf of beforeFunctions){
             if(bsid in customBookSource && bf in customBookSource[bsid]){
-              args = customBookSource[bsid][bf].apply(self, args);
+              argsPromise = customBookSource[bsid][bf].apply(self, arguments);
               break;
             }
           }
@@ -77,11 +77,11 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           let promise;
           // 优先调用自定义的同名函数，如果 getBook
           if(bsid in customBookSource && cf in customBookSource[bsid])
-            promise = customBookSource[bsid][cf].apply(self, args);
+            promise = argsPromise.then(args => customBookSource[bsid][cf].apply(self, args));
 
           else
             // 调用系统函数
-            promise = oldFunction.apply(self, args);
+            promise = argsPromise.then(args => oldFunction.apply(self, args));
 
           // 在调用完系统函数之后，用自定义的 after* 函数处理结果
           // 如 aftergetBook 或 afterGetBook 处理 getBook 函数
@@ -296,26 +296,24 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
     }
 
     // 从网络上获取章节内容
-    getChapter(bsid, chapter={}){
+    getChapter(bsid, dict={}){
 
-      utils.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+      utils.log(`BookSourceManager: Load Chpater content from ${bsid}"`);
 
-      if(!chapter.link) return Promise.reject(206);
+      if(!dict.link && !dict.cid) return Promise.reject(206);
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
+      return this.__spider.get(bsm.chapter, dict)
         .then(data => {
           const c = new Chapter();
           c.content = this.__spider.clearHtml(data.contentHTML);
+          if(!c.content) return Promise.reject(206);
 
-          if(!c.content){
-            // 没有章节内容就返回错误
-            return Promise.reject(206);
-          }
-          c.link = chapter.link;
-          c.title = data.title;
+          c.link = data.link ? data.link : dict.link;;
+          c.title = data.title ? data.title : dict.title;
+          c.cid = data.cid ? data.cid : dict.cid;
 
           return c;
         });

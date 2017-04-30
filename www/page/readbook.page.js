@@ -280,7 +280,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
             lce.attr("data-index", i);
             lce.click(listCatalogEntryClick.bind(_this5));
             listCatalog.append(lce);
-            if (i == _this5.readingRecord.chapterIndex) lce.addClass("current-chapter");else if (!value.link) lce.addClass("vip-chapter");
+            if (i == _this5.readingRecord.chapterIndex) lce.addClass("current-chapter");else if (value.isVIP()) lce.addClass("vip-chapter");
           });
           app.hideLoading();
         }).catch(function (error) {
