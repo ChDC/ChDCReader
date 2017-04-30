@@ -1,6 +1,6 @@
 "use strict";
 
-define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceManager) {
+define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSourceManager) {
 
   var assert = chai.assert;
   var equal = assert.equal;
@@ -24,7 +24,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
     });
   });
 
-  var bsids = ["sfnovel", "qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  var bsids = ["sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -59,7 +59,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
 
         before(function () {
           bsm = new BookSourceManager();
-          return Promise.all([bsm.loadConfig("data/booksources.json"), util.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
+          return Promise.all([bsm.loadConfig("data/booksources.json"), utils.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
             config = data;
             books = config[bsid];
           })]);

@@ -443,7 +443,7 @@ define(function () {
         if (!url || url.match("^https?://")) return url;
 
         if (url.match("^//")) url = "http:" + url;else if (url.match("^://")) url = "http" + url;else if (url.match("^javascript:")) url = "";else {
-          var matcher = host.match(/^(.*):\/\//);
+          var matcher = host.match(/^(.*?):\/\//);
           var scheme = matcher ? matcher[0] : "";
           host = host.substring(scheme.length);
 
@@ -473,7 +473,11 @@ define(function () {
         if (!string) return string;
 
         var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-          return object[p1] !== undefined ? stringify ? JSON.stringify(object[p1]) : object[p1] : stringify ? JSON.stringify(object[p1]) : '';
+
+          if (!(p1 in object)) throw new Error('can\'t find the key ' + p1 + ' in object');
+
+          if (object[p1] == undefined && !stringify) return '';
+          if (stringify) return JSON.stringify(object[p1]);else return object[p1];
         });
         return result;
       }

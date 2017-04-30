@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util, uiutil){
+define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, utils, uiutils){
 
   class MyPage extends Page{
 
@@ -35,7 +35,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
             $(event.currentTarget).attr("disabled", "disabled");
             app.bookShelf.save()
               .then(()=>{
-                uiutil.showMessage("添加成功！");
+                uiutils.showMessage("添加成功！");
                 book.checkBookSources();
                 // 缓存
                 book.cacheChapter(0, app.settings.settings.cacheChapterCount);
@@ -57,7 +57,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
       const bookSourceId = $("#bookSource").val();
       $('#result').empty();
       if(!keyword || !bookSourceId){
-        uiutil.showError("请输入要搜索的关键字");
+        uiutils.showError("请输入要搜索的关键字");
         return;
       }
 
@@ -70,7 +70,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
           })
           .catch(error => {
             app.hideLoading();
-            uiutil.showError(app.error.getMessage(error));
+            uiutils.showError(app.error.getMessage(error));
           });
         return;
       }
@@ -83,7 +83,7 @@ define(["jquery", "main", "Page", "util", "uiutil"], function($, app, Page, util
         })
         .catch(error => {
           app.hideLoading();
-          uiutil.showError(app.error.getMessage(error));
+          uiutils.showError(app.error.getMessage(error));
         });
     }
 

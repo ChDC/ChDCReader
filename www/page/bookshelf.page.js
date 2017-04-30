@@ -10,7 +10,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], function ($, app, Page, util, uiutil, Chapter, sortablejs) {
+define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], function ($, app, Page, utils, uiutils, Chapter, sortablejs) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -44,14 +44,14 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
       value: function removeBook(book) {
         var _this3 = this;
 
-        uiutil.showMessageDialog("确定", "确定要删除该书？", function () {
+        uiutils.showMessageDialog("确定", "确定要删除该书？", function () {
           var target = $(event.currentTarget);
           app.bookShelf.removeBook(book);
           _this3.refreshBooksOrder(".bookshelf", app.bookShelf);
           app.bookShelf.save().then(function () {
-            uiutil.showMessage("删除成功！");
+            uiutils.showMessage("删除成功！");
           }).catch(function (error) {
-            uiutil.showError("删除失败！");
+            uiutils.showError("删除失败！");
           });
         });
         return false;

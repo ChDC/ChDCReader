@@ -1,4 +1,4 @@
-define(["util"], function(util) {
+define(["utils"], function(utils) {
   "use strict"
 
   // **** Chapter ****
@@ -26,8 +26,8 @@ define(["util"], function(util) {
       return false;
 
     // TODO：模糊判等
-    const cA = util.stripString(chapterTitleA);
-    const cB = util.stripString(chapterTitleB);
+    const cA = utils.stripString(chapterTitleA);
+    const cB = utils.stripString(chapterTitleB);
     return cA == cB;
   }
 
@@ -42,8 +42,8 @@ define(["util"], function(util) {
     const numPattern = /第[零一二两三四五六七八九十百千万亿\d]+章/g;
     chapterTitleA = chapterTitleA.replace(numPattern, '');
     chapterTitleB = chapterTitleB.replace(numPattern, '');
-    const cA = util.stripString(chapterTitleA);
-    const cB = util.stripString(chapterTitleB);
+    const cA = utils.stripString(chapterTitleA);
+    const cB = utils.stripString(chapterTitleB);
     return cA == cB;
   }
 

@@ -10,7 +10,7 @@ require(["../js/config"], function(){
         let testList = [
             "mocha",
             "BookSourceManager",
-            "util",
+            "utils",
             "translate",
             "Spider",
         ];

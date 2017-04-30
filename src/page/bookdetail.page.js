@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($, app, Page, util, uiutil, ReadingRecord){
+define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function($, app, Page, utils, uiutils, ReadingRecord){
 
   class MyPage extends Page{
 
@@ -37,7 +37,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
           $(event.currentTarget).attr("disabled", "disabled");
           app.bookShelf.save()
             .then(() => {
-              uiutil.showMessage("添加成功！");
+              uiutils.showMessage("添加成功！");
               book.checkBookSources();
               // 缓存
               book.cacheChapter(0, app.settings.settings.cacheChapterCount);
@@ -73,7 +73,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function($
             bookChapter.append(nc);
           });
         })
-        .catch(error => uiutil.showError(app.error.getMessage(error)));
+        .catch(error => uiutils.showError(app.error.getMessage(error)));
     }
 
     loadView(){

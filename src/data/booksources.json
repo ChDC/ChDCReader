@@ -1,13 +1,13 @@
 {
 
-  "valid": ["sfnovel", "u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
+  "valid": ["qidian", "chuangshi", "sfnovel", "u17", "comico", "qqac",  "biquge", "biquge.tw", "biqugezw", "biqulou",  "dingdian"],
   "sources": {
     "sfnovel": {
       "id": "sfnovel",
       "type": "novel",
       "name": "SF轻小说",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://book.sfacg.com/",
       "search": {
         "request": {
@@ -92,12 +92,12 @@
         }
       }
     },
-    "qq": {
-      "id": "qq",
+    "qqac": {
+      "id": "qqac",
       "type": "comics",
       "name": "腾讯动漫",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://ac.qq.com/",
       "search": {
         "request": {
@@ -181,7 +181,7 @@
       "type": "comics",
       "name": "有妖气",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://www.u17.com",
       "search": {
         "request": {
@@ -272,7 +272,7 @@
       "type": "comics",
       "name": "Comico",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://www.comico.com.tw/",
       "search": {
         "request": {
@@ -433,7 +433,7 @@
       "type": "novel",
       "name": "创世中文网",
       "contentSourceWeight": -100,
-      "mainSourceWeight": 10,
+      "mainSourceWeight": 19,
       "host": "http://chuangshi.qq.com/",
       "search": {
         "response": {
@@ -888,8 +888,8 @@
       "id": "daizhuzai",
       "type": "novel",
       "name": "大主宰小说网",
-      "contentSourceWeight": -10000,
-      "mainSourceWeight": -10000,
+      "contentSourceWeight": -10,
+      "mainSourceWeight": -10,
       "host": "http://www.daizhuzai.com/",
       "search": {
         "response": {

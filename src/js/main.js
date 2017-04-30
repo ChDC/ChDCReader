@@ -1,5 +1,5 @@
-define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"],
-  function(util, uiutil, Book, BookSourceManager, PageManager, BookShelf) {
+define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"],
+  function(utils, uiutils, Book, BookSourceManager, PageManager, BookShelf) {
 
   "use strict"
 
@@ -22,7 +22,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       },
 
       load(){
-        return util.loadData('settings')
+        return utils.loadData('settings')
           .then(data => {
             if(data)
               this.settings = data;
@@ -32,7 +32,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       },
 
       save(){
-        util.saveData('settings', this.settings);
+        utils.saveData('settings', this.settings);
       }
     },
     // 书籍来源管理器
@@ -40,7 +40,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
 
     // 书架
     bookShelf: null,
-    // util: util,
+    // utils: utils,
 
     // 页面管理器
     page: null,
@@ -49,7 +49,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
     error: {
       __error: {},
       load(file){
-        return util.getJSON(file)
+        return utils.getJSON(file)
           .then(data => {
             this.__error = data;
           });
@@ -75,7 +75,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         // document.addEventListener("load", this.onDeviceReady.bind(this));
       }
 
-      this.loadingbar = new uiutil.LoadingBar('./img/loading.gif');
+      this.loadingbar = new uiutils.LoadingBar('./img/loading.gif');
     },
 
     // 检查资源更新
@@ -88,20 +88,20 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         if (error) {
           if(error.code == 2){
             if(showMessage)
-              uiutil.showMessage('没有更新');
+              uiutils.showMessage('没有更新');
           }
           else{
             const errMsg = error.description + "(" + error.code + ")";
-            util.error('Fail to download update: ' + errMsg);
-            uiutil.showError('更新下载失败！\n' + errMsg);
+            utils.error('Fail to download update: ' + errMsg);
+            uiutils.showError('更新下载失败！\n' + errMsg);
           }
         }
         else{
           if(!isInstanceInstall){
-            uiutil.showMessage('更新已下载，下次启动时生效！');
+            uiutils.showMessage('更新已下载，下次启动时生效！');
           }
           else{
-            util.log('Start to install update');
+            utils.log('Start to install update');
             chcp.installUpdate(installationCallback);
           }
         }
@@ -110,12 +110,12 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       function installationCallback(error) {
         if (error) {
           const errMsg = error.description + "(" + error.code + ")";
-          util.error('Fail to install update: ' + errMsg);
-          uiutil.showError('安装更新失败！\n' + errMsg);
+          utils.error('Fail to install update: ' + errMsg);
+          uiutils.showError('安装更新失败！\n' + errMsg);
         }
         else {
-          util.log('Success to install update');
-          // uiutil.showMessage('安装更新成功！');
+          utils.log('Success to install update');
+          // uiutils.showMessage('安装更新成功！');
         }
       }
 
@@ -123,12 +123,12 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       chcp.isUpdateAvailableForInstallation((error, data) => {
         if (error) {
           if(showMessage)
-            uiutil.showMessage('开始检查资源更新。。。');
-          util.log('Start to check update');
+            uiutils.showMessage('开始检查资源更新。。。');
+          utils.log('Start to check update');
           chcp.fetchUpdate(fetchUpdateCallback);
         }
         else{
-          util.log('Start to install update');
+          utils.log('Start to install update');
           chcp.installUpdate(installationCallback);
         }
       });
@@ -165,7 +165,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         window.open = cordova.InAppBrowser.open;
     },
     onUpdateInstalled(){
-      uiutil.showMessage("资源更新成功！");
+      uiutils.showMessage("资源更新成功！");
       // location.reload();
     },
 

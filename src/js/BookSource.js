@@ -1,4 +1,4 @@
-define(['co', "util", 'Chapter'], function(co, util, Chapter) {
+define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
   "use strict"
 
 
@@ -29,7 +29,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     // 获取当前书籍的源
     __getBookSource(){
 
-      util.log(`BookSource: Get book source by searching book`);
+      utils.log(`BookSource: Get book source by searching book`);
 
       if(this.__disable)
         return Promise.reject(404);
@@ -67,7 +67,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
     // 获取当前书籍指定的目录页的链接
     *__getBookSourceCatalogLink(){
       if(!this.__searched)
-        yield this.__getBookSource()
+        yield this.__getBookSource();
       if(this.__disable)
         return Promise.reject(404);
 
@@ -118,7 +118,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
       if(!forceRefresh && (new Date()).getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
         return [this.lastestChapter, false];
 
-      util.log('Refresh LastestChapter!');
+      utils.log('Refresh LastestChapter!');
 
       return this.__getBookSourceDetailLink()
         .then(detailLink =>
@@ -166,13 +166,13 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
       const dest = this.__getCacheChapterLocation(title);
 
       if(onlyCacheNoLoad){
-        const exists = yield util.dataExists(dest, true);
+        const exists = yield utils.dataExists(dest, true);
         return exists ? null : Promise.reject(207);
       }
 
       // 获取章节内容
       try{
-        const data = yield util.loadData(dest, true);
+        const data = yield utils.loadData(dest, true);
         // 章节存在
         if(!data)
           return Promise.reject(207);
@@ -192,7 +192,7 @@ define(['co', "util", 'Chapter'], function(co, util, Chapter) {
 
       // 保存到文件中
       const dest = this.__getCacheChapterLocation(chapter.title);
-      return util.saveData(dest, chapter, true).then(() => chapter); // 将 JSON 对象序列化到文件中
+      return utils.saveData(dest, chapter, true).then(() => chapter); // 将 JSON 对象序列化到文件中
     }
 
   }

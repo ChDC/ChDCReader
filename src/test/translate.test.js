@@ -1,4 +1,4 @@
-define(["chai", "util", "translate"], function(chai, util, translate){
+define(["chai", "utils", "translate"], function(chai, utils, translate){
 
   let assert = chai.assert;
   let equal = assert.equal;

@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], function($, app, Page, util, uiutil, Chapter, sortablejs){
+define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], function($, app, Page, utils, uiutils, Chapter, sortablejs){
 
   class MyPage extends Page{
     onLoad(params){
@@ -19,17 +19,17 @@ define(["jquery", "main", "Page", "util", "uiutil", 'Chapter', 'sortablejs'], fu
     }
 
     removeBook(book){
-      uiutil.showMessageDialog("确定", "确定要删除该书？",
+      uiutils.showMessageDialog("确定", "确定要删除该书？",
         () => {
           const target = $(event.currentTarget);
           app.bookShelf.removeBook(book);
           this.refreshBooksOrder(".bookshelf", app.bookShelf);
           app.bookShelf.save()
             .then(() => {
-              uiutil.showMessage("删除成功！");
+              uiutils.showMessage("删除成功！");
             })
             .catch(error => {
-              uiutil.showError("删除失败！");
+              uiutils.showError("删除失败！");
             });
           });
       return false;

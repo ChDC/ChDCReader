@@ -1,4 +1,4 @@
-define(["jquery", "util"], function($, util){
+define(["jquery", "utils"], function($, utils){
 
   class PageManager{
 
@@ -76,7 +76,7 @@ define(["jquery", "util"], function($, util){
     // 显示指定的页面
     showPage(name, params, options={}){
 
-      // util.log("showPage", baseurl);
+      // utils.log("showPage", baseurl);
 
       // 如果栈中有该页则从栈中加载
       const i = this.__pageStack.findIndex(e => e.name == name);
@@ -93,7 +93,7 @@ define(["jquery", "util"], function($, util){
       return $.get(urls.htmlurl)
         .then(content => {
 
-          // util.log("Gotten page", name);
+          // utils.log("Gotten page", name);
           const contentContainer = $('<div class="page-content-container"></div>');
           // load page content
           contentContainer.append(content);

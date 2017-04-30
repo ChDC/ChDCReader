@@ -21,8 +21,8 @@ requirejs.config({
     "chai": "../lib/chai",
     "cookie": "../lib/cookie",
 
-    "util": "../mylib/util",
-    "uiutil": "../mylib/uiutil",
+    "utils": "../mylib/utils",
+    "uiutils": "../mylib/uiutils",
     "Test": "../mylib/Test",
     "Page": "../mylib/Page",
     "PageManager": "../mylib/PageManager",

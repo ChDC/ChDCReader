@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, BookSource) {
+define(["co", "utils", "Chapter", "BookSource"], function (co, utils, Chapter, BookSource) {
   "use strict";
 
   var Book = function () {
@@ -180,7 +180,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                 case 5:
                   catalogB = _context.sent;
-                  matchs = [[util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)], [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)], [util.listMatchWithNeighbour.bind(util), Chapter.equalTitleWithoutNum.bind(Chapter)]];
+                  matchs = [[utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)], [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)], [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitleWithoutNum.bind(Chapter)]];
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;
@@ -540,7 +540,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                 submitResult = function submitResult() {
                   if (result.length <= 0) {
-                    var re = util.arrayCount(errorCodeList);
+                    var re = utils.arrayCount(errorCodeList);
                     if (re.length > 0) return Promise.reject(re[0][0]);
                     return Promise.reject(201);
                   } else {

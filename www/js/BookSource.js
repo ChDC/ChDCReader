@@ -4,7 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "util", 'Chapter'], function (co, util, Chapter) {
+define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
   "use strict";
 
   var BookSource = function () {
@@ -36,7 +36,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
       value: function __getBookSource() {
         var _this = this;
 
-        util.log('BookSource: Get book source by searching book');
+        utils.log('BookSource: Get book source by searching book');
 
         if (this.__disable) return Promise.reject(404);
 
@@ -174,7 +174,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
 
         if (!forceRefresh && new Date().getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000) return [this.lastestChapter, false];
 
-        util.log('Refresh LastestChapter!');
+        utils.log('Refresh LastestChapter!');
 
         return this.__getBookSourceDetailLink().then(function (detailLink) {
           return _this4.bookSourceManager.getLastestChapter(_this4.id, _this4);
@@ -224,7 +224,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
                 }
 
                 _context3.next = 4;
-                return util.dataExists(dest, true);
+                return utils.dataExists(dest, true);
 
               case 4:
                 exists = _context3.sent;
@@ -233,7 +233,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
               case 6:
                 _context3.prev = 6;
                 _context3.next = 9;
-                return util.loadData(dest, true);
+                return utils.loadData(dest, true);
 
               case 9:
                 data = _context3.sent;
@@ -265,7 +265,7 @@ define(['co', "util", 'Chapter'], function (co, util, Chapter) {
       key: '__cacheChapter',
       value: function __cacheChapter(chapter) {
         var dest = this.__getCacheChapterLocation(chapter.title);
-        return util.saveData(dest, chapter, true).then(function () {
+        return utils.saveData(dest, chapter, true).then(function () {
           return chapter;
         });
       }

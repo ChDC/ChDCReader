@@ -1,4 +1,4 @@
-define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function(co, util, Spider, translate, Book, BookSource, Chapter, customBookSource) {
+define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function(co, utils, Spider, translate, Book, BookSource, Chapter, customBookSource) {
   "use strict"
 
   // **** BookSourceManager *****
@@ -8,8 +8,8 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       this.__sources;
       this.__spider = new Spider({
-        "default": util.ajax.bind(util),
-        "cordova": util.cordovaAjax.bind(util),
+        "default": utils.ajax.bind(utils),
+        "cordova": utils.cordovaAjax.bind(utils),
       });
 
       this.loadConfig(configFileOrConfig);
@@ -36,7 +36,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 加载配置
     loadConfig(configFileOrConfig){
       if(configFileOrConfig && typeof configFileOrConfig == 'string'){
-        return util.getJSON(configFileOrConfig)
+        return utils.getJSON(configFileOrConfig)
           .then(data => {
             this.__sources = {};
             for(let key of data.valid)
@@ -99,7 +99,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
     // 通过书名字和目录搜索唯一的书籍
     getBook(bsid, bookName, bookAuthor){
-      util.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
+      utils.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
 
       if(!bsid || !bookName || !(bsid in this.__sources))
         return Promise.reject(401);
@@ -117,7 +117,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // *   filterSameResult
     searchBookInAllBookSource(keyword, {filterSameResult=true}={}){
 
-      util.log(`BookSourceManager: Search Book in all booksource "${keyword}"`);
+      utils.log(`BookSourceManager: Search Book in all booksource "${keyword}"`);
 
       let result = {};
       const errorList = [];
@@ -156,7 +156,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
         if(finalResult.length === 0 && errorList.length > 0)
         {
-          let re = util.arrayCount(errorList);
+          let re = utils.arrayCount(errorList);
           throw(re[0][0]);
         }
 
@@ -193,7 +193,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 搜索书籍
     searchBook(bsid, keyword){
 
-      util.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
+      utils.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
 
       const self = this;
       const bs = this.__sources[bsid];
@@ -232,7 +232,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 使用详情页链接刷新书籍信息
     getBookInfo(bsid, dict){
 
-      util.log(`BookSourceManager: Get Book Info from ${bsid}`);
+      utils.log(`BookSourceManager: Get Book Info from ${bsid}`);
 
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
@@ -248,7 +248,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
     // 获取最新章节
     getLastestChapter(bsid, dict){
-      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid}"`);
+      utils.log(`BookSourceManager: Get Lastest Chapter from ${bsid}"`);
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
@@ -262,7 +262,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 从某个网页获取目录链接
     getBookCatalogLink(bsid, dict){
 
-      util.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
+      utils.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
 
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
@@ -276,7 +276,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 获取书籍目录
     getBookCatalog(bsid, dict){
 
-      util.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
+      utils.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
@@ -298,7 +298,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 从网络上获取章节内容
     getChapter(bsid, chapter={}){
 
-      util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+      utils.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
       if(!chapter.link) return Promise.reject(206);
 

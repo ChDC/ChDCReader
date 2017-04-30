@@ -2,7 +2,7 @@
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["util"], function (util) {
+define(["utils"], function (utils) {
   "use strict";
 
   var Chapter = function Chapter() {
@@ -21,8 +21,8 @@ define(["util"], function (util) {
   Chapter.equalTitle2 = function (chapterTitleA, chapterTitleB) {
     if (!chapterTitleA || !chapterTitleB) return false;
 
-    var cA = util.stripString(chapterTitleA);
-    var cB = util.stripString(chapterTitleB);
+    var cA = utils.stripString(chapterTitleA);
+    var cB = utils.stripString(chapterTitleB);
     return cA == cB;
   };
 
@@ -35,8 +35,8 @@ define(["util"], function (util) {
     var numPattern = /第[零一二两三四五六七八九十百千万亿\d]+章/g;
     chapterTitleA = chapterTitleA.replace(numPattern, '');
     chapterTitleB = chapterTitleB.replace(numPattern, '');
-    var cA = util.stripString(chapterTitleA);
-    var cB = util.stripString(chapterTitleB);
+    var cA = utils.stripString(chapterTitleA);
+    var cB = utils.stripString(chapterTitleB);
     return cA == cB;
   };
 

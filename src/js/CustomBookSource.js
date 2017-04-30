@@ -1,4 +1,4 @@
-define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, util, Spider, translate, Book, BookSource, Chapter) {
+define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // 定义一个用于存放自定义获取信息的钩子的集合
@@ -7,7 +7,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
     comico: {
 
       beforeSearchBook(){
-        return Array.from(arguments).map(e => util.type(e) =="string"? translate.toTraditionChinese(e) : e);
+        return Array.from(arguments).map(e => utils.type(e) =="string"? translate.toTraditionChinese(e) : e);
       },
 
       afterSearchBook(books){
@@ -80,10 +80,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
       // }
     },
 
-    qq: {
+    qqac: {
       getChapter(bsid, chapter={}){
 
-        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
         if(!chapter.link) return Promise.reject(206);
 
@@ -92,7 +92,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         if(!matcher) return Promise.reject(206);
         link = `http://m.ac.qq.com/chapter/index/id/${matcher[1]}/cid/${matcher[2]}?style=plain`;
 
-        return util.get(link)
+        return utils.get(link)
           .then(html => {
             if(!html) return null;
             html = String(html)
@@ -110,11 +110,11 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
     u17: {
       getChapter(bsid, chapter={}){
 
-        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
         if(!chapter.link) return Promise.reject(206);
 
-        return util.get(chapter.link)
+        return utils.get(chapter.link)
           .then(html => {
             if(!html) return null;
             let regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
@@ -134,10 +134,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
     "chuangshi": {
       getChapter(bsid, chapter={}){
 
-        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
         if(!chapter.link) return Promise.reject(206);
-        return util.cordovaAjax("get", chapter.link, {}, 'json',
+        return utils.cordovaAjax("get", chapter.link, {}, 'json',
               {
                 "Referer": "http://chuangshi.qq.com/",
                 "X-Requested-With": "XMLHttpRequest"
@@ -165,6 +165,14 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
             }
             return arrStr.join('');
         }
+      }
+    },
+
+    "sfnovel": {
+      afterGetChapter(chapter){
+        if(chapter.content)
+          chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
+        return chapter;
       }
     }
   };

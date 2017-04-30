@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "ReadingRecord"], function ($, app, Page, util, uiutil, Infinitelist, ReadingRecord) {
+define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "ReadingRecord"], function ($, app, Page, utils, uiutils, Infinitelist, ReadingRecord) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -32,10 +32,10 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
         if (this.isNewBook) {
           if (!app.bookShelf.hasBook(this.book)) {
-            uiutil.showMessageDialog("加入书架", "\u662F\u5426\u5C06" + this.book.name + " \u52A0\u5165\u4E66\u67B6\uFF1F", function () {
+            uiutils.showMessageDialog("加入书架", "\u662F\u5426\u5C06" + this.book.name + " \u52A0\u5165\u4E66\u67B6\uFF1F", function () {
               app.bookShelf.addBook(_this2.book, _this2.readingRecord);
               app.bookShelf.save().then(function () {
-                uiutil.showMessage("添加成功！");
+                uiutils.showMessage("添加成功！");
                 _this2.fireEvent("myclose");
               });
             }, function () {
@@ -148,7 +148,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             app.bookShelf.addBook(_this3.book, _this3.readingRecord);
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save().then(function () {
-              uiutil.showMessage("添加成功！");
+              uiutils.showMessage("添加成功！");
             }).catch(function (error) {
               $(event.currentTarget).css("display", "block");
             });
@@ -189,7 +189,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           _this4.book.setMainSourceId(bid).then(function (book) {
             return app.bookShelf.save();
           }).catch(function (error) {
-            return uiutil.showError(app.error.getMessage(error));
+            return uiutils.showError(app.error.getMessage(error));
           });
 
           $("#modalCatalog").modal('hide');
@@ -284,7 +284,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
           });
           app.hideLoading();
         }).catch(function (error) {
-          uiutil.showError(app.error.getMessage(error));
+          uiutils.showError(app.error.getMessage(error));
           app.hideLoading();
         });
       }
@@ -298,7 +298,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         if (this.chapterList) this.chapterList.close();
         this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)));
         this.chapterList.onError = function (o, e) {
-          return uiutil.showError(app.error.getMessage(e));
+          return uiutils.showError(app.error.getMessage(e));
         };
 
         this.chapterList.onCurrentItemChanged = function (event, newValue, oldValue) {
@@ -362,7 +362,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
 
         var content = $("<div>" + chapter.content + "</div>");
         content.find('p').addClass('chapter-p');
-        content.find('img').addClass('content-img').on('error', uiutil.imgonerror);
+        content.find('img').addClass('content-img').on('error', uiutils.imgonerror);
 
         nc.find(".chapter-content").html(content);
 

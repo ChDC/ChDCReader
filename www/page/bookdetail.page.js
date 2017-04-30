@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function ($, app, Page, util, uiutil, ReadingRecord) {
+define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function ($, app, Page, utils, uiutils, ReadingRecord) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -55,7 +55,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
 
             $(event.currentTarget).attr("disabled", "disabled");
             app.bookShelf.save().then(function () {
-              uiutil.showMessage("添加成功！");
+              uiutils.showMessage("添加成功！");
               book.checkBookSources();
 
               book.cacheChapter(0, app.settings.settings.cacheChapterCount);
@@ -88,7 +88,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "ReadingRecord"], function (
             bookChapter.append(nc);
           });
         }).catch(function (error) {
-          return uiutil.showError(app.error.getMessage(error));
+          return uiutils.showError(app.error.getMessage(error));
         });
       }
     }, {

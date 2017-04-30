@@ -1,6 +1,6 @@
 "use strict";
 
-define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], function (co, util, Spider, translate, Book, BookSource, Chapter) {
+define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function (co, utils, Spider, translate, Book, BookSource, Chapter) {
   "use strict";
 
   var customBookSource = {
@@ -8,7 +8,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
     comico: {
       beforeSearchBook: function beforeSearchBook() {
         return Array.from(arguments).map(function (e) {
-          return util.type(e) == "string" ? translate.toTraditionChinese(e) : e;
+          return utils.type(e) == "string" ? translate.toTraditionChinese(e) : e;
         });
       },
       afterSearchBook: function afterSearchBook(books) {
@@ -44,12 +44,12 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
       }
     },
 
-    qq: {
+    qqac: {
       getChapter: function getChapter(bsid) {
         var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
 
         if (!chapter.link) return Promise.reject(206);
 
@@ -58,7 +58,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         if (!matcher) return Promise.reject(206);
         link = "http://m.ac.qq.com/chapter/index/id/" + matcher[1] + "/cid/" + matcher[2] + "?style=plain";
 
-        return util.get(link).then(function (html) {
+        return utils.get(link).then(function (html) {
           if (!html) return null;
           html = String(html).replace(/<\!--.*?--\>/g, "").replace(/(^[ \t\r\n]+|[ \t\r\n]+$)/g, "").substring(1);
           var data = JSON.parse(atob(html));
@@ -76,11 +76,11 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
 
         if (!chapter.link) return Promise.reject(206);
 
-        return util.get(chapter.link).then(function (html) {
+        return utils.get(chapter.link).then(function (html) {
           if (!html) return null;
           var regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
           html = html.match(regex);
@@ -109,10 +109,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
         var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
 
         if (!chapter.link) return Promise.reject(206);
-        return util.cordovaAjax("get", chapter.link, {}, 'json', {
+        return utils.cordovaAjax("get", chapter.link, {}, 'json', {
           "Referer": "http://chuangshi.qq.com/",
           "X-Requested-With": "XMLHttpRequest"
         }).then(function (json) {
@@ -137,6 +137,13 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
           }
           return arrStr.join('');
         }
+      }
+    },
+
+    "sfnovel": {
+      afterGetChapter: function afterGetChapter(chapter) {
+        if (chapter.content) chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
+        return chapter;
       }
     }
   };

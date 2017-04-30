@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app, Page, util, uiutil, cookie) {
+define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function ($, app, Page, utils, uiutils, cookie) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -28,7 +28,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
       value: function loadData() {
         var _this2 = this;
 
-        return util.getJSON('data/exploresource.json').then(function (json) {
+        return utils.getJSON('data/exploresource.json').then(function (json) {
           _this2.exploresources = {};
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
@@ -121,7 +121,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function ($, app,
 
           if (es.executeScriptOnLoadStart) ref.executeScript({ code: es.executeScriptOnLoadStart });
 
-          var _arr = ["readbook"];
+          var _arr = ["readbook", "bookdetail"];
 
           var _loop2 = function _loop2() {
             var pageName = _arr[_i];

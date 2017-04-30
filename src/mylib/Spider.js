@@ -457,7 +457,7 @@ define(function(){
       else {
 
         // 需要用到 host 了
-        let matcher = host.match(/^(.*):\/\//);
+        let matcher = host.match(/^(.*?):\/\//);
         let scheme = matcher ? matcher[0] : "";
         host = host.substring(scheme.length);
 
@@ -486,11 +486,18 @@ define(function(){
     format(string, object={}, stringify=false){
       if(!string) return string;
 
-      const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          object[p1] !== undefined ?
-          ( stringify ? JSON.stringify(object[p1]) : object[p1])
-          : ( stringify ? JSON.stringify(object[p1]) : '')
-        )
+      const result = string.replace(/{(\w+)}/g, (p0, p1) => {
+
+        if(!(p1 in object))
+          throw new Error(`can't find the key ${p1} in object`);
+
+        if(object[p1] == undefined && !stringify)
+          return '';
+        if(stringify)
+          return JSON.stringify(object[p1]);
+        else
+          return object[p1];
+      });
       return result;
     }
 

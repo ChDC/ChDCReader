@@ -1,13 +1,13 @@
 {
-  "valid": ["qidian", "chuangshi", "sfnovel", "u17", "comico", "qq"],
+  "valid": ["qidian", "chuangshi", "sfnovel", "u17", "comico", "qqac"],
   "sources": {
     "sfnovel": {
       "url": "http://m.sfacg.com/",
-      "readbook": {
-        "matcher": "^http://m.sfacg.com/b/\\d+"
+      "bookdetail": {
+        "matcher": "^http://m.sfacg.com/b/(\\d+)"
       }
     },
-    "qq": {
+    "qqac": {
       "url": "http://m.ac.qq.com/",
       "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
       "readbook": {
@@ -24,13 +24,13 @@
     "u17": {
       "url": "http://m.u17.com",
       "insertCSS": "#ad {display: none;}",
-      "readbook": {
+      "bookdetail": {
         "matcher": "^http://m.u17.com/c/(\\d+).html"
       }
     },
     "comico": {
       "url": "http://www.comico.com.tw",
-      "readbook": {
+      "bookdetail": {
         "matcher": "^http://www.comico.com.tw/.*?titleNo=(\\d+)"
       }
     },

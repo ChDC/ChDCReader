@@ -1,4 +1,4 @@
-define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceManager){
+define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceManager){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -25,7 +25,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
 
   // 小说书源测试
-  let bsids = ["sfnovel", "qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = ["sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
   // for(let bsid of ['sfnovel']){
@@ -67,7 +67,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       before(()=>{
         bsm = new BookSourceManager();
         return Promise.all([bsm.loadConfig("data/booksources.json"),
-          util.getJSON("test/BookSourceManager.test.data.json").then(data => {
+          utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
             config = data;
             books = config[bsid];
           })]);

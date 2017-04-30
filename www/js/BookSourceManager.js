@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function (co, util, Spider, translate, Book, BookSource, Chapter, customBookSource) {
+define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function (co, utils, Spider, translate, Book, BookSource, Chapter, customBookSource) {
   "use strict";
 
   var BookSourceManager = function () {
@@ -15,8 +15,8 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       this.__sources;
       this.__spider = new Spider({
-        "default": util.ajax.bind(util),
-        "cordova": util.cordovaAjax.bind(util)
+        "default": utils.ajax.bind(utils),
+        "cordova": utils.cordovaAjax.bind(utils)
       });
 
       this.loadConfig(configFileOrConfig);
@@ -47,7 +47,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         var _this = this;
 
         if (configFileOrConfig && typeof configFileOrConfig == 'string') {
-          return util.getJSON(configFileOrConfig).then(function (data) {
+          return utils.getJSON(configFileOrConfig).then(function (data) {
             _this.__sources = {};
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
@@ -200,7 +200,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }, {
       key: "getBook",
       value: function getBook(bsid, bookName, bookAuthor) {
-        util.log("BookSourceManager: Get book \"" + bookName + "\" from " + bsid);
+        utils.log("BookSourceManager: Get book \"" + bookName + "\" from " + bsid);
 
         if (!bsid || !bookName || !(bsid in this.__sources)) return Promise.reject(401);
 
@@ -220,7 +220,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
             _ref$filterSameResult = _ref.filterSameResult,
             filterSameResult = _ref$filterSameResult === undefined ? true : _ref$filterSameResult;
 
-        util.log("BookSourceManager: Search Book in all booksource \"" + keyword + "\"");
+        utils.log("BookSourceManager: Search Book in all booksource \"" + keyword + "\"");
 
         var result = {};
         var errorList = [];
@@ -322,7 +322,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
           }
 
           if (finalResult.length === 0 && errorList.length > 0) {
-            var re = util.arrayCount(errorList);
+            var re = utils.arrayCount(errorList);
             throw re[0][0];
           }
 
@@ -357,7 +357,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       key: "searchBook",
       value: function searchBook(bsid, keyword) {
 
-        util.log("BookSourceManager: Search Book \"" + keyword + "\" from " + bsid);
+        utils.log("BookSourceManager: Search Book \"" + keyword + "\" from " + bsid);
 
         var self = this;
         var bs = this.__sources[bsid];
@@ -436,7 +436,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       value: function getBookInfo(bsid, dict) {
         var _this4 = this;
 
-        util.log("BookSourceManager: Get Book Info from " + bsid);
+        utils.log("BookSourceManager: Get Book Info from " + bsid);
 
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
@@ -451,7 +451,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }, {
       key: "getLastestChapter",
       value: function getLastestChapter(bsid, dict) {
-        util.log("BookSourceManager: Get Lastest Chapter from " + bsid + "\"");
+        utils.log("BookSourceManager: Get Lastest Chapter from " + bsid + "\"");
 
         var bsm = this.__sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
@@ -464,7 +464,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       key: "getBookCatalogLink",
       value: function getBookCatalogLink(bsid, dict) {
 
-        util.log("BookSourceManager: Get Book Catalog Link from " + bsid + "\"");
+        utils.log("BookSourceManager: Get Book Catalog Link from " + bsid + "\"");
 
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
@@ -477,7 +477,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
       key: "getBookCatalog",
       value: function getBookCatalog(bsid, dict) {
 
-        util.log("BookSourceManager: Refresh Catalog from " + bsid);
+        utils.log("BookSourceManager: Refresh Catalog from " + bsid);
 
         var bsm = this.__sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
@@ -523,7 +523,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
         var chapter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        util.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
+        utils.log("BookSourceManager: Load Chpater content from " + bsid + " with link \"" + chapter.link + "\"");
 
         if (!chapter.link) return Promise.reject(206);
 
