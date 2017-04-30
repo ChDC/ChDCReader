@@ -311,9 +311,9 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           c.content = this.__spider.clearHtml(data.contentHTML);
           if(!c.content) return Promise.reject(206);
 
-          c.link = data.link ? data.link : dict.link;;
           c.title = data.title ? data.title : dict.title;
           c.cid = data.cid ? data.cid : dict.cid;
+          if(!c.cid && dict.link) c.link = dict.link;
 
           return c;
         });

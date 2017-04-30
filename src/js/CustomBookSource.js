@@ -73,9 +73,9 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
             c.content = content;
             if(!c.content) return Promise.reject(206);
 
-            c.link = link;
-            c.title = dict.title;
             c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
             return c;
           });
       }
@@ -111,9 +111,9 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
             c.content = content;
             if(!c.content) return Promise.reject(206);
 
-            c.link = dict.link;
-            c.title = dict.title;
             c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && dict.link) c.link = dict.link;
             return c;
           });
       }
@@ -146,9 +146,9 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
             c.content = content;
             if(!c.content) return Promise.reject(206);
 
-            c.link = link;
-            c.title = dict.title;
             c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
             return c;
           });
 
