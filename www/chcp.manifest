@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "38ac2152ef9a9cd0865aa06501a0bf79"
+    "hash": "e5699e6d09719479fda64d4394b6895d"
   },
   {
     "file": "data/booksources.test.json",
@@ -21,7 +21,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "f4262476347beee8d9763e2bd9f0484c"
+    "hash": "264983ab7831a4ba887c5ec0144ad751"
   },
   {
     "file": "img/book_cover.png",
@@ -45,6 +45,10 @@
   },
   {
     "file": "img/logo/qq.png",
+    "hash": "86933ad5cde0c76e4f48f730fe58629f"
+  },
+  {
+    "file": "img/logo/qqac.png",
     "hash": "86933ad5cde0c76e4f48f730fe58629f"
   },
   {
@@ -77,7 +81,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "44c3fdb85787b74dff7fd2d0db7afb8c"
+    "hash": "5264522fadb936468e89dfe62a5373a8"
   },
   {
     "file": "js/BookShelf.js",
@@ -85,15 +89,15 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "ca68119e385528b7e9def7e20cee1dbe"
+    "hash": "466b34a2c16a2b90e9d1cce5e7386dfd"
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "e71c6369d1d42bd6aa29a10ded1dd953"
+    "hash": "b71767030086259ae0f4a3fb3efb100b"
   },
   {
     "file": "js/Chapter.js",
-    "hash": "0d179adf26b499ecafac3557e412adbe"
+    "hash": "b177b4d78ab5f8e27839615a7ef60a51"
   },
   {
     "file": "js/config.js",
@@ -101,7 +105,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "e4c69fae6394bbb09f4c0b03b61ad3d1"
+    "hash": "5f735b6762b55e29ee97205099503d79"
   },
   {
     "file": "js/draggable.js",
@@ -313,7 +317,7 @@
   },
   {
     "file": "mylib/Spider.js",
-    "hash": "926a4d4cc48d02cd1c6f071452346d44"
+    "hash": "f4719b212513304af05fc9c8845230b7"
   },
   {
     "file": "mylib/Test.js",
@@ -389,7 +393,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "2910704dbe8684a9d07c276a9a4c46e1"
+    "hash": "2fb7c7deb08b08950e4ccc388f7c53a8"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -433,11 +437,11 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "8007318d588bea4456c0d05cc971a2b7"
+    "hash": "c84e37335a54bdc1b8e9b50a289b72af"
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "f18de40b460a90163c62074997dd7eb6"
+    "hash": "45d889271591f6a793f578e3578cfa1e"
   },
   {
     "file": "test/main.test.js",
