@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "ReadingRecord"], function($, app, Page, util, uiutil, Infinitelist, ReadingRecord){
+define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "ReadingRecord"], function($, app, Page, utils, uiutils, Infinitelist, ReadingRecord){
 
   class MyPage extends Page{
 
@@ -17,12 +17,12 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       // 询问是否加入书架
       if(this.isNewBook){
         if(!app.bookShelf.hasBook(this.book)){ // 书架中没有本书
-          uiutil.showMessageDialog("加入书架", `是否将${this.book.name} 加入书架？`,
+          uiutils.showMessageDialog("加入书架", `是否将 ${this.book.name} 加入书架？`,
               () => {
                 app.bookShelf.addBook(this.book, this.readingRecord);
                 app.bookShelf.save()
                   .then(() => {
-                    uiutil.showMessage("添加成功！");
+                    uiutils.showMessage("添加成功！");
                     this.fireEvent("myclose");
                   });
 
@@ -129,7 +129,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save()
               .then(() => {
-                uiutil.showMessage("添加成功！");
+                uiutils.showMessage("添加成功！");
                })
               .catch(error => {
                 $(event.currentTarget).css("display", "block");
@@ -168,7 +168,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         // 切换主源
         this.book.setMainSourceId(bid)
           .then(book => app.bookShelf.save())
-          .catch(error => uiutil.showError(app.error.getMessage(error)));
+          .catch(error => uiutils.showError(app.error.getMessage(error)));
 
         // 隐藏目录窗口
         $("#modalCatalog").modal('hide');
@@ -242,13 +242,13 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
             if(i == this.readingRecord.chapterIndex)
               // 标记当前章节
               lce.addClass("current-chapter");
-            else if(!value.link)
+            else if(value.isVIP())
               lce.addClass("vip-chapter");
           });
           app.hideLoading()
         })
         .catch(error => {
-          uiutil.showError(app.error.getMessage(error));
+          uiutils.showError(app.error.getMessage(error));
           app.hideLoading()
         });
     }
@@ -263,16 +263,16 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)),
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this))
       );
-      this.chapterList.onError = (o,e) => uiutil.showError(app.error.getMessage(e));
+      this.chapterList.onError = (o,e) => uiutils.showError(app.error.getMessage(e));
 
       this.chapterList.onCurrentItemChanged = (event, newValue, oldValue) => {
         newValue = $(newValue);
         if(!oldValue){
           // 当前是第一个元素
           app.hideLoading();
-          if(this.readingRecord.pageScrollTop){
+          if(this.readingRecord.getPageScrollTop()){
             const cs = $('#chapterContainer').scrollTop();
-            $('#chapterContainer').scrollTop(cs + this.readingRecord.pageScrollTop);
+            $('#chapterContainer').scrollTop(cs + this.readingRecord.getPageScrollTop());
           }
         }
         const index = newValue.data('chapterIndex');
@@ -337,7 +337,7 @@ define(["jquery", "main", "Page", "util", "uiutil", 'mylib/infinitelist', "Readi
       let content = $(`<div>${chapter.content}</div>`);
       content.find('p').addClass('chapter-p');
       content.find('img').addClass('content-img')
-        .on('error', uiutil.imgonerror);
+        .on('error', uiutils.imgonerror);
 
       nc.find(".chapter-content").html(content);
 

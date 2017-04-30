@@ -1,6 +1,6 @@
 "use strict";
 
-define(["chai", 'util', "Spider"], function (chai, util, Spider) {
+define(["chai", 'utils', "Spider"], function (chai, utils, Spider) {
 
   var assert = chai.assert;
   var equal = assert.equal;
@@ -11,7 +11,7 @@ define(["chai", 'util', "Spider"], function (chai, util, Spider) {
     var config = void 0;
 
     before(function () {
-      spider = new Spider(util.ajax.bind(util));
+      spider = new Spider(utils.ajax.bind(utils));
       config = {
         "request": "http://se.qidian.com/?kw={keyword}",
         "response": {
@@ -45,12 +45,29 @@ define(["chai", 'util', "Spider"], function (chai, util, Spider) {
       equal(null, spider.format());
       equal('', spider.format(''));
       equal('', spider.format('', {}));
-      equal('abc', spider.format('abc{def}'));
       equal('abc123', spider.format('abc{def}', { def: 123 }));
-      equal('abc', spider.format('abc{def}', {}));
+      try {
+        spider.format('abc{def}');
+      } catch (error) {
+        equal("can't find the key def in object", error.message);
+      };
+      try {
+        spider.format('abc{def}', {});
+      } catch (error) {
+        equal("can't find the key def in object", error.message);
+      };
+      try {
+        spider.format('abc{def}', {}, true);
+      } catch (error) {
+        equal("can't find the key def in object", error.message);
+      };
 
       equal('abc"123"', spider.format('abc{def}', { def: "123" }, true));
       equal('abc123', spider.format('abc{def}', { def: "123" }, false));
+      equal('abc', spider.format('abc{def}', { def: undefined }, false));
+      equal('abcundefined', spider.format('abc{def}', { def: undefined }, true));
+      equal('abc', spider.format('abc{def}', { def: null }, false));
+      equal('abcnull', spider.format('abc{def}', { def: null }, true));
     });
 
     it('fixurl', function () {
@@ -76,6 +93,14 @@ define(["chai", 'util', "Spider"], function (chai, util, Spider) {
       assert.equal(html, spider.__filterElement(html, ""));
 
       assert.notInclude(spider.__filterElement(html, 'div'), 'div');
+    });
+
+    it('text2html', function () {
+      equal(undefined, spider.text2html());
+      equal('<p>test</p>', spider.text2html('test'));
+      equal('<p>test</p>', spider.text2html('test'));
+      equal('<p>test</p>', spider.text2html('test'));
+      equal('<p>test</p>\n<p>test2</p>', spider.text2html('test\ntest2'));
     });
 
     it('__transformHTMLTagProperty', function () {

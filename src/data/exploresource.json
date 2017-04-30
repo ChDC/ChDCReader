@@ -1,7 +1,13 @@
 {
-  "valid": ["qidian", "u17", "comico", "qq"],
+  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac"],
   "sources": {
-    "qq": {
+    "sfnovel": {
+      "url": "http://m.sfacg.com/",
+      "bookdetail": {
+        "matcher": "^http://m.sfacg.com/b/(\\d+)"
+      }
+    },
+    "qqac": {
       "url": "http://m.ac.qq.com/",
       "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
       "readbook": {
@@ -18,20 +24,26 @@
     "u17": {
       "url": "http://m.u17.com",
       "insertCSS": "#ad {display: none;}",
-      "readbook": {
+      "bookdetail": {
         "matcher": "^http://m.u17.com/c/(\\d+).html"
       }
     },
     "comico": {
       "url": "http://www.comico.com.tw",
-      "readbook": {
+      "bookdetail": {
         "matcher": "^http://www.comico.com.tw/.*?titleNo=(\\d+)"
       }
     },
     "chuangshi": {
-      "url": "http://chuangshi.qq.com",
+      "url": "http://ubook.qq.com",
       "readbook": {
-        "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+.*"
+        "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
+      }
+    },
+    "qqbook": {
+      "url": "http://ubook.qq.com",
+      "readbook": {
+        "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
       }
     },
     "17k": {

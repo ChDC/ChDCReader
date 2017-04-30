@@ -1,13 +1,104 @@
 {
-
-  "valid": ["u17", "comico", "qq", "qidian", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "dingdian"],
+  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac",  "biquge", "biquge.tw", "daizhuzai", "biqugezw", "biqulou",  "dingdian"],
   "sources": {
-    "qq": {
-      "id": "qq",
+    "sfnovel": {
+      "id": "sfnovel",
+      "type": "novel",
+      "name": "SF轻小说",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 19,
+      "host": "http://book.sfacg.com/",
+      "search": {
+        "request": {
+          "url": "http://s.sfacg.com/?Key={keyword}&S=1&SS=0"
+        },
+        "response": {
+          "type": "array",
+          "element": "table.comic_cover > tbody > tr > td > ul",
+          "children": {
+            "name": "a",
+            "author": {
+              "type": "string",
+              "element": "li:nth-child(2)",
+              "extract": "综合信息：\\s*([^/]*)/"
+            },
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "img",
+            "introduce": {
+              "type": "string",
+              "element": "li:nth-child(2)",
+              "extract": "\\d\\d:\\d\\d:\\d\\d\\s*(.*)"
+            },
+            "bookid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "http://book.sfacg.com/Novel/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://book.sfacg.com/Novel/{bookid}",
+        "response": {
+          "author": "div.author-info > div.author-name > span",
+          "catagory": "div.count-detail > div:nth-child(1) > span:nth-child(1)",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#hasTicket > div.left-part > div > div.pic > a > img",
+          "introduce": "div.summary-content > p",
+          "lastestChapter": "div.chapter-info > h3 > a",
+          "name": "div.summary-content > h1 > span.text"
+        }
+      },
+      "catalog": {
+        "request": {
+          "url": "http://book.sfacg.com/Novel/{bookid}/MainIndex/"
+        },
+        "response":{
+          "type": "array",
+          "element": "div.catalog-list > ul > li",
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "vip": {
+              "type": "string",
+              "element": "a > span",
+              "attribute": "class"
+            },
+            "link": {
+              "type": "string",
+              "element": "a",
+              "valid": "!{vip} || !({vip}.includes('icn_vip'))"
+            }
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
+    "qqac": {
+      "id": "qqac",
       "type": "comics",
       "name": "腾讯动漫",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://ac.qq.com/",
       "search": {
         "request": {
@@ -29,7 +120,6 @@
             },
             "coverImg": ".cover-image",
             "introduce": ".comic-desc",
-            "detailLink": ".comic-link",
             "bookid": {
               "type": "string",
               "element": ".comic-link",
@@ -70,15 +160,20 @@
               "element": "i",
               "attribute": "class"
             },
-            "link": {
+            "cid": {
               "type": "string",
               "element": "a",
+              "attribute": "href",
+              "extract": "\/cid\/(\\d+)",
               "valid": "!{vip} || !({vip}.includes('ui-icon-pay'))"
             }
           }
         }
       },
       "chapter": {
+        "request": {
+          "url": "http://m.ac.qq.com/chapter/index/id/{bookid}/cid/{cid}?style=plain"
+        },
         "response": {
           "contentHTML": "._view",
           "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
@@ -91,7 +186,7 @@
       "type": "comics",
       "name": "有妖气",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://www.u17.com",
       "search": {
         "request": {
@@ -107,13 +202,12 @@
             "complete": {
               "type": "boolean",
               "element": "div > div.info > p.cf > i",
-              "true": "连载中",
-              "false": "完结",
+              "true": "连载",
+              "false": "完",
               "default": false
             },
             "coverImg": "div > div.cover > a > img",
             "introduce": "div > div.info > p.text",
-            "detailLink": "div > div.info > h3 > strong > a",
             "bookid": {
               "type": "string",
               "element": "div > div.info > h3 > strong > a",
@@ -162,15 +256,20 @@
               "element": "a",
               "attribute": "class"
             },
-            "link": {
+            "cid": {
               "type": "string",
               "element": "a",
+              "attribute": "href",
+              "extract": "chapter/(\\d+).html",
               "valid": "!{vip} || !({vip}.includes('vip_chapter'))"
             }
           }
         }
       },
       "chapter": {
+        "request": {
+          "url": "http://www.u17.com/chapter/{cid}.html"
+        },
         "response": {
           "contentHTML": "._view",
           "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
@@ -182,7 +281,7 @@
       "type": "comics",
       "name": "Comico",
       "contentSourceWeight": 100,
-      "mainSourceWeight": 20,
+      "mainSourceWeight": 19,
       "host": "http://www.comico.com.tw/",
       "search": {
         "request": {
@@ -200,11 +299,7 @@
             "complete": "isFinish",
             "coverImg": "imageUrl",
             "introduce": "copy",
-            "bookid": "titleNo",
-            "detailLink": {
-              "type": "format",
-              "value": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}"
-            }
+            "bookid": "titleNo"
           }
         }
       },
@@ -237,15 +332,14 @@
           "element": "list",
           "children": {
             "title": "name",
-            "linkid": "id",
-            "link": {
-              "type": "format",
-              "value": "http://www.comico.com.tw/detail.nhn?titleNo={bookid}&articleNo={linkid}"
-            }
+            "cid": "id"
           }
         }
       },
       "chapter": {
+        "request": {
+          "url": "http://www.comico.com.tw/detail.nhn?titleNo={bookid}&articleNo={cid}"
+        },
         "response": {
           "contentHTML": "._view",
           "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
@@ -274,13 +368,12 @@
               "complete": {
                 "element": ".book-mid-info .author span:last-child",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
               "coverImg": ".book-img-box img",
               "introduce": ".book-mid-info .intro",
               "lastestChapter": ".book-mid-info .update>a",
-              "detailLink": ".book-mid-info>h4>a",
               "bookid": {
                 "type": "string",
                 "element": ".book-mid-info>h4>a",
@@ -300,7 +393,7 @@
           "complete": {
             "element": "div.book-info > p.tag > span:nth-child(1)",
             "type": "boolean",
-            "true": "完本",
+            "true": "完",
             "false": "连载"
           },
           "coverImg": "#bookImg > img",
@@ -320,21 +413,119 @@
           "element": "data::vs#filter(\"$element.vN.indexOf(\\\"相关\\\") < 0\")::cs#concat",
           "children": {
             "title": "cN",
-            "linkid": "cU",
-            "vip": "sS",
-            "link": {
-              "type": "format",
-              "value": "http://read.qidian.com/chapter/{linkid}",
-              "valid": "{vip}==1"
+            "cid": {
+              "type": "string",
+              "element": "cU",
+              "valid": "{sS}==1"
             }
           }
         }
       },
       "chapter": {
+        "request": {
+          "url": "http://read.qidian.com/chapter/{cid}"
+        },
         "response": {
           "contentHTML": "div.read-content",
           "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
           "title": "div.text-head > h3"
+        }
+      }
+    },
+    "qqbook": {
+      "id": "qqbook",
+      "type": "novel",
+      "name": "腾讯图书",
+      "contentSourceWeight": -10,
+      "mainSourceWeight": 20,
+      "host": "http://ubook.qq.com",
+      "search": {
+        "request": {
+          "url": "http://ubook.3g.qq.com/8/search?key={keyword}",
+          "type": "json",
+          "timeout": 5
+        },
+        "response": {
+          "type": "array",
+          "element": "booklist",
+          "children": {
+              "name": {
+                "type": "string",
+                "element": "title",
+                "remove": "</?b>"
+              },
+              "author": "author",
+              "catagory": "categoryInfoV4",
+              "complete": {
+                "element": "finished",
+                "type": "boolean",
+                "default": false,
+                "false": "0"
+              },
+              "coverid": {
+                "type": "string",
+                "element": "cover",
+                "extract": "(\\d\\d\\d)$"
+              },
+              "coverImg": {
+                "type": "format",
+                "value": "http://wfqqreader.3g.qq.com/cover/{coverid}/{cover}/b_{cover}.jpg"
+              },
+              "introduce": "pushName",
+              "lastestChapter": "lastChapterName",
+              "detailLink": ".book-mid-info>h4>a",
+              "bookid": "id"
+            }
+        }
+      },
+      "detail": {
+        "request": {
+          "url": "http://ubook.3g.qq.com/8/intro?bid={bookid}",
+          "type": "json",
+          "timeout": 5
+        },
+        "response": {
+          "author": "book::author",
+          "catagory": "caname",
+          "complete": {
+            "element": "book::finished",
+            "type": "boolean",
+            "false": "0",
+            "default": false
+          },
+          "coverImg": "book::cover",
+          "introduce": "book::intro",
+          "lastestChapter": "book::lastChapterName",
+          "name": "book::title"
+        }
+      },
+      "catalog": {
+        "request": {
+          "url": "http://ubook.3g.qq.com/8/chapter?bid={bookid}&pageNo={pageNo}",
+          "type": "JSON"
+        },
+        "response": {
+          "type": "array",
+          "element": "chapter",
+          "children": {
+            "title": "title",
+            "cid": {
+              "type": "string",
+              "element": "seq",
+              "valid": "{seq} <= {maxfreechapter}"
+            }
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "http://ubook.3g.qq.com/8/book/chapter?bid={bookid}&cid={cid}",
+          "type": "JSON"
+        },
+        "response": {
+          "contentHTML": "content",
+          "modifyTime": "chapter::updateTime",
+          "title": "chapter::title"
         }
       }
     },
@@ -343,7 +534,7 @@
       "type": "novel",
       "name": "创世中文网",
       "contentSourceWeight": -100,
-      "mainSourceWeight": 10,
+      "mainSourceWeight": 19,
       "host": "http://chuangshi.qq.com/",
       "search": {
         "response": {
@@ -356,8 +547,9 @@
             "complete": {
                 "element": "div.search_r_img > p > i",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载"
+                "true": "完",
+                "false": "连载",
+                "default": false
               },
             "coverImg": "div.search_r_img > a > img",
             "introduce": "div.search_r_info > p.search_i > em",
@@ -375,7 +567,7 @@
         "request": "http://chuangshi.qq.com/search/searchindex/type/all/wd/{keyword}.html"
       },
       "detail": {
-        "request": "{detailLink}",
+        "request": "http://chuangshi.qq.com/bk/xh/{bookid}.html",
         "response": {
           "catalogLink": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
           "author": "div.autherinfo > div.au_name > p:nth-child(2) > a",
@@ -383,8 +575,8 @@
           "complete": {
                 "element": "div.mainbox > div.main1 > div.title > i:nth-child(3)",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
           "coverImg": "div.mainbox > div.main2 > div.left > div.cover > a > img",
           "introduce": "div.mainbox > div.main2 > div.left > div.info",
@@ -393,7 +585,7 @@
         }
       },
       "catalogLink":{
-        "request": "{detailLink}",
+        "request": "http://chuangshi.qq.com/bk/xh/{bookid}.html",
         "response": {
           "type": "string",
           "element": "div.mainbox > div.main1 > div.tablist > ul > li:nth-child(2) > a",
@@ -412,15 +604,14 @@
               "element": "a",
               "attribute": "href",
               "extract": "-(\\d+).html"
-            },
-            "link": {
-              "type": "format",
-              "value": "http://chuangshi.qq.com/index.php/Bookreader/{bookid}/{cid}?lang=zhs"
             }
           }
         }
       },
       "chapter": {
+        "request": {
+          "url": "http://chuangshi.qq.com/index.php/Bookreader/{bookid}/{cid}?lang=zhs"
+        },
         "response": {
           "contentHTML": ".bookreadercontent",
           "title": "[data-node=\"chapterTitle\"]"
@@ -460,8 +651,8 @@
           "complete": {
                 "element": "div.BookInfo > div.Info > div.label > a:nth-child(1) > span",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
           "coverImg": "div.BookInfo > div.Props > div > a > img",
           "introduce": "div.BookInfo > div.Info.Sign > dl > dd > div:nth-child(1) > a",
@@ -485,6 +676,9 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}"
+        },
         "response": {
           "contentHTML": "#chapterContentWapper",
           "modifyTime": "#readAreaBox > div.chapter_update_time",
@@ -545,6 +739,9 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}"
+        },
         "response": {
           "contentHTML": "#content",
           "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
@@ -604,6 +801,9 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}"
+        },
         "response": {
           "contentHTML": "#content",
           "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
@@ -663,6 +863,9 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}"
+        },
         "response": {
           "contentHTML": "#content",
           "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
@@ -722,6 +925,9 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}"
+        },
         "response": {
           "contentHTML": "#content",
           "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
@@ -786,6 +992,9 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}"
+        },
         "response": {
           "contentHTML": "#content",
           "modifyTime": "div.text-info > div.info > i:nth-child(4) > span",
@@ -797,8 +1006,8 @@
       "id": "daizhuzai",
       "type": "novel",
       "name": "大主宰小说网",
-      "contentSourceWeight": -10000,
-      "mainSourceWeight": -10000,
+      "contentSourceWeight": 99,
+      "mainSourceWeight": -10,
       "host": "http://www.daizhuzai.com/",
       "search": {
         "response": {
@@ -828,8 +1037,8 @@
           "complete": {
                 "element": "#author > i:nth-child(3)",
                 "type": "boolean",
-                "true": "完本",
-                "false": "连载中"
+                "true": "完",
+                "false": "连载"
               },
           "coverImg": "div.novelinfo img",
           "introduce": "#intro",
@@ -849,10 +1058,12 @@
         }
       },
       "chapter": {
+        "request": {
+          "url": "{link}",
+          "type": "json"
+        },
         "response": {
-          "contentHTML": ".bookreadercontent",
-          "modifyTime": "#chaptercontainer > div > div.story_title > p > span:nth-child(3)",
-          "title": "#chaptercontainer > div > div.story_title > h1"
+          "contentHTML": "info"
         }
       }
     }

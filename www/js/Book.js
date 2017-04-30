@@ -6,7 +6,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, BookSource) {
+define(["co", "utils", "Chapter", "BookSource"], function (co, utils, Chapter, BookSource) {
   "use strict";
 
   var Book = function () {
@@ -129,10 +129,10 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
         return this.getBookSource(bookSourceId).then(function (bs) {
           return bs.getBookInfo();
         }).then(function (book) {
-          _this3.catagory = book.catagory;
-          _this3.cover = book.cover;
-          _this3.complete = book.complete;
-          _this3.introduce = book.introduce;
+          if (book.catagory) _this3.catagory = book.catagory;
+          if (book.cover) _this3.cover = book.cover;
+          if (book.complete) _this3.complete = book.complete;
+          if (book.introduce) _this3.introduce = book.introduce;
         });
       }
     }, {
@@ -180,7 +180,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                 case 5:
                   catalogB = _context.sent;
-                  matchs = [[util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)], [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)], [util.listMatchWithNeighbour.bind(util), Chapter.equalTitleWithoutNum.bind(Chapter)]];
+                  matchs = [[utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)], [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)]];
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;
@@ -540,7 +540,7 @@ define(["co", "util", "Chapter", "BookSource"], function (co, util, Chapter, Boo
 
                 submitResult = function submitResult() {
                   if (result.length <= 0) {
-                    var re = util.arrayCount(errorCodeList);
+                    var re = utils.arrayCount(errorCodeList);
                     if (re.length > 0) return Promise.reject(re[0][0]);
                     return Promise.reject(201);
                   } else {

@@ -1,6 +1,6 @@
 "use strict";
 
-define(["chai", "util", "translate"], function (chai, util, translate) {
+define(["chai", "utils", "translate"], function (chai, utils, translate) {
 
   var assert = chai.assert;
   var equal = assert.equal;

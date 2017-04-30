@@ -1,4 +1,4 @@
-define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function(co, util, Spider, translate, Book, BookSource, Chapter, customBookSource) {
+define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function(co, utils, Spider, translate, Book, BookSource, Chapter, customBookSource) {
   "use strict"
 
   // **** BookSourceManager *****
@@ -8,8 +8,8 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
       this.__sources;
       this.__spider = new Spider({
-        "default": util.ajax.bind(util),
-        "cordova": util.cordovaAjax.bind(util),
+        "default": utils.ajax.bind(utils),
+        "cordova": utils.cordovaAjax.bind(utils),
       });
 
       this.loadConfig(configFileOrConfig);
@@ -36,7 +36,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 加载配置
     loadConfig(configFileOrConfig){
       if(configFileOrConfig && typeof configFileOrConfig == 'string'){
-        return util.getJSON(configFileOrConfig)
+        return utils.getJSON(configFileOrConfig)
           .then(data => {
             this.__sources = {};
             for(let key of data.valid)
@@ -66,10 +66,10 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
           // 在调用系统函数之前，用自定义的 before* 函数处理参数
           // 如 beforegetBook 或 beforeGetBook 处理 getBook 函数
           let beforeFunctions = [`before${cf}`, `before${cf[0].toUpperCase()}${cf.slice(1)}`];
-          let args = arguments;
+          let argsPromise = Promise.resolve(arguments);
           for(let bf of beforeFunctions){
             if(bsid in customBookSource && bf in customBookSource[bsid]){
-              args = customBookSource[bsid][bf].apply(self, args);
+              argsPromise = customBookSource[bsid][bf].apply(self, arguments);
               break;
             }
           }
@@ -77,11 +77,11 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
           let promise;
           // 优先调用自定义的同名函数，如果 getBook
           if(bsid in customBookSource && cf in customBookSource[bsid])
-            promise = customBookSource[bsid][cf].apply(self, args);
+            promise = argsPromise.then(args => customBookSource[bsid][cf].apply(self, args));
 
           else
             // 调用系统函数
-            promise = oldFunction.apply(self, args);
+            promise = argsPromise.then(args => oldFunction.apply(self, args));
 
           // 在调用完系统函数之后，用自定义的 after* 函数处理结果
           // 如 aftergetBook 或 afterGetBook 处理 getBook 函数
@@ -99,7 +99,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
     // 通过书名字和目录搜索唯一的书籍
     getBook(bsid, bookName, bookAuthor){
-      util.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
+      utils.log(`BookSourceManager: Get book "${bookName}" from ${bsid}`);
 
       if(!bsid || !bookName || !(bsid in this.__sources))
         return Promise.reject(401);
@@ -117,7 +117,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // *   filterSameResult
     searchBookInAllBookSource(keyword, {filterSameResult=true}={}){
 
-      util.log(`BookSourceManager: Search Book in all booksource "${keyword}"`);
+      utils.log(`BookSourceManager: Search Book in all booksource "${keyword}"`);
 
       let result = {};
       const errorList = [];
@@ -156,7 +156,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
         if(finalResult.length === 0 && errorList.length > 0)
         {
-          let re = util.arrayCount(errorList);
+          let re = utils.arrayCount(errorList);
           throw(re[0][0]);
         }
 
@@ -193,7 +193,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 搜索书籍
     searchBook(bsid, keyword){
 
-      util.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
+      utils.log(`BookSourceManager: Search Book "${keyword}" from ${bsid}`);
 
       const self = this;
       const bs = this.__sources[bsid];
@@ -232,7 +232,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 使用详情页链接刷新书籍信息
     getBookInfo(bsid, dict){
 
-      util.log(`BookSourceManager: Get Book Info from ${bsid}`);
+      utils.log(`BookSourceManager: Get Book Info from ${bsid}`);
 
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
@@ -248,7 +248,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
 
     // 获取最新章节
     getLastestChapter(bsid, dict){
-      util.log(`BookSourceManager: Get Lastest Chapter from ${bsid}"`);
+      utils.log(`BookSourceManager: Get Lastest Chapter from ${bsid}"`);
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
@@ -262,7 +262,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 从某个网页获取目录链接
     getBookCatalogLink(bsid, dict){
 
-      util.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
+      utils.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
 
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
@@ -276,7 +276,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     // 获取书籍目录
     getBookCatalog(bsid, dict){
 
-      util.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
+      utils.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
@@ -288,6 +288,7 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
             const chapter = new Chapter();
             chapter.title = c.title;
             chapter.link = c.link;
+            chapter.cid = c.cid;
             catalog.push(chapter);
           }
 
@@ -296,26 +297,27 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter", "C
     }
 
     // 从网络上获取章节内容
-    getChapter(bsid, chapter={}){
+    getChapter(bsid, dict={}){
 
-      util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+      utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
-      if(!chapter.link) return Promise.reject(206);
+      if(!dict.link && !dict.cid) return Promise.reject(206);
 
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bsm.chapter, {url: chapter.link, chapterLink: chapter.link})
+      return this.__spider.get(bsm.chapter, dict)
         .then(data => {
           const c = new Chapter();
-          c.content = this.__spider.clearHtml(data.contentHTML);
+          if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
+            c.content = this.__spider.text2html(data.contentHTML);
+          else
+            c.content = this.__spider.clearHtml(data.contentHTML);
+          if(!c.content) return Promise.reject(206);
 
-          if(!c.content){
-            // 没有章节内容就返回错误
-            return Promise.reject(206);
-          }
-          c.link = chapter.link;
-          c.title = data.title;
+          c.title = data.title ? data.title : dict.title;
+          c.cid = data.cid ? data.cid : dict.cid;
+          if(!c.cid && dict.link) c.link = dict.link;
 
           return c;
         });

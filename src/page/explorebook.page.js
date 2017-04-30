@@ -1,5 +1,5 @@
 "use strict"
-define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, Page, util, uiutil, cookie){
+define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app, Page, utils, uiutils, cookie){
 
   class MyPage extends Page{
 
@@ -8,7 +8,7 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
     }
 
     loadData(){
-      return util.getJSON('data/exploresource.json')
+      return utils.getJSON('data/exploresource.json')
         .then(json => {
           this.exploresources = {};
           for(let key of json.valid){
@@ -46,7 +46,8 @@ define(["jquery", "main", "Page", "util", "uiutil", "cookie"], function($, app, 
         if(es.executeScriptOnLoadStart)
           ref.executeScript({ code: es.executeScriptOnLoadStart});
 
-        for(let pageName of ["readbook"]){
+        for(let pageName of ["readbook", "bookdetail"]){
+          if(!(pageName in es)) continue;
           let config = es[pageName];
           let matcher = url.match(config.matcher);
           if(!matcher) continue;

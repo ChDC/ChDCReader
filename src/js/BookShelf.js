@@ -1,4 +1,4 @@
-define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, ReadingRecord) {
+define(['co', "utils", 'Book', "ReadingRecord"], function(co, utils, Book, ReadingRecord) {
   "use strict"
 
   // **** BookShelf *****
@@ -30,7 +30,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
         const b = self.books[bk].book;
         const bs = b.sources[bsk];
         // 更新目录文件
-        util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
+        utils.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
           .then(data => {
             bs.catalog = data;
           })
@@ -49,13 +49,13 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
           .then(()=>{self.__loaded = true;});
       }
 
-      return util.loadData("bookshelf")
+      return utils.loadData("bookshelf")
         .then(data => {
           const bookShelf = data;
           Object.assign(this, bookShelf);
           for(const b of this.books){
             b.book = Book.Cast(b.book, bookSourceManager);
-            b.readingRecord = util.objectCast(b.readingRecord, ReadingRecord);
+            b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
           }
           return loadCatalogs();
         });
@@ -70,11 +70,11 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
           if(bs.needSaveCatalog){
             bs.needSaveCatalog = false;
             // 更新目录文件
-            util.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
+            utils.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
           }
         }
       }
-      return util.saveTextData("bookshelf", util.persistent(this));
+      return utils.saveTextData("bookshelf", utils.persistent(this));
     }
 
     // 添加书籍到书架中
@@ -105,7 +105,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
     // 用特定的排序函数或者新的排序传递进行排序
     sortBooks(functionOrArray){
       let newOrder;
-      switch(util.type(functionOrArray)){
+      switch(utils.type(functionOrArray)){
         case "function":
           newOrder = Object.assign([], this.books);
           newOrder.sort(functionOrArray);
@@ -154,7 +154,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function(co, util, Book, Reading
       // 清除目录
       for(const bsk in book.sources){
         const bs = book.sources[bsk];
-        util.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
+        utils.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
       }
       this.books.splice(index, 1);
       this.sortBooks();

@@ -1,4 +1,4 @@
-define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, BookSource) {
+define(["co", "utils", "Chapter", "BookSource"], function(co, utils, Chapter, BookSource) {
   "use strict"
 
   // ****** Book ****
@@ -120,10 +120,10 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
       return this.getBookSource(bookSourceId)
         .then(bs => bs.getBookInfo())
         .then(book => {
-            this.catagory = book.catagory;  // 分类
-            this.cover = book.cover;  // 封面
-            this.complete = book.complete;  // 是否完结
-            this.introduce = book.introduce;  // 简介
+            if(book.catagory) this.catagory = book.catagory;  // 分类
+            if(book.cover) this.cover = book.cover;  // 封面
+            if(book.complete) this.complete = book.complete;  // 是否完结
+            if(book.introduce) this.introduce = book.introduce;  // 简介
           });
     }
 
@@ -174,9 +174,9 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
         const catalogB = yield self.getCatalog(forceRefresh, sourceB);
 
         const matchs = [
-          [util.listMatch.bind(util), Chapter.equalTitle.bind(Chapter)],
-          [util.listMatchWithNeighbour.bind(util), Chapter.equalTitle.bind(Chapter)],
-          [util.listMatchWithNeighbour.bind(util), Chapter.equalTitleWithoutNum.bind(Chapter)],
+          [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
+          [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)],
+          // [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitleWithoutNum.bind(Chapter)],
         ];
 
         for(const match of matchs){
@@ -299,7 +299,7 @@ define(["co", "util", "Chapter", "BookSource"], function(co, util, Chapter, Book
       function submitResult(){
         if(result.length <= 0){
           // 返回错误数最多的错误
-          let re = util.arrayCount(errorCodeList);
+          let re = utils.arrayCount(errorCodeList);
           if(re.length > 0)
             return Promise.reject(re[0][0]);
           return Promise.reject(201);

@@ -1,6 +1,6 @@
 "use strict";
 
-define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceManager) {
+define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSourceManager) {
 
   var assert = chai.assert;
   var equal = assert.equal;
@@ -24,7 +24,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
     });
   });
 
-  var bsids = ["qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  var bsids = ["qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -59,7 +59,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
 
         before(function () {
           bsm = new BookSourceManager();
-          return Promise.all([bsm.loadConfig("data/booksources.json"), util.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
+          return Promise.all([bsm.loadConfig("data/booksources.json"), utils.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
             config = data;
             books = config[bsid];
           })]);
@@ -105,7 +105,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
               equal(true, catalog.length > 0);
               book.chapters.forEach(function (chapter) {
                 equal(true, catalog.findIndex(function (e) {
-                  return e.title == chapter.title;
+                  return e.title == chapter.title && e.link == chapter.link && e.cid == chapter.cid;
                 }) >= 0);
               });
             });
@@ -115,7 +115,7 @@ define(["chai", "util", "BookSourceManager"], function (chai, util, BookSourceMa
         it('测试获取章节', function () {
           return Promise.all(books.map(function (book) {
             return Promise.all(book.chapters.map(function (chapter) {
-              return bsm.getChapter(bsid, chapter).then(function (c) {
+              return bsm.getChapter(bsid, Object.assign({}, book, chapter)).then(function (c) {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);
                 equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);

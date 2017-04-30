@@ -1,6 +1,6 @@
 "use strict";
 
-define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"], function (util, uiutil, Book, BookSourceManager, PageManager, BookShelf) {
+define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"], function (utils, uiutils, Book, BookSourceManager, PageManager, BookShelf) {
 
   "use strict";
 
@@ -20,7 +20,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       load: function load() {
         var _this = this;
 
-        return util.loadData('settings').then(function (data) {
+        return utils.loadData('settings').then(function (data) {
           if (data) _this.settings = data;
           return data;
         }).catch(function (e) {
@@ -28,7 +28,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         });
       },
       save: function save() {
-        util.saveData('settings', this.settings);
+        utils.saveData('settings', this.settings);
       }
     },
 
@@ -43,7 +43,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       load: function load(file) {
         var _this2 = this;
 
-        return util.getJSON(file).then(function (data) {
+        return utils.getJSON(file).then(function (data) {
           _this2.__error = data;
         });
       },
@@ -62,7 +62,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
         $(this.onDeviceReady.bind(this));
       }
 
-      this.loadingbar = new uiutil.LoadingBar('./img/loading.gif');
+      this.loadingbar = new uiutils.LoadingBar('./img/loading.gif');
     },
     chekcUpdate: function chekcUpdate(isInstanceInstall, showMessage) {
 
@@ -70,17 +70,17 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       function fetchUpdateCallback(error, data) {
         if (error) {
           if (error.code == 2) {
-            if (showMessage) uiutil.showMessage('没有更新');
+            if (showMessage) uiutils.showMessage('没有更新');
           } else {
             var errMsg = error.description + "(" + error.code + ")";
-            util.error('Fail to download update: ' + errMsg);
-            uiutil.showError('更新下载失败！\n' + errMsg);
+            utils.error('Fail to download update: ' + errMsg);
+            uiutils.showError('更新下载失败！\n' + errMsg);
           }
         } else {
           if (!isInstanceInstall) {
-            uiutil.showMessage('更新已下载，下次启动时生效！');
+            uiutils.showMessage('更新已下载，下次启动时生效！');
           } else {
-            util.log('Start to install update');
+            utils.log('Start to install update');
             chcp.installUpdate(installationCallback);
           }
         }
@@ -89,20 +89,20 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       function installationCallback(error) {
         if (error) {
           var errMsg = error.description + "(" + error.code + ")";
-          util.error('Fail to install update: ' + errMsg);
-          uiutil.showError('安装更新失败！\n' + errMsg);
+          utils.error('Fail to install update: ' + errMsg);
+          uiutils.showError('安装更新失败！\n' + errMsg);
         } else {
-          util.log('Success to install update');
+          utils.log('Success to install update');
         }
       }
 
       chcp.isUpdateAvailableForInstallation(function (error, data) {
         if (error) {
-          if (showMessage) uiutil.showMessage('开始检查资源更新。。。');
-          util.log('Start to check update');
+          if (showMessage) uiutils.showMessage('开始检查资源更新。。。');
+          utils.log('Start to check update');
           chcp.fetchUpdate(fetchUpdateCallback);
         } else {
-          util.log('Start to install update');
+          utils.log('Start to install update');
           chcp.installUpdate(installationCallback);
         }
       });
@@ -137,7 +137,7 @@ define(["util", "uiutil", "Book", "BookSourceManager", "PageManager", "BookShelf
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
     onUpdateInstalled: function onUpdateInstalled() {
-      uiutil.showMessage("资源更新成功！");
+      uiutils.showMessage("资源更新成功！");
     },
 
     theme: {

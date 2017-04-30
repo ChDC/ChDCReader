@@ -1,13 +1,13 @@
-define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, util, Spider, translate, Book, BookSource, Chapter) {
+define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // 定义一个用于存放自定义获取信息的钩子的集合
   let customBookSource = {
 
-    comico: {
+    "comico": {
 
       beforeSearchBook(){
-        return Array.from(arguments).map(e => util.type(e) =="string"? translate.toTraditionChinese(e) : e);
+        return Promise.resolve(Array.from(arguments).map(e => utils.type(e) =="string"? translate.toTraditionChinese(e) : e));
       },
 
       afterSearchBook(books){
@@ -45,54 +45,21 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
       afterGetLastestChapter(lc){
         return translate.toSimpleChinese(lc);
       },
-
-      // getBookCatalog(bsid, dict){
-
-      //   let self = this;
-
-      //   return co(function*(){
-      //     let bookid = dict.bookid;
-
-      //     let data = yield self.getBookInfo(bsid, dict.detailLink);
-      //     let lc = data.lastestChapterLink;
-      //     if(!lc) return null;
-      //     // 获取最新章节，然后从序号中获取总章节数目
-      //     let maxCount = data.lastestChapterLink.match(/articleNo=(\d+)/)[1];
-
-      //     // 0 10 ...
-      //     let n = Math.ceil(maxCount / 10);
-      //     let startIndexs = (new Array(n)).fill(0).map((e,i) => i*10)
-
-      //     // 获取所有章节列表
-      //     let result = yield Promise.all(startIndexs.map(si => getPartCatalog(si, dict)));
-      //     // 将结果按 linkid 排序
-      //     result.sort((e1, e2) => e1[0].linkid - e2[0].linkid);
-      //     // 合并结果并返回
-      //     return result.reduce((s, e) => s.concat(e), []);
-
-      //     // 获取每一部分章节
-      //     function getPartCatalog(startIndex, dict){
-      //       let catalogLink = `http://www.comico.com.tw/api/article_list.nhn?titleNo=${dict.bookid}&startIndex=${startIndex}`;
-      //       let gatcherDict = Object.assign({}, dict, {url: catalogLink});
-      //       return self.spider.get(self.sources[bsid].catalog, gatcherDict);
-      //     }
-      //   });
-      // }
     },
 
-    qq: {
-      getChapter(bsid, chapter={}){
+    "qqac": {
+      getChapter(bsid, dict={}){
 
-        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
-        if(!chapter.link) return Promise.reject(206);
+        if(!dict.link && !dict.cid) return Promise.reject(206);
 
-        let link = chapter.link;
-        let matcher = link.match(/index\/id\/(\d+)\/cid\/(\d+)/i);
-        if(!matcher) return Promise.reject(206);
-        link = `http://m.ac.qq.com/chapter/index/id/${matcher[1]}/cid/${matcher[2]}?style=plain`;
+        const bsm = this.__sources[bsid];
+        if(!bsm) return Promise.reject("Illegal booksource!");
 
-        return util.get(link)
+        let link = this.__spider.format(bsm.chapter.request.url, dict);
+
+        return utils.get(link)
           .then(html => {
             if(!html) return null;
             html = String(html)
@@ -100,21 +67,34 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
               .replace(/(^[ \t\r\n]+|[ \t\r\n]+$)/g, "")
               .substring(1);
             let data = JSON.parse(atob(html));
-            // 组合成 img 标签
-            chapter.content = data.picture.map(e => `<img src="${e.url}">`).join('\n');
-            return chapter;
+            let content = data.picture.map(e => `<img src="${e.url}">`).join('\n');
+
+            const c = new Chapter();
+            c.content = content;
+            if(!c.content) return Promise.reject(206);
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
+            return c;
           });
       }
     },
 
-    u17: {
-      getChapter(bsid, chapter={}){
+    "u17": {
+      getChapter(bsid, dict={}){
 
-        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
 
-        if(!chapter.link) return Promise.reject(206);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
-        return util.get(chapter.link)
+        if(!dict.link && !dict.cid) return Promise.reject(206);
+
+        const bsm = this.__sources[bsid];
+        if(!bsm) return Promise.reject("Illegal booksource!");
+
+        let link = this.__spider.format(bsm.chapter.request.url, dict);
+
+        return utils.get(link)
           .then(html => {
             if(!html) return null;
             let regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
@@ -125,19 +105,33 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
             // 得到所有图片的链接
             let imgs = keys.map(e => atob(json[e].src));
             // 组合成 img 标签
-            chapter.content = imgs.map(img => `<img src="${img}">`).join('\n');
-            return chapter;
+            let content = imgs.map(img => `<img src="${img}">`).join('\n');
+
+            const c = new Chapter();
+            c.content = content;
+            if(!c.content) return Promise.reject(206);
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && dict.link) c.link = dict.link;
+            return c;
           });
       }
     },
 
     "chuangshi": {
-      getChapter(bsid, chapter={}){
+      getChapter(bsid, dict={}){
 
-        util.log(`BookSourceManager: Load Chpater content from ${bsid} with link "${chapter.link}"`);
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
-        if(!chapter.link) return Promise.reject(206);
-        return util.cordovaAjax("get", chapter.link, {}, 'json',
+        if(!dict.link && !dict.cid) return Promise.reject(206);
+
+        const bsm = this.__sources[bsid];
+        if(!bsm) return Promise.reject("Illegal booksource!");
+
+        let link = this.__spider.format(bsm.chapter.request.url, dict);
+
+        return utils.cordovaAjax("get", link, {}, 'json',
               {
                 "Referer": "http://chuangshi.qq.com/",
                 "X-Requested-With": "XMLHttpRequest"
@@ -145,13 +139,16 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
           .then(json => {
             let content = decryptByBaseCode(json.Content, 30);
             const bsm = this.__sources[bsid];
-            let data = this.__spider.parse(content, "html", bsm.chapter.response, chapter.link, {});
-            const c = new Chapter();
-            c.content = this.__spider.clearHtml(data.contentHTML);
+            let data = this.__spider.parse(content, "html", bsm.chapter.response, link, {});
+            content = this.__spider.clearHtml(data.contentHTML);
 
+            const c = new Chapter();
+            c.content = content;
             if(!c.content) return Promise.reject(206);
-            c.link = chapter.link;
-            c.title = data.title;
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
             return c;
           });
 
@@ -166,6 +163,78 @@ define(['co', "util", "Spider", "translate", "Book", "BookSource", "Chapter"], f
             return arrStr.join('');
         }
       }
+    },
+
+    "sfnovel": {
+      afterGetChapter(chapter){
+        if(chapter.content)
+          chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
+        return chapter;
+      }
+    },
+
+    "qqbook": {
+      getBookCatalog(bsid, dict){
+
+        utils.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
+
+        const bs = this.__sources[bsid];
+        if(!bs) return Promise.reject("Illegal booksource!");
+
+        let linkTmp = bs.catalog.request.url;
+
+        let self = this;
+        return co(function*(){
+          let result = [];
+          // 获取章节总数和免费章节数目
+          // maxfreechapter
+          let link = self.__spider.format(linkTmp, {bookid: dict.bookid, pageNo: 1});
+          let json = yield utils.getJSON(link);
+
+          let total = json.total;
+          dict.maxfreechapter = json.book.maxfreechapter;
+          result[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
+
+          let pageNos = (new Array(Math.ceil(total / 100) - 1)).fill(0).map((e,i) => i+2)
+
+          // 获取所有章节列表
+          yield Promise.all(pageNos.map(pageNo => {
+            let gatcherDict = Object.assign({pageNo: pageNo}, dict);
+            return self.__spider.get(bs.catalog, gatcherDict)
+              .then(cs => {
+                result[pageNo - 1] = cs;
+              });
+          }));
+          // 合并结果并返回
+          result = result.reduce((s, e) => s.concat(e), []);
+
+          const catalog = [];
+          for(let c of result){
+            const chapter = new Chapter();
+            chapter.title = c.title;
+            chapter.link = c.link;
+            chapter.cid = c.cid;
+            catalog.push(chapter);
+          }
+          return catalog;
+        });
+      }
+    },
+
+    "daizhuzai": {
+      beforeGetChapter(){
+        let args = arguments;
+        let link = args[1].link;
+        if(link.match(/novelsearch/))
+          return Promise.resolve(args);
+        return utils.get(link)
+          .then(data => {
+            let url = data.match(/'(\/novelsearch\/reader\/transcode\/siteid\/\d+\/url\/.*?)'/)[1];
+            args[1].link = this.__spider.fixurl(url, link);
+            return args;
+          });
+
+      },
     }
   };
 

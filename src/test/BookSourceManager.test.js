@@ -1,4 +1,4 @@
-define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceManager){
+define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceManager){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -25,10 +25,10 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
 
 
   // 小说书源测试
-  let bsids = ["qq", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = ["qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
-  // for(let bsid of ['qq']){
+  // for(let bsid of ['comico']){
 
     function equalBook(bsid, book, b){
       assert.isObject(b);
@@ -67,7 +67,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       before(()=>{
         bsm = new BookSourceManager();
         return Promise.all([bsm.loadConfig("data/booksources.json"),
-          util.getJSON("test/BookSourceManager.test.data.json").then(data => {
+          utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
             config = data;
             books = config[bsid];
           })]);
@@ -118,7 +118,8 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
               assert.isArray(catalog);
               equal(true, catalog.length > 0);
               book.chapters.forEach(chapter => {
-                equal(true, catalog.findIndex(e => e.title == chapter.title) >= 0);
+                equal(true, catalog.findIndex(e =>
+                  e.title == chapter.title && e.link == chapter.link && e.cid == chapter.cid) >= 0);
               });
             })
         }));
@@ -127,7 +128,7 @@ define(["chai", "util", "BookSourceManager"], function(chai, util, BookSourceMan
       it('测试获取章节', ()=>{
         return Promise.all(books.map(book =>
           Promise.all(book.chapters.map(chapter =>
-            bsm.getChapter(bsid, chapter)
+            bsm.getChapter(bsid, Object.assign({}, book, chapter))
               .then(c => {
                 equal(chapter.title, c.title);
                 equal(chapter.link, c.link);

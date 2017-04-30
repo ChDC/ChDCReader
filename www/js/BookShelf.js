@@ -4,7 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, ReadingRecord) {
+define(['co', "utils", 'Book', "ReadingRecord"], function (co, utils, Book, ReadingRecord) {
   "use strict";
 
   var BookShelf = function () {
@@ -37,7 +37,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
           var b = self.books[bk].book;
           var bs = b.sources[bsk];
 
-          util.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk)).then(function (data) {
+          utils.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk)).then(function (data) {
             bs.catalog = data;
           }).catch(function (error) {
             return error;
@@ -57,7 +57,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
           });
         }
 
-        return util.loadData("bookshelf").then(function (data) {
+        return utils.loadData("bookshelf").then(function (data) {
           var bookShelf = data;
           Object.assign(_this, bookShelf);
           var _iteratorNormalCompletion = true;
@@ -69,7 +69,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
               var b = _step.value;
 
               b.book = Book.Cast(b.book, bookSourceManager);
-              b.readingRecord = util.objectCast(b.readingRecord, ReadingRecord);
+              b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
             }
           } catch (err) {
             _didIteratorError = true;
@@ -99,11 +99,11 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
             if (bs.needSaveCatalog) {
               bs.needSaveCatalog = false;
 
-              util.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
+              utils.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
             }
           }
         }
-        return util.saveTextData("bookshelf", util.persistent(this));
+        return utils.saveTextData("bookshelf", utils.persistent(this));
       }
     }, {
       key: 'addBook',
@@ -132,7 +132,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
         var _this2 = this;
 
         var newOrder = void 0;
-        switch (util.type(functionOrArray)) {
+        switch (utils.type(functionOrArray)) {
           case "function":
             newOrder = Object.assign([], this.books);
             newOrder.sort(functionOrArray);
@@ -182,7 +182,7 @@ define(['co', "util", 'Book', "ReadingRecord"], function (co, util, Book, Readin
 
         for (var bsk in book.sources) {
           var bs = book.sources[bsk];
-          util.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
+          utils.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
         }
         this.books.splice(index, 1);
         this.sortBooks();

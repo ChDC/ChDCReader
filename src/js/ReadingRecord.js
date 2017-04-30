@@ -21,6 +21,10 @@ define(['Chapter'], function(Chapter) {
       return this.isFinished ? this.chapterIndex + 1 : this.chapterIndex;
     }
 
+    getPageScrollTop(){
+      return this.isFinished ? 0 : this.pageScrollTop;
+    }
+
     getOptions(){
       if(!this.isFinished)
         return this.options;

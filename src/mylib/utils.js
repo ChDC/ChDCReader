@@ -232,46 +232,36 @@ define(function(){
     },
 
     // HTML 内容转换为 Text
-    html2text(html){
+    // html2text(html){
 
-      function replaceElement(html, element, replaceString){
-        const pattern = `<${element}(?: [^>]*?)?>[\\s　]*([\\s\\S]*?)[\\s　]*</${element}>`;
-        html = html.replace(new RegExp(pattern, 'gi'), replaceString);
-        return html;
-      };
+    //   function replaceElement(html, element, replaceString){
+    //     const pattern = `<${element}(?: [^>]*?)?>[\\s　]*([\\s\\S]*?)[\\s　]*</${element}>`;
+    //     html = html.replace(new RegExp(pattern, 'gi'), replaceString);
+    //     return html;
+    //   };
 
-      if(!html) return html;
+    //   if(!html) return html;
 
-      // 替换转义字符
-      html = html.replace(/&nbsp;/gi, ' ');
+    //   // 替换转义字符
+    //   html = html.replace(/&nbsp;/gi, ' ');
 
-      // 解决用双 <br> 标签换行的问题
-      const temp = html.replace(/\s*(<br ?\/?>\s*){2,}/gi, '\n');
-      if(temp.search(/\s*<br ?\/?>\s*/) >= 0)
-        html = html.replace(/\s*<br ?\/?>\s*/gi, '\n');
-      else
-        html = temp;
-      // 替换标签
-      html = replaceElement(html, 'p', '$1\n');
-      html = replaceElement(html, 'span', '$1');
-      html = replaceElement(html, 'b', '$1');
-      html = replaceElement(html, 'i', '$1');
+    //   // 解决用双 <br> 标签换行的问题
+    //   const temp = html.replace(/\s*(<br ?\/?>\s*){2,}/gi, '\n');
+    //   if(temp.search(/\s*<br ?\/?>\s*/) >= 0)
+    //     html = html.replace(/\s*<br ?\/?>\s*/gi, '\n');
+    //   else
+    //     html = temp;
+    //   // 替换标签
+    //   html = replaceElement(html, 'p', '$1\n');
+    //   html = replaceElement(html, 'span', '$1');
+    //   html = replaceElement(html, 'b', '$1');
+    //   html = replaceElement(html, 'i', '$1');
 
-      // 去掉所有标签
-      html = html.replace(/<(\\w+)( [^>]*?)?>[\\s\\S]*?<\/$1>/gi, ''); // 双标签
-      html = html.replace(/<\\w+([^>]*?)?>/gi, ''); // 单标签
-      return html.trim();
-    },
-
-    text2html(text, className){
-      if(!text) return text;
-
-      // 将每一行都加上 p 标签
-      const pStart = className? `<p class="${className}">` : '<p>';
-      const lines = text.split("\n")
-        .map(line => `${pStart}${line.replace(/ /g, '&nbsp;')}</p>`);
-      return lines.join('\n');
-    },
+    //   // 去掉所有标签
+    //   html = html.replace(/<(\\w+)( [^>]*?)?>[\\s\\S]*?<\/$1>/gi, ''); // 双标签
+    //   html = html.replace(/<\\w+([^>]*?)?>/gi, ''); // 单标签
+    //   return html.trim();
+    // },
 
     // 将 Object 类型转换为指定的类
     objectCast(obj, ClassFunction){
@@ -610,25 +600,6 @@ define(function(){
         const s = onlyCache? sessionStorage : localStorage;
         return Promise.resolve(key in s);
       }
-    },
-
-    // 比较去掉所有空格和标点符号之后的所有符号
-    stripString(str){
-      if(!str) return str;
-
-      // 去除括号括起来的文字
-      str = str.replace(/（.*?）/g, '');
-      str = str.replace(/\(.*?\)/g, '');
-      str = str.replace(/【.*?】/g, '');
-
-      // 去除英文字符串
-      str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
-      // 去除中文字符串
-      str = str.replace(/[！@#￥%……&*（）——+=~·《》，。？/：；“{}】【‘|、]/g, '');
-
-      // 去除空白字符
-      str = str.replace(/\s/g, '');
-      return str;
     },
 
     // 给数组计数

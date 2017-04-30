@@ -160,7 +160,11 @@ define(function(){
           html.innerHTML = data;
           return this.__handleResponse(html, response, null,  dict);
         case "json":
-          let json = JSON.parse(data);
+          let json;
+          if(this.type(data) != 'object')
+            json = JSON.parse(data);
+          else
+            json = data;
           return this.__handleResponse(json, response, null, dict);
         default:
           throw new Error("Illegal type");
@@ -228,7 +232,9 @@ define(function(){
           if(response.valideach)
             result = result.filter(m => {
               // 有验证的类型
-              let gatherDict = Object.assign({}, globalDict, this.type(m) == "object" ? m : {});
+              let gatherDict = Object.assign({}, globalDict,
+                  this.type(data) == "object" ? data : {},
+                  this.type(m) == "object" ? m : {});
               const validCode = '"use strict"\n' + this.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
@@ -245,7 +251,7 @@ define(function(){
             return undefined;
 
           let e = this.__getElement(data, response.element);
-          if(!e) return undefined;
+          if(e == undefined) return undefined;
           if(response.attribute){
             let attr;
             let transAttrbite = this.secureAttributeList.find(e => e[0] == response.attribute)
@@ -263,7 +269,7 @@ define(function(){
           else
             result = this.__getValue(e, keyName, globalDict, dict);
 
-          if(!result) return result;
+          if(result == undefined) return result;
           // 用 remove 键指定删除一些值
           if(response.remove){
             let regex = new RegExp(response.remove, 'gi');
@@ -283,12 +289,13 @@ define(function(){
           if(!response.element)
             return response.default;
           let e = this.__getElement(data, response.element);
-          if(!e) return response.default;
+          if(e == undefined) return response.default;
           let v = this.__getValue(e, keyName, globalDict, dict);
+          if(v != undefined) v = v.toString();
 
-          if(v && response.true && v.match(response.true))
+          if(v != undefined && response.true && v.match(response.true))
             result = true;
-          else if(v && response.false && v.match(response.false))
+          else if(v != undefined && response.false && v.match(response.false))
             result = false;
           else
             result = response.default;
@@ -298,7 +305,8 @@ define(function(){
           // 合成结果
           if(!response.value)
             return undefined;
-          let gatherDict = Object.assign({}, globalDict, dict);
+          let gatherDict = Object.assign({}, globalDict,
+              this.type(data) == "object" ? data : {}, dict);
           result = this.format(response.value, gatherDict);
         }
         break;
@@ -310,7 +318,8 @@ define(function(){
 
       if("valid" in response){
         // 有验证的类型
-        let gatherDict = Object.assign({}, globalDict, dict);
+        let gatherDict = Object.assign({}, globalDict,
+            this.type(data) == "object" ? data : {}, dict);
         const validCode = '"use strict"\n' + this.format(response.valid, gatherDict, true);
         if(!eval(validCode))
           return undefined; // 验证失败，返回空值
@@ -320,7 +329,7 @@ define(function(){
 
     __handleString(data, response, keyName, globalDict={}, dict={}){
       let e = this.__getElement(data, response);
-      if(!e) return undefined;
+      if(e == undefined) return undefined;
       return this.__getValue(e, keyName, globalDict, dict);
     }
 
@@ -414,9 +423,9 @@ define(function(){
       const keys = key.split('::');
       let result = obj;
       for(let key of keys){
-        let [k, operator, args] = splitKeyAndOperatorAndArgs(key);
-
         if(!result) return undefined;
+
+        let [k, operator, args] = splitKeyAndOperatorAndArgs(key);
 
         if(this.type(result) == 'array'){
           // 多个值的情况
@@ -457,7 +466,7 @@ define(function(){
       else {
 
         // 需要用到 host 了
-        let matcher = host.match(/^(.*):\/\//);
+        let matcher = host.match(/^(.*?):\/\//);
         let scheme = matcher ? matcher[0] : "";
         host = host.substring(scheme.length);
 
@@ -486,9 +495,18 @@ define(function(){
     format(string, object={}, stringify=false){
       if(!string) return string;
 
-      const result = string.replace(/{(\w+)}/g, (p0, p1) =>
-          object[p1] !== undefined ? ( stringify ? JSON.stringify(object[p1]) : object[p1]) : ''
-        )
+      const result = string.replace(/{(\w+)}/g, (p0, p1) => {
+
+        if(!(p1 in object))
+          throw new Error(`can't find the key ${p1} in object`);
+
+        if(object[p1] == undefined && !stringify)
+          return '';
+        if(stringify)
+          return JSON.stringify(object[p1]);
+        else
+          return object[p1];
+      });
       return result;
     }
 
@@ -590,6 +608,25 @@ define(function(){
       if(type != 'object')
         return type;
       return obj.constructor.name.toLowerCase();
+    }
+
+    text2html(text){
+      if(!text) return text;
+
+      // 将每一行都加上 p 标签
+      const lines = text.split("\n")
+        .map(line => `<p>${escapeHTML(line.trim())}</p>`);
+      return lines.join('\n');
+
+      function escapeHTML(t) {
+        return t
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/ /g, "&nbsp;")
+          .replace(/"/g, "&#34;")
+          .replace(/'/g, "&#39;");
+      }
     }
 
   }
