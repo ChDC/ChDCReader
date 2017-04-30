@@ -4,7 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "utils", 'Book', "ReadingRecord"], function (co, utils, Book, ReadingRecord) {
+define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils, Book, Chapter, ReadingRecord) {
   "use strict";
 
   var BookShelf = function () {
@@ -38,7 +38,7 @@ define(['co', "utils", 'Book', "ReadingRecord"], function (co, utils, Book, Read
           var bs = b.sources[bsk];
 
           utils.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk)).then(function (data) {
-            bs.catalog = data;
+            bs.catalog = utils.arrayCast(data, Chapter);
           }).catch(function (error) {
             return error;
           });
