@@ -121,7 +121,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       });
       $('#btnBookDetail').click(e => app.page.showPage("bookdetail", {book: this.book}));
       $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name)
-          .click(e => window.open(this.book.getDetailLink(), '_system'));
+          .click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
       $("#btnRefreshCatalog").click(() => this.loadCatalog(true));
       if(this.isNewBook){
         $("#btnAddtoBookShelf").show().click(e => {
@@ -281,7 +281,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         if(index >= 0){
           this.readingRecord.setReadingRecord(index, title, options);
           $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name)
-            .click(e => window.open(this.book.getDetailLink(options.contentSourceId), '_system'));
+            .click(e => window.open(this.book.getOfficialDetailLink(options.contentSourceId), '_system'));
         }
         else{
           // 已经读完了
@@ -294,32 +294,52 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       this.chapterList.loadList();
     }
 
+    // 构造读完页面
     buildLastPage(){
-      const nc = $('.template .chapter').clone();
+      const nc = $('.template .readFinished').clone();
       if(!nc || nc.length <=0)
         return null;
 
-      let title = '读完啦';
-      let content = `
-        <h2>您已经读完了本书的所有更新！</h2>
-        <h2>想要更快的读到本书的更新，请去本书的官方网站：</h2>
-        <h2><a href="${this.book.getDetailLink()}">官方网站</a></h2>
-        <hr/>
-        <h2>您已经读完了本书的所有更新！</h2>
-        <h2>想要更快的读到本书的更新，请去本书的官方网站：</h2>
-        <h2><a href="${this.book.getDetailLink()}">官方网站</a></h2>
-        <hr/>
-        <h2>您已经读完了本书的所有更新！</h2>
-        <h2>想要更快的读到本书的更新，请去本书的官方网站：</h2>
-        <h2><a href="${this.book.getDetailLink()}">官方网站</a></h2>
-        <hr/>
-      `;
-      nc.find(".chapter-title").text(title);
-      nc.find(".chapter-content").html(content);
+      nc.height($('#chapterContainer').height());
+
+      nc.find(".offical-site").click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
+      nc.find("img.offical-site").attr('src', `img/logo/${this.book.mainSourceId}.png`);
 
       nc.data('chapterIndex', -1);
-      nc.data('chapterTitle', title);
+      nc.data('chapterTitle', '读完啦');
+
+      this.loadElseBooks(nc.find(".elseBooks"));
       return nc[0];
+    }
+
+    loadElseBooks(list){
+      function addBook(bookshelfitem, prepend=false){
+        let nb = $('.template .book').clone();
+        if(bookshelfitem.book.cover) nb.find('.book-cover').attr('src', bookshelfitem.book.cover);
+        nb.find('.book-name').text(bookshelfitem.book.name);
+        nb.click(() => {
+          app.page.closeCurrentPagetAndShow("readbook", {book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord})
+        });
+        if(prepend)
+          list.prepend(nb);
+        else
+          list.append(nb);
+      }
+
+      // 添加未读完的书籍
+      let unFinishedBooks = app.bookShelf.books.filter(e => !e.readingRecord.isFinished && e.book != this.book);
+      unFinishedBooks.forEach(addBook);
+
+      // 添加读完的书籍
+      let finishedBooks = app.bookShelf.books.filter(e => e.readingRecord.isFinished && e.book != this.book).reverse();
+      finishedBooks.forEach(e => {
+        e.book.getLastestChapter()
+          .then(([lastestChapter]) => {
+            if(!e.readingRecord.equalChapterTitle(lastestChapter)) // 有新章节
+              addBook(e, true);
+          });
+      });
+
     }
 
     buildChapter({chapter, index, options}={}){

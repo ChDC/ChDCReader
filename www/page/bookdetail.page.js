@@ -36,7 +36,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
 
         if (book.cover) $("#book-cover").attr("src", book.cover);
         $("#book-name").text(book.name).click(function (e) {
-          return window.open(_this2.book.getDetailLink(), '_system');
+          return window.open(_this2.book.getOfficialDetailLink(), '_system');
         });
         $("#book-author").text(book.author);
         $("#book-catagory").text(book.catagory);

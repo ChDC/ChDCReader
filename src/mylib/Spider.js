@@ -95,27 +95,19 @@ define(function(){
       if(!response)
         return Promise.reject(new Error("Empty response"));
 
-      if(!request)
-        request = {
-          "url": dict.url
-        };
-
-      if(this.type(request) == "string"){
-        request = {
-          "url": request
-        };
+      let url;
+      try{
+        url = this.getLink(request, dict);
+      }
+      catch(error){
+        return Promise.reject(error);
       }
 
-      if(!request.url)
-        return Promise.reject(new Error("Empty URL"));
-
       // 补充缺省值
+      request = request || {};
       let method = (request.method || "GET").toLowerCase();
       let type = (request.type || "HTML").toLowerCase();
       let headers = request.headers || {};
-
-      // 获取 URL
-      let url = this.format(request.url, dict);
 
       let ajax;
       switch(this.type(this.ajax)){
@@ -145,6 +137,25 @@ define(function(){
       return ajax(method, url, request.params, undefined, headers,
                   {timeout: request.timeout})
         .then(data => this.parse(data, type, response, url, dict));
+    }
+
+    // 从 request 中获取请求的 url
+    getLink(request, dict={}){
+      if(!request)
+        request = {
+          "url": dict.url
+        };
+
+      if(this.type(request) == "string"){
+        request = {
+          "url": request
+        };
+      }
+
+      if(!request.url)
+        throw new Error("Empty URL");
+
+      return this.format(request.url, dict);
     }
 
     // 解析数据

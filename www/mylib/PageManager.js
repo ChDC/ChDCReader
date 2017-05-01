@@ -84,11 +84,12 @@ define(["jquery"], function ($) {
         var _this = this;
 
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+        var dontShowTargetPage = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
         var i = this.__pageStack.findIndex(function (e) {
           return e.name == name;
         });
-        if (i == 0) return Promise.reject(new Error("the current page is the page"));else if (i > 0) return this.closePage(this.__pageStack[i - 1].name);
+        if (i == 0) return Promise.reject(new Error("the current page is the page"));else if (i > 0) return this.closePage(this.__pageStack[i - 1].name, dontShowTargetPage);
 
         var urls = this.getURLs(name);
 
@@ -107,7 +108,7 @@ define(["jquery"], function ($) {
           });
 
           var curpage = _this.getPage();
-          if (curpage) curpage.jsPage.fireEvent('pause');
+          if (curpage && !dontShowTargetPage) curpage.jsPage.fireEvent('pause');
 
           _this.__pageStack.unshift({
             name: name,
@@ -141,8 +142,21 @@ define(["jquery"], function ($) {
         return page;
       }
     }, {
+      key: "closeCurrentPagetAndShow",
+      value: function closeCurrentPagetAndShow(name, params) {
+        var _this2 = this;
+
+        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+        return this.closePage(undefined, undefined, true).then(function () {
+          return _this2.showPage(name, params, options, true);
+        });
+      }
+    }, {
       key: "closePage",
       value: function closePage(name, params) {
+        var dontShowTargetPage = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
 
         var cp = this.getPage();
         if (!cp) return Promise.reject(new Error("empty page stack"));
@@ -165,7 +179,7 @@ define(["jquery"], function ($) {
         if (cssthemeelemnt.data('url') != urls.cssthemeurl) this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
 
         this.__container.append(curPage.content);
-        curPage.jsPage.fireEvent('resume');
+        if (!dontShowTargetPage) curPage.jsPage.fireEvent('resume');
         return Promise.resolve(curPage.jsPage);
       }
     }, {

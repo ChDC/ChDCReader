@@ -478,6 +478,49 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
         return this.__spider.get(bs.catalogLink, dict);
       }
     }, {
+      key: "getOfficialURLs",
+      value: function getOfficialURLs(bsid, dict, key) {
+        utils.log("BookSourceManager: Get Book Detail Link from " + bsid + "\"");
+
+        var bs = this.__sources[bsid];
+        if (!bs) throw new Error("Illegal booksource!");
+
+        var config = bs.officialurls;
+        if (!config) return null;
+        if (key && config[key]) return this.__spider.format(config[key], dict);
+        if (!key) {
+          var result = {};
+          for (var _key in config) {
+            result[_key] = this.__spider.format(config[_key], dict);
+          }
+        }
+        return null;
+      }
+    }, {
+      key: "getBookDetailLink",
+      value: function getBookDetailLink(bsid, dict) {
+        utils.log("BookSourceManager: Get Book Detail Link from " + bsid + "\"");
+
+        var bs = this.__sources[bsid];
+        if (!bs) throw new Error("Illegal booksource!");
+
+        return this.__spider.getLink(bs.detail.request, dict);
+      }
+    }, {
+      key: "getChapterLink",
+      value: function getChapterLink(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        utils.log("BookSourceManager: Get Chpater link from " + bsid);
+
+        if (!dict.link && !dict.cid) throw new Error(206);
+
+        var bsm = this.__sources[bsid];
+        if (!bsm) throw new Error("Illegal booksource!");
+
+        return this.__spider.getLink(bsm.chapter.request, dict);
+      }
+    }, {
       key: "getBookCatalog",
       value: function getBookCatalog(bsid, dict) {
 

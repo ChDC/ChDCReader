@@ -158,8 +158,13 @@ define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShe
           this.page.showPage("bookshelf");
           this.chekcUpdate(true);
         });
-      document.addEventListener("pause", () => {
-          app.bookShelf.save();
+      document.addEventListener("backbutton", () => {
+          // 按返回键的时候先关闭当前对话框
+          let m = Array.from(document.querySelectorAll('.modal')).find(e => e.style.display=='block');
+          if(m)
+            $(m).modal('hide');
+          else
+            window.history.back();
         }, false);
       if(typeof(cordova) != "undefined" && cordova.InAppBrowser)
         window.open = cordova.InAppBrowser.open;

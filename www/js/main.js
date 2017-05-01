@@ -131,8 +131,11 @@ define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShe
         _this3.page.showPage("bookshelf");
         _this3.chekcUpdate(true);
       });
-      document.addEventListener("pause", function () {
-        app.bookShelf.save();
+      document.addEventListener("backbutton", function () {
+        var m = Array.from(document.querySelectorAll('.modal')).find(function (e) {
+          return e.style.display == 'block';
+        });
+        if (m) $(m).modal('hide');else window.history.back();
       }, false);
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },

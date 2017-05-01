@@ -1,5 +1,7 @@
 "use strict";
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -138,7 +140,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           return app.page.showPage("bookdetail", { book: _this3.book });
         });
         $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name).click(function (e) {
-          return window.open(_this3.book.getDetailLink(), '_system');
+          return window.open(_this3.book.getOfficialDetailLink(), '_system');
         });
         $("#btnRefreshCatalog").click(function () {
           return _this3.loadCatalog(true);
@@ -316,7 +318,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           if (index >= 0) {
             _this6.readingRecord.setReadingRecord(index, title, options);
             $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name).click(function (e) {
-              return window.open(_this6.book.getDetailLink(options.contentSourceId), '_system');
+              return window.open(_this6.book.getOfficialDetailLink(options.contentSourceId), '_system');
             });
           } else {
             _this6.readingRecord.setFinished(true);
@@ -330,25 +332,65 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "buildLastPage",
       value: function buildLastPage() {
-        var nc = $('.template .chapter').clone();
+        var _this7 = this;
+
+        var nc = $('.template .readFinished').clone();
         if (!nc || nc.length <= 0) return null;
 
-        var title = '读完啦';
-        var content = "\n        <h2>\u60A8\u5DF2\u7ECF\u8BFB\u5B8C\u4E86\u672C\u4E66\u7684\u6240\u6709\u66F4\u65B0\uFF01</h2>\n        <h2>\u60F3\u8981\u66F4\u5FEB\u7684\u8BFB\u5230\u672C\u4E66\u7684\u66F4\u65B0\uFF0C\u8BF7\u53BB\u672C\u4E66\u7684\u5B98\u65B9\u7F51\u7AD9\uFF1A</h2>\n        <h2><a href=\"" + this.book.getDetailLink() + "\">\u5B98\u65B9\u7F51\u7AD9</a></h2>\n        <hr/>\n        <h2>\u60A8\u5DF2\u7ECF\u8BFB\u5B8C\u4E86\u672C\u4E66\u7684\u6240\u6709\u66F4\u65B0\uFF01</h2>\n        <h2>\u60F3\u8981\u66F4\u5FEB\u7684\u8BFB\u5230\u672C\u4E66\u7684\u66F4\u65B0\uFF0C\u8BF7\u53BB\u672C\u4E66\u7684\u5B98\u65B9\u7F51\u7AD9\uFF1A</h2>\n        <h2><a href=\"" + this.book.getDetailLink() + "\">\u5B98\u65B9\u7F51\u7AD9</a></h2>\n        <hr/>\n        <h2>\u60A8\u5DF2\u7ECF\u8BFB\u5B8C\u4E86\u672C\u4E66\u7684\u6240\u6709\u66F4\u65B0\uFF01</h2>\n        <h2>\u60F3\u8981\u66F4\u5FEB\u7684\u8BFB\u5230\u672C\u4E66\u7684\u66F4\u65B0\uFF0C\u8BF7\u53BB\u672C\u4E66\u7684\u5B98\u65B9\u7F51\u7AD9\uFF1A</h2>\n        <h2><a href=\"" + this.book.getDetailLink() + "\">\u5B98\u65B9\u7F51\u7AD9</a></h2>\n        <hr/>\n      ";
-        nc.find(".chapter-title").text(title);
-        nc.find(".chapter-content").html(content);
+        nc.height($('#chapterContainer').height());
+
+        nc.find(".offical-site").click(function (e) {
+          return window.open(_this7.book.getOfficialDetailLink(), '_system');
+        });
+        nc.find("img.offical-site").attr('src', "img/logo/" + this.book.mainSourceId + ".png");
 
         nc.data('chapterIndex', -1);
-        nc.data('chapterTitle', title);
+        nc.data('chapterTitle', '读完啦');
+
+        this.loadElseBooks(nc.find(".elseBooks"));
         return nc[0];
+      }
+    }, {
+      key: "loadElseBooks",
+      value: function loadElseBooks(list) {
+        var _this8 = this;
+
+        function addBook(bookshelfitem) {
+          var prepend = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+          var nb = $('.template .book').clone();
+          if (bookshelfitem.book.cover) nb.find('.book-cover').attr('src', bookshelfitem.book.cover);
+          nb.find('.book-name').text(bookshelfitem.book.name);
+          nb.click(function () {
+            app.page.closeCurrentPagetAndShow("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
+          });
+          if (prepend) list.prepend(nb);else list.append(nb);
+        }
+
+        var unFinishedBooks = app.bookShelf.books.filter(function (e) {
+          return !e.readingRecord.isFinished && e.book != _this8.book;
+        });
+        unFinishedBooks.forEach(addBook);
+
+        var finishedBooks = app.bookShelf.books.filter(function (e) {
+          return e.readingRecord.isFinished && e.book != _this8.book;
+        }).reverse();
+        finishedBooks.forEach(function (e) {
+          e.book.getLastestChapter().then(function (_ref2) {
+            var _ref3 = _slicedToArray(_ref2, 1),
+                lastestChapter = _ref3[0];
+
+            if (!e.readingRecord.equalChapterTitle(lastestChapter)) addBook(e, true);
+          });
+        });
       }
     }, {
       key: "buildChapter",
       value: function buildChapter() {
-        var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            chapter = _ref2.chapter,
-            index = _ref2.index,
-            options = _ref2.options;
+        var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            chapter = _ref4.chapter,
+            index = _ref4.index,
+            options = _ref4.options;
 
         if (!chapter) return this.buildLastPage();
 

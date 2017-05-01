@@ -11,6 +11,11 @@ define(['utils'], function(utils){
       this.__onDeviceResumeHandler = (e) => {
         this.fireEvent("deviceResume", e);
       };
+      // this.__onBackButtonHandler = (e) => {
+      //   this.fireEvent("backbutton", e);
+      //   if(!e.__stopPropagation)
+      //     window.history.back();
+      // };
     }
 
     // addEventListener(eventName, handler){
@@ -70,12 +75,14 @@ define(['utils'], function(utils){
       // add Device pause
       document.addEventListener("pause", this.__onDevicePauseHandler, false);
       document.addEventListener("resume", this.__onDeviceResumeHandler, false);
+      // document.addEventListener("backbutton", this.__onBackButtonHandler, false);
     }
 
     __onPause(){
       // console.error(this.name, "pause");
       document.removeEventListener("pause", this.__onDevicePauseHandler, false);
       document.removeEventListener("resume", this.__onDeviceResumeHandler, false);
+      // document.removeEventListener("backbutton", this.__onBackButtonHandler, false);
     }
 
     // __onClose(params){

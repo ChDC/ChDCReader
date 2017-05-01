@@ -38,23 +38,17 @@ define(function () {
 
         if (!response) return Promise.reject(new Error("Empty response"));
 
-        if (!request) request = {
-          "url": dict.url
-        };
-
-        if (this.type(request) == "string") {
-          request = {
-            "url": request
-          };
+        var url = void 0;
+        try {
+          url = this.getLink(request, dict);
+        } catch (error) {
+          return Promise.reject(error);
         }
 
-        if (!request.url) return Promise.reject(new Error("Empty URL"));
-
+        request = request || {};
         var method = (request.method || "GET").toLowerCase();
         var type = (request.type || "HTML").toLowerCase();
         var headers = request.headers || {};
-
-        var url = this.format(request.url, dict);
 
         var ajax = void 0;
         switch (this.type(this.ajax)) {
@@ -74,6 +68,25 @@ define(function () {
         return ajax(method, url, request.params, undefined, headers, { timeout: request.timeout }).then(function (data) {
           return _this2.parse(data, type, response, url, dict);
         });
+      }
+    }, {
+      key: 'getLink',
+      value: function getLink(request) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (!request) request = {
+          "url": dict.url
+        };
+
+        if (this.type(request) == "string") {
+          request = {
+            "url": request
+          };
+        }
+
+        if (!request.url) throw new Error("Empty URL");
+
+        return this.format(request.url, dict);
       }
     }, {
       key: 'parse',

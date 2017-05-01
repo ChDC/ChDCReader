@@ -51,12 +51,12 @@ define(["co", "utils", "Chapter", "BookSource"], function (co, utils, Chapter, B
         });
       }
     }, {
-      key: "getDetailLink",
-      value: function getDetailLink() {
+      key: "getOfficialDetailLink",
+      value: function getOfficialDetailLink() {
         var bookSourceId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.mainSourceId;
 
         try {
-          return this.sources[bookSourceId].detailLink;
+          return this.sources[bookSourceId].getOfficialDetailLink();
         } catch (error) {
           return null;
         }

@@ -533,18 +533,43 @@ define(function () {
 
         if (!("currentTarget" in e)) e.currentTarget = this;
         if (!("target" in e)) e.target = this;
+        e.stopPropagation = function () {
+          e.__stopPropagation = true;
+        };
 
         var __onevent = '__on' + eventName[0].toUpperCase() + eventName.substring(1);
         if (__onevent in this) this[__onevent](e);
 
         if (eventName in this.__events) {
-          this.__events[eventName].forEach(function (eh) {
-            try {
-              eh(e);
-            } catch (error) {
-              console.error(error);
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = this.__events[eventName][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var eh = _step3.value;
+
+              try {
+                if (e.__stopPropagation) break;
+                eh(e);
+              } catch (error) {
+                console.error(error);
+              }
             }
-          });
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                _iterator3.return();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
         }
 
         var onevent = 'on' + eventName[0].toUpperCase() + eventName.substring(1);
@@ -567,28 +592,28 @@ define(function () {
           case "object":
             if (Array.prototype.isPrototypeOf(obj)) {
               var children = [];
-              var _iteratorNormalCompletion3 = true;
-              var _didIteratorError3 = false;
-              var _iteratorError3 = undefined;
+              var _iteratorNormalCompletion4 = true;
+              var _didIteratorError4 = false;
+              var _iteratorError4 = undefined;
 
               try {
-                for (var _iterator3 = obj[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                  var v = _step3.value;
+                for (var _iterator4 = obj[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                  var v = _step4.value;
 
                   var value = __persistent(v);
                   if (value !== undefined) children.push(value);
                 }
               } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                    _iterator3.return();
+                  if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                    _iterator4.return();
                   }
                 } finally {
-                  if (_didIteratorError3) {
-                    throw _iteratorError3;
+                  if (_didIteratorError4) {
+                    throw _iteratorError4;
                   }
                 }
               }
@@ -605,28 +630,28 @@ define(function () {
               } else keys = Object.getOwnPropertyNames(obj);
 
               var _children = [];
-              var _iteratorNormalCompletion4 = true;
-              var _didIteratorError4 = false;
-              var _iteratorError4 = undefined;
+              var _iteratorNormalCompletion5 = true;
+              var _didIteratorError5 = false;
+              var _iteratorError5 = undefined;
 
               try {
-                for (var _iterator4 = keys[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                  var k = _step4.value;
+                for (var _iterator5 = keys[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                  var k = _step5.value;
 
                   var _value = __persistent(obj[k]);
                   if (_value !== undefined) _children.push('"' + k + '":' + _value);
                 }
               } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                    _iterator4.return();
+                  if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                    _iterator5.return();
                   }
                 } finally {
-                  if (_didIteratorError4) {
-                    throw _iteratorError4;
+                  if (_didIteratorError5) {
+                    throw _iteratorError5;
                   }
                 }
               }
