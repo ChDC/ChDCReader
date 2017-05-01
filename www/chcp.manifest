@@ -6,6 +6,17 @@
   {
     "file": "data/booksources.json",
     "hash": "61c29aed719bda187088ae0fef562031"
+<<<<<<< HEAD
+=======
+  },
+  {
+    "file": "data/booksources.test.json",
+    "hash": "25797cc7769cf0ea036b2b53cd425a26"
+  },
+  {
+    "file": "data/booksourcesTest.json",
+    "hash": "25797cc7769cf0ea036b2b53cd425a26"
+>>>>>>> dev
   },
   {
     "file": "data/errorCode.json",
