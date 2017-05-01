@@ -114,6 +114,15 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
         });
     }
 
+    // 获取官方原网页
+    getOfficialDetailLink(){
+      try{
+        return this.bookSourceManager.getOfficialURLs(this.id, this, "bookdetail");
+      }
+      catch(error){
+        return null;
+      }
+    }
 
     // 从本地或网络上获取章节内容
     // * cacheDir 缓存章节的目录

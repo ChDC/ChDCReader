@@ -19,7 +19,7 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
 
         nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
 
-        nb.find(".book-name").text(book.name).click(e => window.open(book.getDetailLink(), '_system'));
+        nb.find(".book-name").text(book.name).click(e => window.open(book.getOfficialDetailLink(), '_system'));
         nb.find(".book-author").text(book.author);
         nb.find(".book-catagory").text(book.catagory);
         nb.find(".book-complete").text(book.complete ? "完结" : "连载中");

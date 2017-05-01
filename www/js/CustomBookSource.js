@@ -51,12 +51,8 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
 
         utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
-        if (!dict.link && !dict.cid) return Promise.reject(206);
-
+        var link = this.getChapterLink(bsid, dict);
         var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
-
-        var link = this.__spider.format(bsm.chapter.request.url, dict);
 
         return utils.get(link).then(function (html) {
           if (!html) return null;
@@ -85,12 +81,8 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
 
         utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
-        if (!dict.link && !dict.cid) return Promise.reject(206);
-
+        var link = this.getChapterLink(bsid, dict);
         var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
-
-        var link = this.__spider.format(bsm.chapter.request.url, dict);
 
         return utils.get(link).then(function (html) {
           if (!html) return null;
@@ -131,12 +123,8 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
 
         utils.log("BookSourceManager: Load Chpater content from " + bsid);
 
-        if (!dict.link && !dict.cid) return Promise.reject(206);
-
+        var link = this.getChapterLink(bsid, dict);
         var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
-
-        var link = this.__spider.format(bsm.chapter.request.url, dict);
 
         return utils.cordovaAjax("get", link, {}, 'json', {
           "Referer": "http://chuangshi.qq.com/",

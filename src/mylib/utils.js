@@ -635,8 +635,11 @@ define(function(){
       function fireEvent(eventName, e={}){
         if(!eventName) return;
 
+        // init e
+
         if(!("currentTarget" in e)) e.currentTarget = this;
         if(!("target" in e)) e.target = this;
+        e.stopPropagation = () => { e.__stopPropagation = true;};
 
         // __onEvent
         let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
@@ -645,9 +648,15 @@ define(function(){
 
         // addEventListener
         if(eventName in this.__events){
-          this.__events[eventName].forEach(eh => {
-            try{ eh(e) } catch(error){ console.error(error); }
-          });
+          for(let eh of this.__events[eventName]){
+            try{
+              if(e.__stopPropagation) break;
+              eh(e)
+            }
+            catch(error){
+              console.error(error);
+            }
+          }
         }
 
         // onEvent

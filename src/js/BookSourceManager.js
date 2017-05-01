@@ -273,6 +273,48 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
       return this.__spider.get(bs.catalogLink, dict);
     }
 
+    // 获取原网页
+    getOfficialURLs(bsid, dict, key){
+      utils.log(`BookSourceManager: Get Book Detail Link from ${bsid}"`);
+
+      const bs = this.__sources[bsid];
+      if(!bs) throw new Error("Illegal booksource!");
+
+      let config = bs.officialurls;
+      if(!config) return null;
+      if(key && config[key])
+        return this.__spider.format(config[key], dict);
+      if(!key){
+        let result = {};
+        for(let key in config)
+          result[key] = this.__spider.format(config[key], dict);
+      }
+      return null;
+    }
+
+    // 获取书籍的 DetailLink
+    getBookDetailLink(bsid, dict){
+      utils.log(`BookSourceManager: Get Book Detail Link from ${bsid}"`);
+
+      const bs = this.__sources[bsid];
+      if(!bs) throw new Error("Illegal booksource!");
+
+      return this.__spider.getLink(bs.detail.request, dict);
+    }
+
+    // 获取书籍的章节链接
+    getChapterLink(bsid, dict={}){
+      utils.log(`BookSourceManager: Get Chpater link from ${bsid}`);
+
+      if(!dict.link && !dict.cid) throw new Error(206);
+
+      const bsm = this.__sources[bsid];
+      if(!bsm) throw new Error("Illegal booksource!");
+
+      return this.__spider.getLink(bsm.chapter.request, dict);
+    }
+
+
     // 获取书籍目录
     getBookCatalog(bsid, dict){
 

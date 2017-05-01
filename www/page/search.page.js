@@ -43,7 +43,7 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
             nb.find(".book-type").text(app.bookSourceManager.getBookSourceTypeName(book.mainSourceId));
 
             nb.find(".book-name").text(book.name).click(function (e) {
-              return window.open(book.getDetailLink(), '_system');
+              return window.open(book.getOfficialDetailLink(), '_system');
             });
             nb.find(".book-author").text(book.author);
             nb.find(".book-catagory").text(book.catagory);

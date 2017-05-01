@@ -7,7 +7,12 @@
       "name": "SF轻小说",
       "contentSourceWeight": 100,
       "mainSourceWeight": 19,
-      "host": "http://book.sfacg.com/",
+      "officialurls": {
+        "host": "http://book.sfacg.com/",
+        "bookdetail": "http://m.sfacg.com/b/{bookid}",
+        "bookchapter": "{link}",
+        "booksearch": "http://m.sfacg.com/search.html"
+      },
       "search": {
         "request": {
           "url": "http://s.sfacg.com/?Key={keyword}&S=1&SS=0"
@@ -99,7 +104,12 @@
       "name": "腾讯动漫",
       "contentSourceWeight": 100,
       "mainSourceWeight": 19,
-      "host": "http://ac.qq.com/",
+      "officialurls": {
+        "host": "http://ac.qq.com/",
+        "bookdetail": "http://m.ac.qq.com/comic/index/id/{bookid}",
+        "bookchapter": "http://m.ac.qq.com/chapter/index/id/{bookid}/cid/{cid}",
+        "booksearch": "http://m.ac.qq.com/search/index"
+      },
       "search": {
         "request": {
           "url": "http://m.ac.qq.com/search/result?t=1493260500155&word={keyword}&page=1&pageSize=100&style=items"
@@ -187,7 +197,12 @@
       "name": "有妖气",
       "contentSourceWeight": 100,
       "mainSourceWeight": 19,
-      "host": "http://www.u17.com",
+      "officialurls": {
+        "host": "http://www.u17.com",
+        "bookdetail": "http://m.u17.com/c/{bookid}.html",
+        "bookchapter": "",
+        "booksearch": "http://so.u17.com/"
+      },
       "search": {
         "request": {
           "url": "http://so.u17.com/all/{keyword}/m0_p1.html"
@@ -282,7 +297,12 @@
       "name": "Comico",
       "contentSourceWeight": 100,
       "mainSourceWeight": 19,
-      "host": "http://www.comico.com.tw/",
+      "officialurls": {
+        "host": "http://www.comico.com.tw/",
+        "bookdetail": "http://www.comico.com.tw/spweb/list.nhn?titleNo={bookid}",
+        "bookchapter": "",
+        "booksearch": "http://www.comico.com.tw"
+      },
       "search": {
         "request": {
           "url": "http://www.comico.com.tw/api/genretitles.nhn?seq=1&typeMain=0&typeSub=0",
@@ -352,7 +372,12 @@
       "name": "起点中文网",
       "contentSourceWeight": -10,
       "mainSourceWeight": 20,
-      "host": "http://www.qidian.com/",
+      "officialurls": {
+        "host": "http://www.qidian.com/",
+        "bookdetail": "http://m.qidian.com/book/{bookid}",
+        "bookchapter": "http://read.qidian.com/chapter/{cid}",
+        "booksearch": "http://m.qidian.com/search"
+      },
       "search": {
         "request": {
           "url": "http://se.qidian.com/?kw={keyword}",
@@ -438,7 +463,12 @@
       "name": "腾讯图书",
       "contentSourceWeight": -10,
       "mainSourceWeight": 20,
-      "host": "http://ubook.qq.com",
+      "officialurls": {
+        "host": "http://ubook.qq.com",
+        "bookdetail": "http://ubook.qq.com/8/intro.html?bid={bookid}",
+        "bookchapter": "",
+        "booksearch": "http://ubook.3g.qq.com/8/search"
+      },
       "search": {
         "request": {
           "url": "http://ubook.3g.qq.com/8/search?key={keyword}",
@@ -535,7 +565,12 @@
       "name": "创世中文网",
       "contentSourceWeight": -100,
       "mainSourceWeight": 19,
-      "host": "http://chuangshi.qq.com/",
+      "officialurls": {
+        "host": "http://chuangshi.qq.com/",
+        "bookdetail": "http://chuangshi.qq.com/bk/xh/{bookid}.html",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -625,7 +660,12 @@
       "name": "17K",
       "contentSourceWeight": -100,
       "mainSourceWeight": 10,
-      "host": "http://www.17k.com/",
+      "officialurls": {
+        "host": "http://www.17k.com/",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -644,6 +684,7 @@
         "request": "http://search.17k.com/search.xhtml?c.st=0&c.q={keyword}"
       },
       "detail": {
+        "request": "{detailLink}",
         "response": {
           "catalogLink": "div.BookInfo > div.Props > dl > dt > a",
           "author": "div.AuthorInfo > div > a.name",
@@ -693,7 +734,12 @@
       "name": "笔趣阁",
       "contentSourceWeight": 10,
       "mainSourceWeight": -10,
-      "host": "http://www.biquge.com/",
+      "officialurls": {
+        "host": "http://www.biquge.com/",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -755,7 +801,12 @@
       "name": "笔趣阁中文网",
       "contentSourceWeight": 10,
       "mainSourceWeight": -10,
-      "host": "http://www.biqugezw.com/",
+      "officialurls": {
+        "host": "http://www.biqugezw.com/",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -817,7 +868,12 @@
       "name": "笔趣阁 TW",
       "contentSourceWeight": 10,
       "mainSourceWeight": -10,
-      "host": "http://www.biquge.com.tw/",
+      "officialurls": {
+        "host": "http://www.biquge.com.tw/",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -879,7 +935,12 @@
       "name": "顶点小说",
       "contentSourceWeight": 10,
       "mainSourceWeight": -10,
-      "host": "http://www.booktxt.net",
+      "officialurls": {
+        "host": "http://www.booktxt.net",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -946,7 +1007,12 @@
       "name": "笔趣楼",
       "contentSourceWeight": 10,
       "mainSourceWeight": -10,
-      "host": "http://www.biqulou.net/",
+      "officialurls": {
+        "host": "http://www.biqulou.net/",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",
@@ -1008,7 +1074,12 @@
       "name": "大主宰小说网",
       "contentSourceWeight": 99,
       "mainSourceWeight": -10,
-      "host": "http://www.daizhuzai.com/",
+      "officialurls": {
+        "host": "http://www.daizhuzai.com/",
+        "bookdetail": "{detailLink}",
+        "bookchapter": "",
+        "booksearch": ""
+      },
       "search": {
         "response": {
           "type": "array",

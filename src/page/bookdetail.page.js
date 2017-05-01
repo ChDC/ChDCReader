@@ -17,7 +17,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
     loadBookDetail(book){
       if(book.cover)
         $("#book-cover").attr("src", book.cover);
-      $("#book-name").text(book.name).click(e => window.open(this.book.getDetailLink(), '_system'));
+      $("#book-name").text(book.name).click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
       $("#book-author").text(book.author);
       $("#book-catagory").text(book.catagory);
       $("#book-complete").text(book.complete ? "完结" : "连载中");

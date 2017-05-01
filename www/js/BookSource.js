@@ -143,6 +143,15 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });
       }
     }, {
+      key: 'getOfficialDetailLink',
+      value: function getOfficialDetailLink() {
+        try {
+          return this.bookSourceManager.getOfficialURLs(this.id, this, "bookdetail");
+        } catch (error) {
+          return null;
+        }
+      }
+    }, {
       key: 'getChapter',
       value: function getChapter(chapter, onlyCacheNoLoad) {
         var _this5 = this;

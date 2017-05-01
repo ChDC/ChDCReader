@@ -42,9 +42,9 @@ define(["co", "utils", "Chapter", "BookSource"], function(co, utils, Chapter, Bo
       });
     }
 
-    getDetailLink(bookSourceId=this.mainSourceId){
+    getOfficialDetailLink(bookSourceId=this.mainSourceId){
       try{
-        return this.sources[bookSourceId].detailLink;
+        return this.sources[bookSourceId].getOfficialDetailLink();
       }
       catch(error){
         return null;

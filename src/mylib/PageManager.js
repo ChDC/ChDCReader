@@ -74,7 +74,7 @@ define(["jquery"], function($){
     }
 
     // 显示指定的页面
-    showPage(name, params, options={}){
+    showPage(name, params, options={}, dontShowTargetPage=false){
 
       // console.log("showPage", baseurl);
 
@@ -83,7 +83,7 @@ define(["jquery"], function($){
       if(i == 0)
         return Promise.reject(new Error("the current page is the page")); // 当前页面就是要显示的页面，所以退出
       else if(i > 0)
-        return this.closePage(this.__pageStack[i-1].name);
+        return this.closePage(this.__pageStack[i-1].name, dontShowTargetPage);
 
       // 如果缓存中没有该页，则新建
       // 拼接 URL
@@ -110,7 +110,7 @@ define(["jquery"], function($){
 
           // 触发之前页面的暂停事件
           let curpage = this.getPage();
-          if(curpage)
+          if(curpage && !dontShowTargetPage)
             curpage.jsPage.fireEvent('pause');
 
           // 将当前的页面存储起来
@@ -148,9 +148,14 @@ define(["jquery"], function($){
       return page;
     }
 
+    // 关闭当前页面并跳转到另一个页面
+    closeCurrentPagetAndShow(name, params, options={}){
+      return this.closePage(undefined, undefined, true)
+        .then(() => this.showPage(name, params, options, true));
+    }
 
     // 关闭当前页面
-    closePage(name, params){
+    closePage(name, params, dontShowTargetPage=false){
 
       let cp = this.getPage();
       if(!cp)
@@ -183,7 +188,7 @@ define(["jquery"], function($){
         this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
 
       this.__container.append(curPage.content);
-      curPage.jsPage.fireEvent('resume');
+      if(!dontShowTargetPage) curPage.jsPage.fireEvent('resume');
       return Promise.resolve(curPage.jsPage);
     }
 
