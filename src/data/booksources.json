@@ -162,7 +162,7 @@
         },
         "response":{
           "type": "array",
-          "element": ".chapter-page-all span",
+          "element": ".works-chapter-list-con:first-child .chapter-page-all span",
           "children": {
             "title": "a",
             "vip": {
