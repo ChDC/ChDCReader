@@ -109,7 +109,7 @@
   },
   {
     "file": "js/main.js",
-    "hash": "506926dadfce4fe89d30c18c64e5443e"
+    "hash": "678b55dc2bf74ce5bd43f2738c51c6ae"
   },
   {
     "file": "js/ReadingRecord.js",
@@ -285,7 +285,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "2e5a4d8b48bf117189c005ce398560b9"
+    "hash": "e39df47965f4eb665206b308e4c669b7"
   },
   {
     "file": "mylib/Page.js",
@@ -293,7 +293,7 @@
   },
   {
     "file": "mylib/PageManager.js",
-    "hash": "01dfbb7f8a597d3644b917b084f38b4b"
+    "hash": "703f0fcf30f991ec188eb169e5d4e246"
   },
   {
     "file": "mylib/Spider.js",
