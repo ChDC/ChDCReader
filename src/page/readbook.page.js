@@ -265,7 +265,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       );
       this.chapterList.onError = (o,e) => uiutils.showError(app.error.getMessage(e));
 
-      this.chapterList.onCurrentItemChanged = (event, newValue, oldValue) => {
+      this.chapterList.onCurrentElementChanged = (event, newValue, oldValue) => {
         newValue = $(newValue);
         if(!oldValue){
           // 当前是第一个元素
@@ -349,12 +349,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
     // 下一章节
     nextChapter(){
-      this.chapterList.nextItem();
+      this.chapterList.nextElement();
     }
 
     // 上一章节
     previousChapter(){
-      this.chapterList.previousItem();
+      this.chapterList.previousElement();
     }
   }
 

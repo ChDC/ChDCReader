@@ -4,15 +4,12 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, 
   // **** BookShelf *****
   class BookShelf{
 
-    constructor(){
-      this.__loaded = false; // 标记是否已经加载的数据
+    constructor(name="bookshelf"){
+      this.name = name;
       this.books = [];
       // this.bookmarks = []; // 书签
-    }
 
-    // 是否已经加载了
-    isLoaded(){
-      return this.__loaded;
+      utils.addEventSupport(this); // 添加事件机制
     }
 
     // 获取存储目录的文件路径
@@ -45,11 +42,10 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, 
             tasks.push(loadCatalog(bk, bsk));
           }
         }
-        return Promise.all(tasks)
-          .then(()=>{self.__loaded = true;});
+        return Promise.all(tasks);
       }
 
-      return utils.loadData("bookshelf")
+      return utils.loadData(this.name)
         .then(data => {
           const bookShelf = data;
           Object.assign(this, bookShelf);
@@ -58,7 +54,8 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, 
             b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
           }
           return loadCatalogs();
-        });
+        })
+        .then(() => this.fireEvent("loadedData"));
     }
 
     // 保存数据
@@ -74,19 +71,26 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, 
           }
         }
       }
-      return utils.saveTextData("bookshelf", utils.persistent(this));
+      return utils.saveTextData(this.name, utils.persistent(this))
+        .then(() => this.fireEvent("savedData"));
+    }
+
+    newBookShelfItem(book, readingRecord){
+      return {
+        book: book,
+        readingRecord: readingRecord || new ReadingRecord(),
+        lockLocation: -1 // 是否锁定了位置
+      };
     }
 
     // 添加书籍到书架中
     addBook(book, readingRecord){
       if(!this.hasBook(book)){
         // 默认添加到开头
-        this.books.unshift({
-          book: book,
-          readingRecord: readingRecord || new ReadingRecord(),
-          lockLocation: -1 // 是否锁定了位置
-        });
+        let newItem = this.newBookShelfItem(book, readingRecord);
+        this.books.unshift(newItem);
         this.sortBooks();
+        this.fireEvent("addedBook", {bookShelfItem: newItem});
         // return this.save();
       }
     }
@@ -132,6 +136,7 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, 
         result.splice(e.lockLocation, 0, e)
       });
       this.books = result;
+      this.fireEvent("sortedBook");
       return true;
     }
 
@@ -158,7 +163,9 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function(co, utils, 
       }
       this.books.splice(index, 1);
       this.sortBooks();
+
       // TODO: 清空缓存章节
+      this.fireEvent("removedBook", {book: book});
       // return this.save();
     }
   }
