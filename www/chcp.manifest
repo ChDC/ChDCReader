@@ -6,17 +6,6 @@
   {
     "file": "data/booksources.json",
     "hash": "61c29aed719bda187088ae0fef562031"
-<<<<<<< HEAD
-=======
-  },
-  {
-    "file": "data/booksources.test.json",
-    "hash": "25797cc7769cf0ea036b2b53cd425a26"
-  },
-  {
-    "file": "data/booksourcesTest.json",
-    "hash": "25797cc7769cf0ea036b2b53cd425a26"
->>>>>>> dev
   },
   {
     "file": "data/errorCode.json",
@@ -100,7 +89,7 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "94634e2cebd76315a00c1f7adc8c9916"
+    "hash": "47364fade244700bee3ff62e63cbae1f"
   },
   {
     "file": "js/BookSourceManager.js",
