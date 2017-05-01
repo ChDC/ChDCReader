@@ -369,12 +369,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         var unFinishedBooks = app.bookShelf.books.filter(function (e) {
           return !e.readingRecord.isFinished && e.book != _this8.book;
-        });
+        }).reverse();
         unFinishedBooks.forEach(addBook);
 
         var finishedBooks = app.bookShelf.books.filter(function (e) {
           return e.readingRecord.isFinished && e.book != _this8.book;
-        }).reverse();
+        });
         finishedBooks.forEach(function (e) {
           e.book.getLastestChapter().then(function (_ref2) {
             var _ref3 = _slicedToArray(_ref2, 1),
