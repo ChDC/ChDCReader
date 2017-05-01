@@ -87,7 +87,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
                   return self.__assertBookSource();
 
                 case 2:
-                  if (!(!forceRefresh && new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
+                  if (!(new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
                     _context.next = 4;
                     break;
                   }
