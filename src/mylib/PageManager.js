@@ -23,6 +23,10 @@ define(["jquery"], function($){
 
     }
 
+    getPageCount(){
+      return this.__pageStack.length;
+    }
+
     // 设置主题
     setTheme(theme){
       if(this.__theme != theme){

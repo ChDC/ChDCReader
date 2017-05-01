@@ -16,15 +16,19 @@
 
 * [起点中文网](http://www.qidian.com/)
 * [创世中文网](http://chuangshi.qq.com/)
+* [腾讯图书](http://ubook.qq.com)
+* [SF轻小说](http://book.sfacg.com/)
 * [大主宰小说网](http://www.daizhuzai.com/)
 * [笔趣楼](http://www.biqulou.net/)
 * [笔趣阁 TW](http://www.biquge.com.tw/)
 * [笔趣阁中文网](http://www.biqugezw.com/)
 * [笔趣阁](http://www.biquge.com/)
+* [顶点小说](http://www.booktxt.net)
 
 ### 漫画
 
 * [comico](http://www.comico.com.tw/)
+* [腾讯动漫](http://ac.qq.com/)
 
 ## 声明
 
@@ -32,35 +36,59 @@
 
 ## 技术框架
 
-本项目基于 Corodva 框架实现。
+* 本项目基于 Corodva 框架实现。
+
+* 本项目中的爬虫部分使用的是本人创作的爬虫框架 [Spider](https://github.com/ChDC/ChDCSpider)
+
+  它是基于配置的爬虫框架，只需要在配置文件中写好请求的链接和用于选取元素的 CSS 选择器就可以获取到想要的信息。
 
 ## 截图
 
-
 ### 书架页面
 
-![书架页](Screenshot/Screenshot_2017-03-24-21-08-27-044_com.chdc.reader.png)
+| 白天模式                                     | 夜间模式                                     |
+| ---------------------------------------- | ---------------------------------------- |
+| ![Screenshot_2017-05-01-12-02-11-780_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-11-780_com.chdc.reader.png) | ![Screenshot_2017-05-01-11-59-55-230_com.chdc.reader](Screenshot/Screenshot_2017-05-01-11-59-55-230_com.chdc.reader.png) |
+| ![Screenshot_2017-05-01-12-03-27-366_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-03-27-366_com.chdc.reader.png) | ![Screenshot_2017-05-01-12-00-22-984_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-00-22-984_com.chdc.reader.png) |
+| ![Screenshot_2017-05-01-12-00-28-594_com.chdc.reader](Screenshot/Screenshot_2017-05-01-21-36-46-076_com.chdc.reader.png) | ![Screenshot_2017-05-01-12-00-28-594_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-00-28-594_com.chdc.reader.png) |
 
-![书籍操作](Screenshot/Screenshot_2017-03-24-21-08-31-689_com.chdc.reader.png)
+### 详情页
 
-![夜间模式书架](Screenshot/Screenshot_2017-03-24-21-09-18-075_com.chdc.reader.png)
-
-### 目录页
-
-![目录页](Screenshot/Screenshot_2017-03-24-21-11-24-410_com.chdc.reader.png)
+| 白天模式                                     | 夜间模式                                     |
+| ---------------------------------------- | ---------------------------------------- |
+| ![Screenshot_2017-05-01-12-03-20-965_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-03-20-965_com.chdc.reader.png) | ![Screenshot_2017-05-01-12-03-20-965_com.chdc.reader](Screenshot/Screenshot_2017-05-01-21-39-04-874_com.chdc.reader.png) |
 
 ### 搜索页面
 
-![搜索页](Screenshot/Screenshot_2017-03-24-21-08-21-025_com.chdc.reader.png)
+| 白天模式                                     | 夜间模式                                     |
+| ---------------------------------------- | ---------------------------------------- |
+| ![Screenshot_2017-05-01-12-03-17-077_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-03-17-077_com.chdc.reader.png) | ![Screenshot_2017-05-01-12-00-13-917_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-00-13-917_com.chdc.reader.png) |
 
 ### 小说阅读界面
 
-![阅读页面](Screenshot/Screenshot_2017-03-24-21-09-01-856_com.chdc.reader.png)
+| 白天模式                                     | 夜间模式                                     |
+| ---------------------------------------- | ---------------------------------------- |
+| ![Screenshot_2017-05-01-12-02-47-823_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-47-823_com.chdc.reader.png) | ![Screenshot_2017-05-01-12-01-28-577_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-01-28-577_com.chdc.reader.png) |
+| ![Screenshot_2017-05-01-12-02-52-691_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-52-691_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-46-37-751_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-46-37-751_com.chdc.reader.png) |
+| ![Screenshot_2017-05-01-12-03-02-646_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-03-02-646_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-47-02-873_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-47-02-873_com.chdc.reader.png) |
+| ![Screenshot_2017-05-01-12-02-56-677_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-56-677_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-46-49-562_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-46-49-562_com.chdc.reader.png) |
 
-![夜间模式阅读页面](Screenshot/Screenshot_2017-03-24-21-09-14-051_com.chdc.reader.png)
+### 漫画阅读页面
+
+| 白天模式                                     | 夜间模式                                     |
+| ---------------------------------------- | ---------------------------------------- |
+| ![Screenshot_2017-05-01-12-02-18-613_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-18-613_com.chdc.reader.png) | ![Screenshot_2017-05-01-12-02-26-613_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-26-613_com.chdc.reader.png) |
+
+### 发现页面
+
+| 白天模式                                     | 夜间模式                                     |
+| ---------------------------------------- | ---------------------------------------- |
+| ![Screenshot_2017-05-01-20-46-09-432_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-03-09-025_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-46-09-432_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-46-09-432_com.chdc.reader.png) |
 
 ## 使用技巧
 
+* 在搜索页面，点击搜索结果的标题可以跳转到本书的官方网站
+* 在阅读页面的目录页点击目录源的名字可以跳转到本书的官方网站
 * 拖动书架中书籍右边的两个点可以对书籍进行排序
 * 当当前章节的质量不好时，点击“劣质章节”可以从其他书源加载该章节
 
@@ -69,10 +97,7 @@
 * 缓存封面
 * 百度搜索
 * 搜索记录
-* 卷
+* 卷：qidian，sfnovel
 * 首次启动强制更新资源
 * 更新后提示资源更新内容
-
-
-* 弹出框响应 Android 的返回键
 

@@ -27,6 +27,11 @@ define(["jquery"], function ($) {
       key: "reload",
       value: function reload() {}
     }, {
+      key: "getPageCount",
+      value: function getPageCount() {
+        return this.__pageStack.length;
+      }
+    }, {
       key: "setTheme",
       value: function setTheme(theme) {
         if (this.__theme != theme) {

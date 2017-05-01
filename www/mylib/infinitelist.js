@@ -351,10 +351,10 @@ define(["co"], function (co) {
               case 22:
                 _result = result, newElement = _result.value, done = _result.done;
 
-                if (direction >= 0 && newElement) this.__elementList.append(newElement);else if (direction < 0 && newElement) {
+                if (direction >= 0 && newElement) this.__elementList.appendChild(newElement);else if (direction < 0 && newElement) {
                   cs = this.__container.scrollTop;
 
-                  this.__elementList.prepend(newElement);
+                  this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
                   this.__container.scrollTop = cs + newElement.offsetHeight;
                 }
 
