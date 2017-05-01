@@ -158,13 +158,23 @@ define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShe
           this.page.showPage("bookshelf");
           this.chekcUpdate(true);
         });
+
+      let lastPressBackTime = 0;
       document.addEventListener("backbutton", () => {
           // 按返回键的时候先关闭当前对话框
           let m = Array.from(document.querySelectorAll('.modal')).find(e => e.style.display=='block');
           if(m)
             $(m).modal('hide');
-          else
-            window.history.back();
+          else if(app.page.getPageCount() > 1)
+            navigator.app.backHistory();
+            // window.history.back();
+          else{
+            let now = new Date().getTime();
+            if(now - lastPressBackTime < 1000)
+              navigator.app.exitApp();
+            else
+              lastPressBackTime = now;
+          }
         }, false);
       if(typeof(cordova) != "undefined" && cordova.InAppBrowser)
         window.open = cordova.InAppBrowser.open;

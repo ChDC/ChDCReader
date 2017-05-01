@@ -131,11 +131,16 @@ define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShe
         _this3.page.showPage("bookshelf");
         _this3.chekcUpdate(true);
       });
+
+      var lastPressBackTime = 0;
       document.addEventListener("backbutton", function () {
         var m = Array.from(document.querySelectorAll('.modal')).find(function (e) {
           return e.style.display == 'block';
         });
-        if (m) $(m).modal('hide');else window.history.back();
+        if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) navigator.app.backHistory();else {
+            var now = new Date().getTime();
+            if (now - lastPressBackTime < 1000) navigator.app.exitApp();else lastPressBackTime = now;
+          }
       }, false);
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },

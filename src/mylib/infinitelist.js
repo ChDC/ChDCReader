@@ -305,10 +305,10 @@ define(["co"], function(co) {
 
       // 把元素添加到 DOM 上
       if(direction >= 0 && newElement)
-        this.__elementList.append(newElement);
+        this.__elementList.appendChild(newElement);
       else if(direction < 0 && newElement) {
         const cs = this.__container.scrollTop;
-        this.__elementList.prepend(newElement);
+        this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
         this.__container.scrollTop = cs + newElement.offsetHeight;
       }
 
