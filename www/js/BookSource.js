@@ -38,9 +38,9 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
 
         utils.log('BookSource: assert myself');
 
-        if (this.__searched) return Promise.resolve();
-
         if (this.__disable) return Promise.reject(404);
+
+        if (this.__searched) return Promise.resolve();
 
         return this.bookSourceManager.getBook(this.id, this.book.name, this.book.author).then(function (book) {
           Object.assign(_this, book.sources[_this.id]);

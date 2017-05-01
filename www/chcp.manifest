@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "dd056026560f85e8ca204c446444e7d1"
+    "hash": "61c29aed719bda187088ae0fef562031"
   },
   {
     "file": "data/booksources.test.json",
@@ -52,8 +52,12 @@
     "hash": "0e8d129db454d925b4fce66dd41ba5de"
   },
   {
+    "file": "img/logo/qqbook.jpg",
+    "hash": "92925b8ff47555257869a453601df250"
+  },
+  {
     "file": "img/logo/qqbook.png",
-    "hash": "28e2ad7490be716b69f426fc6b7e322f"
+    "hash": "41495cf24f6d9c5d78cfdb7ddec53ea1"
   },
   {
     "file": "img/logo/sfacg.png",
@@ -89,11 +93,11 @@
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "8f71a1a12443417a6138fb60b3da7cb9"
+    "hash": "9cf249ccb119d630ffebd695939390ba"
   },
   {
     "file": "js/BookSource.js",
-    "hash": "9c19a3d1994afb155746a820f3a44551"
+    "hash": "94634e2cebd76315a00c1f7adc8c9916"
   },
   {
     "file": "js/BookSourceManager.js",
