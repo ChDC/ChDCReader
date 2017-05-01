@@ -4,14 +4,28 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
   class MyPage extends Page{
     onLoad(params){
       this.loadView();
+      this.loaded = false; // 标记是否已经加载的数据
+
+      this.bookShelf = app.bookShelf;
+      this.bookTemplateElement; // 模板元素
+      this.bookShelfElement; // 书架的容器元素，用于存放书籍
+      this.bookShelf.addEventListener("addedBook", (e)=>{
+        // 添加了书籍
+        // 更新UI
+        this.addBook(e.bookShelfItem);
+        this.refreshBooksOrder(this.bookShelf)
+      });
     }
 
     onResume(){
-      if(app.bookShelf.isLoaded())
-        this.loadBooks(".bookshelf", app.bookShelf);
+      if(!this.loaded)
+        this.bookShelf.load(app.bookSourceManager)
+          .then(() => {
+            this.loaded = true;
+            this.loadBooks(this.bookShelf)
+          });
       else
-        app.bookShelf.load(app.bookSourceManager)
-          .then(() => this.loadBooks(".bookshelf", app.bookShelf));
+        this.refreshAllReadingRecord();
     }
 
     onDeviceResume(){
@@ -21,10 +35,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     removeBook(book){
       uiutils.showMessageDialog("确定", "确定要删除该书？",
         () => {
-          const target = $(event.currentTarget);
-          app.bookShelf.removeBook(book);
-          this.refreshBooksOrder(".bookshelf", app.bookShelf);
-          app.bookShelf.save()
+          // const target = $(event.currentTarget);
+          this.bookShelf.removeBook(book);
+          this.refreshBooksOrder(this.bookShelf);
+          this.bookShelf.save()
             .then(() => {
               uiutils.showMessage("删除成功！");
             })
@@ -36,79 +50,101 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }
 
     // 只更新 UI 不重新加载数据
-    refreshBooksOrder(id, bookShelf){
+    refreshBooksOrder(bookShelf){
       const books = bookShelf.books;
-      const bs = $(id);
       let newOrders = [];
-      let children = bs.children();
+      let children = this.bookShelfElement.children();
       Array.from(children).forEach(e => {
         let i = books.indexOf($(e).data("bookshelfitem"));
         newOrders[i] = e;
       });
       children.detach();
-      bs.append(newOrders);
+      this.bookShelfElement.append(newOrders);
+    }
+
+    addBook(bookshelfitem){
+      const readingRecord = bookshelfitem.readingRecord;
+      const book = bookshelfitem.book;
+      const nb = this.bookTemplateElement.clone();
+
+      nb.data("bookshelfitem", bookshelfitem);
+
+      if(book.cover) nb.find(".book-cover").attr("src", book.cover);
+      nb.find(".book-name").text(book.name)
+        .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
+
+      nb.find('.book-cover, .book-info')
+        .click(() => app.page.showPage("readbook", {book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord}));
+
+      nb.find('.btnBookMenu').click(event => {
+        $(event.currentTarget).dropdown();
+        return false;
+      }).dropdown();
+
+      nb.find('.btnDetail').click(e => app.page.showPage("bookdetail", {book: bookshelfitem.book}));
+      nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
+      nb.find('.btnLockLocation').click((e) => {
+        this.bookShelf.toggleLockBook(bookshelfitem);
+        $(e.currentTarget).find('a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+        this.bookShelf.save();
+      });
+      nb.find('.btnLockLocation > a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+      this.bookShelfElement.append(nb);
+    }
+
+    // 刷新所有的阅读记录
+    refreshAllReadingRecord(){
+      Array.from(this.bookShelfElement.children())
+          .forEach(e => this.refreshReadingRecord($(e)));
+    }
+
+    // 刷新阅读记录
+    refreshReadingRecord(bookElement){
+      let bookshelfitem = bookElement.data("bookshelfitem");
+      if(!bookshelfitem) throw new Error("empty illegal bookshelfitem");
+
+      const readingRecord = bookshelfitem.readingRecord;
+      const book = bookshelfitem.book;
+      bookElement.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
+
+      // 刷新最新章节
+      book.getLastestChapter()
+        .then(([lastestChapter]) => {
+          let isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
+          bookElement.find(".book-lastestchapter")
+            .text("最新：" + (lastestChapter? lastestChapter : "无"))
+            .addClass(isNewChapter ? 'unread-chapter' : "");
+
+          if(readingRecord.isFinished && isNewChapter){
+            // 更新最新章节
+            // 缓存后面章节内容
+            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+          }
+        });
     }
 
     // 加载书架列表
-    loadBooks(id, bookShelf){
+    loadBooks(bookShelf){
       const books = bookShelf.books;
-      const bs = $(id);
-      bs.empty();
-      const b = $(".template .book");
-
-      books.forEach( value => {
-        const readingRecord = value.readingRecord;
-        const book = value.book;
-
-        const nb = b.clone();
-        nb.data("bookshelfitem", value);
-        if(book.cover) nb.find(".book-cover").attr("src", book.cover);
-        nb.find(".book-name").text(book.name)
-          .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
-        nb.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
-
-        // 刷新最新章节
-        book.getLastestChapter()
-          .then(([lastestChapter]) => {
-            nb.find(".book-lastestchapter")
-              .text("最新：" + (lastestChapter? lastestChapter : "无"))
-              .addClass(readingRecord.equalChapterTitle(lastestChapter) ? "" : 'unread-chapter');
-
-            // 缓存后面章节内容
-            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
-          });
-
-        nb.find('.book-cover, .book-info')
-          .click(() => app.page.showPage("readbook", {book: value.book, readingRecord: value.readingRecord}));
-
-        nb.find('.btnBookMenu').click(event => {
-          $(event.currentTarget).dropdown();
-          return false;
-        }).dropdown();
-
-        nb.find('.btnDetail').click(e => app.page.showPage("bookdetail", {book: value.book}));
-        nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
-        nb.find('.btnLockLocation').click((e) => {
-          app.bookShelf.toggleLockBook(value);
-          nb.find('.btnLockLocation > a').text(app.bookShelf.isLockedBook(value) ? "解锁位置" : "锁定位置");
-          app.bookShelf.save();
-        });
-        nb.find('.btnLockLocation > a').text(app.bookShelf.isLockedBook(value) ? "解锁位置" : "锁定位置");
-        bs.append(nb);
-      });
+      this.bookShelfElement.empty();
+      books.forEach(this.addBook.bind(this));
+      this.refreshAllReadingRecord();
     };
 
     // 重新给所有书籍排序
     sortBooksByElementOrder(){
-      const elements = $(".bookshelf").children();
+      const elements = this.bookShelfElement.children();
       let newBooks = Array.from(elements).map(e => $(e).data('bookshelfitem'))
-      app.bookShelf.sortBooks(newBooks);
-      app.bookShelf.save();
-      this.refreshBooksOrder(".bookshelf", app.bookShelf);
+      this.bookShelf.sortBooks(newBooks);
+      this.bookShelf.save();
+      this.refreshBooksOrder(this.bookShelf);
     }
 
     loadView(){
-      sortablejs.create($(".bookshelf")[0],
+
+      this.bookTemplateElement = $(".template .book");
+      this.bookShelfElement = $("#bookshelf");
+      sortablejs.create(this.bookShelfElement[0],
               {
                 handle: ".btnBookMenu",
                 animation: 150,

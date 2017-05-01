@@ -414,7 +414,6 @@ define(function () {
       return new Promise(function (resolve, reject) {
         var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
         window.requestFileSystem(fileSystem, 0, function (fs) {
-
           fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
             return fileEntry.remove(resolve, reject);
           }, reject);
@@ -514,6 +513,53 @@ define(function () {
         return e2[1] - e1[1];
       });
       return result;
+    },
+    addEventSupport: function addEventSupport(obj) {
+      obj.__events = {};
+      obj.addEventListener = addEventListener.bind(obj);
+      obj.fireEvent = fireEvent.bind(obj);
+      obj.removeEventListener = removeEventListener.bind(obj);
+
+      function addEventListener(eventName, handler) {
+        if (!eventName || !handler) return;
+        if (!(eventName in this.__events)) this.__events[eventName] = [];
+        this.__events[eventName].push(handler);
+      }
+
+      function fireEvent(eventName) {
+        var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (!eventName) return;
+
+        if (!("currentTarget" in e)) e.currentTarget = this;
+        if (!("target" in e)) e.target = this;
+
+        var __onevent = '__on' + eventName[0].toUpperCase() + eventName.substring(1);
+        if (__onevent in this) this[__onevent](e);
+
+        if (eventName in this.__events) {
+          this.__events[eventName].forEach(function (eh) {
+            try {
+              eh(e);
+            } catch (error) {
+              console.error(error);
+            }
+          });
+        }
+
+        var onevent = 'on' + eventName[0].toUpperCase() + eventName.substring(1);
+        if (onevent in this) this[onevent](e);
+      }
+
+      function removeEventListener(eventName, handler) {
+        if (!eventName || !handler) return;
+        if (eventName in this.__events) {
+          var i = this.__events[eventName].findIndex(function (m) {
+            return m == handler;
+          });
+          if (i >= 0) this.__events[eventName].splice(i, 1);
+        }
+      }
     },
     persistent: function persistent(o) {
       function __persistent(obj) {

@@ -4,7 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["jquery", "utils"], function ($, utils) {
+define(["jquery"], function ($) {
   var PageManager = function () {
     function PageManager() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {

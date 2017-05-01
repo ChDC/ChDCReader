@@ -23,16 +23,28 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     _createClass(MyPage, [{
       key: "onLoad",
       value: function onLoad(params) {
+        var _this2 = this;
+
         this.loadView();
+        this.loaded = false;
+
+        this.bookShelf = app.bookShelf;
+        this.bookTemplateElement;
+        this.bookShelfElement;
+        this.bookShelf.addEventListener("addedBook", function (e) {
+          _this2.addBook(e.bookShelfItem);
+          _this2.refreshBooksOrder(_this2.bookShelf);
+        });
       }
     }, {
       key: "onResume",
       value: function onResume() {
-        var _this2 = this;
+        var _this3 = this;
 
-        if (app.bookShelf.isLoaded()) this.loadBooks(".bookshelf", app.bookShelf);else app.bookShelf.load(app.bookSourceManager).then(function () {
-          return _this2.loadBooks(".bookshelf", app.bookShelf);
-        });
+        if (!this.loaded) this.bookShelf.load(app.bookSourceManager).then(function () {
+          _this3.loaded = true;
+          _this3.loadBooks(_this3.bookShelf);
+        });else this.refreshAllReadingRecord();
       }
     }, {
       key: "onDeviceResume",
@@ -42,13 +54,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }, {
       key: "removeBook",
       value: function removeBook(book) {
-        var _this3 = this;
+        var _this4 = this;
 
         uiutils.showMessageDialog("确定", "确定要删除该书？", function () {
-          var target = $(event.currentTarget);
-          app.bookShelf.removeBook(book);
-          _this3.refreshBooksOrder(".bookshelf", app.bookShelf);
-          app.bookShelf.save().then(function () {
+          _this4.bookShelf.removeBook(book);
+          _this4.refreshBooksOrder(_this4.bookShelf);
+          _this4.bookShelf.save().then(function () {
             uiutils.showMessage("删除成功！");
           }).catch(function (error) {
             uiutils.showError("删除失败！");
@@ -58,93 +69,117 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       }
     }, {
       key: "refreshBooksOrder",
-      value: function refreshBooksOrder(id, bookShelf) {
+      value: function refreshBooksOrder(bookShelf) {
         var books = bookShelf.books;
-        var bs = $(id);
         var newOrders = [];
-        var children = bs.children();
+        var children = this.bookShelfElement.children();
         Array.from(children).forEach(function (e) {
           var i = books.indexOf($(e).data("bookshelfitem"));
           newOrders[i] = e;
         });
         children.detach();
-        bs.append(newOrders);
+        this.bookShelfElement.append(newOrders);
+      }
+    }, {
+      key: "addBook",
+      value: function addBook(bookshelfitem) {
+        var _this5 = this;
+
+        var readingRecord = bookshelfitem.readingRecord;
+        var book = bookshelfitem.book;
+        var nb = this.bookTemplateElement.clone();
+
+        nb.data("bookshelfitem", bookshelfitem);
+
+        if (book.cover) nb.find(".book-cover").attr("src", book.cover);
+        nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
+
+        nb.find('.book-cover, .book-info').click(function () {
+          return app.page.showPage("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
+        });
+
+        nb.find('.btnBookMenu').click(function (event) {
+          $(event.currentTarget).dropdown();
+          return false;
+        }).dropdown();
+
+        nb.find('.btnDetail').click(function (e) {
+          return app.page.showPage("bookdetail", { book: bookshelfitem.book });
+        });
+        nb.find('.btnRemoveBook').click(function (e) {
+          return _this5.removeBook(book);
+        });
+        nb.find('.btnLockLocation').click(function (e) {
+          _this5.bookShelf.toggleLockBook(bookshelfitem);
+          $(e.currentTarget).find('a').text(_this5.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+          _this5.bookShelf.save();
+        });
+        nb.find('.btnLockLocation > a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+        this.bookShelfElement.append(nb);
+      }
+    }, {
+      key: "refreshAllReadingRecord",
+      value: function refreshAllReadingRecord() {
+        var _this6 = this;
+
+        Array.from(this.bookShelfElement.children()).forEach(function (e) {
+          return _this6.refreshReadingRecord($(e));
+        });
+      }
+    }, {
+      key: "refreshReadingRecord",
+      value: function refreshReadingRecord(bookElement) {
+        var bookshelfitem = bookElement.data("bookshelfitem");
+        if (!bookshelfitem) throw new Error("empty illegal bookshelfitem");
+
+        var readingRecord = bookshelfitem.readingRecord;
+        var book = bookshelfitem.book;
+        bookElement.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
+
+        book.getLastestChapter().then(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 1),
+              lastestChapter = _ref2[0];
+
+          var isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
+          bookElement.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).addClass(isNewChapter ? 'unread-chapter' : "");
+
+          if (readingRecord.isFinished && isNewChapter) {
+            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+          }
+        });
       }
     }, {
       key: "loadBooks",
-      value: function loadBooks(id, bookShelf) {
-        var _this4 = this;
-
+      value: function loadBooks(bookShelf) {
         var books = bookShelf.books;
-        var bs = $(id);
-        bs.empty();
-        var b = $(".template .book");
-
-        books.forEach(function (value) {
-          var readingRecord = value.readingRecord;
-          var book = value.book;
-
-          var nb = b.clone();
-          nb.data("bookshelfitem", value);
-          if (book.cover) nb.find(".book-cover").attr("src", book.cover);
-          nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
-          nb.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
-
-          book.getLastestChapter().then(function (_ref) {
-            var _ref2 = _slicedToArray(_ref, 1),
-                lastestChapter = _ref2[0];
-
-            nb.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).addClass(readingRecord.equalChapterTitle(lastestChapter) ? "" : 'unread-chapter');
-
-            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
-          });
-
-          nb.find('.book-cover, .book-info').click(function () {
-            return app.page.showPage("readbook", { book: value.book, readingRecord: value.readingRecord });
-          });
-
-          nb.find('.btnBookMenu').click(function (event) {
-            $(event.currentTarget).dropdown();
-            return false;
-          }).dropdown();
-
-          nb.find('.btnDetail').click(function (e) {
-            return app.page.showPage("bookdetail", { book: value.book });
-          });
-          nb.find('.btnRemoveBook').click(function (e) {
-            return _this4.removeBook(book);
-          });
-          nb.find('.btnLockLocation').click(function (e) {
-            app.bookShelf.toggleLockBook(value);
-            nb.find('.btnLockLocation > a').text(app.bookShelf.isLockedBook(value) ? "解锁位置" : "锁定位置");
-            app.bookShelf.save();
-          });
-          nb.find('.btnLockLocation > a').text(app.bookShelf.isLockedBook(value) ? "解锁位置" : "锁定位置");
-          bs.append(nb);
-        });
+        this.bookShelfElement.empty();
+        books.forEach(this.addBook.bind(this));
+        this.refreshAllReadingRecord();
       }
     }, {
       key: "sortBooksByElementOrder",
       value: function sortBooksByElementOrder() {
-        var elements = $(".bookshelf").children();
+        var elements = this.bookShelfElement.children();
         var newBooks = Array.from(elements).map(function (e) {
           return $(e).data('bookshelfitem');
         });
-        app.bookShelf.sortBooks(newBooks);
-        app.bookShelf.save();
-        this.refreshBooksOrder(".bookshelf", app.bookShelf);
+        this.bookShelf.sortBooks(newBooks);
+        this.bookShelf.save();
+        this.refreshBooksOrder(this.bookShelf);
       }
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this5 = this;
+        var _this7 = this;
 
-        sortablejs.create($(".bookshelf")[0], {
+        this.bookTemplateElement = $(".template .book");
+        this.bookShelfElement = $("#bookshelf");
+        sortablejs.create(this.bookShelfElement[0], {
           handle: ".btnBookMenu",
           animation: 150,
 
           onUpdate: function onUpdate(event) {
-            _this5.sortBooksByElementOrder();
+            _this7.sortBooksByElementOrder();
           }
         });
         $("#btnCheckUpdate").click(function (e) {

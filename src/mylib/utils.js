@@ -528,10 +528,8 @@ define(function(){
     // 删除文件
     __removeFile(file, isCacheDir=false){
       return new Promise((resolve, reject) => {
-        // TODO
         const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
         window.requestFileSystem(fileSystem, 0, fs => {
-
           fs.root.getFile(file + ".json", { create: false, exclusive: false },
               fileEntry => fileEntry.remove(resolve, reject)
               , reject);
@@ -618,6 +616,54 @@ define(function(){
       }
       result.sort((e1,e2) => e2[1] - e1[1]);
       return result;
+    },
+
+    // 添加事件监听机制
+    addEventSupport(obj){
+      obj.__events = {};
+      obj.addEventListener = addEventListener.bind(obj);
+      obj.fireEvent = fireEvent.bind(obj);
+      obj.removeEventListener = removeEventListener.bind(obj);
+
+      function addEventListener(eventName, handler){
+        if(!eventName || !handler) return;
+        if(!(eventName in this.__events))
+          this.__events[eventName] = [];
+        this.__events[eventName].push(handler);
+      }
+
+      function fireEvent(eventName, e={}){
+        if(!eventName) return;
+
+        if(!("currentTarget" in e)) e.currentTarget = this;
+        if(!("target" in e)) e.target = this;
+
+        // __onEvent
+        let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
+        if(__onevent in this)
+          this[__onevent](e);
+
+        // addEventListener
+        if(eventName in this.__events){
+          this.__events[eventName].forEach(eh => {
+            try{ eh(e) } catch(error){ console.error(error); }
+          });
+        }
+
+        // onEvent
+        let onevent = `on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
+        if(onevent in this)
+          this[onevent](e);
+      }
+
+      function removeEventListener(eventName, handler){
+        if(!eventName || !handler) return;
+        if(eventName in this.__events){
+          let i = this.__events[eventName].findIndex(m => m == handler);
+          if(i >= 0)
+            this.__events[eventName].splice(i, 1);
+        }
+      }
     },
 
     // 持久化数据

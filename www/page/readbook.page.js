@@ -301,7 +301,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           return uiutils.showError(app.error.getMessage(e));
         };
 
-        this.chapterList.onCurrentItemChanged = function (event, newValue, oldValue) {
+        this.chapterList.onCurrentElementChanged = function (event, newValue, oldValue) {
           newValue = $(newValue);
           if (!oldValue) {
             app.hideLoading();
@@ -374,12 +374,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "nextChapter",
       value: function nextChapter() {
-        this.chapterList.nextItem();
+        this.chapterList.nextElement();
       }
     }, {
       key: "previousChapter",
       value: function previousChapter() {
-        this.chapterList.previousItem();
+        this.chapterList.previousElement();
       }
     }]);
 

@@ -9,22 +9,22 @@ define(["co"], function (co) {
   "use strict";
 
   var Infinitelist = function () {
-    function Infinitelist(container, itemList, nextItemGenerator, previousItemGenerator) {
+    function Infinitelist(container, elementList, nextElementGenerator, previousElementGenerator) {
       var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
       _classCallCheck(this, Infinitelist);
 
       this.__container = container;
-      this.__itemList = itemList;
-      this.previousItemGenerator = previousItemGenerator;
-      this.nextItemGenerator = nextItemGenerator;
+      this.__elementList = elementList;
+      this.previousElementGenerator = previousElementGenerator;
+      this.nextElementGenerator = nextElementGenerator;
       this.options = options;
 
-      this.onNewItemFinished = undefined;
-      this.onNoNewItemToLoad = undefined;
+      this.onNewElementFinished = undefined;
+      this.onNoNewElementToLoad = undefined;
       this.onError = undefined;
-      this.onCurrentItemChanged = null;
-      this.__currentItem = null;
+      this.onCurrentElementChanged = null;
+      this.__currentElement = null;
       this.__lastCheckScrollY = null;
       this.__lastCurrentChangeCheckScrollY = null;
       this.__isCheckingBoundary = false;
@@ -33,7 +33,7 @@ define(["co"], function (co) {
       this.DOWN_THRESHOLD = 3;
       this.UP_THRESHOLD = 1;
       this.CHECK_SCROLL_THRESHOLD = 0.9;
-      this.CUTTENTITEM_CHECK_CHECK_SCROLL_THRESHOLD = 0.1;
+      this.CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD = 0.1;
       this.PREVIOUS = 1;
       this.NEXT = -1;
     }
@@ -41,56 +41,56 @@ define(["co"], function (co) {
     _createClass(Infinitelist, [{
       key: "getPageScorllTop",
       value: function getPageScorllTop() {
-        return this.__currentItem ? this.__container.scrollTop - this.__currentItem.offsetTop : 0;
+        return this.__currentElement ? this.__container.scrollTop - this.__currentElement.offsetTop : 0;
       }
     }, {
       key: "getScrollRate",
       value: function getScrollRate() {
-        if (!this.__currentItem) return 0;
-        var rate = (this.__container.scrollTop - this.__currentItem.offsetTop + this.__container.offsetHeight) / this.__currentItem.offsetHeight;
+        if (!this.__currentElement) return 0;
+        var rate = (this.__container.scrollTop - this.__currentElement.offsetTop + this.__container.offsetHeight) / this.__currentElement.offsetHeight;
         return rate > 1 ? 1 : rate;
       }
     }, {
-      key: "nextItem",
-      value: function nextItem() {
+      key: "nextElement",
+      value: function nextElement() {
         var _this = this;
 
-        var i = this.__getCurrentItemIndex();
-        var ics = this.__itemList.children;
+        var i = this.__getCurrentElementIndex();
+        var ics = this.__elementList.children;
         if (i >= 0 && ++i < ics.length) {
           this.__container.scrollTop = ics[i].offsetTop;
           return;
         }
 
-        co(this.__addItem(1)).then(function (newItem) {
-          if (newItem) {
-            _this.__checkCurrentItemChange();
-            _this.__container.scrollTop = newItem.offsetTop;
+        co(this.__addElement(1)).then(function (newElement) {
+          if (newElement) {
+            _this.__checkCurrentElementChange();
+            _this.__container.scrollTop = newElement.offsetTop;
           }
         });
       }
     }, {
-      key: "previousItem",
-      value: function previousItem() {
+      key: "previousElement",
+      value: function previousElement() {
         var _this2 = this;
 
         var st = this.getPageScorllTop();
         if (st > 0) {
-          this.__container.scrollTop = this.__currentItem.offsetTop;
+          this.__container.scrollTop = this.__currentElement.offsetTop;
           return;
         }
 
-        var i = this.__getCurrentItemIndex();
+        var i = this.__getCurrentElementIndex();
         if (--i >= 0) {
-          var ics = this.__itemList.children;
+          var ics = this.__elementList.children;
           this.__container.scrollTop = ics[i].offsetTop;
           return;
         }
 
-        co(this.__addItem(-1)).then(function (newItem) {
-          if (newItem) {
-            _this2.__checkCurrentItemChange();
-            _this2.__container.scrollTop = newItem.offsetTop;
+        co(this.__addElement(-1)).then(function (newElement) {
+          if (newElement) {
+            _this2.__checkCurrentElementChange();
+            _this2.__container.scrollTop = newElement.offsetTop;
           }
         });
       }
@@ -103,7 +103,7 @@ define(["co"], function (co) {
       key: "close",
       value: function close() {
         this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
-        Array.from(this.__itemList.children).forEach(function (e) {
+        Array.from(this.__elementList.children).forEach(function (e) {
           return e.remove();
         });
 
@@ -112,26 +112,26 @@ define(["co"], function (co) {
         }
       }
     }, {
-      key: "getCurrentItem",
-      value: function getCurrentItem() {
-        return this.__currentItem;
+      key: "getCurrentElement",
+      value: function getCurrentElement() {
+        return this.__currentElement;
       }
     }, {
-      key: "__getCurrentItemIndex",
-      value: function __getCurrentItemIndex() {
-        if (!this.__currentItem) return -1;
-        var ics = this.__itemList.children;
-        return Array.from(ics).indexOf(this.__currentItem);
+      key: "__getCurrentElementIndex",
+      value: function __getCurrentElementIndex() {
+        if (!this.__currentElement) return -1;
+        var ics = this.__elementList.children;
+        return Array.from(ics).indexOf(this.__currentElement);
       }
     }, {
       key: "__scrollEvent",
       value: function __scrollEvent(event) {
         var scrollY = this.__container.scrollTop;
 
-        if (this.__lastCurrentChangeCheckScrollY == null) this.__checkCurrentItemChange();else {
+        if (this.__lastCurrentChangeCheckScrollY == null) this.__checkCurrentElementChange();else {
           var wh = this.__container.offsetHeight;
-          if (Math.abs(scrollY - this.__lastCurrentChangeCheckScrollY) > wh * this.CUTTENTITEM_CHECK_CHECK_SCROLL_THRESHOLD) {
-            this.__checkCurrentItemChange();
+          if (Math.abs(scrollY - this.__lastCurrentChangeCheckScrollY) > wh * this.CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD) {
+            this.__checkCurrentElementChange();
           }
         }
 
@@ -143,27 +143,27 @@ define(["co"], function (co) {
         }
       }
     }, {
-      key: "__checkCurrentItemChange",
-      value: function __checkCurrentItemChange() {
+      key: "__checkCurrentElementChange",
+      value: function __checkCurrentElementChange() {
         var _this3 = this;
 
         this.__lastCurrentChangeCheckScrollY = this.__container.scrollTop;
-        if (!this.__currentItem) return;
+        if (!this.__currentElement) return;
 
-        var cis = this.computeCurrentItems();
+        var cis = this.computeCurrentElements();
         var i = cis.findIndex(function (e) {
-          return e == _this3.__currentItem;
+          return e == _this3.__currentElement;
         });
-        if (i < 0) this.setCurrentItem(cis[0]);
+        if (i < 0) this.setCurrentElement(cis[0]);
       }
     }, {
-      key: "setCurrentItem",
-      value: function setCurrentItem(newCurrentItem) {
-        var oldValue = this.__currentItem;
-        if (newCurrentItem == oldValue) return;
+      key: "setCurrentElement",
+      value: function setCurrentElement(newCurrentElement) {
+        var oldValue = this.__currentElement;
+        if (newCurrentElement == oldValue) return;
 
-        this.__currentItem = newCurrentItem;
-        if (this.onCurrentItemChanged) this.onCurrentItemChanged(this, newCurrentItem, oldValue);
+        this.__currentElement = newCurrentElement;
+        if (this.onCurrentElementChanged) this.onCurrentElementChanged(this, newCurrentElement, oldValue);
       }
     }, {
       key: "checkBoundary",
@@ -203,22 +203,22 @@ define(["co"], function (co) {
         }));
       }
     }, {
-      key: "computeCurrentItems",
-      value: function computeCurrentItems() {
+      key: "computeCurrentElements",
+      value: function computeCurrentElements() {
         var wh = this.__container.offsetHeight;
-        var items = this.__itemList.children;
+        var elements = this.__elementList.children;
         var result = [];
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
 
         try {
-          for (var _iterator = Array.from(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var item = _step.value;
+          for (var _iterator = Array.from(elements)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var element = _step.value;
 
-            var top = item.getBoundingClientRect().top;
-            var height = item.offsetHeight;
-            if (top + height <= 0.1 * wh) continue;else if (top > 0.9 * wh) break;else result.push(item);
+            var top = element.getBoundingClientRect().top;
+            var height = element.offsetHeight;
+            if (top + height <= 0.1 * wh) continue;else if (top > 0.9 * wh) break;else result.push(element);
           }
         } catch (err) {
           _didIteratorError = true;
@@ -239,47 +239,47 @@ define(["co"], function (co) {
       }
     }, {
       key: "__isOutBoundary",
-      value: function __isOutBoundary(item, direction) {
+      value: function __isOutBoundary(element, direction) {
         var wh = this.__container.offsetHeight;
         var result = false;
-        var top = item.getBoundingClientRect().top;
-        if (direction >= 0) result = top > (this.DOWN_THRESHOLD + 1) * wh;else result = top + item.offsetHeight < -this.UP_THRESHOLD * wh;
+        var top = element.getBoundingClientRect().top;
+        if (direction >= 0) result = top > (this.DOWN_THRESHOLD + 1) * wh;else result = top + element.offsetHeight < -this.UP_THRESHOLD * wh;
         return result;
       }
     }, {
       key: "__isOnBoundary",
-      value: function __isOnBoundary(item, direction) {
+      value: function __isOnBoundary(element, direction) {
         var wh = this.__container.offsetHeight;
         var result = false;
-        var top = item.getBoundingClientRect().top;
-        if (direction >= 0) result = top + item.offsetHeight > (this.DOWN_THRESHOLD + 1) * wh;else result = top < -this.UP_THRESHOLD * wh;
+        var top = element.getBoundingClientRect().top;
+        if (direction >= 0) result = top + element.offsetHeight > (this.DOWN_THRESHOLD + 1) * wh;else result = top < -this.UP_THRESHOLD * wh;
         return result;
       }
     }, {
       key: "clearOutBoundary",
       value: function clearOutBoundary() {
-        var ies = this.__itemList.children;
-        var cii = this.__getCurrentItemIndex();
+        var ies = this.__elementList.children;
+        var cii = this.__getCurrentElementIndex();
 
         for (var i = ies.length - 1; i >= 0; i--) {
-          var item = ies[i];
-          if (!this.__isOutBoundary(item, this.PREVIOUS) || i <= cii + 1) break;
-          item.remove();
+          var element = ies[i];
+          if (!this.__isOutBoundary(element, this.PREVIOUS) || i <= cii + 1) break;
+          element.remove();
         }
 
         for (var _i = 0; _i < ies.length; _i++) {
-          var _item = ies[_i];
-          if (!this.__isOutBoundary(_item, this.NEXT) || _i >= cii - 1) break;
-          var itemHeight = _item.offsetHeight;
+          var _element = ies[_i];
+          if (!this.__isOutBoundary(_element, this.NEXT) || _i >= cii - 1) break;
+          var elementHeight = _element.offsetHeight;
           var cs = this.__container.scrollTop;
-          _item.remove();
-          this.__container.scrollTop = cs - itemHeight;
+          _element.remove();
+          this.__container.scrollTop = cs - elementHeight;
         }
       }
     }, {
-      key: "__getBoundaryItem",
-      value: function __getBoundaryItem(direction) {
-        var es = this.__itemList.children;
+      key: "__getBoundaryElement",
+      value: function __getBoundaryElement(direction) {
+        var es = this.__elementList.children;
         if (es.length <= 0) return null;
         return direction >= 0 ? es[es.length - 1] : es[0];
       }
@@ -288,32 +288,32 @@ define(["co"], function (co) {
       value: function __isBoundarySatisfied(direction) {
         if (!this.__container) return true;
 
-        var be = this.__getBoundaryItem(direction);
+        var be = this.__getBoundaryElement(direction);
         if (!be) return false;
 
-        var result = be.dataset['end'] == direction || this.__currentItem != be && this.__isOnBoundary(be, direction);
+        var result = be.dataset['end'] == direction || this.__currentElement != be && this.__isOnBoundary(be, direction);
         return result;
       }
     }, {
-      key: "__addItem",
-      value: regeneratorRuntime.mark(function __addItem(direction) {
-        var result, isFirstItem, _result, newItem, done, cs, be, imgs;
+      key: "__addElement",
+      value: regeneratorRuntime.mark(function __addElement(direction) {
+        var result, isFirstElement, _result, newElement, done, cs, be, imgs;
 
-        return regeneratorRuntime.wrap(function __addItem$(_context2) {
+        return regeneratorRuntime.wrap(function __addElement$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 result = void 0;
-                isFirstItem = !this.__getBoundaryItem(direction);
+                isFirstElement = !this.__getBoundaryElement(direction);
                 _context2.prev = 2;
 
-                if (!(direction >= 0 && this.nextItemGenerator)) {
+                if (!(direction >= 0 && this.nextElementGenerator)) {
                   _context2.next = 9;
                   break;
                 }
 
                 _context2.next = 6;
-                return this.nextItemGenerator.next();
+                return this.nextElementGenerator.next();
 
               case 6:
                 result = _context2.sent;
@@ -321,13 +321,13 @@ define(["co"], function (co) {
                 break;
 
               case 9:
-                if (!(direction < 0 && this.previousItemGenerator)) {
+                if (!(direction < 0 && this.previousElementGenerator)) {
                   _context2.next = 15;
                   break;
                 }
 
                 _context2.next = 12;
-                return this.previousItemGenerator.next();
+                return this.previousElementGenerator.next();
 
               case 12:
                 result = _context2.sent;
@@ -349,30 +349,30 @@ define(["co"], function (co) {
                 throw _context2.t0;
 
               case 22:
-                _result = result, newItem = _result.value, done = _result.done;
+                _result = result, newElement = _result.value, done = _result.done;
 
-                if (direction >= 0 && newItem) this.__itemList.append(newItem);else if (direction < 0 && newItem) {
+                if (direction >= 0 && newElement) this.__elementList.append(newElement);else if (direction < 0 && newElement) {
                   cs = this.__container.scrollTop;
 
-                  this.__itemList.prepend(newItem);
-                  this.__container.scrollTop = cs + newItem.offsetHeight;
+                  this.__elementList.prepend(newElement);
+                  this.__container.scrollTop = cs + newElement.offsetHeight;
                 }
 
-                if (isFirstItem) this.setCurrentItem(newItem);
+                if (isFirstElement) this.setCurrentElement(newElement);
 
                 if (done) {
-                  be = this.__getBoundaryItem(direction);
+                  be = this.__getBoundaryElement(direction);
 
                   if (be) be.dataset['end'] = direction;
-                  if (this.onNoNewItemToLoad) this.onNoNewItemToLoad(this, be);
+                  if (this.onNoNewElementToLoad) this.onNoNewElementToLoad(this, be);
                 }
 
-                if (!newItem) {
+                if (!newElement) {
                   _context2.next = 30;
                   break;
                 }
 
-                imgs = newItem.querySelectorAll('img');
+                imgs = newElement.querySelectorAll('img');
                 _context2.next = 30;
                 return Promise.all(Array.from(imgs).map(function (img) {
                   return new Promise(function (resolve, reject) {
@@ -388,16 +388,16 @@ define(["co"], function (co) {
                 }));
 
               case 30:
-                if (newItem && this.onNewItemFinished) this.onNewItemFinished(this, newItem, direction);
+                if (newElement && this.onNewElementFinished) this.onNewElementFinished(this, newElement, direction);
 
-                return _context2.abrupt("return", Promise.resolve(newItem));
+                return _context2.abrupt("return", Promise.resolve(newElement));
 
               case 32:
               case "end":
                 return _context2.stop();
             }
           }
-        }, __addItem, this, [[2, 18]]);
+        }, __addElement, this, [[2, 18]]);
       })
     }, {
       key: "__checkBoundary",
@@ -420,7 +420,7 @@ define(["co"], function (co) {
                 }
 
                 _context3.next = 5;
-                return this.__addItem(direction);
+                return this.__addElement(direction);
 
               case 5:
                 if (ifClear) this.clearOutBoundary();

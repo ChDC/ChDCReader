@@ -4,14 +4,14 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(function () {
+define(['utils'], function (utils) {
     var Page = function () {
         function Page() {
             var _this = this;
 
             _classCallCheck(this, Page);
 
-            this.__events = {};
+            utils.addEventSupport(this);
 
             this.__onDevicePauseHandler = function (e) {
                 _this.fireEvent("devicePause", e);
@@ -22,50 +22,6 @@ define(function () {
         }
 
         _createClass(Page, [{
-            key: "addEventListener",
-            value: function addEventListener(eventName, handler) {
-                if (!eventName || !handler) return;
-                if (!(eventName in this.__events)) this.__events[eventName] = [];
-                this.__events[eventName].push(handler);
-            }
-        }, {
-            key: "fireEvent",
-            value: function fireEvent(eventName) {
-                var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-                if (!eventName) return;
-
-                if (!("currentTarget" in e)) e.currentTarget = this;
-                if (!("target" in e)) e.target = this;
-
-                var __onevent = "__on" + eventName[0].toUpperCase() + eventName.substring(1);
-                if (__onevent in this) this[__onevent](e);
-
-                if (eventName in this.__events) {
-                    this.__events[eventName].forEach(function (eh) {
-                        try {
-                            eh(e);
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    });
-                }
-
-                var onevent = "on" + eventName[0].toUpperCase() + eventName.substring(1);
-                if (onevent in this) this[onevent](e);
-            }
-        }, {
-            key: "removeEventListener",
-            value: function removeEventListener(eventName, handler) {
-                if (!eventName || !handler) return;
-                if (eventName in this.__events) {
-                    var i = this.__events[eventName].findIndex(function (m) {
-                        return m == handler;
-                    });
-                    if (i >= 0) this.__events[eventName].splice(i, 1);
-                }
-            }
-        }, {
             key: "close",
             value: function close(params) {
                 return this.pageManager.closePage(params);
@@ -91,14 +47,10 @@ define(function () {
             }
         }, {
             key: "onDevicePause",
-            value: function onDevicePause() {
-                console.error(this.name, "DevicePause");
-            }
+            value: function onDevicePause() {}
         }, {
             key: "onDeviceResume",
-            value: function onDeviceResume() {
-                console.error(this.name, "DeviceResume");
-            }
+            value: function onDeviceResume() {}
         }]);
 
         return Page;
