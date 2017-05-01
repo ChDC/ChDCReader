@@ -327,11 +327,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       }
 
       // 添加未读完的书籍
-      let unFinishedBooks = app.bookShelf.books.filter(e => !e.readingRecord.isFinished && e.book != this.book);
+      let unFinishedBooks = app.bookShelf.books.filter(e => !e.readingRecord.isFinished && e.book != this.book).reverse();
       unFinishedBooks.forEach(addBook);
 
       // 添加读完的书籍
-      let finishedBooks = app.bookShelf.books.filter(e => e.readingRecord.isFinished && e.book != this.book).reverse();
+      let finishedBooks = app.bookShelf.books.filter(e => e.readingRecord.isFinished && e.book != this.book);
       finishedBooks.forEach(e => {
         e.book.getLastestChapter()
           .then(([lastestChapter]) => {
