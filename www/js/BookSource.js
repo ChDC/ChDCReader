@@ -1,10 +1,16 @@
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
+;(function (deps, factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["BookSource"] = factory();
+})(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
   "use strict";
 
   var BookSource = function () {
@@ -32,11 +38,11 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
     }
 
     _createClass(BookSource, [{
-      key: '__assertBookSource',
+      key: "__assertBookSource",
       value: function __assertBookSource() {
         var _this = this;
 
-        utils.log('BookSource: assert myself');
+        utils.log("BookSource: assert myself");
 
         if (this.__disable) return Promise.reject(404);
 
@@ -54,7 +60,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });
       }
     }, {
-      key: 'getBookInfo',
+      key: "getBookInfo",
       value: function getBookInfo() {
         var _this2 = this;
 
@@ -63,7 +69,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });
       }
     }, {
-      key: '__assertBookSourceCatalogLink',
+      key: "__assertBookSourceCatalogLink",
       value: function __assertBookSourceCatalogLink() {
         var _this3 = this;
 
@@ -72,7 +78,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });else return Promise.resolve();
       }
     }, {
-      key: 'getCatalog',
+      key: "getCatalog",
       value: function getCatalog(forceRefresh) {
         if (!forceRefresh && this.catalog) return Promise.resolve(this.catalog);
 
@@ -92,7 +98,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
                     break;
                   }
 
-                  return _context.abrupt('return', self.catalog);
+                  return _context.abrupt("return", self.catalog);
 
                 case 4:
                   _context.next = 6;
@@ -108,10 +114,10 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
                   self.catalog = catalog;
                   self.__updatedCatalogTime = new Date().getTime();
                   self.needSaveCatalog = true;
-                  return _context.abrupt('return', catalog);
+                  return _context.abrupt("return", catalog);
 
                 case 13:
-                case 'end':
+                case "end":
                   return _context.stop();
               }
             }
@@ -119,7 +125,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         }));
       }
     }, {
-      key: 'refreshLastestChapter',
+      key: "refreshLastestChapter",
       value: function refreshLastestChapter() {
         var _this4 = this;
 
@@ -143,7 +149,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });
       }
     }, {
-      key: 'getOfficialDetailLink',
+      key: "getOfficialDetailLink",
       value: function getOfficialDetailLink() {
         try {
           return this.bookSourceManager.getOfficialURLs(this.id, this, "bookdetail");
@@ -152,7 +158,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         }
       }
     }, {
-      key: 'getChapter',
+      key: "getChapter",
       value: function getChapter(chapter, onlyCacheNoLoad) {
         var _this5 = this;
 
@@ -169,12 +175,12 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
         });
       }
     }, {
-      key: '__getCacheChapterLocation',
+      key: "__getCacheChapterLocation",
       value: function __getCacheChapterLocation(id) {
-        return 'chapter_' + this.book.name + '.' + this.book.author + '_' + id + '.' + this.id;
+        return "chapter_" + this.book.name + "." + this.book.author + "_" + id + "." + this.id;
       }
     }, {
-      key: '__getCacheChapter',
+      key: "__getCacheChapter",
       value: regeneratorRuntime.mark(function __getCacheChapter(title, onlyCacheNoLoad) {
         var dest, exists, data, chapter;
         return regeneratorRuntime.wrap(function __getCacheChapter$(_context2) {
@@ -193,7 +199,7 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
 
               case 4:
                 exists = _context2.sent;
-                return _context2.abrupt('return', exists ? null : Promise.reject(207));
+                return _context2.abrupt("return", exists ? null : Promise.reject(207));
 
               case 6:
                 _context2.prev = 6;
@@ -208,26 +214,26 @@ define(['co', "utils", 'Chapter'], function (co, utils, Chapter) {
                   break;
                 }
 
-                return _context2.abrupt('return', Promise.reject(207));
+                return _context2.abrupt("return", Promise.reject(207));
 
               case 12:
                 chapter = Object.assign(new Chapter(), data);
-                return _context2.abrupt('return', chapter);
+                return _context2.abrupt("return", chapter);
 
               case 16:
                 _context2.prev = 16;
-                _context2.t0 = _context2['catch'](6);
-                return _context2.abrupt('return', Promise.reject(207));
+                _context2.t0 = _context2["catch"](6);
+                return _context2.abrupt("return", Promise.reject(207));
 
               case 19:
-              case 'end':
+              case "end":
                 return _context2.stop();
             }
           }
         }, __getCacheChapter, this, [[6, 16]]);
       })
     }, {
-      key: '__cacheChapter',
+      key: "__cacheChapter",
       value: function __cacheChapter(chapter) {
         var dest = this.__getCacheChapterLocation(chapter.title);
         return utils.saveData(dest, chapter, true).then(function () {

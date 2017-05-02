@@ -4,7 +4,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['utils'], function (utils) {
+;(function (deps, factory) {
+    "use strict";
+
+    if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+        return require(e);
+    }));else window["Page"] = factory();
+})(['utils'], function (utils) {
     var Page = function () {
         function Page() {
             var _this = this;

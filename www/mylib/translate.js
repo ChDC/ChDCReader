@@ -1,6 +1,10 @@
-'use strict';
+"use strict";
 
-define(function () {
+;(function (factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["translate"] = factory();
+})(function () {
 
   var translate = {
     toTraditionChinese: function toTraditionChinese(text) {

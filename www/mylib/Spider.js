@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -8,7 +8,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(function () {
+;(function (factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["Spider"] = factory();
+})(function () {
   var Spider = function () {
     function Spider(ajax) {
       var _this = this;
@@ -26,7 +30,7 @@ define(function () {
     }
 
     _createClass(Spider, [{
-      key: 'get',
+      key: "get",
       value: function get() {
         var _this2 = this;
 
@@ -65,12 +69,13 @@ define(function () {
             throw new Error("illegal ajax");
             break;
         }
+
         return ajax(method, url, request.params, undefined, headers, { timeout: request.timeout }).then(function (data) {
           return _this2.parse(data, type, response, url, dict);
         });
       }
     }, {
-      key: 'getLink',
+      key: "getLink",
       value: function getLink(request) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -89,11 +94,11 @@ define(function () {
         return this.format(request.url, dict);
       }
     }, {
-      key: 'parse',
+      key: "parse",
       value: function parse(data, type, response, host) {
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
-        dict.host = host;
+        dict = Object.assign({}, dict, { host: host });
 
         switch (type) {
           case "html":
@@ -111,7 +116,7 @@ define(function () {
         }
       }
     }, {
-      key: '__handleResponse',
+      key: "__handleResponse",
       value: function __handleResponse(data, response, keyName) {
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -131,7 +136,7 @@ define(function () {
         }
       }
     }, {
-      key: '__handleArray',
+      key: "__handleArray",
       value: function __handleArray(data, response, keyName) {
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -165,7 +170,7 @@ define(function () {
         return result;
       }
     }, {
-      key: '__handleObject',
+      key: "__handleObject",
       value: function __handleObject(data, response, keyName) {
         var _this3 = this;
 
@@ -201,10 +206,10 @@ define(function () {
                 return _this3.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                var gatherDict = Object.assign({}, globalDict, _this3.type(data) == "object" ? data : {}, _this3.type(m) == "object" ? m : {});
-                var validCode = '"use strict"\n' + _this3.format(response.valideach, gatherDict, true);
-                return eval(validCode);
-              });
+                  var gatherDict = Object.assign({}, globalDict, _this3.type(data) == "object" ? data : {}, _this3.type(m) == "object" ? m : {});
+                  var validCode = '"use strict"\n' + _this3.format(response.valideach, gatherDict, true);
+                  return eval(validCode);
+                });
             }
             break;
           case "object":
@@ -219,6 +224,7 @@ define(function () {
 
               var e = this.__getElement(data, response.element);
               if (e == undefined) return undefined;
+
               if (response.attribute) {
                 var attr = void 0;
                 var transAttrbite = this.secureAttributeList.find(function (e) {
@@ -226,7 +232,6 @@ define(function () {
                 });
                 if (transAttrbite) attr = transAttrbite[1];else attr = response.attribute;
                 result = e.getAttribute(attr);
-
                 if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
                 if (attr == 'innerHTML') result = this.__reverseTransformHTMLTagProperty(result);
               } else result = this.__getValue(e, keyName, globalDict, dict);
@@ -278,7 +283,7 @@ define(function () {
         return result;
       }
     }, {
-      key: '__handleString',
+      key: "__handleString",
       value: function __handleString(data, response, keyName) {
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -288,7 +293,7 @@ define(function () {
         return this.__getValue(e, keyName, globalDict, dict);
       }
     }, {
-      key: '__getValue',
+      key: "__getValue",
       value: function __getValue(element, keyName) {
         var globalDict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var dict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -339,7 +344,7 @@ define(function () {
         }
       }
     }, {
-      key: '__getElement',
+      key: "__getElement",
       value: function __getElement(element, selector) {
         if (!element || !selector) return undefined;
 
@@ -350,7 +355,7 @@ define(function () {
         }
       }
     }, {
-      key: '__getAllElements',
+      key: "__getAllElements",
       value: function __getAllElements(element, selector) {
         if (!element || !selector) return undefined;
 
@@ -361,13 +366,13 @@ define(function () {
         }
       }
     }, {
-      key: '__getDataFromObject',
+      key: "__getDataFromObject",
       value: function __getDataFromObject(obj, key) {
         var _this4 = this;
 
         function operatorFilter(element, args) {
           var codeStart = '"use strict"\n';
-          var env = 'var $element=' + JSON.stringify(element) + ';\n';
+          var env = "var $element=" + JSON.stringify(element) + ";\n";
           var code = codeStart + env + args[0];
           return eval(code);
         }
@@ -433,7 +438,7 @@ define(function () {
           for (var _iterator3 = keys[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
             var _ret = _loop();
 
-            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+            if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
           }
         } catch (err) {
           _didIteratorError3 = true;
@@ -453,7 +458,7 @@ define(function () {
         return result;
       }
     }, {
-      key: 'fixurl',
+      key: "fixurl",
       value: function fixurl(url, host) {
         if (!url || url.match("^https?://")) return url;
 
@@ -464,7 +469,7 @@ define(function () {
 
           if (url.match("^/")) {
             host = host.replace(/\/.*$/, "");
-            url = '' + scheme + host + url;
+            url = "" + scheme + host + url;
           } else {
             host = host.replace(/\/[^\/]*$/, "");
             var m2 = url.match(/^\.\.\//g);
@@ -474,13 +479,13 @@ define(function () {
                 host = host.replace(/\/[^\/]*$/, "");
               }
             }
-            url = '' + scheme + host + '/' + url;
+            url = "" + scheme + host + "/" + url;
           }
         }
         return url;
       }
     }, {
-      key: 'format',
+      key: "format",
       value: function format(string) {
         var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var stringify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
@@ -489,7 +494,7 @@ define(function () {
 
         var result = string.replace(/{(\w+)}/g, function (p0, p1) {
 
-          if (!(p1 in object)) throw new Error('can\'t find the key ' + p1 + ' in object');
+          if (!(p1 in object)) throw new Error("can't find the key " + p1 + " in object");
 
           if (object[p1] == undefined && !stringify) return '';
           if (stringify) return JSON.stringify(object[p1]);else return object[p1];
@@ -497,7 +502,7 @@ define(function () {
         return result;
       }
     }, {
-      key: 'clearHtml',
+      key: "clearHtml",
       value: function clearHtml(html) {
         if (!html) return html;
 
@@ -522,7 +527,7 @@ define(function () {
         return html;
       }
     }, {
-      key: 'filterHtmlContent',
+      key: "filterHtmlContent",
       value: function filterHtmlContent(html) {
         var _this5 = this;
 
@@ -538,7 +543,7 @@ define(function () {
         return html;
       }
     }, {
-      key: '__transformHTMLTagProperty',
+      key: "__transformHTMLTagProperty",
       value: function __transformHTMLTagProperty(html) {
         if (!html) return html;
 
@@ -552,7 +557,7 @@ define(function () {
                 src = _step4$value[0],
                 dest = _step4$value[1];
 
-            html = html.replace(new RegExp('\\b' + src + '=(?=["\'])', 'gi'), dest + '=');
+            html = html.replace(new RegExp("\\b" + src + "=(?=[\"'])", 'gi'), dest + "=");
           }
         } catch (err) {
           _didIteratorError4 = true;
@@ -572,7 +577,7 @@ define(function () {
         return html;
       }
     }, {
-      key: '__reverseTransformHTMLTagProperty',
+      key: "__reverseTransformHTMLTagProperty",
       value: function __reverseTransformHTMLTagProperty(html) {
         if (!html) return html;
 
@@ -586,7 +591,7 @@ define(function () {
                 src = _step5$value[0],
                 dest = _step5$value[1];
 
-            html = html.replace(new RegExp('\\b' + dest + '=(?=["\'])', 'gi'), src + '=');
+            html = html.replace(new RegExp("\\b" + dest + "=(?=[\"'])", 'gi'), src + "=");
           }
         } catch (err) {
           _didIteratorError5 = true;
@@ -606,34 +611,34 @@ define(function () {
         return html;
       }
     }, {
-      key: '__filterElement',
+      key: "__filterElement",
       value: function __filterElement(html, element) {
         var endElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : element;
 
 
         if (!html || !element) return html;
 
-        var pattern = '<' + element + '( [^>]*?)?>[\\s\\S]*?</' + endElement + '>';
+        var pattern = "<" + element + "( [^>]*?)?>[\\s\\S]*?</" + endElement + ">";
         html = html.replace(new RegExp(pattern, 'gi'), '');
 
-        pattern = '<' + element + '([^>]*?)?>';
+        pattern = "<" + element + "([^>]*?)?>";
         html = html.replace(new RegExp(pattern, 'gi'), '');
         return html;
       }
     }, {
-      key: 'type',
+      key: "type",
       value: function type(obj) {
-        var type = typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
+        var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
         if (type != 'object') return type;
         return obj.constructor.name.toLowerCase();
       }
     }, {
-      key: 'text2html',
+      key: "text2html",
       value: function text2html(text) {
         if (!text) return text;
 
         var lines = text.split("\n").map(function (line) {
-          return '<p>' + escapeHTML(line.trim()) + '</p>';
+          return "<p>" + escapeHTML(line.trim()) + "</p>";
         });
         return lines.join('\n');
 

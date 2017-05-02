@@ -1,4 +1,12 @@
-define(function() {
+;(function(factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory();
+  else
+    window["Chapter"] = factory();
+}(function() {
   "use strict"
 
   // **** Chapter ****
@@ -92,4 +100,4 @@ define(function() {
 
   return Chapter;
 
-});
+}));

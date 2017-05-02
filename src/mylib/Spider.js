@@ -1,4 +1,19 @@
-define(function(){
+/*!
+ * JavaScript Spider v1.0.0
+ * https://github.com/ChDC/ChDCSpider
+ *
+ * Copyright 2016, 2017 Chen Dacai
+ * Released under the MIT license
+ */
+;(function(factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory();
+  else
+    window["Spider"] = factory();
+}(function(){
   /******* 格式说明 ************
 
     request 设置请求
@@ -109,6 +124,7 @@ define(function(){
       let type = (request.type || "HTML").toLowerCase();
       let headers = request.headers || {};
 
+      // 获取 ajax 操作对象
       let ajax;
       switch(this.type(this.ajax)){
         case "function":
@@ -134,18 +150,26 @@ define(function(){
           throw new Error("illegal ajax");
           break;
       }
+
+      // 发出请求并解析响应
       return ajax(method, url, request.params, undefined, headers,
                   {timeout: request.timeout})
         .then(data => this.parse(data, type, response, url, dict));
     }
 
-    // 从 request 中获取请求的 url
+    // get request url
+    // args:
+    // * request: the request config object
+    // * dict: the data dict to help combine url
     getLink(request, dict={}){
+
+      // if request is empty, get url from dict.url
       if(!request)
         request = {
           "url": dict.url
         };
 
+      // the request arg can be a single string
       if(this.type(request) == "string"){
         request = {
           "url": request
@@ -158,10 +182,15 @@ define(function(){
       return this.format(request.url, dict);
     }
 
-    // 解析数据
+    // parse the response data
+    // * data: the response data
+    // * type: assign the type of response, it can be "json" or "html"(default)
+    // * response: the config to parse data
+    // * host: the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
     parse(data, type, response, host, dict={}){
-      // 获取 URL
-      dict.host = host; // 用于修复获取到的 URL
+
+      // to make the function noinfluence
+      dict = Object.assign({}, dict, {host: host});
 
       switch(type){
         case "html":
@@ -182,7 +211,7 @@ define(function(){
       }
     }
 
-    // 处理响应
+    // handle the response
     __handleResponse(data, response, keyName, globalDict={}, dict={}){
 
       if(!response) return undefined;
@@ -207,7 +236,6 @@ define(function(){
       return result;
     }
 
-    // 处理 object
     __handleObject(data, response, keyName, globalDict={}, dict={}){
 
       const __privateHandleObject = (response) => {
@@ -241,8 +269,8 @@ define(function(){
           result = list.map(m =>
               this.__handleResponse(m, response.children, keyName, globalDict, dict));
           if(response.valideach)
+            // 指定了验证类型，验证每一个值是否有效
             result = result.filter(m => {
-              // 有验证的类型
               let gatherDict = Object.assign({}, globalDict,
                   this.type(data) == "object" ? data : {},
                   this.type(m) == "object" ? m : {});
@@ -252,6 +280,7 @@ define(function(){
         }
         break;
         case "object": {
+          // object
           if(!response.children)
             return undefined;
           result = __privateHandleObject(response.children);
@@ -263,6 +292,8 @@ define(function(){
 
           let e = this.__getElement(data, response.element);
           if(e == undefined) return undefined;
+
+          // 从 element 中获取属性值
           if(response.attribute){
             let attr;
             let transAttrbite = this.secureAttributeList.find(e => e[0] == response.attribute)
@@ -271,23 +302,23 @@ define(function(){
             else
               attr = response.attribute;
             result = e.getAttribute(attr);
-            // 修复 url
             if(this.fixurlAttributeList.indexOf(attr) >= 0)
               result = this.fixurl(result, globalDict.host);
             if(attr == 'innerHTML')
               result = this.__reverseTransformHTMLTagProperty(result);
           }
           else
+            // 没有指定属性则按键的名字获取值，缺省获取 textContent
             result = this.__getValue(e, keyName, globalDict, dict);
 
           if(result == undefined) return result;
-          // 用 remove 键指定删除一些值
+          // [operator] 指定 remove 操作来删除一些值
           if(response.remove){
             let regex = new RegExp(response.remove, 'gi');
             result = result.replace(regex, '');
           }
 
-          // 使用 extract 提取最终结果
+          // [operator] 使用 extract 操作提取最终结果
           if(response.extract){
             let regex = new RegExp(response.extract, 'i'); // 只匹配地址一个结果
             let matcher = result.match(regex);
@@ -297,6 +328,7 @@ define(function(){
         }
         break;
         case "boolean": {
+          // boolean
           if(!response.element)
             return response.default;
           let e = this.__getElement(data, response.element);
@@ -344,9 +376,10 @@ define(function(){
       return this.__getValue(e, keyName, globalDict, dict);
     }
 
-    // 获取值
+    // 从元素中获取值
     __getValue(element, keyName, globalDict={}, dict={}){
       if(element && element.querySelector){
+        // html
         let result;
         if(!keyName)
           return element.textContent.trim();
@@ -375,7 +408,7 @@ define(function(){
       }
     }
 
-    // 获取 HTML 元素对象
+    // 获取 HTML 元素对象或者 JOSN 对象
     __getElement(element, selector){
       if(!element || !selector) return undefined;
 
@@ -402,6 +435,7 @@ define(function(){
     }
 
     // 从 Object 中获取数据
+    // eg: get "abc.def" from "{abc: {def: 1}}" using "abc::def"
     __getDataFromObject(obj, key){
 
       function operatorFilter(element, args){
@@ -463,7 +497,10 @@ define(function(){
     }
 
 
-    // 修复抓取的 URL
+    // fix the url
+    // args:
+    // * url: the url to fix
+    // * host: the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
     fixurl(url, host){
       if(!url || url.match("^https?://"))
         return url;
@@ -502,7 +539,7 @@ define(function(){
     }
 
     // 字符串格式化，类似于 Python 的 string.format
-    // stringify 为 true 表示将属性先 stringify 再放入
+    // stringify 为 true 表示将属性先 用 JSON.stringify() 处理之后再放入
     format(string, object={}, stringify=false){
       if(!string) return string;
 
@@ -555,7 +592,7 @@ define(function(){
       return html;
     }
 
-    // 过滤 HTML 中的内容，用于爬虫
+    // 过滤 HTML 中的不需要的内容（如link、meta、script 等标签），用于爬虫
     filterHtmlContent(html){
       if(!html) return html;
 
@@ -621,6 +658,7 @@ define(function(){
       return obj.constructor.name.toLowerCase();
     }
 
+    // transform text to html
     text2html(text){
       if(!text) return text;
 
@@ -643,4 +681,4 @@ define(function(){
   }
 
   return Spider;
-});
+}));

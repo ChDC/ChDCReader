@@ -1,26 +1,30 @@
-'use strict';
+"use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-define(function () {
+;(function (factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["utils"] = factory();
+})(function () {
   "use strict";
 
   return {
     DEBUG: true,
 
     type: function type(obj) {
-      var type = typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
+      var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
       if (type != 'object') return type;
       return obj.constructor.name.toLowerCase();
     },
     log: function log(content, detailContent) {
-      var msg = '[' + new Date().toLocaleString() + '] ' + content + (detailContent ? ': ' + detailContent : '');
+      var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.log(msg);
     },
     error: function error(content, detailContent) {
-      var msg = '[' + new Date().toLocaleString() + '] ' + content + (detailContent ? ': ' + detailContent : '');
+      var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.error(msg);
     },
     __urlJoin: function __urlJoin(url, params) {
@@ -29,7 +33,7 @@ define(function () {
 
       var r = [];
       for (var k in params) {
-        r.push(k + '=' + params[k]);
+        r.push(k + "=" + params[k]);
       };
 
       if (r.length <= 0) return url;
@@ -37,10 +41,7 @@ define(function () {
       params = r.join("&");
 
       var i = url.indexOf("?");
-      if (i == -1) return url + '?' + params;else if (i < url.length - 1) return url + '&' + params;else return '' + url + params;
-    },
-    ajax: function ajax(method, url, params, dataType, headers, options) {
-      return this.get(url, params, dataType, options);
+      if (i == -1) return url + "?" + params;else if (i < url.length - 1) return url + "&" + params;else return "" + url + params;
     },
     cordovaAjax: function cordovaAjax() {
       var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'get';
@@ -83,25 +84,36 @@ define(function () {
         });
       });
     },
-    get: function get(url, params, dataType) {
+    ajax: function ajax() {
+      var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "GET";
+      var url = arguments[1];
+      var params = arguments[2];
+      var dataType = arguments[3];
+
       var _this = this;
 
-      var _ref = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {},
+      var headers = arguments[4];
+
+      var _ref = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {},
           _ref$timeout = _ref.timeout,
-          timeout = _ref$timeout === undefined ? 5 : _ref$timeout;
+          timeout = _ref$timeout === undefined ? 5 : _ref$timeout,
+          _ref$retry = _ref.retry,
+          retry = _ref$retry === undefined ? 1 : _ref$retry;
 
       return new Promise(function (resolve, reject) {
         if (!url) return reject(new Error("url is null"));
         url = _this.__urlJoin(url, params);
-        _this.log('Get: ' + url);
+        _this.log("Get: " + url);
         url = encodeURI(url);
+        retry = retry || 0;
+
         var request = new XMLHttpRequest();
-        request.open("GET", url);
+        request.open(method, url);
         request.timeout = timeout * 1000;
 
+        dataType = (dataType || "").toLowerCase();
         switch (dataType) {
           case "json":
-          case "JSON":
             request.setRequestHeader("Content-Type", "application/json");
             break;
         }
@@ -118,12 +130,18 @@ define(function () {
         };
 
         request.ontimeout = function () {
-          _this.error('Fail to get: ' + url + ', \u7F51\u7EDC\u8D85\u65F6');
-          reject(new Error("Request Timeout"));
+          if (retry > 0) {
+            request.open(method, url);
+            request.send(null);
+            retry -= 1;
+          } else {
+            _this.error("Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
+            reject(new Error("Request Timeout"));
+          }
         };
 
         request.onabort = function () {
-          _this.error('Fail to get: ' + url + ', \u4F20\u8F93\u4E2D\u65AD');
+          _this.error("Fail to get: " + url + ", \u4F20\u8F93\u4E2D\u65AD");
           reject(new Error("Request Abort"));
         };
 
@@ -134,6 +152,9 @@ define(function () {
 
         request.send(null);
       });
+    },
+    get: function get(url, params, dataType, options) {
+      return this.ajax("GET", url, params, dataType, {}, options);
     },
     getJSON: function getJSON(url, params) {
       return this.get(url, params, "json");
@@ -256,7 +277,7 @@ define(function () {
           };
         }();
 
-        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
       }
     },
     listMatchWithNeighbour: function listMatchWithNeighbour(listA, listB, indexA) {
@@ -537,7 +558,7 @@ define(function () {
           e.__stopPropagation = true;
         };
 
-        var __onevent = '__on' + eventName[0].toUpperCase() + eventName.substring(1);
+        var __onevent = "__on" + eventName[0].toUpperCase() + eventName.substring(1);
         if (__onevent in this) this[__onevent](e);
 
         if (eventName in this.__events) {
@@ -572,7 +593,7 @@ define(function () {
           }
         }
 
-        var onevent = 'on' + eventName[0].toUpperCase() + eventName.substring(1);
+        var onevent = "on" + eventName[0].toUpperCase() + eventName.substring(1);
         if (onevent in this) this[onevent](e);
       }
 
@@ -588,7 +609,7 @@ define(function () {
     },
     persistent: function persistent(o) {
       function __persistent(obj) {
-        switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
+        switch (typeof obj === "undefined" ? "undefined" : _typeof(obj)) {
           case "object":
             if (Array.prototype.isPrototypeOf(obj)) {
               var children = [];
@@ -639,7 +660,7 @@ define(function () {
                   var k = _step5.value;
 
                   var _value = __persistent(obj[k]);
-                  if (_value !== undefined) _children.push('"' + k + '":' + _value);
+                  if (_value !== undefined) _children.push("\"" + k + "\":" + _value);
                 }
               } catch (err) {
                 _didIteratorError5 = true;

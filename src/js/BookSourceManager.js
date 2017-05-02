@@ -1,12 +1,21 @@
-define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function(co, utils, Spider, translate, Book, BookSource, Chapter, customBookSource) {
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["BookSourceManager"] = factory();
+}(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // **** BookSourceManager *****
   class BookSourceManager{
 
-    constructor(configFileOrConfig){
+    constructor(configFileOrConfig, customBookSource){
 
       this.__sources;
+      this.__customBookSource = customBookSource;
       this.__spider = new Spider({
         "default": utils.ajax.bind(utils),
         "cordova": utils.cordovaAjax.bind(utils),
@@ -28,11 +37,6 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
       return result;
     }
 
-    init(){
-      return Promise.all(Object.values(customBookSource)
-        .map(cm => cm.init && cm.init()));
-    }
-
     // 加载配置
     loadConfig(configFileOrConfig){
       if(configFileOrConfig && typeof configFileOrConfig == 'string'){
@@ -41,20 +45,19 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
             this.__sources = {};
             for(let key of data.valid)
               this.__sources[key] = data.sources[key];
-          })
-          .then(() => this.init())
-          .then(() => this.__sources);
+            return this.__sources;
+          });
       }
       else if(configFileOrConfig){
         this.__sources = configFileOrConfig;
       }
-      return this.init()
-          .then(() => this.__sources);
+      return this.__sources;
     }
 
     // 把拦截函数功能添加到类中
     // 可以设置前置拦截器、方法拦截器和后置拦截器
     addCustomSourceFeature(){
+      if(!this.__customBookSource) return;
       let customFunctionList = ["getBook", "searchBook",
               "getBookInfo", "getChapter",
               "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
@@ -68,16 +71,16 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           let beforeFunctions = [`before${cf}`, `before${cf[0].toUpperCase()}${cf.slice(1)}`];
           let argsPromise = Promise.resolve(arguments);
           for(let bf of beforeFunctions){
-            if(bsid in customBookSource && bf in customBookSource[bsid]){
-              argsPromise = customBookSource[bsid][bf].apply(self, arguments);
+            if(bsid in this.__customBookSource && bf in this.__customBookSource[bsid]){
+              argsPromise = this.__customBookSource[bsid][bf].apply(self, arguments);
               break;
             }
           }
 
           let promise;
           // 优先调用自定义的同名函数，如果 getBook
-          if(bsid in customBookSource && cf in customBookSource[bsid])
-            promise = argsPromise.then(args => customBookSource[bsid][cf].apply(self, args));
+          if(bsid in this.__customBookSource && cf in this.__customBookSource[bsid])
+            promise = argsPromise.then(args => this.__customBookSource[bsid][cf].apply(self, args));
 
           else
             // 调用系统函数
@@ -88,13 +91,17 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           let afterFunctions = [`after${cf}`, `after${cf[0].toUpperCase()}${cf.slice(1)}`];
 
           for(let af of afterFunctions){
-            if(bsid in customBookSource && af in customBookSource[bsid]){
-              return promise.then(result => customBookSource[bsid][af].call(self, result));
+            if(bsid in this.__customBookSource && af in this.__customBookSource[bsid]){
+              return promise.then(result => this.__customBookSource[bsid][af].call(self, result));
             }
           }
           return promise;
         };
       }
+
+      // init
+      return Promise.all(Object.values(this.__customBookSource)
+        .map(cm => cm.init && cm.init()));
     }
 
     // 通过书名字和目录搜索唯一的书籍
@@ -399,4 +406,4 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
   }
 
   return BookSourceManager;
-});
+}));

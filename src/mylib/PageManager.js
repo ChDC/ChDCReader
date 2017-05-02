@@ -1,4 +1,12 @@
-define(["jquery"], function($){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["PageManager"] = factory();
+}(["jquery"], function($){
 
   class PageManager{
 
@@ -214,4 +222,4 @@ define(["jquery"], function($){
   };
 
   return PageManager;
-});
+}));

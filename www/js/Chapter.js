@@ -1,10 +1,14 @@
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(function () {
+;(function (factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["Chapter"] = factory();
+})(function () {
   "use strict";
 
   var Chapter = function () {
@@ -19,7 +23,7 @@ define(function () {
     }
 
     _createClass(Chapter, [{
-      key: 'isVIP',
+      key: "isVIP",
       value: function isVIP() {
         return !this.cid && !this.link && this.title;
       }
@@ -44,7 +48,7 @@ define(function () {
 
     var nums = '零一二两三四五六七八九';
     cs = cs.map(function (c) {
-      return c.replace(/[十百千万亿]/gi, '').replace(new RegExp('[' + nums + ']', 'gi'), function (m) {
+      return c.replace(/[十百千万亿]/gi, '').replace(new RegExp("[" + nums + "]", 'gi'), function (m) {
         var i = nums.indexOf(m);
         return i <= 2 ? i : i - 1;
       });
