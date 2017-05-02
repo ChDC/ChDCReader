@@ -20,7 +20,9 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
 
     _createClass(MyPage, [{
       key: "onLoad",
-      value: function onLoad(params) {
+      value: function onLoad(_ref) {
+        var params = _ref.params;
+
         this.loadView();
       }
     }, {

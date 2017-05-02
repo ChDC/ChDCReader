@@ -60,7 +60,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var oldFunction = _this2[cf];
           var self = _this2;
           _this2[cf] = function (bsid) {
-            var _this3 = this;
+            var _this3 = this,
+                _arguments = arguments;
 
             var beforeFunctions = ["before" + cf, "before" + cf[0].toUpperCase() + cf.slice(1)];
             var argsPromise = Promise.resolve(arguments);
@@ -113,7 +114,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (bsid in _this3.__customBookSource && af in _this3.__customBookSource[bsid]) {
                   return {
                     v: promise.then(function (result) {
-                      return _this3.__customBookSource[bsid][af].call(self, result);
+                      return _this3.__customBookSource[bsid][af].call(self, result, _arguments);
                     })
                   };
                 }

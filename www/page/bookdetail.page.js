@@ -8,25 +8,32 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function ($, app, Page, utils, uiutils, ReadingRecord) {
+define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord", "uifactory"], function ($, app, Page, utils, uiutils, ReadingRecord, uifactory) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
     function MyPage() {
       _classCallCheck(this, MyPage);
 
-      return _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).call(this));
+
+      _this.buildCatalogView = uifactory.buildCatalogView.bind(_this);
+      return _this;
     }
 
     _createClass(MyPage, [{
       key: "onLoad",
-      value: function onLoad(params) {
+      value: function onLoad(_ref) {
+        var params = _ref.params;
+
         this.book = params.book;
         this.loadView();
       }
     }, {
       key: "readbookpageclose",
-      value: function readbookpageclose() {
+      value: function readbookpageclose(_ref2) {
+        var params = _ref2.params;
+
         if (app.bookShelf.hasBook(this.book)) app.page.showPage("bookshelf");
       }
     }, {
@@ -67,54 +74,21 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
         }
       }
     }, {
-      key: "buildCatalogView",
-      value: function buildCatalogView(catalog) {
+      key: "loadBookChapters",
+      value: function loadBookChapters(id) {
         var _this3 = this;
 
-        var idPrefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-
-        var tv = $(".template .chapter-volume-item");
-        var tc = $(".template .chapter-item");
-
-        if (catalog.length > 0 && "chapters" in catalog[0]) {
-          return catalog.map(function (v, index) {
-            var nv = tv.clone();
-            idPrefix = idPrefix + index;
-            var headid = "head" + idPrefix;
-            var contentid = "content" + idPrefix;
-
-            nv.find(".panel-heading").attr("id", headid);
-            nv.find(".panel-collapse").attr("id", contentid).attr("aria-labelledby", headid);
-
-            nv.find(".volume-name").text(v.name).attr("data-target", '#' + contentid).attr("aria-controls", contentid);
-
-            nv.find(".chapter-list").append(_this3.buildCatalogView(v.chapters, idPrefix));
-            return nv;
-          });
-        } else return catalog.map(function (chapter, index) {
-          var nc = tc.clone();
-          nc.text(chapter.title);
-          nc.click(function (e) {
+        this.bookChapterList.empty();
+        this.book.getCatalog(false, undefined, true).then(function (catalog) {
+          _this3.bookChapterList.append(_this3.buildCatalogView(catalog, function (e) {
+            var chapter = $(e.currentTarget).data("chapter");
             app.page.showPage("readbook", {
               book: _this3.book,
               readingRecord: new ReadingRecord({ chapterIndex: chapter.index, chapterTitle: chapter.title })
             }).then(function (page) {
               page.addEventListener('myclose', _this3.readbookpageclose.bind(_this3));
             });
-          });
-          return nc;
-        });
-      }
-    }, {
-      key: "loadBookChapters",
-      value: function loadBookChapters(id) {
-        var _this4 = this;
-
-        var c = $(".template .book-chapter");
-        this.bookChapterList.empty();
-        this.book.getCatalog(false, undefined, true).then(function (catalog) {
-          var tvv = $(".template .chapter-volume");
-          _this4.bookChapterList.append(tvv.clone().append(_this4.buildCatalogView(catalog)));
+          }, "#book-chapters"));
         }).catch(function (error) {
           return uiutils.showError(app.error.getMessage(error));
         });
@@ -122,13 +96,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this5 = this;
+        var _this4 = this;
 
         this.bookChapterList = $('#book-chapters');
         this.loadBookDetail();
         this.loadBookChapters();
         $('#btnClose').click(function (e) {
-          return _this5.close();
+          return _this4.close();
         });
       }
     }]);

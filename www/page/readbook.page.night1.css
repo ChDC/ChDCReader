@@ -1,10 +1,16 @@
 /*********** Color ***************/
 
-.mainView, .toolbar.top, .toolbar.bottom, .modal-content{
+.mainView, .toolbar.top, .toolbar.bottom, .modal-content, #listCatalog, .chapter-item, .chapter-volume-item{
     background-image: none;
     background-color: #252526;
     color: #f1f1cf;
     /*color: #3399ff;*/
+}
+
+.chapter-volume-item>.panel-heading, .volume-name{
+    /*border-width: 0px;*/
+    color:  #f1f1cf;
+    background-color: #505052;
 }
 
 .toolbar .btn{

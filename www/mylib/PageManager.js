@@ -100,7 +100,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var i = this.__pageStack.findIndex(function (e) {
           return e.name == name;
         });
-        if (i == 0) return Promise.reject(new Error("the current page is the page"));else if (i > 0) return this.closePage(this.__pageStack[i - 1].name, dontShowTargetPage);
+        if (i == 0) return Promise.reject(new Error("the current page is the page"));else if (i > 0) return this.closePage(this.__pageStack[i - 1].name);
 
         var urls = this.getURLs(name);
 
@@ -137,8 +137,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             requirejs([urls.jsurl], function (Page) {
               var page = _this.__newPageFactory(Page, name);
               _this.getPage().jsPage = page;
-              page.fireEvent('load', params);
-              page.fireEvent('resume', params);
+              page.fireEvent('load', { params: params });
+              page.fireEvent('resume', { params: params });
               resolve(page);
             });
           });
@@ -173,13 +173,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (!cp) return Promise.reject(new Error("empty page stack"));
         if (!name) name = cp.name;else if (!this.getPage(name)) return Promise.reject(new Error("don't exist this page"));
 
-        this.getPage().jsPage.fireEvent('pause', params);
+        this.getPage().jsPage.fireEvent('pause', { params: params });
         this.__container.children().detach();
 
         var popPage = void 0;
         while ((popPage = this.__pageStack.shift()) && popPage.name != name) {
-          popPage.jsPage.fireEvent('close', params);
-        }popPage.jsPage.fireEvent('close', params);
+          popPage.jsPage.fireEvent('close', { params: params });
+        }popPage.jsPage.fireEvent('close', { params: params });
 
         var curPage = this.getPage();
         if (!curPage) return Promise.resolve(null);

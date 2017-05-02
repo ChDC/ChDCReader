@@ -361,11 +361,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }));
 
               case 30:
+
+                if (isFirstElement && this.onFirstNewElementFinished) this.onFirstNewElementFinished(this, newElement, direction);
                 if (newElement && this.onNewElementFinished) this.onNewElementFinished(this, newElement, direction);
 
                 return _context.abrupt("return", Promise.resolve(newElement));
 
-              case 32:
+              case 33:
               case "end":
                 return _context.stop();
             }
