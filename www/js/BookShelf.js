@@ -64,32 +64,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return utils.loadData(this.name).then(function (data) {
           var bookShelf = data;
           Object.assign(_this, bookShelf);
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = _this.books[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var b = _step.value;
-
-              b.book = Book.Cast(b.book, bookSourceManager);
-              b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-
+          _this.books.forEach(function (b) {
+            b.book = Book.Cast(b.book, bookSourceManager);
+            b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
+          });
           return loadCatalogs();
         }).then(function () {
           return _this.fireEvent("loadedData");

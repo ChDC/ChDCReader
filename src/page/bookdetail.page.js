@@ -14,7 +14,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
     }
 
     // 加载书籍详情
-    loadBookDetail(book){
+    loadBookDetail(){
+      let book = this.book;
       if(book.cover)
         $("#book-cover").attr("src", book.cover);
       $("#book-name").text(book.name).click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
@@ -50,36 +51,65 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
       }
     }
 
-    // 加载章节列表
-    loadBookChapters(id, book){
+    buildCatalogView(catalog, idPrefix=""){
+      // let tvv = $(".template .chapter-volume");
+      let tv = $(".template .chapter-volume-item");
+      let tc = $(".template .chapter-item");
 
-      const bookChapter = $(id);
-      const c = $(".template .book-chapter");
-      bookChapter.empty();
-      book.getCatalog(false, undefined)
-        .then(catalog => {
-          catalog.forEach((chapter, index) => {
-            const nc = c.clone();
-            nc.text(chapter.title);
-            nc.click(e => {
-              app.page.showPage("readbook", {
-                book: book,
-                readingRecord: new ReadingRecord({chapterIndex: index, chapterTitle: chapter.title})
-              })
-              .then(page => {
-                page.addEventListener('myclose', this.readbookpageclose.bind(this));
-              });
+      if(catalog.length > 0 && "chapters" in catalog[0]){
+        // volume
+        return catalog.map((v, index) => {
+          let nv = tv.clone();
+          idPrefix = idPrefix + index;
+          let headid = `head${idPrefix}`;
+          let contentid = `content${idPrefix}`;
+
+          nv.find(".panel-heading").attr("id", headid);
+          nv.find(".panel-collapse").attr("id", contentid).attr("aria-labelledby", headid);
+
+          nv.find(".volume-name").text(v.name).attr("data-target", '#' + contentid).attr("aria-controls", contentid);
+          // load chapters
+          nv.find(".chapter-list").append(
+            this.buildCatalogView(v.chapters, idPrefix)
+          );
+          return nv;
+        });
+      }
+      else
+        return catalog.map((chapter, index) => {
+          const nc = tc.clone();
+          nc.text(chapter.title);
+          nc.click(e => {
+            app.page.showPage("readbook", {
+              book: this.book,
+              readingRecord: new ReadingRecord({chapterIndex: chapter.index, chapterTitle: chapter.title})
+            })
+            .then(page => {
+              page.addEventListener('myclose', this.readbookpageclose.bind(this));
             });
-            bookChapter.append(nc);
           });
+          return nc;
+        });
+    }
+
+    // 加载章节列表
+    loadBookChapters(id){
+
+      const c = $(".template .book-chapter");
+      this.bookChapterList.empty();
+      this.book.getCatalog(false, undefined, true)
+        .then(catalog => {
+          let tvv = $(".template .chapter-volume");
+          this.bookChapterList.append(tvv.clone().append(this.buildCatalogView(catalog)));
         })
         .catch(error => uiutils.showError(app.error.getMessage(error)));
     }
 
     loadView(){
 
-      this.loadBookDetail(this.book);
-      this.loadBookChapters("#book-chapters", this.book);
+      this.bookChapterList = $('#book-chapters');
+      this.loadBookDetail();
+      this.loadBookChapters();
       $('#btnClose').click(e => this.close());
     }
 

@@ -182,8 +182,7 @@
 
         var self = this;
         return co(regeneratorRuntime.mark(function _callee() {
-          var result, link, json, total, pageNos, catalog, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, c, chapter;
-
+          var result, link, json, total, pageNos;
           return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
@@ -215,64 +214,16 @@
                   result = result.reduce(function (s, e) {
                     return s.concat(e);
                   }, []);
+                  return _context.abrupt("return", result.map(function (c) {
+                    return self.__spider.cloneObjectValues(new Chapter(), c);
+                  }));
 
-                  catalog = [];
-                  _iteratorNormalCompletion = true;
-                  _didIteratorError = false;
-                  _iteratorError = undefined;
-                  _context.prev = 16;
-
-                  for (_iterator = result[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    c = _step.value;
-                    chapter = new Chapter();
-
-                    chapter.title = c.title;
-                    chapter.link = c.link;
-                    chapter.cid = c.cid;
-                    catalog.push(chapter);
-                  }
-                  _context.next = 24;
-                  break;
-
-                case 20:
-                  _context.prev = 20;
-                  _context.t0 = _context["catch"](16);
-                  _didIteratorError = true;
-                  _iteratorError = _context.t0;
-
-                case 24:
-                  _context.prev = 24;
-                  _context.prev = 25;
-
-                  if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                  }
-
-                case 27:
-                  _context.prev = 27;
-
-                  if (!_didIteratorError) {
-                    _context.next = 30;
-                    break;
-                  }
-
-                  throw _iteratorError;
-
-                case 30:
-                  return _context.finish(27);
-
-                case 31:
-                  return _context.finish(24);
-
-                case 32:
-                  return _context.abrupt("return", catalog);
-
-                case 33:
+                case 13:
                 case "end":
                   return _context.stop();
               }
             }
-          }, _callee, this, [[16, 20, 24, 32], [25,, 27, 31]]);
+          }, _callee, this);
         }));
       }
     },

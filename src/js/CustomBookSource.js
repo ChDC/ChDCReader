@@ -203,16 +203,7 @@
           }));
           // 合并结果并返回
           result = result.reduce((s, e) => s.concat(e), []);
-
-          const catalog = [];
-          for(let c of result){
-            const chapter = new Chapter();
-            chapter.title = c.title;
-            chapter.link = c.link;
-            chapter.cid = c.cid;
-            catalog.push(chapter);
-          }
-          return catalog;
+          return result.map(c => self.__spider.cloneObjectValues(new Chapter(), c));
         });
       }
     },

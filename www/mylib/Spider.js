@@ -138,41 +138,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__handleArray",
       value: function __handleArray(data, response, keyName) {
+        var _this3 = this;
+
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
-        var result = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = response[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var m = _step.value;
-
-            result.push(this.__handleResponse(data, m, keyName, globalDict, dict));
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
-        return result;
+        return response.map(function (m) {
+          return _this3.__handleResponse(data, m, keyName, globalDict, dict);
+        });
       }
     }, {
       key: "__handleObject",
       value: function __handleObject(data, response, keyName) {
-        var _this3 = this;
+        var _this4 = this;
 
         var globalDict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
@@ -182,7 +160,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var result = {};
 
           for (var key in response) {
-            result[key] = _this3.__handleResponse(data, response[key], key, globalDict, result);
+            result[key] = _this4.__handleResponse(data, response[key], key, globalDict, result);
           }
           return result;
         };
@@ -203,11 +181,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               result = [];
               var list = this.__getAllElements(data, response.element);
               result = list.map(function (m) {
-                return _this3.__handleResponse(m, response.children, keyName, globalDict, dict);
+                return _this4.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                  var gatherDict = Object.assign({}, globalDict, _this3.type(data) == "object" ? data : {}, _this3.type(m) == "object" ? m : {});
-                  var validCode = '"use strict"\n' + _this3.format(response.valideach, gatherDict, true);
+                  var gatherDict = Object.assign({}, globalDict, _this4.type(data) == "object" ? data : {}, _this4.type(m) == "object" ? m : {});
+                  var validCode = '"use strict"\n' + _this4.format(response.valideach, gatherDict, true);
                   return eval(validCode);
                 });
             }
@@ -303,15 +281,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (!keyName) return element.textContent.trim();
 
           var matched = false;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
           try {
-            for (var _iterator2 = this.specialKey2AttributeList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var _step2$value = _slicedToArray(_step2.value, 2),
-                  pattern = _step2$value[0],
-                  attr = _step2$value[1];
+            for (var _iterator = this.specialKey2AttributeList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var _step$value = _slicedToArray(_step.value, 2),
+                  pattern = _step$value[0],
+                  attr = _step$value[1];
 
               if (keyName.match(pattern)) {
                 matched = true;
@@ -320,19 +298,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                   if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
                 } else if (this.type(attr) == "function") result = attr(element);
+                break;
               }
             }
           } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
               }
             } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
+              if (_didIteratorError) {
+                throw _iteratorError;
               }
             }
           }
@@ -368,7 +347,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getDataFromObject",
       value: function __getDataFromObject(obj, key) {
-        var _this4 = this;
+        var _this5 = this;
 
         function operatorFilter(element, args) {
           var codeStart = '"use strict"\n';
@@ -397,13 +376,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (!obj || !key) return obj;
         var keys = key.split('::');
         var result = obj;
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
         try {
           var _loop = function _loop() {
-            var key = _step3.value;
+            var key = _step2.value;
 
             if (!result) return {
                 v: undefined
@@ -415,7 +394,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 operator = _splitKeyAndOperatorA2[1],
                 args = _splitKeyAndOperatorA2[2];
 
-            if (_this4.type(result) == 'array') {
+            if (_this5.type(result) == 'array') {
               if (operator == 'concat') result = result.reduce(function (s, m) {
                 return s.concat(m[k]);
               }, []);else if (operator == "filter") result = result.map(function (m) {
@@ -428,29 +407,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             } else {
               if (operator == "filter") {
                 result = result[k];
-                if (_this4.type(result) == 'array') result = result.filter(function (e) {
+                if (_this5.type(result) == 'array') result = result.filter(function (e) {
                   return operatorFilter(e, args);
                 });
               } else result = result[k];
             }
           };
 
-          for (var _iterator3 = keys[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
             var _ret = _loop();
 
             if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
           }
         } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
             }
           } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
+            if (_didIteratorError2) {
+              throw _iteratorError2;
             }
           }
         }
@@ -529,7 +508,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "filterHtmlContent",
       value: function filterHtmlContent(html) {
-        var _this5 = this;
+        var _this6 = this;
 
         if (!html) return html;
 
@@ -538,13 +517,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
         html = blackList.reduce(function (html, be) {
-          return _this5.__filterElement(html, be);
+          return _this6.__filterElement(html, be);
         }, html);
         return html;
       }
     }, {
       key: "__transformHTMLTagProperty",
       value: function __transformHTMLTagProperty(html) {
+        if (!html) return html;
+
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = this.secureAttributeList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var _step3$value = _slicedToArray(_step3.value, 2),
+                src = _step3$value[0],
+                dest = _step3$value[1];
+
+            html = html.replace(new RegExp("\\b" + src + "=(?=[\"'])", 'gi'), dest + "=");
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
+        }
+
+        return html;
+      }
+    }, {
+      key: "__reverseTransformHTMLTagProperty",
+      value: function __reverseTransformHTMLTagProperty(html) {
         if (!html) return html;
 
         var _iteratorNormalCompletion4 = true;
@@ -557,7 +570,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 src = _step4$value[0],
                 dest = _step4$value[1];
 
-            html = html.replace(new RegExp("\\b" + src + "=(?=[\"'])", 'gi'), dest + "=");
+            html = html.replace(new RegExp("\\b" + dest + "=(?=[\"'])", 'gi'), src + "=");
           }
         } catch (err) {
           _didIteratorError4 = true;
@@ -570,40 +583,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           } finally {
             if (_didIteratorError4) {
               throw _iteratorError4;
-            }
-          }
-        }
-
-        return html;
-      }
-    }, {
-      key: "__reverseTransformHTMLTagProperty",
-      value: function __reverseTransformHTMLTagProperty(html) {
-        if (!html) return html;
-
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
-
-        try {
-          for (var _iterator5 = this.secureAttributeList[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var _step5$value = _slicedToArray(_step5.value, 2),
-                src = _step5$value[0],
-                dest = _step5$value[1];
-
-            html = html.replace(new RegExp("\\b" + dest + "=(?=[\"'])", 'gi'), src + "=");
-          }
-        } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-              _iterator5.return();
-            }
-          } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
             }
           }
         }
@@ -645,6 +624,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function escapeHTML(t) {
           return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/ /g, "&nbsp;").replace(/"/g, "&#34;").replace(/'/g, "&#39;");
         }
+      }
+    }, {
+      key: "cloneObjectValues",
+      value: function cloneObjectValues(dest, src) {
+        if (!dest || !src) return dest;
+
+        for (var key in dest) {
+          if (src[key] != undefined) dest[key] = src[key];
+        }
+        return dest;
       }
     }]);
 

@@ -31,9 +31,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
       }
     }, {
       key: "loadBookDetail",
-      value: function loadBookDetail(book) {
+      value: function loadBookDetail() {
         var _this2 = this;
 
+        var book = this.book;
         if (book.cover) $("#book-cover").attr("src", book.cover);
         $("#book-name").text(book.name).click(function (e) {
           return window.open(_this2.book.getOfficialDetailLink(), '_system');
@@ -66,27 +67,54 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
         }
       }
     }, {
-      key: "loadBookChapters",
-      value: function loadBookChapters(id, book) {
+      key: "buildCatalogView",
+      value: function buildCatalogView(catalog) {
         var _this3 = this;
 
-        var bookChapter = $(id);
-        var c = $(".template .book-chapter");
-        bookChapter.empty();
-        book.getCatalog(false, undefined).then(function (catalog) {
-          catalog.forEach(function (chapter, index) {
-            var nc = c.clone();
-            nc.text(chapter.title);
-            nc.click(function (e) {
-              app.page.showPage("readbook", {
-                book: book,
-                readingRecord: new ReadingRecord({ chapterIndex: index, chapterTitle: chapter.title })
-              }).then(function (page) {
-                page.addEventListener('myclose', _this3.readbookpageclose.bind(_this3));
-              });
-            });
-            bookChapter.append(nc);
+        var idPrefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+
+        var tv = $(".template .chapter-volume-item");
+        var tc = $(".template .chapter-item");
+
+        if (catalog.length > 0 && "chapters" in catalog[0]) {
+          return catalog.map(function (v, index) {
+            var nv = tv.clone();
+            idPrefix = idPrefix + index;
+            var headid = "head" + idPrefix;
+            var contentid = "content" + idPrefix;
+
+            nv.find(".panel-heading").attr("id", headid);
+            nv.find(".panel-collapse").attr("id", contentid).attr("aria-labelledby", headid);
+
+            nv.find(".volume-name").text(v.name).attr("data-target", '#' + contentid).attr("aria-controls", contentid);
+
+            nv.find(".chapter-list").append(_this3.buildCatalogView(v.chapters, idPrefix));
+            return nv;
           });
+        } else return catalog.map(function (chapter, index) {
+          var nc = tc.clone();
+          nc.text(chapter.title);
+          nc.click(function (e) {
+            app.page.showPage("readbook", {
+              book: _this3.book,
+              readingRecord: new ReadingRecord({ chapterIndex: chapter.index, chapterTitle: chapter.title })
+            }).then(function (page) {
+              page.addEventListener('myclose', _this3.readbookpageclose.bind(_this3));
+            });
+          });
+          return nc;
+        });
+      }
+    }, {
+      key: "loadBookChapters",
+      value: function loadBookChapters(id) {
+        var _this4 = this;
+
+        var c = $(".template .book-chapter");
+        this.bookChapterList.empty();
+        this.book.getCatalog(false, undefined, true).then(function (catalog) {
+          var tvv = $(".template .chapter-volume");
+          _this4.bookChapterList.append(tvv.clone().append(_this4.buildCatalogView(catalog)));
         }).catch(function (error) {
           return uiutils.showError(app.error.getMessage(error));
         });
@@ -94,12 +122,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this4 = this;
+        var _this5 = this;
 
-        this.loadBookDetail(this.book);
-        this.loadBookChapters("#book-chapters", this.book);
+        this.bookChapterList = $('#book-chapters');
+        this.loadBookDetail();
+        this.loadBookChapters();
         $('#btnClose').click(function (e) {
-          return _this4.close();
+          return _this5.close();
         });
       }
     }]);

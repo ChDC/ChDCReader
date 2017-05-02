@@ -170,7 +170,7 @@
       let lastPressBackTime = 0;
       document.addEventListener("backbutton", () => {
           // 按返回键的时候先关闭当前对话框
-          let m = Array.from(document.querySelectorAll('.modal')).find(e => e.style.display=='block');
+          let m = Array.from(document.querySelectorAll('.modal')).reverse().find(e => e.style.display=='block');
           if(m)
             $(m).modal('hide');
           else if(app.page.getPageCount() > 1)

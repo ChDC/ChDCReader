@@ -31,17 +31,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(BookSourceManager, [{
-      key: "getBookSourcesBySameType",
-      value: function getBookSourcesBySameType(bsid) {
-        if (!bsid || !(bsid in this.__sources)) return null;
-        var result = {};
-        var type = this.__sources[bsid].type;
-        for (var key in this.__sources) {
-          if (this.__sources[key].type == type) result[key] = this.__sources[key];
-        }
-        return result;
-      }
-    }, {
       key: "loadConfig",
       value: function loadConfig(configFileOrConfig) {
         var _this = this;
@@ -49,15 +38,44 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (configFileOrConfig && typeof configFileOrConfig == 'string') {
           return utils.getJSON(configFileOrConfig).then(function (data) {
             _this.__sources = {};
+            data.valid.forEach(function (key) {
+              return _this.__sources[key] = data.sources[key];
+            });
+            return _this.__sources;
+          });
+        } else if (configFileOrConfig) {
+          this.__sources = configFileOrConfig;
+        }
+        return this.__sources;
+      }
+    }, {
+      key: "addCustomSourceFeature",
+      value: function addCustomSourceFeature() {
+        var _this2 = this;
+
+        if (!this.__customBookSource) return;
+        var customFunctionList = ["getBook", "searchBook", "getBookInfo", "getChapter", "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
+
+        customFunctionList.forEach(function (cf) {
+          var oldFunction = _this2[cf];
+          var self = _this2;
+          _this2[cf] = function (bsid) {
+            var _this3 = this;
+
+            var beforeFunctions = ["before" + cf, "before" + cf[0].toUpperCase() + cf.slice(1)];
+            var argsPromise = Promise.resolve(arguments);
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
 
             try {
-              for (var _iterator = data.valid[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var key = _step.value;
+              for (var _iterator = beforeFunctions[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var bf = _step.value;
 
-                _this.__sources[key] = data.sources[key];
+                if (bsid in this.__customBookSource && bf in this.__customBookSource[bsid]) {
+                  argsPromise = this.__customBookSource[bsid][bf].apply(self, arguments);
+                  break;
+                }
               }
             } catch (err) {
               _didIteratorError = true;
@@ -74,131 +92,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }
             }
 
-            return _this.__sources;
-          });
-        } else if (configFileOrConfig) {
-          this.__sources = configFileOrConfig;
-        }
-        return this.__sources;
-      }
-    }, {
-      key: "addCustomSourceFeature",
-      value: function addCustomSourceFeature() {
-        var _this2 = this;
+            var promise = void 0;
 
-        if (!this.__customBookSource) return;
-        var customFunctionList = ["getBook", "searchBook", "getBookInfo", "getChapter", "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+            if (bsid in this.__customBookSource && cf in this.__customBookSource[bsid]) promise = argsPromise.then(function (args) {
+              return _this3.__customBookSource[bsid][cf].apply(self, args);
+            });else promise = argsPromise.then(function (args) {
+                return oldFunction.apply(self, args);
+              });
 
-        try {
-          var _loop = function _loop() {
-            var cf = _step2.value;
+            var afterFunctions = ["after" + cf, "after" + cf[0].toUpperCase() + cf.slice(1)];
 
-            var oldFunction = _this2[cf];
-            var self = _this2;
-            _this2[cf] = function (bsid) {
-              var _this3 = this;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-              var beforeFunctions = ["before" + cf, "before" + cf[0].toUpperCase() + cf.slice(1)];
-              var argsPromise = Promise.resolve(arguments);
-              var _iteratorNormalCompletion3 = true;
-              var _didIteratorError3 = false;
-              var _iteratorError3 = undefined;
+            try {
+              var _loop = function _loop() {
+                var af = _step2.value;
 
-              try {
-                for (var _iterator3 = beforeFunctions[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                  var bf = _step3.value;
-
-                  if (bsid in this.__customBookSource && bf in this.__customBookSource[bsid]) {
-                    argsPromise = this.__customBookSource[bsid][bf].apply(self, arguments);
-                    break;
-                  }
+                if (bsid in _this3.__customBookSource && af in _this3.__customBookSource[bsid]) {
+                  return {
+                    v: promise.then(function (result) {
+                      return _this3.__customBookSource[bsid][af].call(self, result);
+                    })
+                  };
                 }
-              } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
+              };
+
+              for (var _iterator2 = afterFunctions[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var _ret = _loop();
+
+                if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+              }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                  _iterator2.return();
+                }
               } finally {
-                try {
-                  if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                    _iterator3.return();
-                  }
-                } finally {
-                  if (_didIteratorError3) {
-                    throw _iteratorError3;
-                  }
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
                 }
               }
+            }
 
-              var promise = void 0;
-
-              if (bsid in this.__customBookSource && cf in this.__customBookSource[bsid]) promise = argsPromise.then(function (args) {
-                return _this3.__customBookSource[bsid][cf].apply(self, args);
-              });else promise = argsPromise.then(function (args) {
-                  return oldFunction.apply(self, args);
-                });
-
-              var afterFunctions = ["after" + cf, "after" + cf[0].toUpperCase() + cf.slice(1)];
-
-              var _iteratorNormalCompletion4 = true;
-              var _didIteratorError4 = false;
-              var _iteratorError4 = undefined;
-
-              try {
-                var _loop2 = function _loop2() {
-                  var af = _step4.value;
-
-                  if (bsid in _this3.__customBookSource && af in _this3.__customBookSource[bsid]) {
-                    return {
-                      v: promise.then(function (result) {
-                        return _this3.__customBookSource[bsid][af].call(self, result);
-                      })
-                    };
-                  }
-                };
-
-                for (var _iterator4 = afterFunctions[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                  var _ret2 = _loop2();
-
-                  if ((typeof _ret2 === "undefined" ? "undefined" : _typeof(_ret2)) === "object") return _ret2.v;
-                }
-              } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-              } finally {
-                try {
-                  if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                    _iterator4.return();
-                  }
-                } finally {
-                  if (_didIteratorError4) {
-                    throw _iteratorError4;
-                  }
-                }
-              }
-
-              return promise;
-            };
+            return promise;
           };
-
-          for (var _iterator2 = customFunctionList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            _loop();
-          }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
-        }
+        });
 
         return Promise.all(Object.values(this.__customBookSource).map(function (cm) {
           return cm.init && cm.init();
@@ -232,61 +175,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var result = {};
         var errorList = [];
         var allBsids = this.getSourcesKeysByMainSourceWeight();
-        var tasks = [];
-
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
-
-        try {
-          var _loop4 = function _loop4() {
-            var bsid = _step5.value;
-
-            tasks.push(_this4.searchBook(bsid, keyword).then(function (books) {
-              result[bsid] = books;
-            }).catch(function (error) {
-              errorList.push(error);
-            }));
-          };
-
-          for (var _iterator5 = allBsids[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            _loop4();
-          }
-        } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-              _iterator5.return();
-            }
-          } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
-            }
-          }
-        }
+        var tasks = allBsids.map(function (bsid) {
+          return _this4.searchBook(bsid, keyword).then(function (books) {
+            result[bsid] = books;
+          }).catch(function (error) {
+            errorList.push(error);
+          });
+        });
 
         function handleResult() {
           var finalResult = [];
 
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
 
           try {
-            for (var _iterator6 = allBsids[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var bsid = _step6.value;
+            for (var _iterator3 = allBsids[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var bsid = _step3.value;
 
               var books = result[bsid];
               if (!books) break;
-              var _iteratorNormalCompletion7 = true;
-              var _didIteratorError7 = false;
-              var _iteratorError7 = undefined;
+              var _iteratorNormalCompletion4 = true;
+              var _didIteratorError4 = false;
+              var _iteratorError4 = undefined;
 
               try {
-                var _loop3 = function _loop3() {
-                  var b = _step7.value;
+                var _loop2 = function _loop2() {
+                  var b = _step4.value;
 
                   if (filterSameResult) {
                     if (!finalResult.find(function (e) {
@@ -295,35 +211,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   } else finalResult.push(b);
                 };
 
-                for (var _iterator7 = books[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                  _loop3();
+                for (var _iterator4 = books[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                  _loop2();
                 }
               } catch (err) {
-                _didIteratorError7 = true;
-                _iteratorError7 = err;
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
               } finally {
                 try {
-                  if (!_iteratorNormalCompletion7 && _iterator7.return) {
-                    _iterator7.return();
+                  if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                    _iterator4.return();
                   }
                 } finally {
-                  if (_didIteratorError7) {
-                    throw _iteratorError7;
+                  if (_didIteratorError4) {
+                    throw _iteratorError4;
                   }
                 }
               }
             }
           } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                _iterator6.return();
+              if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                _iterator3.return();
               }
             } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -341,18 +257,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__createBook",
       value: function __createBook(bs, m) {
+
         m.cover = m.coverImg;
 
-        var book = Book.createBook(m, this);
+        var book = this.__spider.cloneObjectValues(new Book(this), m);
+        var bss = this.__spider.cloneObjectValues(new BookSource(book, this, bs.id, bs.contentSourceWeight), m);
         book.sources = {};
-        var bss = new BookSource(book, this, bs.id, bs.contentSourceWeight);
-
-        if ("bookid" in m) bss.bookid = m.bookid;
-        if ("detailLink" in m) bss.detailLink = m.detailLink;
-        if ("catalogLink" in m) bss.catalogLink = m.catalogLink;
-        if (m.lastestChapter) {
-          bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');
-        }
+        if (bss.lastestChapter) bss.lastestChapter = bss.lastestChapter.replace(/^最新更新\s+/, '');
 
         bss.__searched = true;
         book.sources[bs.id] = bss;
@@ -376,29 +287,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           var books = [];
 
-          var _iteratorNormalCompletion8 = true;
-          var _didIteratorError8 = false;
-          var _iteratorError8 = undefined;
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator8 = data[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-              var m = _step8.value;
+            for (var _iterator5 = data[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var m = _step5.value;
 
               m.author = m.author || "";
               if (!checkBook(m)) continue;
               books.push(self.__createBook(bs, m));
             }
           } catch (err) {
-            _didIteratorError8 = true;
-            _iteratorError8 = err;
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion8 && _iterator8.return) {
-                _iterator8.return();
+              if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                _iterator5.return();
               }
             } finally {
-              if (_didIteratorError8) {
-                throw _iteratorError8;
+              if (_didIteratorError5) {
+                throw _iteratorError5;
               }
             }
           }
@@ -410,27 +321,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var name = book.name.toLowerCase();
           var author = book.author.toLowerCase();
           var keywords = keyword.toLowerCase().split(/ +/);
-          var _iteratorNormalCompletion9 = true;
-          var _didIteratorError9 = false;
-          var _iteratorError9 = undefined;
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
 
           try {
-            for (var _iterator9 = keywords[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-              var kw = _step9.value;
+            for (var _iterator6 = keywords[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var kw = _step6.value;
 
               if (kw.includes(name) || kw.includes(author) || name.includes(kw) || author.includes(kw)) return true;
             }
           } catch (err) {
-            _didIteratorError9 = true;
-            _iteratorError9 = err;
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion9 && _iterator9.return) {
-                _iterator9.return();
+              if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                _iterator6.return();
               }
             } finally {
-              if (_didIteratorError9) {
-                throw _iteratorError9;
+              if (_didIteratorError6) {
+                throw _iteratorError6;
               }
             }
           }
@@ -481,6 +392,63 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return this.__spider.get(bs.catalogLink, dict);
       }
     }, {
+      key: "getBookCatalog",
+      value: function getBookCatalog(bsid, dict) {
+        var _this6 = this;
+
+        utils.log("BookSourceManager: Refresh Catalog from " + bsid);
+
+        var bsm = this.__sources[bsid];
+        if (!bsm) return Promise.reject("Illegal booksource!");
+
+        return this.__spider.get(bsm.catalog, dict).then(function (data) {
+          if (bsm.catalog.hasVolume) data = data.map(function (v) {
+            return v.chapters.map(function (c) {
+              return c.volume = v.name, c;
+            });
+          }).reduce(function (s, e) {
+            return s.concat(e);
+          }, []);
+          return data.map(function (c) {
+            return _this6.__spider.cloneObjectValues(new Chapter(), c);
+          });
+        });
+      }
+    }, {
+      key: "getChapter",
+      value: function getChapter(bsid) {
+        var _this7 = this;
+
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
+
+        if (!dict.link && !dict.cid) return Promise.reject(206);
+
+        var bsm = this.__sources[bsid];
+        if (!bsm) return Promise.reject("Illegal booksource!");
+
+        return this.__spider.get(bsm.chapter, dict).then(function (data) {
+          var c = new Chapter();
+          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = _this7.__spider.text2html(data.contentHTML);else c.content = _this7.__spider.clearHtml(data.contentHTML);
+          if (!c.content) return Promise.reject(206);
+
+          c.title = data.title ? data.title : dict.title;
+          c.cid = data.cid ? data.cid : dict.cid;
+          if (!c.cid && dict.link) c.link = dict.link;
+
+          return c;
+        });
+      }
+    }, {
+      key: "hasVolume",
+      value: function hasVolume(bsid) {
+        var bs = this.__sources[bsid];
+        if (!bs) throw new Error("Illegal booksource!");
+        return bs.catalog.hasVolume;
+      }
+    }, {
       key: "getOfficialURLs",
       value: function getOfficialURLs(bsid, dict, key) {
         utils.log("BookSourceManager: Get Book Detail Link from " + bsid + "\"");
@@ -524,76 +492,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return this.__spider.getLink(bsm.chapter.request, dict);
       }
     }, {
-      key: "getBookCatalog",
-      value: function getBookCatalog(bsid, dict) {
-
-        utils.log("BookSourceManager: Refresh Catalog from " + bsid);
-
-        var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
-
-        return this.__spider.get(bsm.catalog, dict).then(function (data) {
-          var catalog = [];
-          var _iteratorNormalCompletion10 = true;
-          var _didIteratorError10 = false;
-          var _iteratorError10 = undefined;
-
-          try {
-            for (var _iterator10 = data[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-              var c = _step10.value;
-
-              var chapter = new Chapter();
-              chapter.title = c.title;
-              chapter.link = c.link;
-              chapter.cid = c.cid;
-              catalog.push(chapter);
-            }
-          } catch (err) {
-            _didIteratorError10 = true;
-            _iteratorError10 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion10 && _iterator10.return) {
-                _iterator10.return();
-              }
-            } finally {
-              if (_didIteratorError10) {
-                throw _iteratorError10;
-              }
-            }
-          }
-
-          return catalog;
-        });
-      }
-    }, {
-      key: "getChapter",
-      value: function getChapter(bsid) {
-        var _this6 = this;
-
-        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
-        if (!dict.link && !dict.cid) return Promise.reject(206);
-
-        var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
-
-        return this.__spider.get(bsm.chapter, dict).then(function (data) {
-          var c = new Chapter();
-          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = _this6.__spider.text2html(data.contentHTML);else c.content = _this6.__spider.clearHtml(data.contentHTML);
-          if (!c.content) return Promise.reject(206);
-
-          c.title = data.title ? data.title : dict.title;
-          c.cid = data.cid ? data.cid : dict.cid;
-          if (!c.cid && dict.link) c.link = dict.link;
-
-          return c;
-        });
-      }
-    }, {
       key: "getSourcesKeysByMainSourceWeight",
       value: function getSourcesKeysByMainSourceWeight(bsid) {
         var sources = bsid ? this.getBookSourcesBySameType(bsid) : this.__sources;
@@ -603,6 +501,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }).map(function (e) {
           return e[0];
         });
+      }
+    }, {
+      key: "getBookSourcesBySameType",
+      value: function getBookSourcesBySameType(bsid) {
+        if (!bsid || !(bsid in this.__sources)) return null;
+        var result = {};
+        var type = this.__sources[bsid].type;
+        for (var key in this.__sources) {
+          if (this.__sources[key].type == type) result[key] = this.__sources[key];
+        }
+        return result;
       }
     }, {
       key: "getBookSource",

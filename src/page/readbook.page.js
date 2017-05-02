@@ -227,8 +227,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       app.showLoading();
       $('#listCatalogContainer').height($(window).height() * 0.5);
 
-      return this.book.getCatalog(forceRefresh)
+      return this.book.getCatalog(forceRefresh, undefined, true)
         .then(catalog => {
+          debugger;
           const listCatalog = $("#listCatalog");
           const listCatalogEntry = $(".template .listCatalogEntry");
           listCatalog.empty();

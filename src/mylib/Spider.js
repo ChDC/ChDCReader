@@ -229,11 +229,7 @@
     }
 
     __handleArray(data, response, keyName, globalDict={}, dict={}){
-      let result = [];
-      for(let m of response){
-        result.push(this.__handleResponse(data, m, keyName, globalDict, dict));
-      }
-      return result;
+      return response.map(m => this.__handleResponse(data, m, keyName, globalDict, dict));
     }
 
     __handleObject(data, response, keyName, globalDict={}, dict={}){
@@ -396,6 +392,7 @@
             }
             else if(this.type(attr) == "function")
               result = attr(element);
+            break;
           }
         }
         if(!matched)
@@ -676,6 +673,22 @@
           .replace(/"/g, "&#34;")
           .replace(/'/g, "&#39;");
       }
+    }
+
+
+
+    // 将第二个对象中的属性复制到第一个对象中
+    // 只复制第一个对象中有的属性
+    // 并且只有当第二个对象中对应的键值不为空的时候才复制
+    // 该函数用于用 get 或 parse 函数获取到结果后对结果进行筛选
+    cloneObjectValues(dest, src){
+      if(!dest || !src) return dest;
+
+      for(let key in dest){
+        if(src[key] != undefined)
+          dest[key] = src[key];
+      }
+      return dest;
     }
 
   }
