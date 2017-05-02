@@ -80,7 +80,7 @@
 
           for(let af of afterFunctions){
             if(bsid in this.__customBookSource && af in this.__customBookSource[bsid]){
-              return promise.then(result => this.__customBookSource[bsid][af].call(self, result));
+              return promise.then(result => this.__customBookSource[bsid][af].call(self, result, arguments));
             }
           }
           return promise;

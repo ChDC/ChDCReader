@@ -3,7 +3,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
 
   class MyPage extends Page{
 
-    onLoad(params){
+    onLoad({params}){
       this.loadView();
     }
 

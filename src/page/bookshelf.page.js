@@ -2,7 +2,7 @@
 define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], function($, app, Page, utils, uiutils, Chapter, sortablejs){
 
   class MyPage extends Page{
-    onLoad(params){
+    onLoad({params}){
       this.loadView();
       this.loaded = false; // 标记是否已经加载的数据
 

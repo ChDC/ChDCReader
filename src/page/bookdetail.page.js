@@ -1,14 +1,21 @@
 "use strict"
-define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function($, app, Page, utils, uiutils, ReadingRecord){
+define(["jquery", "main", "Page", "utils", "uiutils",
+   "ReadingRecord", "uifactory"],
+   function($, app, Page, utils, uiutils, ReadingRecord, uifactory){
 
   class MyPage extends Page{
 
-    onLoad(params){
+    constructor(){
+      super();
+      this.buildCatalogView = uifactory.buildCatalogView.bind(this);
+    }
+
+    onLoad({params}){
       this.book = params.book;
       this.loadView();
     }
 
-    readbookpageclose(){
+    readbookpageclose({params}){
       if(app.bookShelf.hasBook(this.book))
         app.page.showPage("bookshelf");
     }
@@ -51,56 +58,23 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
       }
     }
 
-    buildCatalogView(catalog, idPrefix=""){
-      // let tvv = $(".template .chapter-volume");
-      let tv = $(".template .chapter-volume-item");
-      let tc = $(".template .chapter-item");
-
-      if(catalog.length > 0 && "chapters" in catalog[0]){
-        // volume
-        return catalog.map((v, index) => {
-          let nv = tv.clone();
-          idPrefix = idPrefix + index;
-          let headid = `head${idPrefix}`;
-          let contentid = `content${idPrefix}`;
-
-          nv.find(".panel-heading").attr("id", headid);
-          nv.find(".panel-collapse").attr("id", contentid).attr("aria-labelledby", headid);
-
-          nv.find(".volume-name").text(v.name).attr("data-target", '#' + contentid).attr("aria-controls", contentid);
-          // load chapters
-          nv.find(".chapter-list").append(
-            this.buildCatalogView(v.chapters, idPrefix)
-          );
-          return nv;
-        });
-      }
-      else
-        return catalog.map((chapter, index) => {
-          const nc = tc.clone();
-          nc.text(chapter.title);
-          nc.click(e => {
-            app.page.showPage("readbook", {
-              book: this.book,
-              readingRecord: new ReadingRecord({chapterIndex: chapter.index, chapterTitle: chapter.title})
-            })
-            .then(page => {
-              page.addEventListener('myclose', this.readbookpageclose.bind(this));
-            });
-          });
-          return nc;
-        });
-    }
-
     // 加载章节列表
     loadBookChapters(id){
 
-      const c = $(".template .book-chapter");
       this.bookChapterList.empty();
       this.book.getCatalog(false, undefined, true)
         .then(catalog => {
-          let tvv = $(".template .chapter-volume");
-          this.bookChapterList.append(tvv.clone().append(this.buildCatalogView(catalog)));
+          this.bookChapterList.append(this.buildCatalogView(catalog,
+            e => {
+              let chapter = $(e.currentTarget).data("chapter");
+              app.page.showPage("readbook", {
+                  book: this.book,
+                  readingRecord: new ReadingRecord({chapterIndex: chapter.index, chapterTitle: chapter.title})
+                })
+                .then(page => {
+                  page.addEventListener('myclose', this.readbookpageclose.bind(this));
+                });
+            }, "#book-chapters"));
         })
         .catch(error => uiutils.showError(app.error.getMessage(error)));
     }

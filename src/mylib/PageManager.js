@@ -95,7 +95,7 @@
       if(i == 0)
         return Promise.reject(new Error("the current page is the page")); // 当前页面就是要显示的页面，所以退出
       else if(i > 0)
-        return this.closePage(this.__pageStack[i-1].name, dontShowTargetPage);
+        return this.closePage(this.__pageStack[i-1].name);
 
       // 如果缓存中没有该页，则新建
       // 拼接 URL
@@ -145,8 +145,8 @@
             requirejs([urls.jsurl], Page => {
               let page = this.__newPageFactory(Page, name);
               this.getPage().jsPage = page;
-              page.fireEvent('load', params);
-              page.fireEvent('resume', params);
+              page.fireEvent('load', {params: params});
+              page.fireEvent('resume', {params: params});
               resolve(page);
             });
           })
@@ -179,14 +179,14 @@
 
       // 关闭当前页面
       // 触发当前页面的暂停事件
-      this.getPage().jsPage.fireEvent('pause', params); // 关闭当前页面要触发 pause 事件
+      this.getPage().jsPage.fireEvent('pause', {params: params}); // 关闭当前页面要触发 pause 事件
       this.__container.children().detach();
 
       // 当前中间页面
       let popPage;
       while((popPage = this.__pageStack.shift()) && popPage.name != name)
-        popPage.jsPage.fireEvent('close', params);
-      popPage.jsPage.fireEvent('close', params);
+        popPage.jsPage.fireEvent('close', {params: params});
+      popPage.jsPage.fireEvent('close', {params: params});
 
       // 弹出最后一页
       let curPage = this.getPage();

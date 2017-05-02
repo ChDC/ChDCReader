@@ -361,8 +361,8 @@
           })));
       }
 
-      // if(isFirstElement && this.onFirstNewElementFinished)
-      //   this.onFirstNewElementFinished(this, newElement, direction);
+      if(isFirstElement && this.onFirstNewElementFinished)
+        this.onFirstNewElementFinished(this, newElement, direction);
       if(newElement && this.onNewElementFinished)
         this.onNewElementFinished(this, newElement, direction);
 
