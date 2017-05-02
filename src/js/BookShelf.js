@@ -57,10 +57,10 @@
         .then(data => {
           const bookShelf = data;
           Object.assign(this, bookShelf);
-          for(const b of this.books){
+          this.books.forEach(b => {
             b.book = Book.Cast(b.book, bookSourceManager);
             b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
-          }
+          });
           return loadCatalogs();
         })
         .then(() => this.fireEvent("loadedData"));

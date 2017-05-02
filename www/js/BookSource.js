@@ -23,10 +23,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.book = book;
 
       this.id = id;
-      this.detailLink;
-      this.catalogLink;
-      this.bookid;
-      this.catalog;
+      this.detailLink = undefined;
+      this.catalogLink = undefined;
+      this.bookid = undefined;
+      this.catalog = undefined;
       this.lastestChapter = undefined;
 
       this.weight = weight;
@@ -147,15 +147,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
           return [lastestChapter, lastestChapterUpdated];
         });
-      }
-    }, {
-      key: "getOfficialDetailLink",
-      value: function getOfficialDetailLink() {
-        try {
-          return this.bookSourceManager.getOfficialURLs(this.id, this, "bookdetail");
-        } catch (error) {
-          return null;
-        }
       }
     }, {
       key: "getChapter",

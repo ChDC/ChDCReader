@@ -1,6 +1,6 @@
 /*********** Color ***************/
 
-body, .modal-content{
+body, .modal-content, #book-chapters, .chapter-item, .chapter-volume-item{
     background-color: #252526;
     background-image: none;
     /*color: #3399ff;*/
@@ -11,5 +11,8 @@ body, .modal-content{
     color: #fff;
 }
 
-
-
+.chapter-volume-item>.panel-heading, .volume-name{
+    /*border-width: 0px;*/
+    color:  #f1f1cf;
+    background-color: #505052;
+}

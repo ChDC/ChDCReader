@@ -1,20 +1,28 @@
 "use strict"
-define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function($, app, Page, utils, uiutils, ReadingRecord){
+define(["jquery", "main", "Page", "utils", "uiutils",
+   "ReadingRecord", "uifactory"],
+   function($, app, Page, utils, uiutils, ReadingRecord, uifactory){
 
   class MyPage extends Page{
 
-    onLoad(params){
+    constructor(){
+      super();
+      this.buildCatalogView = uifactory.buildCatalogView.bind(this);
+    }
+
+    onLoad({params}){
       this.book = params.book;
       this.loadView();
     }
 
-    readbookpageclose(){
+    readbookpageclose({params}){
       if(app.bookShelf.hasBook(this.book))
         app.page.showPage("bookshelf");
     }
 
     // 加载书籍详情
-    loadBookDetail(book){
+    loadBookDetail(){
+      let book = this.book;
       if(book.cover)
         $("#book-cover").attr("src", book.cover);
       $("#book-name").text(book.name).click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
@@ -51,35 +59,31 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord"], function
     }
 
     // 加载章节列表
-    loadBookChapters(id, book){
+    loadBookChapters(id){
 
-      const bookChapter = $(id);
-      const c = $(".template .book-chapter");
-      bookChapter.empty();
-      book.getCatalog(false, undefined)
+      this.bookChapterList.empty();
+      this.book.getCatalog(false, undefined, true)
         .then(catalog => {
-          catalog.forEach((chapter, index) => {
-            const nc = c.clone();
-            nc.text(chapter.title);
-            nc.click(e => {
+          this.bookChapterList.append(this.buildCatalogView(catalog,
+            e => {
+              let chapter = $(e.currentTarget).data("chapter");
               app.page.showPage("readbook", {
-                book: book,
-                readingRecord: new ReadingRecord({chapterIndex: index, chapterTitle: chapter.title})
-              })
-              .then(page => {
-                page.addEventListener('myclose', this.readbookpageclose.bind(this));
-              });
-            });
-            bookChapter.append(nc);
-          });
+                  book: this.book,
+                  readingRecord: new ReadingRecord({chapterIndex: chapter.index, chapterTitle: chapter.title})
+                })
+                .then(page => {
+                  page.addEventListener('myclose', this.readbookpageclose.bind(this));
+                });
+            }, "#book-chapters"));
         })
         .catch(error => uiutils.showError(app.error.getMessage(error)));
     }
 
     loadView(){
 
-      this.loadBookDetail(this.book);
-      this.loadBookChapters("#book-chapters", this.book);
+      this.bookChapterList = $('#book-chapters');
+      this.loadBookDetail();
+      this.loadBookChapters();
       $('#btnClose').click(e => this.close());
     }
 

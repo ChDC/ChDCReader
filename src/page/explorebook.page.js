@@ -3,7 +3,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
 
   class MyPage extends Page{
 
-    onLoad(params){
+    onLoad({params}){
       this.loadView();
     }
 
@@ -11,9 +11,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
       return utils.getJSON('data/exploresource.json')
         .then(json => {
           this.exploresources = {};
-          for(let key of json.valid){
+          for(let key of json.valid)
             this.exploresources[key] = json.sources[key];
-          }
         });
     }
 

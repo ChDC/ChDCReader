@@ -63,27 +63,35 @@
         }
       },
       "catalog": {
+        "hasVolume": true,
         "request": {
           "url": "http://book.sfacg.com/Novel/{bookid}/MainIndex/"
         },
         "response":{
           "type": "array",
-          "element": "div.catalog-list > ul > li",
+          "element": ".story-catalog",
           "children": {
-            "title": {
-              "type": "string",
-              "element": "a",
-              "attribute": "title"
-            },
-            "vip": {
-              "type": "string",
-              "element": "a > span",
-              "attribute": "class"
-            },
-            "link": {
-              "type": "string",
-              "element": "a",
-              "valid": "!{vip} || !({vip}.includes('icn_vip'))"
+            "name": "div.catalog-hd > .catalog-title",
+            "chapters": {
+              "type": "array",
+              "element": "div.catalog-list > ul > li",
+              "children": {
+                "title": {
+                  "type": "string",
+                  "element": "a",
+                  "attribute": "title"
+                },
+                "vip": {
+                  "type": "string",
+                  "element": "a > span",
+                  "attribute": "class"
+                },
+                "link": {
+                  "type": "string",
+                  "element": "a",
+                  "valid": "!{vip} || !({vip}.includes('icn_vip'))"
+                }
+              }
             }
           }
         }
@@ -428,6 +436,7 @@
         }
       },
       "catalog": {
+        "hasVolume": true,
         "request": {
           "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
           "type": "JSON",
@@ -435,13 +444,20 @@
         },
         "response": {
           "type": "array",
-          "element": "data::vs#filter(\"$element.vN.indexOf(\\\"相关\\\") < 0\")::cs#concat",
+          "element": "data::vs",
           "children": {
-            "title": "cN",
-            "cid": {
-              "type": "string",
-              "element": "cU",
-              "valid": "{sS}==1"
+            "name": "vN",
+            "chapters": {
+              "type": "array",
+              "element": "cs",
+              "children": {
+                "title": "cN",
+                "cid": {
+                  "type": "string",
+                  "element": "cU",
+                  "valid": "{sS}==1"
+                }
+              }
             }
           }
         }

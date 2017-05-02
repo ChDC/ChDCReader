@@ -140,7 +140,7 @@
 
       var lastPressBackTime = 0;
       document.addEventListener("backbutton", function () {
-        var m = Array.from(document.querySelectorAll('.modal')).find(function (e) {
+        var m = Array.from(document.querySelectorAll('.modal')).reverse().find(function (e) {
           return e.style.display == 'block';
         });
         if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) navigator.app.backHistory();else {

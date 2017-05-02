@@ -614,12 +614,12 @@
     arrayCount(array){
       if(!array) return array;
       const counter = {};
-      for(let m of array){
+      array.forEach(m => {
         if(!(m in counter))
           counter[m] = 1;
         else
           counter[m] += 1;
-      }
+      });
       const result = [];
       for(let k in counter){
         result.push([k, counter[k]])

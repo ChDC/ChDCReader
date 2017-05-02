@@ -25,26 +25,13 @@
       this.addCustomSourceFeature();
     }
 
-    // 获取和指定的 bsid 相同 type 的所有 sources
-    getBookSourcesBySameType(bsid){
-      if(!bsid || !(bsid in this.__sources)) return null;
-      let result = {};
-      let type = this.__sources[bsid].type;
-      for(let key in this.__sources){
-        if(this.__sources[key].type == type)
-          result[key] = this.__sources[key];
-      }
-      return result;
-    }
-
     // 加载配置
     loadConfig(configFileOrConfig){
       if(configFileOrConfig && typeof configFileOrConfig == 'string'){
         return utils.getJSON(configFileOrConfig)
           .then(data => {
             this.__sources = {};
-            for(let key of data.valid)
-              this.__sources[key] = data.sources[key];
+            data.valid.forEach(key => this.__sources[key] = data.sources[key]);
             return this.__sources;
           });
       }
@@ -61,7 +48,8 @@
       let customFunctionList = ["getBook", "searchBook",
               "getBookInfo", "getChapter",
               "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
-      for(let cf of customFunctionList){
+
+      customFunctionList.forEach(cf => {
         let oldFunction = this[cf];
         let self = this;
         this[cf] = function(bsid){ // 此处必须用 function，不能用箭头函数
@@ -92,12 +80,12 @@
 
           for(let af of afterFunctions){
             if(bsid in this.__customBookSource && af in this.__customBookSource[bsid]){
-              return promise.then(result => this.__customBookSource[bsid][af].call(self, result));
+              return promise.then(result => this.__customBookSource[bsid][af].call(self, result, arguments));
             }
           }
           return promise;
         };
-      }
+      });
 
       // init
       return Promise.all(Object.values(this.__customBookSource)
@@ -119,6 +107,7 @@
         });
     }
 
+
     // 全网搜索
     // * options
     // *   filterSameResult
@@ -129,19 +118,16 @@
       let result = {};
       const errorList = [];
       const allBsids = this.getSourcesKeysByMainSourceWeight();
-      const tasks = [];
-
-      for(const bsid of allBsids)
-      {
+      const tasks = allBsids.map(bsid =>
         // 单书源搜索
-        tasks.push(this.searchBook(bsid, keyword)
+        this.searchBook(bsid, keyword)
           .then(books => {
             result[bsid] = books;
           })
           .catch(error => {
             errorList.push(error);
-          }));
-      }
+          })
+      );
 
       function handleResult(){
         // 处理结果
@@ -177,18 +163,14 @@
 
     // 从获取的数据中提取 Book
     __createBook(bs, m){
+
       m.cover = m.coverImg;
 
-      const book = Book.createBook(m, this);
+      const book = this.__spider.cloneObjectValues(new Book(this), m);
+      const bss = this.__spider.cloneObjectValues(new BookSource(book, this, bs.id, bs.contentSourceWeight), m);
       book.sources = {}; // 内容来源
-      const bss = new BookSource(book, this, bs.id, bs.contentSourceWeight);
-
-      if("bookid" in m) bss.bookid = m.bookid;
-      if("detailLink" in m) bss.detailLink = m.detailLink;
-      if("catalogLink" in m) bss.catalogLink = m.catalogLink;
-      if(m.lastestChapter){
-        bss.lastestChapter = m.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
-      }
+      if(bss.lastestChapter)
+        bss.lastestChapter = bss.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
 
       bss.__searched = true;
       book.sources[bs.id] = bss;
@@ -280,6 +262,61 @@
       return this.__spider.get(bs.catalogLink, dict);
     }
 
+
+    // 获取书籍目录
+    getBookCatalog(bsid, dict){
+
+      utils.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
+
+      const bsm = this.__sources[bsid];
+      if(!bsm) return Promise.reject("Illegal booksource!");
+
+      return this.__spider.get(bsm.catalog, dict)
+        .then(data => {
+          if(bsm.catalog.hasVolume)
+            data = data
+              .map(v => v.chapters.map(c => (c.volume = v.name, c)))
+              .reduce((s,e) => s.concat(e), []);
+          return data.map(c => this.__spider.cloneObjectValues(new Chapter(), c));
+        });
+    }
+
+    // 从网络上获取章节内容
+    getChapter(bsid, dict={}){
+
+      utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+
+      if(!dict.link && !dict.cid) return Promise.reject(206);
+
+      const bsm = this.__sources[bsid];
+      if(!bsm) return Promise.reject("Illegal booksource!");
+
+      return this.__spider.get(bsm.chapter, dict)
+        .then(data => {
+          const c = new Chapter();
+          if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
+            c.content = this.__spider.text2html(data.contentHTML);
+          else
+            c.content = this.__spider.clearHtml(data.contentHTML);
+          if(!c.content) return Promise.reject(206);
+
+          c.title = data.title ? data.title : dict.title;
+          c.cid = data.cid ? data.cid : dict.cid;
+          if(!c.cid && dict.link) c.link = dict.link;
+
+          return c;
+        });
+    }
+
+
+
+    // 该源的目录是否有卷
+    hasVolume(bsid){
+      const bs = this.__sources[bsid];
+      if(!bs) throw new Error("Illegal booksource!");
+      return bs.catalog.hasVolume;
+    }
+
     // 获取原网页
     getOfficialURLs(bsid, dict, key){
       utils.log(`BookSourceManager: Get Book Detail Link from ${bsid}"`);
@@ -321,62 +358,23 @@
       return this.__spider.getLink(bsm.chapter.request, dict);
     }
 
-
-    // 获取书籍目录
-    getBookCatalog(bsid, dict){
-
-      utils.log(`BookSourceManager: Refresh Catalog from ${bsid}`);
-
-      const bsm = this.__sources[bsid];
-      if(!bsm) return Promise.reject("Illegal booksource!");
-
-      return this.__spider.get(bsm.catalog, dict)
-        .then(data => {
-          const catalog = [];
-          for(let c of data){
-            const chapter = new Chapter();
-            chapter.title = c.title;
-            chapter.link = c.link;
-            chapter.cid = c.cid;
-            catalog.push(chapter);
-          }
-
-          return catalog;
-        });
-    }
-
-    // 从网络上获取章节内容
-    getChapter(bsid, dict={}){
-
-      utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
-
-      if(!dict.link && !dict.cid) return Promise.reject(206);
-
-      const bsm = this.__sources[bsid];
-      if(!bsm) return Promise.reject("Illegal booksource!");
-
-      return this.__spider.get(bsm.chapter, dict)
-        .then(data => {
-          const c = new Chapter();
-          if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
-            c.content = this.__spider.text2html(data.contentHTML);
-          else
-            c.content = this.__spider.clearHtml(data.contentHTML);
-          if(!c.content) return Promise.reject(206);
-
-          c.title = data.title ? data.title : dict.title;
-          c.cid = data.cid ? data.cid : dict.cid;
-          if(!c.cid && dict.link) c.link = dict.link;
-
-          return c;
-        });
-    }
-
     // 按主源权重从大到小排序的数组
     getSourcesKeysByMainSourceWeight(bsid){
       let sources = bsid ? this.getBookSourcesBySameType(bsid) : this.__sources;
       let key = "mainSourceWeight";
       return Object.entries(sources).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
+    }
+
+    // 获取和指定的 bsid 相同 type 的所有 sources
+    getBookSourcesBySameType(bsid){
+      if(!bsid || !(bsid in this.__sources)) return null;
+      let result = {};
+      let type = this.__sources[bsid].type;
+      for(let key in this.__sources){
+        if(this.__sources[key].type == type)
+          result[key] = this.__sources[key];
+      }
+      return result;
     }
 
     // 获取指定的 booksource

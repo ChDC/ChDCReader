@@ -19,10 +19,10 @@
       this.book = book; // 不持久化
 
       this.id = id; // 书源 ID
-      this.detailLink; // 详情页链接
-      this.catalogLink; // 目录页链接
-      this.bookid; // 书籍 ID
-      this.catalog; // 目录
+      this.detailLink = undefined; // 详情页链接
+      this.catalogLink = undefined; // 目录页链接
+      this.bookid = undefined; // 书籍 ID
+      this.catalog = undefined; // 目录
       this.lastestChapter = undefined;  // 最新的章节
 
       this.weight = weight; // 书源的权重
@@ -77,6 +77,11 @@
         return Promise.resolve();
     }
 
+    // 该源的目录是否有卷
+    // hasVolume(){
+    //   return this.bookSourceManager.hasVolume(this.id);
+    // }
+
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
@@ -123,14 +128,14 @@
     }
 
     // 获取官方原网页
-    getOfficialDetailLink(){
-      try{
-        return this.bookSourceManager.getOfficialURLs(this.id, this, "bookdetail");
-      }
-      catch(error){
-        return null;
-      }
-    }
+    // getOfficialDetailLink(){
+    //   try{
+    //     return this.bookSourceManager.getOfficialURLs(this.id, this, "bookdetail");
+    //   }
+    //   catch(error){
+    //     return null;
+    //   }
+    // }
 
     // 从本地或网络上获取章节内容
     // * cacheDir 缓存章节的目录

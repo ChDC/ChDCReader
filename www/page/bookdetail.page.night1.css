@@ -11,5 +11,19 @@ body, .modal-content{
     color: #fff;
 }
 
+#book-chapters{
+    color: #f1f1cf;
+}
 
+/*#book-chapters .chapter-item{
+    color: #f1f1cf;
+}*/
 
+.chapter-item{
+    background-color: #252526;
+}
+
+/*.panel-heading, .volume-name{
+    border-width: 0px;
+    background-color: #505052;
+}*/

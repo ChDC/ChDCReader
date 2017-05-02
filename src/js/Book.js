@@ -52,7 +52,7 @@
 
     getOfficialDetailLink(bookSourceId=this.mainSourceId){
       try{
-        return this.sources[bookSourceId].getOfficialDetailLink();
+        return this.bookSourceManager.getOfficialURLs(bookSourceId, this.sources[bookSourceId], "bookdetail");
       }
       catch(error){
         return null;
@@ -110,20 +110,57 @@
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
-    getCatalog(forceRefresh, bookSourceId){
+    getCatalog(forceRefresh, bookSourceId=this.mainSourceId, groupByVolume=false, countPerGroup=100){
 
       return this.getBookSource(bookSourceId)
         .then(bs => bs.getCatalog(forceRefresh))
         .then(catalog => {
           if(!catalog || catalog.length <= 0)
             return Promise.reject(501);
-          return catalog;
+          if(!groupByVolume)
+            return catalog;
+          return this.groupCatalogByVolume(bookSourceId, catalog, countPerGroup);
         });
+    }
+
+    // 按卷或者数量对章节进行分组
+    groupCatalogByVolume(bookSourceId=this.mainSourceId, catalog, countPerGroup=100){
+
+      if(!catalog) return catalog;
+      catalog.forEach((c, i) => c.index = i);
+
+      if(this.bookSourceManager.hasVolume(bookSourceId)){
+        let result = [];
+        let volumeName;
+        let vi = -1;
+        for(let c of catalog){
+          if(volumeName != c.volume){
+            volumeName = c.volume;
+            result[++vi] = {name: volumeName, chapters: []}
+          }
+          result[vi].chapters.push(c);
+        }
+        result.forEach(v => v.chapters = groupByNumber(v.chapters, countPerGroup));
+        if(result.length == 1)
+          return result[0].chapters;
+        return result;
+      }
+      else
+        return groupByNumber(catalog, countPerGroup);
+
+      function groupByNumber(catalog, countPerGroup){
+        let n = Math.ceil(catalog.length / countPerGroup);
+        if(n <= 1) return catalog;
+        return new Array(n).fill(0).map((e, i) => ({
+            name: `${i*countPerGroup+1}-${(i+1)*countPerGroup}`,
+            chapters: catalog.slice(i*countPerGroup, (i+1)*countPerGroup)
+          }));
+      }
     }
 
     // 使用详情页链接刷新书籍信息
     // 前提：book.sources 中有详情链接
-    refreshBookInfo(bookSourceId){
+    refreshBookInfo(bookSourceId=this.mainSourceId){
 
       return this.getBookSource(bookSourceId)
         .then(bs => bs.getBookInfo())
@@ -138,7 +175,7 @@
     // *************************** 章节部分 ****************
 
     // 获取指定源的指定索引的章节
-    index(chapterIndex, forceRefresh, bookSourceId){
+    index(chapterIndex, forceRefresh, bookSourceId=this.mainSourceId){
       if(typeof chapterIndex != "number"){
         return Promise.reject(205);
       }
@@ -327,13 +364,12 @@
         const contentSources = self.getSourcesKeysSortedByWeight().reverse();
         // 去掉要排除的源
         if(excludes){
-          for(const exclude of excludes)
-          {
+          excludes.forEach(exclude => {
             const i = contentSources.indexOf(exclude);
             contentSources.splice(i, 1);
             if(!noInfluenceWeight)
               self.sources[exclude].weight += EXECLUDE_WEIGHT;
-          }
+          });
         }
         if(includeSource){
           const i = contentSources.indexOf(includeSource);
@@ -511,21 +547,6 @@
     }
     return nb;
   }
-
-  Book.createBook = function(obj, bookSourceManager){
-    if(!obj) return undefined;
-
-    const book = new Book(bookSourceManager);
-    book.name = obj.name;  // 书名
-    book.author = obj.author;// 作者
-
-    book.catagory = obj.catagory;  // 分类
-    book.cover = obj.cover; // 封面
-    book.complete = obj.complete;  // 是否完结
-    book.introduce = obj.introduce;  // 简介
-
-    return book;
-  };
 
   // 判断两本是书是否相等
   Book.equal = function(bookA, bookB){

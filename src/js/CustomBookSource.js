@@ -162,6 +162,14 @@
     },
 
     "sfnovel": {
+
+      afterGetBookCatalog(catalog, args){
+        // 将每个章节的卷中的书名去掉
+        let book = args[1].book;
+        catalog.forEach(c => c.volume = c.volume.replace(`【${book.name}】`, "").trim());
+        return catalog;
+      },
+
       afterGetChapter(chapter){
         if(chapter.content)
           chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
@@ -203,16 +211,7 @@
           }));
           // 合并结果并返回
           result = result.reduce((s, e) => s.concat(e), []);
-
-          const catalog = [];
-          for(let c of result){
-            const chapter = new Chapter();
-            chapter.title = c.title;
-            chapter.link = c.link;
-            chapter.cid = c.cid;
-            catalog.push(chapter);
-          }
-          return catalog;
+          return result.map(c => self.__spider.cloneObjectValues(new Chapter(), c));
         });
       }
     },

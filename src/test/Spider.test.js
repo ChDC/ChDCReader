@@ -46,6 +46,14 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
       };
     });
 
+    it('cloneObjectValues', () => {
+      let src = {abc: 1, def: 2, fff: undefined};
+      let dest = {abc: 0, fff: 2};
+      spider.cloneObjectValues(dest, src);
+      equal(1, dest.abc);
+      equal(2, dest.fff);
+      equal(false, "def" in dest);
+    });
 
     it('string format', ()=> {
       equal(null, spider.format());
