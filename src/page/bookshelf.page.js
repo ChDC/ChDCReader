@@ -111,9 +111,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       book.getLastestChapter()
         .then(([lastestChapter]) => {
           let isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
-          bookElement.find(".book-lastestchapter")
-            .text("最新：" + (lastestChapter? lastestChapter : "无"))
-            .addClass(isNewChapter ? 'unread-chapter' : "");
+          let lce = bookElement.find(".book-lastestchapter")
+            .text("最新：" + (lastestChapter? lastestChapter : "无"));
+          if(isNewChapter)
+            lce.addClass('unread-chapter');
+          else
+            lce.removeClass('unread-chapter');
 
           if(readingRecord.isFinished && isNewChapter){
             // 更新最新章节

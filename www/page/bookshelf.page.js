@@ -141,7 +141,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
               lastestChapter = _ref2[0];
 
           var isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
-          bookElement.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无")).addClass(isNewChapter ? 'unread-chapter' : "");
+          var lce = bookElement.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无"));
+          if (isNewChapter) lce.addClass('unread-chapter');else lce.removeClass('unread-chapter');
 
           if (readingRecord.isFinished && isNewChapter) {
             book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
