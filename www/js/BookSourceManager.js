@@ -6,14 +6,21 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "CustomBookSource"], function (co, utils, Spider, translate, Book, BookSource, Chapter, customBookSource) {
+;(function (deps, factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["BookSourceManager"] = factory();
+})(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function (co, utils, Spider, translate, Book, BookSource, Chapter) {
   "use strict";
 
   var BookSourceManager = function () {
-    function BookSourceManager(configFileOrConfig) {
+    function BookSourceManager(configFileOrConfig, customBookSource) {
       _classCallCheck(this, BookSourceManager);
 
       this.__sources;
+      this.__customBookSource = customBookSource;
       this.__spider = new Spider({
         "default": utils.ajax.bind(utils),
         "cordova": utils.cordovaAjax.bind(utils)
@@ -33,13 +40,6 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           if (this.__sources[key].type == type) result[key] = this.__sources[key];
         }
         return result;
-      }
-    }, {
-      key: "init",
-      value: function init() {
-        return Promise.all(Object.values(customBookSource).map(function (cm) {
-          return cm.init && cm.init();
-        }));
       }
     }, {
       key: "loadConfig",
@@ -73,23 +73,20 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
                 }
               }
             }
-          }).then(function () {
-            return _this.init();
-          }).then(function () {
+
             return _this.__sources;
           });
         } else if (configFileOrConfig) {
           this.__sources = configFileOrConfig;
         }
-        return this.init().then(function () {
-          return _this.__sources;
-        });
+        return this.__sources;
       }
     }, {
       key: "addCustomSourceFeature",
       value: function addCustomSourceFeature() {
         var _this2 = this;
 
+        if (!this.__customBookSource) return;
         var customFunctionList = ["getBook", "searchBook", "getBookInfo", "getChapter", "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
@@ -102,6 +99,8 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
             var oldFunction = _this2[cf];
             var self = _this2;
             _this2[cf] = function (bsid) {
+              var _this3 = this;
+
               var beforeFunctions = ["before" + cf, "before" + cf[0].toUpperCase() + cf.slice(1)];
               var argsPromise = Promise.resolve(arguments);
               var _iteratorNormalCompletion3 = true;
@@ -112,8 +111,8 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
                 for (var _iterator3 = beforeFunctions[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                   var bf = _step3.value;
 
-                  if (bsid in customBookSource && bf in customBookSource[bsid]) {
-                    argsPromise = customBookSource[bsid][bf].apply(self, arguments);
+                  if (bsid in this.__customBookSource && bf in this.__customBookSource[bsid]) {
+                    argsPromise = this.__customBookSource[bsid][bf].apply(self, arguments);
                     break;
                   }
                 }
@@ -134,8 +133,8 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
 
               var promise = void 0;
 
-              if (bsid in customBookSource && cf in customBookSource[bsid]) promise = argsPromise.then(function (args) {
-                return customBookSource[bsid][cf].apply(self, args);
+              if (bsid in this.__customBookSource && cf in this.__customBookSource[bsid]) promise = argsPromise.then(function (args) {
+                return _this3.__customBookSource[bsid][cf].apply(self, args);
               });else promise = argsPromise.then(function (args) {
                   return oldFunction.apply(self, args);
                 });
@@ -150,10 +149,10 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
                 var _loop2 = function _loop2() {
                   var af = _step4.value;
 
-                  if (bsid in customBookSource && af in customBookSource[bsid]) {
+                  if (bsid in _this3.__customBookSource && af in _this3.__customBookSource[bsid]) {
                     return {
                       v: promise.then(function (result) {
-                        return customBookSource[bsid][af].call(self, result);
+                        return _this3.__customBookSource[bsid][af].call(self, result);
                       })
                     };
                   }
@@ -200,6 +199,10 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
             }
           }
         }
+
+        return Promise.all(Object.values(this.__customBookSource).map(function (cm) {
+          return cm.init && cm.init();
+        }));
       }
     }, {
       key: "getBook",
@@ -218,7 +221,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
     }, {
       key: "searchBookInAllBookSource",
       value: function searchBookInAllBookSource(keyword) {
-        var _this3 = this;
+        var _this4 = this;
 
         var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
             _ref$filterSameResult = _ref.filterSameResult,
@@ -239,7 +242,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
           var _loop4 = function _loop4() {
             var bsid = _step5.value;
 
-            tasks.push(_this3.searchBook(bsid, keyword).then(function (books) {
+            tasks.push(_this4.searchBook(bsid, keyword).then(function (books) {
               result[bsid] = books;
             }).catch(function (error) {
               errorList.push(error);
@@ -438,7 +441,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
     }, {
       key: "getBookInfo",
       value: function getBookInfo(bsid, dict) {
-        var _this4 = this;
+        var _this5 = this;
 
         utils.log("BookSourceManager: Get Book Info from " + bsid);
 
@@ -448,7 +451,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
         return this.__spider.get(bs.detail, dict).then(function (m) {
           m.bookid = dict.bookid;
           m.author = m.author || "";
-          var book = _this4.__createBook(bs, m);
+          var book = _this5.__createBook(bs, m);
           return book;
         });
       }
@@ -566,7 +569,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
     }, {
       key: "getChapter",
       value: function getChapter(bsid) {
-        var _this5 = this;
+        var _this6 = this;
 
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -580,7 +583,7 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter", "
 
         return this.__spider.get(bsm.chapter, dict).then(function (data) {
           var c = new Chapter();
-          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = _this5.__spider.text2html(data.contentHTML);else c.content = _this5.__spider.clearHtml(data.contentHTML);
+          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = _this6.__spider.text2html(data.contentHTML);else c.content = _this6.__spider.clearHtml(data.contentHTML);
           if (!c.content) return Promise.reject(206);
 
           c.title = data.title ? data.title : dict.title;

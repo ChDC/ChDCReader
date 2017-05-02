@@ -4,7 +4,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(["co"], function (co) {
+;(function (deps, factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["Infinitelist"] = factory();
+})(["co"], function (co) {
 
   "use strict";
 
@@ -25,17 +31,14 @@ define(["co"], function (co) {
       this.onError = undefined;
       this.onCurrentElementChanged = null;
       this.__currentElement = null;
-      this.__lastCheckScrollY = null;
-      this.__lastCurrentChangeCheckScrollY = null;
       this.__isCheckingBoundary = false;
-      this.__scrollEventBindThis = this.__scrollEvent.bind(this);
-
       this.DOWN_THRESHOLD = 3;
       this.UP_THRESHOLD = 1;
-      this.CHECK_SCROLL_THRESHOLD = 0.9;
-      this.CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD = 0.1;
-      this.PREVIOUS = 1;
-      this.NEXT = -1;
+
+      this.PREVIOUS = -1;
+      this.NEXT = 1;
+
+      this.__enableScrollSupport();
     }
 
     _createClass(Infinitelist, [{
@@ -62,9 +65,9 @@ define(["co"], function (co) {
           return;
         }
 
-        co(this.__addElement(1)).then(function (newElement) {
+        co(this.__addElement(this.NEXT)).then(function (newElement) {
           if (newElement) {
-            _this.__checkCurrentElementChange();
+            _this.__checkCurrentElementChange(_this.NEXT);
             _this.__container.scrollTop = newElement.offsetTop;
           }
         });
@@ -87,9 +90,9 @@ define(["co"], function (co) {
           return;
         }
 
-        co(this.__addElement(-1)).then(function (newElement) {
+        co(this.__addElement(this.PREVIOUS)).then(function (newElement) {
           if (newElement) {
-            _this2.__checkCurrentElementChange();
+            _this2.__checkCurrentElementChange(_this2.PREVIOUS);
             _this2.__container.scrollTop = newElement.offsetTop;
           }
         });
@@ -97,7 +100,11 @@ define(["co"], function (co) {
     }, {
       key: "loadList",
       value: function loadList() {
-        return this.checkBoundary();
+        var _this3 = this;
+
+        return this.checkBoundary(this.NEXT).then(function () {
+          if (_this3.options.ifCheckPrevious) return _this3.checkBoundary(_this3.PREVIOUS, true);
+        });
       }
     }, {
       key: "close",
@@ -124,37 +131,60 @@ define(["co"], function (co) {
         return Array.from(ics).indexOf(this.__currentElement);
       }
     }, {
-      key: "__scrollEvent",
-      value: function __scrollEvent(event) {
-        var scrollY = this.__container.scrollTop;
+      key: "__enableScrollSupport",
+      value: function __enableScrollSupport() {
+        var _this4 = this;
 
-        if (this.__lastCurrentChangeCheckScrollY == null) this.__checkCurrentElementChange();else {
-          var wh = this.__container.offsetHeight;
-          if (Math.abs(scrollY - this.__lastCurrentChangeCheckScrollY) > wh * this.CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD) {
-            this.__checkCurrentElementChange();
-          }
-        }
+        var __lastCheckScrollY = 0;
+        var __lastCurrentChangeCheckScrollY = 0;
+        var __lastScrollTop = 0;
+        var CHECK_SCROLL_THRESHOLD = 0.9;
+        var CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD = 0.1;
+        var __scrollEvent = function __scrollEvent(event) {
+          var target = event.currentTarget;
+          var cst = target.scrollTop;
+          var offset = cst - __lastScrollTop;
+          event.scrollTop = cst;
+          var direction = offset >= 0 ? 1 : -1;
 
-        if (this.__lastCheckScrollY == null) this.checkBoundary();else {
-          var _wh = this.__container.offsetHeight;
-          if (Math.abs(scrollY - this.__lastCheckScrollY) > _wh * this.CHECK_SCROLL_THRESHOLD) {
-            this.checkBoundary();
+          if (offset > 0) __onScroll(event, direction);else if (offset < 0) __onScroll(event, direction);
+          __lastScrollTop = cst;
+        };
+
+        var __onScroll = function __onScroll(event, direction) {
+
+          var wh = _this4.__container.offsetHeight;
+          if (Math.abs(event.scrollTop - __lastCurrentChangeCheckScrollY) > wh * CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD) {
+            __lastCurrentChangeCheckScrollY = _this4.__container.scrollTop;
+            _this4.__checkCurrentElementChange(direction);
           }
-        }
+
+          if (!_this4.__isCheckingBoundary && Math.abs(event.scrollTop - __lastCheckScrollY) > wh * CHECK_SCROLL_THRESHOLD) {
+            if (!_this4.options.ifCheckPrevious && direction == _this4.PREVIOUS) return;
+            __lastCheckScrollY = _this4.__container.scrollTop;
+            _this4.checkBoundary(direction);
+          }
+        };
+
+        this.__scrollEventBindThis = __scrollEvent.bind(this);
+        this.__container.addEventListener('scroll', this.__scrollEventBindThis);
       }
     }, {
       key: "__checkCurrentElementChange",
-      value: function __checkCurrentElementChange() {
-        var _this3 = this;
+      value: function __checkCurrentElementChange(direction) {
+        var CURRENT_ELEMENT_CHANGED_THRESHOLD = 0.1;
+        var wh = this.__container.offsetHeight;
 
-        this.__lastCurrentChangeCheckScrollY = this.__container.scrollTop;
-        if (!this.__currentElement) return;
+        var currentElement = void 0;
+        var elements = Array.from(this.__elementList.children);
 
-        var cis = this.computeCurrentElements();
-        var i = cis.findIndex(function (e) {
-          return e == _this3.__currentElement;
-        });
-        if (i < 0) this.setCurrentElement(cis[0]);
+        if (direction > 0) currentElement = elements.reverse().find(function (e) {
+          return e.getBoundingClientRect().top < (1 - CURRENT_ELEMENT_CHANGED_THRESHOLD) * wh;
+        });else if (direction < 0) currentElement = elements.find(function (e) {
+            return e.getBoundingClientRect().top + e.offsetHeight > CURRENT_ELEMENT_CHANGED_THRESHOLD * wh;
+          });
+
+        if (currentElement != this.__currentElement) this.setCurrentElement(currentElement);
       }
     }, {
       key: "setCurrentElement",
@@ -167,75 +197,16 @@ define(["co"], function (co) {
       }
     }, {
       key: "checkBoundary",
-      value: function checkBoundary() {
+      value: function checkBoundary(direction) {
+        var _this5 = this;
+
         if (this.__isCheckingBoundary) return;
         this.__isCheckingBoundary = true;
-        this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
 
-        var curScrollY = this.__container.scrollTop;
-        var scrollDirection = this.PREVIOUS;
-        if (this.__lastCheckScrollY) scrollDirection = curScrollY > this.__lastCheckScrollY ? this.PREVIOUS : this.NEXT;
-        this.__lastCheckScrollY = curScrollY;
 
-        var self = this;
-        return co(regeneratorRuntime.mark(function _callee() {
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  _context.next = 2;
-                  return self.__checkBoundary(scrollDirection, true);
-
-                case 2:
-                  _context.next = 4;
-                  return self.__checkBoundary(-scrollDirection, true);
-
-                case 4:
-                  self.__container.addEventListener('scroll', self.__scrollEventBindThis);
-                  self.__isCheckingBoundary = false;
-
-                case 6:
-                case "end":
-                  return _context.stop();
-              }
-            }
-          }, _callee, this);
-        }));
-      }
-    }, {
-      key: "computeCurrentElements",
-      value: function computeCurrentElements() {
-        var wh = this.__container.offsetHeight;
-        var elements = this.__elementList.children;
-        var result = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = Array.from(elements)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var element = _step.value;
-
-            var top = element.getBoundingClientRect().top;
-            var height = element.offsetHeight;
-            if (top + height <= 0.1 * wh) continue;else if (top > 0.9 * wh) break;else result.push(element);
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
-        return result;
+        return co(this.__checkBoundary(direction, false)).then(function () {
+          _this5.__isCheckingBoundary = false;
+        });
       }
     }, {
       key: "__isOutBoundary",
@@ -257,24 +228,26 @@ define(["co"], function (co) {
       }
     }, {
       key: "clearOutBoundary",
-      value: function clearOutBoundary() {
+      value: function clearOutBoundary(direction) {
         var ies = this.__elementList.children;
         var cii = this.__getCurrentElementIndex();
 
-        for (var i = ies.length - 1; i >= 0; i--) {
-          var element = ies[i];
-          if (!this.__isOutBoundary(element, this.PREVIOUS) || i <= cii + 1) break;
-          element.remove();
-        }
+        var select = !direction ? 3 : direction > 0 ? 1 : 2;
 
-        for (var _i = 0; _i < ies.length; _i++) {
-          var _element = ies[_i];
-          if (!this.__isOutBoundary(_element, this.NEXT) || _i >= cii - 1) break;
-          var elementHeight = _element.offsetHeight;
-          var cs = this.__container.scrollTop;
-          _element.remove();
-          this.__container.scrollTop = cs - elementHeight;
-        }
+        if (select & 1) for (var i = ies.length - 1; i >= 0; i--) {
+            var element = ies[i];
+            if (!this.__isOutBoundary(element, this.NEXT) || i <= cii + 1) break;
+            element.remove();
+          }
+
+        if (select & 2) for (var _i = 0; _i < ies.length; _i++) {
+            var _element = ies[_i];
+            if (!this.__isOutBoundary(_element, this.PREVIOUS) || _i >= cii - 1) break;
+            var elementHeight = _element.offsetHeight;
+            var cs = this.__container.scrollTop;
+            _element.remove();
+            this.__container.scrollTop = cs - elementHeight;
+          }
       }
     }, {
       key: "__getBoundaryElement",
@@ -299,54 +272,54 @@ define(["co"], function (co) {
       value: regeneratorRuntime.mark(function __addElement(direction) {
         var result, isFirstElement, _result, newElement, done, cs, be, imgs;
 
-        return regeneratorRuntime.wrap(function __addElement$(_context2) {
+        return regeneratorRuntime.wrap(function __addElement$(_context) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context.prev = _context.next) {
               case 0:
                 result = void 0;
                 isFirstElement = !this.__getBoundaryElement(direction);
-                _context2.prev = 2;
+                _context.prev = 2;
 
                 if (!(direction >= 0 && this.nextElementGenerator)) {
-                  _context2.next = 9;
+                  _context.next = 9;
                   break;
                 }
 
-                _context2.next = 6;
+                _context.next = 6;
                 return this.nextElementGenerator.next();
 
               case 6:
-                result = _context2.sent;
-                _context2.next = 16;
+                result = _context.sent;
+                _context.next = 16;
                 break;
 
               case 9:
                 if (!(direction < 0 && this.previousElementGenerator)) {
-                  _context2.next = 15;
+                  _context.next = 15;
                   break;
                 }
 
-                _context2.next = 12;
+                _context.next = 12;
                 return this.previousElementGenerator.next();
 
               case 12:
-                result = _context2.sent;
-                _context2.next = 16;
+                result = _context.sent;
+                _context.next = 16;
                 break;
 
               case 15:
-                return _context2.abrupt("return", Promise.resolve(null));
+                return _context.abrupt("return", Promise.resolve(null));
 
               case 16:
-                _context2.next = 22;
+                _context.next = 22;
                 break;
 
               case 18:
-                _context2.prev = 18;
-                _context2.t0 = _context2["catch"](2);
+                _context.prev = 18;
+                _context.t0 = _context["catch"](2);
 
-                if (this.onError) this.onError(this, _context2.t0);
-                throw _context2.t0;
+                if (this.onError) this.onError(this, _context.t0);
+                throw _context.t0;
 
               case 22:
                 _result = result, newElement = _result.value, done = _result.done;
@@ -368,12 +341,12 @@ define(["co"], function (co) {
                 }
 
                 if (!newElement) {
-                  _context2.next = 30;
+                  _context.next = 30;
                   break;
                 }
 
                 imgs = newElement.querySelectorAll('img');
-                _context2.next = 30;
+                _context.next = 30;
                 return Promise.all(Array.from(imgs).map(function (img) {
                   return new Promise(function (resolve, reject) {
 
@@ -390,11 +363,11 @@ define(["co"], function (co) {
               case 30:
                 if (newElement && this.onNewElementFinished) this.onNewElementFinished(this, newElement, direction);
 
-                return _context2.abrupt("return", Promise.resolve(newElement));
+                return _context.abrupt("return", Promise.resolve(newElement));
 
               case 32:
               case "end":
-                return _context2.stop();
+                return _context.stop();
             }
           }
         }, __addElement, this, [[2, 18]]);
@@ -402,37 +375,29 @@ define(["co"], function (co) {
     }, {
       key: "__checkBoundary",
       value: regeneratorRuntime.mark(function __checkBoundary(direction, ifClear) {
-        return regeneratorRuntime.wrap(function __checkBoundary$(_context3) {
+        return regeneratorRuntime.wrap(function __checkBoundary$(_context2) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(!this.options.ifCheckPrevious && direction < 0)) {
-                  _context3.next = 2;
-                  break;
-                }
-
-                return _context3.abrupt("return", Promise.resolve());
-
-              case 2:
                 if (this.__isBoundarySatisfied(direction)) {
-                  _context3.next = 8;
+                  _context2.next = 6;
                   break;
                 }
 
-                _context3.next = 5;
+                _context2.next = 3;
                 return this.__addElement(direction);
 
-              case 5:
-                if (ifClear) this.clearOutBoundary();
-                _context3.next = 2;
+              case 3:
+                if (ifClear) this.clearOutBoundary(-direction);
+                _context2.next = 0;
                 break;
 
-              case 8:
-                return _context3.abrupt("return", Promise.resolve());
+              case 6:
+                return _context2.abrupt("return", Promise.resolve());
 
-              case 9:
+              case 7:
               case "end":
-                return _context3.stop();
+                return _context2.stop();
             }
           }
         }, __checkBoundary, this);

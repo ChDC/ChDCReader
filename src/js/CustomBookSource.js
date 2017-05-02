@@ -1,4 +1,12 @@
-define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["customBookSource"] = factory();
+}(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // 定义一个用于存放自定义获取信息的钩子的集合
@@ -226,4 +234,4 @@ define(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], 
   };
 
   return customBookSource;
-});
+}));

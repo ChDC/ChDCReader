@@ -1,5 +1,13 @@
-define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShelf", "bootstrap"],
-  function(utils, uiutils, Book, BookSourceManager, PageManager, BookShelf) {
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["main"] = factory();
+}(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShelf", "CustomBookSource", "bootstrap"],
+  function(utils, uiutils, Book, BookSourceManager, PageManager, BookShelf, customBookSource) {
 
   "use strict"
 
@@ -148,7 +156,7 @@ define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShe
       this.error.load("data/errorCode.json");
       this.settings.load()
         .then(() => {
-          this.bookSourceManager = new BookSourceManager("data/booksources.json");
+          this.bookSourceManager = new BookSourceManager("data/booksources.json", customBookSource);
           // this.bookSourceManager.init();
 
           this.bookShelf = new BookShelf();
@@ -246,4 +254,4 @@ define(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShe
   window.app = app;
   app.init();
   return app;
-});
+}));

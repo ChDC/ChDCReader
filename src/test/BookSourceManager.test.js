@@ -1,4 +1,4 @@
-define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceManager){
+define(["chai", "utils", "BookSourceManager", "CustomBookSource"], function(chai, utils, BookSourceManager, customBookSource){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -9,7 +9,7 @@ define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceM
     let bsm;
 
     before(()=>{
-      bsm = new BookSourceManager();
+      bsm = new BookSourceManager(undefined, customBookSource);
       return bsm.loadConfig("data/booksources.json");
     });
 
@@ -65,7 +65,7 @@ define(["chai", "utils", "BookSourceManager"], function(chai, utils, BookSourceM
       let books;
 
       before(()=>{
-        bsm = new BookSourceManager();
+        bsm = new BookSourceManager(undefined, customBookSource);
         return Promise.all([bsm.loadConfig("data/booksources.json"),
           utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
             config = data;

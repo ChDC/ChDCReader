@@ -1,4 +1,12 @@
-define(function(){
+;(function(factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory();
+  else
+    window["utils"] = factory();
+}(function(){
   "use strict"
 
   return {
@@ -94,11 +102,6 @@ define(function(){
     //         });
     // },
 
-    ajax(method, url, params, dataType, headers,
-                  options){
-      return this.get(url, params, dataType, options);
-    },
-
     cordovaAjax(method='get', url, params={}, dataType, headers={},
                   options){
       if(typeof cordovaHTTP == 'undefined')
@@ -140,31 +143,31 @@ define(function(){
     },
 
     /*
-    * 原始的 HTTP Get
+    * 原始的 HTTP XHR
     * url: 完整的 URL
     * params: 参数
     */
-    get(url, params, dataType, {timeout=5}={}) {
+    ajax(method="GET", url, params, dataType, headers, {timeout=5, retry=1}={}) {
 
       return new Promise((resolve, reject) => {
         if(!url) return reject(new Error("url is null"));
         url = this.__urlJoin(url, params);
         this.log(`Get: ${url}`);
         url = encodeURI(url);
+        retry = retry || 0;
+
         let request = new XMLHttpRequest();
-        request.open("GET", url);
+        request.open(method, url);
         request.timeout = timeout * 1000;
 
+        dataType = (dataType || "").toLowerCase();
         switch(dataType){
-          // case null:
-          // case "":
-          // case undefined:
-          //     request.setRequestHeader("Content-Type", "text/plain");
-          //     break;
           case "json":
-          case "JSON":
             request.setRequestHeader("Content-Type", "application/json");
             break;
+          // default undefined:
+          //     request.setRequestHeader("Content-Type", "text/plain");
+          //     break;
         }
 
         request.onload = () => {
@@ -180,8 +183,17 @@ define(function(){
         };
 
         request.ontimeout = () => {
-          this.error(`Fail to get: ${url}, 网络超时`);
-          reject(new Error("Request Timeout"));
+          if(retry > 0){
+            // 超时重传
+            // request.abort();
+            request.open(method, url);
+            request.send(null);
+            retry -= 1;
+          }
+          else{
+            this.error(`Fail to get: ${url}, 网络超时`);
+            reject(new Error("Request Timeout"));
+          }
         };
 
         request.onabort = () => {
@@ -198,16 +210,14 @@ define(function(){
       });
     },
 
+    get(url, params, dataType, options){
+      return this.ajax("GET", url, params, dataType, {}, options);
+    },
+
     // 获取 JSON 格式
     getJSON(url, params){
       return this.get(url, params, "json");
     },
-
-    // getDOM(url, params){
-    //   return this.get(url, params)
-    //       .then(data => `<div>${this.filterHtmlContent(data)}</div>`);
-
-    // },
 
     // 从 URL 字符串中获取参数对象
     getParamsFromURL(url){
@@ -736,4 +746,4 @@ define(function(){
     }
   };
 
-});
+}));

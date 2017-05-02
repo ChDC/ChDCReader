@@ -1,4 +1,12 @@
-define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["BookSource"] = factory();
+}(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
   "use strict"
 
 
@@ -199,4 +207,4 @@ define(['co', "utils", 'Chapter'], function(co, utils, Chapter) {
               "needSaveCatalog", "lastestChapter"];
 
   return BookSource;
-});
+}));

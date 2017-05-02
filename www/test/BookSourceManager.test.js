@@ -1,6 +1,6 @@
 "use strict";
 
-define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSourceManager) {
+define(["chai", "utils", "BookSourceManager", "CustomBookSource"], function (chai, utils, BookSourceManager, customBookSource) {
 
   var assert = chai.assert;
   var equal = assert.equal;
@@ -10,7 +10,7 @@ define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSource
     var bsm = void 0;
 
     before(function () {
-      bsm = new BookSourceManager();
+      bsm = new BookSourceManager(undefined, customBookSource);
       return bsm.loadConfig("data/booksources.json");
     });
 
@@ -58,7 +58,7 @@ define(["chai", "utils", "BookSourceManager"], function (chai, utils, BookSource
         var books = void 0;
 
         before(function () {
-          bsm = new BookSourceManager();
+          bsm = new BookSourceManager(undefined, customBookSource);
           return Promise.all([bsm.loadConfig("data/booksources.json"), utils.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
             config = data;
             books = config[bsid];

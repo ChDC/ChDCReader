@@ -1,4 +1,12 @@
-define(["co"], function(co) {
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["Infinitelist"] = factory();
+}(["co"], function(co) {
 
   "use strict"
 
@@ -23,23 +31,21 @@ define(["co"], function(co) {
       this.onError = undefined;
       this.onCurrentElementChanged = null;  // 当前正在呈现的元素改变的事件
 
-      // this.__container.on('scroll', this.__scrollEventBindThis);
 
       // 私有成员
       this.__currentElement = null; // 当前元素
-      this.__lastCheckScrollY = null; // 上次检查边界时滑动的位置
-      this.__lastCurrentChangeCheckScrollY = null; // 上次检查当前元素改变时滑动的位置
-      this.__isCheckingBoundary = false; // 是否正在检查边界
-      this.__scrollEventBindThis = this.__scrollEvent.bind(this);
+      this.__isCheckingBoundary = false; // 是否正在检查边界，用于加锁
 
       // 常量
-      this.DOWN_THRESHOLD = 3; // 向下加载长度的阈值
-      this.UP_THRESHOLD = 1; // 向上加载长度的阈值
-      this.CHECK_SCROLL_THRESHOLD = 0.9; // 当滑动多长的距离检查一次
-      this.CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD = 0.1; // 当滑动多长的距离检查一次当前元素改动
-      this.PREVIOUS = 1;
-      this.NEXT = -1;
+      this.DOWN_THRESHOLD = 3; // 向下加载长度的阈值，单位为容器的高度
+      this.UP_THRESHOLD = 1; // 向上加载长度的阈值，单位为容器的高度
+
+      this.PREVIOUS = -1; // 前面，上面
+      this.NEXT = 1;// 后面，下面
+
+      this.__enableScrollSupport();
     }
+
 
     // 获取页内的滚动位置
     getPageScorllTop(){
@@ -64,10 +70,10 @@ define(["co"], function(co) {
       }
 
       // 没有元素了
-      co(this.__addElement(1))
+      co(this.__addElement(this.NEXT))
         .then(newElement => {
           if(newElement){
-            this.__checkCurrentElementChange(); // 强制刷新
+            this.__checkCurrentElementChange(this.NEXT); // 强制刷新
             this.__container.scrollTop = newElement.offsetTop;
           }
         });
@@ -90,10 +96,10 @@ define(["co"], function(co) {
       }
 
       // 没有元素了
-      co(this.__addElement(-1))
+      co(this.__addElement(this.PREVIOUS))
         .then(newElement => {
           if(newElement){
-            this.__checkCurrentElementChange(); // 强制刷新
+            this.__checkCurrentElementChange(this.PREVIOUS); // 强制刷新
             this.__container.scrollTop = newElement.offsetTop;
           }
         });
@@ -101,7 +107,13 @@ define(["co"], function(co) {
 
     // 加载列表数据
     loadList(){
-      return this.checkBoundary();
+
+      return this.checkBoundary(this.NEXT)
+        .then(() => {
+          // 如果允许向上检查就检查
+          if(this.options.ifCheckPrevious)
+            return this.checkBoundary(this.PREVIOUS, true);
+        });
     }
 
     // 关闭
@@ -125,40 +137,73 @@ define(["co"], function(co) {
       return Array.from(ics).indexOf(this.__currentElement);
     }
 
-    // 容器的滚动事件
-    __scrollEvent(event){
-      const scrollY = this.__container.scrollTop;
 
-      if(this.__lastCurrentChangeCheckScrollY == null)
-        this.__checkCurrentElementChange();
-      else {
+    __enableScrollSupport(){
+
+      let __lastCheckScrollY = 0; // 上次检查边界时滑动的位置
+      let __lastCurrentChangeCheckScrollY = 0; // 上次检查当前元素改变时滑动的位置
+      let __lastScrollTop = 0; // 用于确定滚动方向的上次滚动的记录值
+      const CHECK_SCROLL_THRESHOLD = 0.9; // 当滑动多长的距离检查一次
+      const CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD = 0.1; // 当滑动多长的距离检查一次当前元素改动
+
+      // 容器的滚动事件
+      let __scrollEvent = (event) => {
+        const target = event.currentTarget;
+        let cst = target.scrollTop;
+        let offset = cst - __lastScrollTop;
+        event.scrollTop = cst;
+        let direction = offset >= 0 ? 1 : -1;
+
+        if(offset > 0)
+          // 向下滚动
+          __onScroll(event, direction);
+        else if(offset < 0)
+          // 向上滚动
+          __onScroll(event, direction);
+        __lastScrollTop = cst;
+      }
+
+      // 处理滚动的业务
+      let __onScroll = (event, direction) => {
+
         const wh = this.__container.offsetHeight;
-        if(Math.abs(scrollY - this.__lastCurrentChangeCheckScrollY) > wh * this.CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD) {
-          this.__checkCurrentElementChange();
+        if(Math.abs(event.scrollTop - __lastCurrentChangeCheckScrollY) > wh * CUTTENTELEMENT_CHECK_CHECK_SCROLL_THRESHOLD) {
+          __lastCurrentChangeCheckScrollY = this.__container.scrollTop;
+          this.__checkCurrentElementChange(direction);
+        }
+
+        if(!this.__isCheckingBoundary && Math.abs(event.scrollTop - __lastCheckScrollY) > wh * CHECK_SCROLL_THRESHOLD) {
+          if(!this.options.ifCheckPrevious && direction == this.PREVIOUS)
+            return;
+          __lastCheckScrollY = this.__container.scrollTop;
+          this.checkBoundary(direction);
         }
       }
 
-      if(this.__lastCheckScrollY == null)
-        this.checkBoundary();
-      else{
-        const wh = this.__container.offsetHeight;
-        if(Math.abs(scrollY - this.__lastCheckScrollY) > wh * this.CHECK_SCROLL_THRESHOLD) {
-          this.checkBoundary();
-        }
-      }
+      this.__scrollEventBindThis = __scrollEvent.bind(this);
+      this.__container.addEventListener('scroll', this.__scrollEventBindThis);
     }
 
     // 检查当前元素是否改变
-    __checkCurrentElementChange(){
-      this.__lastCurrentChangeCheckScrollY = this.__container.scrollTop;
-      if(!this.__currentElement) return;
+    __checkCurrentElementChange(direction){
+      // if(!this.__currentElement) return;
+      const CURRENT_ELEMENT_CHANGED_THRESHOLD = 0.1; // 检查当前元素变化的阈值，单位为容器的高度
+      const wh = this.__container.offsetHeight;
 
-      const cis = this.computeCurrentElements();
-      const i = cis.findIndex(e => e == this.__currentElement);
-      if(i < 0)
-        this.setCurrentElement(cis[0]);
+      let currentElement;
+      const elements = Array.from(this.__elementList.children);
+      // 如果正在向下滑动就查找第一个在下边界的元素
+      if(direction > 0)
+        currentElement = elements.reverse().find(e =>
+          e.getBoundingClientRect().top < (1 - CURRENT_ELEMENT_CHANGED_THRESHOLD) * wh);
+      // 如果正在向上滑动就查找第一个在上边界的元素
+      else if(direction < 0)
+        currentElement = elements.find(e =>
+          e.getBoundingClientRect().top + e.offsetHeight > CURRENT_ELEMENT_CHANGED_THRESHOLD * wh);
+
+      if(currentElement != this.__currentElement)
+        this.setCurrentElement(currentElement);
     }
-
 
     // 设置当前元素
     setCurrentElement(newCurrentElement){
@@ -173,47 +218,20 @@ define(["co"], function(co) {
 
 
     // 向下、上检查
-    checkBoundary(){
+    checkBoundary(direction){
       // 加锁
       if(this.__isCheckingBoundary) return;
       this.__isCheckingBoundary = true;
-      this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
+      // this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
 
-      const curScrollY = this.__container.scrollTop;
-      let scrollDirection = this.PREVIOUS;
-      if(this.__lastCheckScrollY)
-        scrollDirection = curScrollY > this.__lastCheckScrollY ? this.PREVIOUS : this.NEXT;
-      this.__lastCheckScrollY = curScrollY;
-
-
-      let self = this;
-      return co(function*(){
-        yield self.__checkBoundary(scrollDirection, true);
-        yield self.__checkBoundary(-scrollDirection, true);
-
-        // 解锁
-        self.__container.addEventListener('scroll', self.__scrollEventBindThis);
-        self.__isCheckingBoundary = false;
-      });
+      return co(this.__checkBoundary(direction, false)) // 不清空过界的元素
+        .then(() => {
+          // 解锁
+          // this.__container.addEventListener('scroll', this.__scrollEventBindThis);
+          this.__isCheckingBoundary = false;
+        });
     }
 
-    // 计算当前元素
-    computeCurrentElements(){
-      const wh = this.__container.offsetHeight;
-      const elements = this.__elementList.children;
-      const result = [];
-      for(let element of Array.from(elements)){
-        const top = element.getBoundingClientRect().top;
-        const height = element.offsetHeight;
-        if(top + height <= 0.1 * wh)
-          continue;
-        else if(top > 0.9 * wh)
-          break;
-        else
-          result.push(element);
-      }
-      return result;
-    }
 
     // 在指定方向上检查指定元素是否超出边界
     __isOutBoundary(element, direction){
@@ -240,28 +258,32 @@ define(["co"], function(co) {
     }
 
     // 清理超出边界的元素
-    clearOutBoundary(){
+    clearOutBoundary(direction){
       const ies = this.__elementList.children;
       const cii = this.__getCurrentElementIndex();
 
-      // 清理后面的元素
-      for(let i = ies.length - 1; i >=0; i--){
-        let element = ies[i];
-        if(!this.__isOutBoundary(element, this.PREVIOUS) || i <= cii + 1)
-          break;
-        element.remove();
-      }
+      let select = !direction ? 3 : direction > 0 ? 1 : 2;
 
-      // 清理前面的元素
-      for(let i = 0; i < ies.length; i++){
-        let element = ies[i];
-        if(!this.__isOutBoundary(element, this.NEXT) || i >= cii - 1)
-          break;
-        const elementHeight = element.offsetHeight;
-        const cs = this.__container.scrollTop;
-        element.remove();
-        this.__container.scrollTop = cs - elementHeight;
-      }
+      if(select & 1)
+        // 清理后面的元素
+        for(let i = ies.length - 1; i >=0; i--){
+          let element = ies[i];
+          if(!this.__isOutBoundary(element, this.NEXT) || i <= cii + 1)
+            break;
+          element.remove();
+        }
+
+      if(select & 2)
+        // 清理前面的元素
+        for(let i = 0; i < ies.length; i++){
+          let element = ies[i];
+          if(!this.__isOutBoundary(element, this.PREVIOUS) || i >= cii - 1)
+            break;
+          const elementHeight = element.offsetHeight;
+          const cs = this.__container.scrollTop;
+          element.remove();
+          this.__container.scrollTop = cs - elementHeight;
+        }
     }
 
     // 获取边界元素
@@ -350,14 +372,10 @@ define(["co"], function(co) {
     // 检查指定方向的边界
     *__checkBoundary(direction, ifClear){
 
-      // 如果不允许向上检查就退出
-      if(!this.options.ifCheckPrevious && direction < 0)
-        return Promise.resolve();
-
       while(!this.__isBoundarySatisfied(direction)){
         yield this.__addElement(direction);
         if(ifClear)
-          this.clearOutBoundary();
+          this.clearOutBoundary(-direction);
       }
 
       return Promise.resolve();
@@ -365,4 +383,4 @@ define(["co"], function(co) {
   }
 
   return Infinitelist;
-});
+}));

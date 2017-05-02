@@ -1,10 +1,16 @@
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils, Book, Chapter, ReadingRecord) {
+;(function (deps, factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["BookShelf"] = factory();
+})(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils, Book, Chapter, ReadingRecord) {
   "use strict";
 
   var BookShelf = function () {
@@ -21,12 +27,12 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
     }
 
     _createClass(BookShelf, [{
-      key: '__getSaveCatalogLocation',
+      key: "__getSaveCatalogLocation",
       value: function __getSaveCatalogLocation(bookName, bookAuthor, sourceId) {
-        return 'catalog_' + bookName + '.' + bookAuthor + '_' + sourceId;
+        return "catalog_" + bookName + "." + bookAuthor + "_" + sourceId;
       }
     }, {
-      key: 'load',
+      key: "load",
       value: function load(bookSourceManager) {
         var _this = this;
 
@@ -90,7 +96,7 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
         });
       }
     }, {
-      key: 'save',
+      key: "save",
       value: function save() {
         var _this2 = this;
 
@@ -110,7 +116,7 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
         });
       }
     }, {
-      key: 'newBookShelfItem',
+      key: "newBookShelfItem",
       value: function newBookShelfItem(book, readingRecord) {
         return {
           book: book,
@@ -118,7 +124,7 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
           lockLocation: -1 };
       }
     }, {
-      key: 'addBook',
+      key: "addBook",
       value: function addBook(book, readingRecord) {
         if (!this.hasBook(book)) {
           var newItem = this.newBookShelfItem(book, readingRecord);
@@ -128,17 +134,17 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
         }
       }
     }, {
-      key: 'toggleLockBook',
+      key: "toggleLockBook",
       value: function toggleLockBook(bookshelfitem) {
         if (this.isLockedBook(bookshelfitem)) bookshelfitem.lockLocation = -1;else bookshelfitem.lockLocation = this.books.indexOf(bookshelfitem);
       }
     }, {
-      key: 'isLockedBook',
+      key: "isLockedBook",
       value: function isLockedBook(bookshelfitem) {
         return bookshelfitem.lockLocation >= 0;
       }
     }, {
-      key: 'sortBooks',
+      key: "sortBooks",
       value: function sortBooks(functionOrArray) {
         var _this3 = this;
 
@@ -176,7 +182,7 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
         return true;
       }
     }, {
-      key: 'hasBook',
+      key: "hasBook",
       value: function hasBook(book) {
         if (!book) return book;
         return this.books.find(function (e) {
@@ -185,7 +191,7 @@ define(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils,
         });
       }
     }, {
-      key: 'removeBook',
+      key: "removeBook",
       value: function removeBook(book) {
         var index = this.books.findIndex(function (e) {
           return e.book == book;

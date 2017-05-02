@@ -1,4 +1,12 @@
-define(['utils'], function(utils){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["Page"] = factory();
+}(['utils'], function(utils){
   class Page{
 
     constructor(){
@@ -129,4 +137,4 @@ define(['utils'], function(utils){
 
 
   return Page;
-});
+}));
