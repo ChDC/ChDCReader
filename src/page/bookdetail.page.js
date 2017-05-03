@@ -62,7 +62,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
     loadBookChapters(id){
 
       this.bookChapterList.empty();
-      this.book.getCatalog(false, undefined, true)
+      this.book.getCatalog({groupByVolume: true})
         .then(catalog => {
           this.bookChapterList.append(this.buildCatalogView(catalog,
             e => {

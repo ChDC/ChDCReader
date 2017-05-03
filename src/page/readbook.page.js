@@ -57,7 +57,12 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.lastReadingScrollTop = this.readingRecord.getPageScrollTop();
       this.book.checkBookSources();
       this.loadView();
-      this.refreshChapterList();
+
+      this.book.getChapterIndex(this.readingRecord.chapterTitle, this.readingRecord.chapterIndex)
+        .then(index => {
+          this.readingRecord.chapterIndex = index;
+          this.refreshChapterList();
+        })
     }
 
     onPause(){
@@ -196,7 +201,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         if(this.readingRecord.chapterIndex){
           this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.getChapterIndex(), undefined, oldMainSource)
             .then(({chapter, index}) => {
-              this.readingRecord.setReadingRecord(index, chapter.title, {});
+              this.readingRecord.setReadingRecord(chapter.title, index, {});
               this.refreshChapterList();
             })
             .catch(error => {
@@ -233,14 +238,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       app.showLoading();
       $('#listCatalogContainer').height($(window).height() * 0.5);
 
-      return this.book.getCatalog(forceRefresh, undefined, true)
+      return this.book.getCatalog(({forceRefresh: forceRefresh, groupByVolume: true}))
         .then(catalog => {
           const listCatalog = $("#listCatalog");
           listCatalog.empty();
           listCatalog.append(this.buildCatalogView(catalog,
             (e) => {
               let chapter = $(e.currentTarget).data("chapter");
-              this.readingRecord.setReadingRecord(chapter.index, chapter.title, {});
+              this.readingRecord.setReadingRecord(chapter.title, chapter.index, {});
               this.refreshChapterList();
             }, "#listCatalog",
             (chapter, nc) => {
@@ -261,6 +266,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       app.showLoading();
       let opts = Object.assign({}, this.readingRecord.getOptions(), options);
       if(this.chapterList) this.chapterList.close();
+
       this.chapterList = new Infinitelist(
         $('#chapterContainer')[0],
         $('#chapters')[0],
@@ -272,19 +278,18 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
       this.chapterList.onCurrentElementChanged = ({new: newValue, old: oldValue}) => {
         newValue = $(newValue);
-        const index = newValue.data('chapterIndex');
-        const title = newValue.data('chapterTitle');
-        const options = newValue.data('options');
-        if(index >= 0){
-          this.readingRecord.setReadingRecord(index, title, options);
-          $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name)
-            .click(e => window.open(this.book.getOfficialDetailLink(options.contentSourceId), '_system'));
+        const readingRecord = newValue.data('readingRecord');
+        const contentSourceId = readingRecord.options.contentSourceId;
+        if(readingRecord.chapterIndex >= 0){
+          Object.assign(this.readingRecord, readingRecord);
+          $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name)
+            .click(e => window.open(this.book.getOfficialDetailLink(contentSourceId), '_system'));
         }
         else{
           // 已经读完了
           this.readingRecord.setFinished(true)
         }
-        $(".labelChapterTitle").text(title);
+        $(".labelChapterTitle").text(readingRecord.chapterTitle);
         app.hideLoading();
       };
       this.chapterList.onFirstNewElementFinished = ({newElement, direction}) => {
@@ -371,9 +376,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
       nc.find(".chapter-content").html(content);
 
-      nc.data('chapterIndex', index);
-      nc.data('chapterTitle', chapter.title);
-      nc.data('options', options);
+      nc.data("readingRecord", new ReadingRecord({chapterTitle: chapter.title, chapterIndex: index, options: options}));
       return nc[0];
     }
 

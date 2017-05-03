@@ -27,22 +27,18 @@
     }
   }
 
-
-  // 判断两个标题是否相等，传入的是章节
-  Chapter.equalTitle = function(chapterA, chapterB){
-    return Chapter.equalTitle2(chapterA.title, chapterB.title);
-  }
-
   // 判断两个标题是否相等，传入的是章节标题
-  Chapter.equalTitle2 = function(chapterTitleA, chapterTitleB){
+  Chapter.equalTitle = function(ca, cb){
 
-    if(chapterTitleA == chapterTitleB) return true;
-    if(!chapterTitleA || !chapterTitleB) return false;
+    if(ca == cb) return 4;
+    if(!ca || !cb) return 0;
 
-    let cs = [chapterTitleA, chapterTitleB];
+    let cs = [ca, cb].map(c => typeof(c) != "string" ? c.title : c);
+    if(cs[0] == cs[1]) return 4;
+
     // 去掉标点符号啥的
     cs = cs.map(Chapter.stripString);
-    if(cs[0] == cs[1]) return true;
+    if(cs[0] == cs[1]) return 3;
 
     // 将大写数字转换为小写数字
     const nums = '零一二两三四五六七八九';
@@ -52,32 +48,15 @@
         let i = nums.indexOf(m);
         return i <= 2 ? i : i - 1;
       }));
-    if(cs[0] == cs[1]) return true;
+    if(cs[0] == cs[1]) return 2;
 
     // 去掉所有的数字
     const numPattern = /第[0123456789零一二两三四五六七八九十百千万亿\d]+[章节卷]/g;
     cs = cs.map(c => c.replace(numPattern, ''));
-    if(cs[0] == cs[1]) return true;
+    if(cs[0] == cs[1]) return 1;
 
-    return false;
+    return 0;
   }
-
-  // 去掉“第**章”字样来判断两个标题是否相等，传入的是章节
-  // Chapter.equalTitleWithoutNum = function(chapterA, chapterB){
-  //   let chapterTitleA = chapterA.title;
-  //   let chapterTitleB = chapterB.title;
-
-  //   if(!chapterTitleA || !chapterTitleB)
-  //     return false;
-
-  //   const numPattern = /第[零一二两三四五六七八九十百千万亿\d]+章/g;
-  //   chapterTitleA = chapterTitleA.replace(numPattern, '');
-  //   chapterTitleB = chapterTitleB.replace(numPattern, '');
-  //   const cA = Chapter.stripString(chapterTitleA);
-  //   const cB = Chapter.stripString(chapterTitleB);
-  //   return cA == cB;
-  // }
-
 
   // 比较去掉所有空格和标点符号之后的所有符号
   Chapter.stripString = function(str){
