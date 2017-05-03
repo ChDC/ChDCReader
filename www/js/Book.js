@@ -118,30 +118,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "getCatalog",
-      value: function getCatalog(forceRefresh) {
-        var bookSourceId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.mainSourceId;
-
+      value: function getCatalog() {
         var _this3 = this;
 
-        var groupByVolume = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-        var countPerGroup = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 100;
-
+        var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            _ref$forceRefresh = _ref.forceRefresh,
+            forceRefresh = _ref$forceRefresh === undefined ? false : _ref$forceRefresh,
+            _ref$bookSourceId = _ref.bookSourceId,
+            bookSourceId = _ref$bookSourceId === undefined ? this.mainSourceId : _ref$bookSourceId,
+            _ref$groupByVolume = _ref.groupByVolume,
+            groupByVolume = _ref$groupByVolume === undefined ? false : _ref$groupByVolume,
+            _ref$countPerGroup = _ref.countPerGroup,
+            countPerGroup = _ref$countPerGroup === undefined ? 100 : _ref$countPerGroup;
 
         return this.getBookSource(bookSourceId).then(function (bs) {
           return bs.getCatalog(forceRefresh);
         }).then(function (catalog) {
           if (!catalog || catalog.length <= 0) return Promise.reject(501);
           if (!groupByVolume) return catalog;
-          return _this3.groupCatalogByVolume(bookSourceId, catalog, countPerGroup);
+          return _this3.groupCatalogByVolume(catalog, { bookSourceId: bookSourceId, countPerGroup: countPerGroup });
         });
       }
     }, {
       key: "groupCatalogByVolume",
-      value: function groupCatalogByVolume() {
-        var bookSourceId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.mainSourceId;
-        var catalog = arguments[1];
-        var countPerGroup = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
-
+      value: function groupCatalogByVolume(catalog) {
+        var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            _ref2$bookSourceId = _ref2.bookSourceId,
+            bookSourceId = _ref2$bookSourceId === undefined ? this.mainSourceId : _ref2$bookSourceId,
+            _ref2$countPerGroup = _ref2.countPerGroup,
+            countPerGroup = _ref2$countPerGroup === undefined ? 100 : _ref2$countPerGroup;
 
         if (!catalog) return catalog;
         catalog.forEach(function (c, i) {
@@ -229,7 +234,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return Promise.reject(203);
         }
 
-        return this.getCatalog(forceRefresh, bookSourceId).then(function (catalog) {
+        return this.getCatalog({ forceRefresh: forceRefresh, bookSourceId: bookSourceId }).then(function (catalog) {
           if (chapterIndex >= 0 && chapterIndex < catalog.length) return catalog[chapterIndex];else if (chapterIndex >= catalog.length) return Promise.reject(202);else return Promise.reject(203);
         });
       }
@@ -254,12 +259,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               switch (_context.prev = _context.next) {
                 case 0:
                   _context.next = 2;
-                  return self.getCatalog(forceRefresh, bookSourceId);
+                  return self.getCatalog({ forceRefresh: forceRefresh, bookSourceId: bookSourceId });
 
                 case 2:
                   catalog = _context.sent;
                   _context.next = 5;
-                  return self.getCatalog(forceRefresh, sourceB);
+                  return self.getCatalog({ forceRefresh: forceRefresh, bookSourceId: sourceB });
 
                 case 5:
                   catalogB = _context.sent;
@@ -364,18 +369,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "__getChapterFromContentSources",
-      value: regeneratorRuntime.mark(function __getChapterFromContentSources(index, _ref) {
-        var _ref$bookSourceId = _ref.bookSourceId,
-            bookSourceId = _ref$bookSourceId === undefined ? this.mainSourceId : _ref$bookSourceId,
-            _ref$count = _ref.count,
-            count = _ref$count === undefined ? 1 : _ref$count,
-            excludes = _ref.excludes,
-            contentSourceId = _ref.contentSourceId,
-            contentSourceChapterIndex = _ref.contentSourceChapterIndex,
-            onlyCacheNoLoad = _ref.onlyCacheNoLoad,
-            _ref$noInfluenceWeigh = _ref.noInfluenceWeight,
-            noInfluenceWeight = _ref$noInfluenceWeigh === undefined ? false : _ref$noInfluenceWeigh,
-            forceRefresh = _ref.forceRefresh;
+      value: regeneratorRuntime.mark(function __getChapterFromContentSources(index, _ref3) {
+        var _ref3$bookSourceId = _ref3.bookSourceId,
+            bookSourceId = _ref3$bookSourceId === undefined ? this.mainSourceId : _ref3$bookSourceId,
+            _ref3$count = _ref3.count,
+            count = _ref3$count === undefined ? 1 : _ref3$count,
+            excludes = _ref3.excludes,
+            contentSourceId = _ref3.contentSourceId,
+            contentSourceChapterIndex = _ref3.contentSourceChapterIndex,
+            onlyCacheNoLoad = _ref3.onlyCacheNoLoad,
+            _ref3$noInfluenceWeig = _ref3.noInfluenceWeight,
+            noInfluenceWeight = _ref3$noInfluenceWeig === undefined ? false : _ref3$noInfluenceWeig,
+            forceRefresh = _ref3.forceRefresh;
 
         var _marked, catalog, chapterA, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
 
@@ -592,9 +597,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 addChapterToResult = function addChapterToResult(chapterB, indexB, source) {
                   if (!noInfluenceWeight) self.sources[source].weight += FOUND_WEIGHT;
 
+                  var chapter = new Chapter();
+                  Object.assign(chapter, chapterA);
+                  chapter.content = chapterB.content;
+
                   result.push({
-                    chapter: chapterB,
-                    title: chapterA.title,
+                    chapter: chapter,
                     index: index,
                     options: {
                       contentSourceId: source,
@@ -605,7 +613,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 _marked = [getChapterFromContentSources2, getChapterFromSelectBookSourceAndSelectSourceChapterIndex].map(regeneratorRuntime.mark);
                 _context4.next = 8;
-                return this.getCatalog(forceRefresh, bookSourceId);
+                return this.getCatalog({ forceRefresh: forceRefresh, bookSourceId: bookSourceId });
 
               case 8:
                 catalog = _context4.sent;
@@ -638,6 +646,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }, __getChapterFromContentSources, this);
       })
+    }, {
+      key: "getChapterIndex",
+      value: function getChapterIndex(title, index) {
+        var _ref4 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+            _ref4$bookSourceId = _ref4.bookSourceId,
+            bookSourceId = _ref4$bookSourceId === undefined ? this.mainSourceId : _ref4$bookSourceId,
+            _ref4$forceRefresh = _ref4.forceRefresh,
+            forceRefresh = _ref4$forceRefresh === undefined ? false : _ref4$forceRefresh;
+
+        return this.getCatalog({ bookSourceId: bookSourceId, forceRefresh: forceRefresh }).then(function (catalog) {
+          if (index != undefined) {
+            var tc = catalog[index];
+            if (Chapter.equalTitle(tc, title)) return index;
+
+            var ir = catalog.slice(index + 1).findIndex(function (c) {
+              return !!Chapter.equalTitle(c, title);
+            });
+            var il = catalog.slice(0, index).reverse().findIndex(function (c) {
+              return !!Chapter.equalTitle(c, title);
+            });
+
+            if (ir >= 0 && (il < 0 || ir < il)) return index + ir + 1;else if (il >= 0 && (ir < 0 || il < ir)) return index - il - 1;else return -1;
+          }
+          return catalog.findIndex(function (c) {
+            return !!Chapter.equalTitle(c, title);
+          });
+        });
+      }
     }, {
       key: "buildChapterIterator",
       value: function buildChapterIterator(chapterIndex, direction, options) {

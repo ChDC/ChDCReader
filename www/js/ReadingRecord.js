@@ -16,14 +16,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   var ReadingRecord = function () {
     function ReadingRecord() {
       var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref$chapterIndex = _ref.chapterIndex,
-          chapterIndex = _ref$chapterIndex === undefined ? 0 : _ref$chapterIndex,
           _ref$chapterTitle = _ref.chapterTitle,
           chapterTitle = _ref$chapterTitle === undefined ? "" : _ref$chapterTitle,
-          _ref$pageScrollTop = _ref.pageScrollTop,
-          pageScrollTop = _ref$pageScrollTop === undefined ? 0 : _ref$pageScrollTop,
+          _ref$chapterIndex = _ref.chapterIndex,
+          chapterIndex = _ref$chapterIndex === undefined ? 0 : _ref$chapterIndex,
           _ref$options = _ref.options,
-          options = _ref$options === undefined ? {} : _ref$options;
+          options = _ref$options === undefined ? {} : _ref$options,
+          _ref$pageScrollTop = _ref.pageScrollTop,
+          pageScrollTop = _ref$pageScrollTop === undefined ? 0 : _ref$pageScrollTop;
 
       _classCallCheck(this, ReadingRecord);
 
@@ -62,7 +62,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "setReadingRecord",
-      value: function setReadingRecord(chapterIndex, chapterTitle, options) {
+      value: function setReadingRecord(chapterTitle, chapterIndex, options) {
         this.chapterIndex = chapterIndex;
         this.chapterTitle = chapterTitle;
         this.options = options;
@@ -85,7 +85,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "equalChapterTitle",
       value: function equalChapterTitle(chapterTitle) {
-        return Chapter.equalTitle2(chapterTitle, this.chapterTitle);
+        return Chapter.equalTitle(chapterTitle, this.chapterTitle);
       }
     }, {
       key: "getReadingRecordStatus",
