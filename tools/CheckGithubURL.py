@@ -45,7 +45,7 @@ def main():
 
     opt, args = parser.parse_args()
 
-    opt.url = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/dev/'
+    opt.url = 'https://raw.githubusercontent.com/ChDC/ChDCNovelReader/master/'
     opt.dir = 'www'
     opt.md5 = 'www/chcp.manifest'
 
