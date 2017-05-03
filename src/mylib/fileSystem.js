@@ -30,7 +30,6 @@
 
     // 删除目录
     removeDirectory(dirEntry, recursively=true){
-      debugger;
       if(recursively)
         return new Promise((resolve, reject) => dirEntry.removeRecursively(resolve, reject));
       else
@@ -157,7 +156,6 @@
     removePath(file, isCacheDir=false, recursively=true){
       return this.getFileEntryFromPath(file, isCacheDir, {create: false, exclusive: false})
         .then(fe => {
-          debugger;
           if(fe.isFile)
             this.removeFile(fe);
           else

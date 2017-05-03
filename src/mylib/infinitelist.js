@@ -6,14 +6,14 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["Infinitelist"] = factory();
-}(["co"], function(co) {
+}(["co", "utils"], function(co, utils) {
 
   "use strict"
 
   class Infinitelist{
 
     // options
-    // * ifCheckPrevious 是否检查前面的内容边界
+    // * disableCheckPrevious 是否检查前面的内容边界
     constructor(container, elementList,
             nextElementGenerator, previousElementGenerator,
             options={}){
@@ -25,11 +25,11 @@
       this.options = options;
 
       // 事件
-      // this.onFirstNewElementFinished = undefined; // 当获取第一个列表元素完成的函数
-      this.onNewElementFinished = undefined; // 获取列表元素完成的函数
-      this.onNoNewElementToLoad = undefined; // 当没有元素可以获取到的时候触发
-      this.onError = undefined;
-      this.onCurrentElementChanged = null;  // 当前正在呈现的元素改变的事件
+      // firstNewElementFinished // 当获取第一个列表元素完成的函数
+      // newElementFinished // 获取列表元素完成的函数
+      // NoNewElementToLoad // 当没有元素可以获取到的时候触发
+      // error
+      // CurrentElementChanged // 当前正在呈现的元素改变的事件
 
 
       // 私有成员
@@ -44,6 +44,7 @@
       this.NEXT = 1;// 后面，下面
 
       this.__enableScrollSupport();
+      utils.addEventSupport(this);
     }
 
 
@@ -61,28 +62,33 @@
     }
 
     // 滑动到下一个元素
-    nextElement(forceUpdate=false){
+    nextElement(){
       let i = this.__getCurrentElementIndex();
       const ics = this.__elementList.children;
       if(i >= 0 && ++i < ics.length){
         this.__container.scrollTop = ics[i].offsetTop;
         return Promise.resolve();
       }
-      if(!forceUpdate)
-        return Promise.resolve();
+
+      if(!this.options.disableCheckNext)
+        return new Promise((resolve, reject) => {
+          this.addEventListener("newElementAddedToDOM", ()=>{
+            resolve();
+          }, true);
+        });
+
       // 没有元素了
       return co(this.__addElement(this.NEXT))
         .then(newElement => {
           if(newElement){
-            this.__checkCurrentElementChange(this.NEXT); // 强制刷新
             this.__container.scrollTop = newElement.offsetTop;
-            this.__checkCurrentElementChange(this.NEXT);
+            this.__checkCurrentElementChange(this.NEXT); // 强制刷新
           }
         });
     }
 
     // 滑动到上一个元素
-    previousElement(forceUpdate=false){
+    previousElement(){
       // 如果当前位置不是本章首位就滚动到本章首位
       let st = this.getPageScorllTop();
       if(st > 0){
@@ -96,15 +102,15 @@
         this.__container.scrollTop = ics[i].offsetTop;
         return Promise.resolve();
       }
-      if(!forceUpdate)
-        return Promise.resolve();
+
       // 没有元素了
+      if(!this.options.disableCheckPrevious)
+        return Promise.reject();
       return co(this.__addElement(this.PREVIOUS))
         .then(newElement => {
           if(newElement){
-            this.__checkCurrentElementChange(this.PREVIOUS); // 强制刷新
             this.__container.scrollTop = newElement.offsetTop;
-            this.__checkCurrentElementChange(this.PREVIOUS);
+            this.__checkCurrentElementChange(this.PREVIOUS); // 强制刷新
           }
         });
     }
@@ -115,7 +121,7 @@
       return this.checkBoundary(this.NEXT)
         .then(() => {
           // 如果允许向上检查就检查
-          if(this.options.ifCheckPrevious)
+          if(!this.options.disableCheckPrevious)
             return this.checkBoundary(this.PREVIOUS, true);
         });
     }
@@ -177,7 +183,7 @@
         }
 
         if(!this.__isCheckingBoundary && Math.abs(event.scrollTop - __lastCheckScrollY) > wh * CHECK_SCROLL_THRESHOLD) {
-          if(!this.options.ifCheckPrevious && direction == this.PREVIOUS)
+          if(this.options.disableCheckPrevious && direction == this.PREVIOUS)
             return;
           __lastCheckScrollY = this.__container.scrollTop;
           this.checkBoundary(direction);
@@ -216,8 +222,7 @@
         return;
 
       this.__currentElement = newCurrentElement;
-      if(this.onCurrentElementChanged)
-        this.onCurrentElementChanged(this, newCurrentElement, oldValue);
+      this.fireEvent("currentElementChanged", {new: newCurrentElement, old: oldValue});
     }
 
 
@@ -322,8 +327,7 @@
           return Promise.resolve(null);
       }
       catch(error){
-        if(this.onError)
-          this.onError(this, error);
+        this.fireEvent("error", {error: error});
         throw error;
       }
 
@@ -338,6 +342,9 @@
         this.__container.scrollTop = cs + newElement.offsetHeight;
       }
 
+      if(newElement)
+        this.fireEvent("newElementAddedToDOM", {newElement: newElement, direction: direction});
+
       if(isFirstElement)
         this.setCurrentElement(newElement); // 设置当前元素为第一个元素
 
@@ -346,7 +353,7 @@
         // 标记最后一个元素为边界
         const be = this.__getBoundaryElement(direction);
         if(be) be.dataset['end'] = direction;
-        if(this.onNoNewElementToLoad) this.onNoNewElementToLoad(this, be);
+        this.fireEvent("noNewElementToLoad", {boundaryElement: be});
       }
 
       // 将所有的图片的 onload 事件都设置好
@@ -365,10 +372,10 @@
           })));
       }
 
-      if(isFirstElement && this.onFirstNewElementFinished)
-        this.onFirstNewElementFinished(this, newElement, direction);
-      if(newElement && this.onNewElementFinished)
-        this.onNewElementFinished(this, newElement, direction);
+      if(isFirstElement)
+        this.fireEvent("firstNewElementFinished", {newElement: newElement, direction: direction});
+      if(newElement)
+        this.fireEvent("newElementFinished", {newElement: newElement, direction: direction});
 
       return Promise.resolve(newElement);
     }
