@@ -157,7 +157,6 @@
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
     onUpdateInstalled: function onUpdateInstalled() {
-      debugger;
       localStorage.setItem("updated", true);
 
       require(["executeOnUpdated"], function (executeOnUpdated) {

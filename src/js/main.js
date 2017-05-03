@@ -196,7 +196,6 @@
     // 资源更新完成后触发的事件，不过不能显示界面等
     // 可用于清理更新数据等
     onUpdateInstalled(){
-      debugger;
       localStorage.setItem("updated", true);
       // location.reload();
       require(["executeOnUpdated"], (executeOnUpdated)=>executeOnUpdated.run());
