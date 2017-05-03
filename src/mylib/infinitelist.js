@@ -61,46 +61,50 @@
     }
 
     // 滑动到下一个元素
-    nextElement(){
+    nextElement(forceUpdate=false){
       let i = this.__getCurrentElementIndex();
       const ics = this.__elementList.children;
       if(i >= 0 && ++i < ics.length){
         this.__container.scrollTop = ics[i].offsetTop;
-        return;
+        return Promise.resolve();
       }
-
+      if(!forceUpdate)
+        return Promise.resolve();
       // 没有元素了
-      co(this.__addElement(this.NEXT))
+      return co(this.__addElement(this.NEXT))
         .then(newElement => {
           if(newElement){
             this.__checkCurrentElementChange(this.NEXT); // 强制刷新
             this.__container.scrollTop = newElement.offsetTop;
+            this.__checkCurrentElementChange(this.NEXT);
           }
         });
     }
 
     // 滑动到上一个元素
-    previousElement(){
+    previousElement(forceUpdate=false){
       // 如果当前位置不是本章首位就滚动到本章首位
       let st = this.getPageScorllTop();
       if(st > 0){
         this.__container.scrollTop = this.__currentElement.offsetTop;
-        return;
+        return Promise.resolve();
       }
 
       let i = this.__getCurrentElementIndex();
       if(--i >= 0){
         const ics = this.__elementList.children;
         this.__container.scrollTop = ics[i].offsetTop;
-        return;
+        return Promise.resolve();
       }
-
+      if(!forceUpdate)
+        return Promise.resolve();
       // 没有元素了
-      co(this.__addElement(this.PREVIOUS))
+      return co(this.__addElement(this.PREVIOUS))
         .then(newElement => {
           if(newElement){
             this.__checkCurrentElementChange(this.PREVIOUS); // 强制刷新
             this.__container.scrollTop = newElement.offsetTop;
+            this.__checkCurrentElementChange(this.PREVIOUS);
           }
         });
     }

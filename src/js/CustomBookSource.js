@@ -166,6 +166,7 @@
       afterGetBookCatalog(catalog, args){
         // 将每个章节的卷中的书名去掉
         let book = args[1].book;
+        if(!book || !book.name) return catalog;
         catalog.forEach(c => c.volume = c.volume.replace(`【${book.name}】`, "").trim());
         return catalog;
       },
