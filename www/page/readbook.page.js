@@ -341,12 +341,14 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
           newValue = $(newValue);
           var readingRecord = newValue.data('readingRecord');
-          var contentSourceId = readingRecord.options.contentSourceId;
           if (readingRecord.chapterIndex >= 0) {
-            Object.assign(_this7.readingRecord, readingRecord);
-            $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name).click(function (e) {
-              return window.open(_this7.book.getOfficialDetailLink(contentSourceId), '_system');
-            });
+            (function () {
+              var contentSourceId = readingRecord.options.contentSourceId;
+              Object.assign(_this7.readingRecord, readingRecord);
+              $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name).click(function (e) {
+                return window.open(_this7.book.getOfficialDetailLink(contentSourceId), '_system');
+              });
+            })();
           } else {
             _this7.readingRecord.setFinished(true);
           }
@@ -382,9 +384,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         });
         nc.find("img.offical-site").attr('src', "img/logo/" + this.book.mainSourceId + ".png");
 
-        nc.data('chapterIndex', -1);
-        nc.data('chapterTitle', '读完啦');
-
+        nc.data("readingRecord", new ReadingRecord({ chapterTitle: "读完啦", chapterIndex: -1 }));
         this.loadElseBooks(nc.find(".elseBooks"));
         return nc[0];
       }
