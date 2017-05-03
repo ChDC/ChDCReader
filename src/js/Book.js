@@ -110,7 +110,7 @@
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
-    getCatalog(forceRefresh, bookSourceId=this.mainSourceId, groupByVolume=false, countPerGroup=100){
+    getCatalog({forceRefresh=false, bookSourceId=this.mainSourceId, groupByVolume=false, countPerGroup=100}={}){
 
       return this.getBookSource(bookSourceId)
         .then(bs => bs.getCatalog(forceRefresh))
@@ -119,15 +119,15 @@
             return Promise.reject(501);
           if(!groupByVolume)
             return catalog;
-          return this.groupCatalogByVolume(bookSourceId, catalog, countPerGroup);
+          return this.groupCatalogByVolume(catalog, {bookSourceId: bookSourceId, countPerGroup: countPerGroup});
         });
     }
 
     // 按卷或者数量对章节进行分组
-    groupCatalogByVolume(bookSourceId=this.mainSourceId, catalog, countPerGroup=100){
+    groupCatalogByVolume(catalog, {bookSourceId=this.mainSourceId, countPerGroup=100}={}){
 
       if(!catalog) return catalog;
-      catalog.forEach((c, i) => c.index = i);
+      catalog.forEach((c, i) => c.index = i); // TODO 对原始数据进行了修改
 
       if(this.bookSourceManager.hasVolume(bookSourceId)){
         let result = [];
@@ -184,7 +184,7 @@
         return Promise.reject(203);
       }
 
-      return this.getCatalog(forceRefresh, bookSourceId)
+      return this.getCatalog({forceRefresh: forceRefresh, bookSourceId: bookSourceId})
         .then(catalog => {
           if(chapterIndex >= 0 && chapterIndex < catalog.length)
             // 存在于目录中
@@ -212,16 +212,15 @@
       const self = this;
       return co(function*(){
         // 获取目录源的目录
-        const catalog = yield self.getCatalog(forceRefresh, bookSourceId);
+        const catalog = yield self.getCatalog({forceRefresh: forceRefresh, bookSourceId: bookSourceId});
 
         // 获取源B 的目录
 
-        const catalogB = yield self.getCatalog(forceRefresh, sourceB);
+        const catalogB = yield self.getCatalog({forceRefresh: forceRefresh, bookSourceId: sourceB});
 
         const matchs = [
           [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
-          [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)],
-          // [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitleWithoutNum.bind(Chapter)],
+          [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)]
         ];
 
         for(const match of matchs){
@@ -294,7 +293,7 @@
           noInfluenceWeight = false,
           forceRefresh
         }){
-      const catalog = yield this.getCatalog(forceRefresh, bookSourceId);
+      const catalog = yield this.getCatalog({forceRefresh: forceRefresh, bookSourceId: bookSourceId});
       const chapterA = catalog[index];
       const result = []; // 结果的集合，按权重排序
       const errorCodeList = []; // 用于存放每次获取章节失败的原因
@@ -326,12 +325,13 @@
       function addChapterToResult(chapterB, indexB, source){
         if(!noInfluenceWeight)
           self.sources[source].weight += FOUND_WEIGHT;
-        // const chapter = new Chapter();
-        // chapter.title = chapterA.title;
-        // chapter.content = chapterB.content;
+
+        const chapter = new Chapter();
+        Object.assign(chapter, chapterA);
+        chapter.content = chapterB.content;
+
         result.push({
-          chapter: chapterB,
-          title: chapterA.title,
+          chapter: chapter,
           index: index,
           options: {
             contentSourceId: source,
@@ -457,6 +457,29 @@
       }
     }
 
+    // 根据标题获取章节在目录中的索引值
+    getChapterIndex(title, index, {bookSourceId=this.mainSourceId, forceRefresh=false}={}){
+      return this.getCatalog({bookSourceId: bookSourceId, forceRefresh: forceRefresh})
+        .then(catalog => {
+          if(index != undefined){
+            let tc = catalog[index];
+            if(Chapter.equalTitle(tc, title))
+              return index;
+
+            // right
+            let ir = catalog.slice(index+1).findIndex(c => !!Chapter.equalTitle(c, title));
+            let il = catalog.slice(0, index).reverse().findIndex(c => !!Chapter.equalTitle(c, title));
+
+            if(ir >= 0 && (il < 0 || ir < il))
+              return index + ir + 1;
+            else if(il >= 0 && (ir < 0 || il < ir ))
+              return index - il - 1;
+            else
+              return -1;
+          }
+          return catalog.findIndex(c => !!Chapter.equalTitle(c, title));
+        });
+    }
 
     // 一次获取多个章节
     // chapterIndex 是从主要目录源中获取的章节索引

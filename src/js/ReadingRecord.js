@@ -13,7 +13,7 @@
   // **** ReadingRecord *****
   class ReadingRecord{
 
-    constructor({chapterIndex=0, chapterTitle="", pageScrollTop=0, options={}}={}){
+    constructor({chapterTitle="", chapterIndex=0, options={}, pageScrollTop=0}={}){
       this.chapterIndex = chapterIndex; // 为了避免更新目录后原来的位置后移而考虑的
       this.chapterTitle = chapterTitle;
       this.isFinished = false; // 是否读完了
@@ -50,7 +50,7 @@
     }
 
     // 设置正在读的章节
-    setReadingRecord(chapterIndex, chapterTitle, options){
+    setReadingRecord(chapterTitle, chapterIndex, options){
       this.chapterIndex = chapterIndex;
       this.chapterTitle = chapterTitle;
       this.options = options;
@@ -70,7 +70,7 @@
     }
 
     equalChapterTitle(chapterTitle){
-      return Chapter.equalTitle2(chapterTitle, this.chapterTitle);
+      return Chapter.equalTitle(chapterTitle, this.chapterTitle);
     }
 
     // 获取阅读记录的状态文本
