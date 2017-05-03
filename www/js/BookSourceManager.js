@@ -362,7 +362,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         return this.__spider.get(bs.detail, dict).then(function (m) {
           m.bookid = dict.bookid;
-          m.author = m.author || "";
+          m.catalogLink = dict.catalogLink;
+          m.detailLink = dict.detailLink;
           var book = _this5.__createBook(bs, m);
           return book;
         });

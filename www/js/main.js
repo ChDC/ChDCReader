@@ -164,7 +164,7 @@
       });
     },
     onUpdated: function onUpdated() {
-      utils.get("data/update.html").then(function (html) {
+      utils.get("data/Update.html").then(function (html) {
         return uiutils.showMessageDialog("资源更新说明", html);
       });
     },
