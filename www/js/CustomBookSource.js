@@ -166,6 +166,7 @@
     "sfnovel": {
       afterGetBookCatalog: function afterGetBookCatalog(catalog, args) {
         var book = args[1].book;
+        if (!book || !book.name) return catalog;
         catalog.forEach(function (c) {
           return c.volume = c.volume.replace("\u3010" + book.name + "\u3011", "").trim();
         });

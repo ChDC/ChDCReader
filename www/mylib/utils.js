@@ -392,7 +392,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       } else {
         var s = onlyCache ? sessionStorage : localStorage;
         if (key[key.length - 1] == "/") {
-          debugger;
           var pattern = new RegExp("^" + key);
           for (var key in s) {
             if (key.match(pattern)) delete s[key];

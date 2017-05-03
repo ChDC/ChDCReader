@@ -413,12 +413,18 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "nextChapter",
       value: function nextChapter() {
-        this.chapterList.nextElement();
+        app.showLoading();
+        this.chapterList.nextElement(false).then(function () {
+          return app.hideLoading();
+        });
       }
     }, {
       key: "previousChapter",
       value: function previousChapter() {
-        this.chapterList.previousElement();
+        app.showLoading();
+        this.chapterList.previousElement(true).then(function () {
+          return app.hideLoading();
+        });
       }
     }]);
 

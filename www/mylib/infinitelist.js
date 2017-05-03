@@ -58,17 +58,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function nextElement() {
         var _this = this;
 
+        var forceUpdate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
         var i = this.__getCurrentElementIndex();
         var ics = this.__elementList.children;
         if (i >= 0 && ++i < ics.length) {
           this.__container.scrollTop = ics[i].offsetTop;
-          return;
+          return Promise.resolve();
         }
+        if (!forceUpdate) return Promise.resolve();
 
-        co(this.__addElement(this.NEXT)).then(function (newElement) {
+        return co(this.__addElement(this.NEXT)).then(function (newElement) {
           if (newElement) {
             _this.__checkCurrentElementChange(_this.NEXT);
             _this.__container.scrollTop = newElement.offsetTop;
+            _this.__checkCurrentElementChange(_this.NEXT);
           }
         });
       }
@@ -77,23 +81,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function previousElement() {
         var _this2 = this;
 
+        var forceUpdate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
         var st = this.getPageScorllTop();
         if (st > 0) {
           this.__container.scrollTop = this.__currentElement.offsetTop;
-          return;
+          return Promise.resolve();
         }
 
         var i = this.__getCurrentElementIndex();
         if (--i >= 0) {
           var ics = this.__elementList.children;
           this.__container.scrollTop = ics[i].offsetTop;
-          return;
+          return Promise.resolve();
         }
+        if (!forceUpdate) return Promise.resolve();
 
-        co(this.__addElement(this.PREVIOUS)).then(function (newElement) {
+        return co(this.__addElement(this.PREVIOUS)).then(function (newElement) {
           if (newElement) {
             _this2.__checkCurrentElementChange(_this2.PREVIOUS);
             _this2.__container.scrollTop = newElement.offsetTop;
+            _this2.__checkCurrentElementChange(_this2.PREVIOUS);
           }
         });
       }
