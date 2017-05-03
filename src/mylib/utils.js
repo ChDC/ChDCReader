@@ -1,12 +1,12 @@
-;(function(factory) {
+;(function(deps, factory) {
   "use strict";
   if (typeof define === "function" && define.amd)
-    define(factory);
+    define(deps, factory);
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
-    module.exports = factory();
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["utils"] = factory();
-}(function(){
+}(["fileSystem"], function(fileSystem){
   "use strict"
 
   return {
@@ -436,123 +436,12 @@
       }
     },
 
-    // 确保文件名正确
-    __convertFileName(file){
-      return file.replace(/[\\:*?"<>|/]/g, "");
-    },
-
-    // 保存 JSON 对象到文件中
-    __saveTextToFile(file, data, isCacheDir=false){
-      file = this.__convertFileName(file);
-
-      return new Promise((resolve, reject) => {
-        // 创建并写入文件
-        function createAndWriteFile(){
-          const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-          //持久化数据保存
-          window.requestFileSystem(fileSystem, 0,
-            fs => {
-              fs.root.getFile(file + ".json", { create: true, exclusive: false },
-                fileEntry => {
-                  //文件内容
-                  const dataObj = new Blob([data], { type: 'text/plain' });
-                  //写入文件
-                  writeFile(fileEntry, dataObj);
-
-                }, reject);
-
-            }, reject);
-        }
-
-        //将内容数据写入到文件中
-        function writeFile(fileEntry, dataObj) {
-          //创建一个写入对象
-          fileEntry.createWriter(fileWriter => {
-
-            //文件写入成功
-            fileWriter.onwriteend = () => { };
-
-            //文件写入失败
-            fileWriter.onerror = e => {};
-
-            //写入文件
-            fileWriter.write(dataObj);
-            resolve();
-          });
-        }
-        createAndWriteFile();
-      });
-    },
-
-    // 从文件中获取 JSON 对象
-    __loadTextFromFile(file, isCacheDir=false){
-      file = this.__convertFileName(file);
-
-      return new Promise((resolve, reject) => {
-        function handleError(){
-          resolve(null);
-        }
-        function readFile(){
-          const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-          //持久化数据保存
-          window.requestFileSystem(fileSystem, 0,
-            fs => {
-              fs.root.getFile(file + ".json", { create: false, exclusive: false },
-                fileEntry => {
-                  fileEntry.file(file => {
-                    const reader = new FileReader();
-
-                    reader.onloadend = function(){
-                      resolve(this.result);
-                    };
-
-                    reader.readAsText(file);
-
-                  }, handleError);
-                }, handleError);
-
-            }, reject);
-        }
-
-        readFile();
-      })
-    },
-
-    // 检查文件是否存在
-    __fileExists(file, isCacheDir=false){
-      file = this.__convertFileName(file);
-
-      return new Promise((resolve, reject) => {
-        const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-        window.requestFileSystem(fileSystem, 0, fs => {
-
-          fs.root.getFile(file + ".json", { create: false, exclusive: false },
-            fileEntry => {
-              resolve(fileEntry.isFile ? true : false);
-            }, () => resolve(false));
-
-        }, () => resolve(false));
-      })
-    },
-
-    // 删除文件
-    __removeFile(file, isCacheDir=false){
-      return new Promise((resolve, reject) => {
-        const fileSystem = !isCacheDir? LocalFileSystem.PERSISTENT: window.TEMPORARY;
-        window.requestFileSystem(fileSystem, 0, fs => {
-          fs.root.getFile(file + ".json", { create: false, exclusive: false },
-              fileEntry => fileEntry.remove(resolve, reject)
-              , reject);
-        }, reject);
-      })
-    },
-
     // 保存已经被 JSON.stringify 格式化后的字符串
     saveTextData(key, data, onlyCache=false){
       if(!key || !data)
         return Promise.reject(new Error("Illegal args"));
       if(window.requestFileSystem){
-        return this.__saveTextToFile(key, data, onlyCache);
+        return fileSystem.saveTextToFile(key, data, onlyCache);
       }
       else{
         const s = onlyCache? sessionStorage : localStorage;
@@ -575,7 +464,7 @@
       if(!key) return Promise.reject(new Error("Illegal args"));
 
       if(window.requestFileSystem)
-        return this.__loadTextFromFile(key, onlyCache)
+        return fileSystem.loadTextFromFile(key, onlyCache)
           .then(data => JSON.parse(data));
       else{
         const s = onlyCache? sessionStorage : localStorage;
@@ -590,11 +479,19 @@
       if(!key) return Promise.reject(new Error("Illegal args"));
 
       if(window.requestFileSystem){
-        return this.__removeFile(key, onlyCache);
+        return fileSystem.removePath(key, onlyCache);
       }
       else{
         const s = onlyCache? sessionStorage : localStorage;
-        const data = s.removeItem(key);
+        if(key[key.length - 1] == "/"){
+          debugger;
+          let pattern = new RegExp(`^${key}`);
+          for(var key in s)
+            if(key.match(pattern))
+              delete s[key];
+        }
+        else
+          s.removeItem(key);
         return Promise.resolve();
       }
     },
@@ -602,7 +499,7 @@
     // 数据是否存在
     dataExists(key, onlyCache=false){
       if(window.requestFileSystem){
-        return this.__fileExists(key, onlyCache);
+        return fileSystem.fileExists(key, onlyCache);
       }
       else{
         const s = onlyCache? sessionStorage : localStorage;

@@ -26,7 +26,7 @@
       load: function load() {
         var _this = this;
 
-        return utils.loadData('settings').then(function (data) {
+        return utils.loadData('settings.json').then(function (data) {
           if (data) _this.settings = data;
           return data;
         }).catch(function (e) {
@@ -34,7 +34,7 @@
         });
       },
       save: function save() {
-        utils.saveData('settings', this.settings);
+        utils.saveData('settings.json', this.settings);
       }
     },
 
@@ -113,6 +113,12 @@
         }
       });
     },
+    checkIfUpdated: function checkIfUpdated() {
+      if (localStorage.getItem("updated")) {
+        this.onUpdated();
+        localStorage.removeItem('updated');
+      }
+    },
 
     loadingbar: null,
     showLoading: function showLoading() {
@@ -129,12 +135,12 @@
       this.settings.load().then(function () {
         _this3.bookSourceManager = new BookSourceManager("data/booksources.json", customBookSource);
 
-
         _this3.bookShelf = new BookShelf();
 
         app.theme.load();
 
         _this3.page.showPage("bookshelf");
+        _this3.checkIfUpdated();
         _this3.chekcUpdate(true);
       });
 
@@ -145,13 +151,22 @@
         });
         if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) navigator.app.backHistory();else {
             var now = new Date().getTime();
-            if (now - lastPressBackTime < 1000) navigator.app.exitApp();else lastPressBackTime = now;
+            if (now - lastPressBackTime < 700) navigator.app.exitApp();else lastPressBackTime = now;
           }
       }, false);
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
     onUpdateInstalled: function onUpdateInstalled() {
-      uiutils.showMessage("资源更新成功！");
+      localStorage.setItem("updated", true);
+
+      require(["executeOnUpdated"], function (executeOnUpdated) {
+        return executeOnUpdated.run();
+      });
+    },
+    onUpdated: function onUpdated() {
+      utils.get("data/update.html").then(function (html) {
+        return uiutils.showMessageDialog("资源更新说明", html);
+      });
     },
 
     theme: {

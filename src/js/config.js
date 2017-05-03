@@ -28,7 +28,8 @@ requirejs.config({
     "Page": "../mylib/Page",
     "PageManager": "../mylib/PageManager",
     "Spider": "../mylib/Spider",
-    "translate": "../mylib/translate"
+    "translate": "../mylib/translate",
+    "fileSystem": "../mylib/fileSystem"
   }
 });
 

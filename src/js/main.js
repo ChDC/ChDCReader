@@ -20,7 +20,6 @@
         cacheChapterCount: 3, // 缓存后面章节的数目
         cacheCountEachChapter: 1, // 默认情况下每章缓存的源章节数目
         cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
-        // chapterIndexOffset: 1,  // 当前章节的偏移值
         // chapterCount: 3,   // 每次加载的章节数目
         theme: {
           nighttheme: "night1", // 夜间主题
@@ -30,7 +29,7 @@
       },
 
       load(){
-        return utils.loadData('settings')
+        return utils.loadData('settings.json')
           .then(data => {
             if(data)
               this.settings = data;
@@ -40,7 +39,7 @@
       },
 
       save(){
-        utils.saveData('settings', this.settings);
+        utils.saveData('settings.json', this.settings);
       }
     },
     // 书籍来源管理器
@@ -142,6 +141,14 @@
       });
     },
 
+    // 检查是否是更新资源之后的首次启动
+    checkIfUpdated(){
+      if(localStorage.getItem("updated")){
+        this.onUpdated();
+        localStorage.removeItem('updated');
+      }
+    },
+
     // 加载进度条
     loadingbar: null,
     showLoading(){
@@ -157,13 +164,13 @@
       this.settings.load()
         .then(() => {
           this.bookSourceManager = new BookSourceManager("data/booksources.json", customBookSource);
-          // this.bookSourceManager.init();
 
           this.bookShelf = new BookShelf();
           // 设置主题
           app.theme.load();
 
           this.page.showPage("bookshelf");
+          this.checkIfUpdated();
           this.chekcUpdate(true);
         });
 
@@ -178,7 +185,7 @@
             // window.history.back();
           else{
             let now = new Date().getTime();
-            if(now - lastPressBackTime < 1000)
+            if(now - lastPressBackTime < 700)
               navigator.app.exitApp();
             else
               lastPressBackTime = now;
@@ -187,9 +194,19 @@
       if(typeof(cordova) != "undefined" && cordova.InAppBrowser)
         window.open = cordova.InAppBrowser.open;
     },
+    // 资源更新完成后触发的事件，不过不能显示界面等
+    // 可用于清理更新数据等
     onUpdateInstalled(){
-      uiutils.showMessage("资源更新成功！");
+      localStorage.setItem("updated", true);
       // location.reload();
+      require(["executeOnUpdated"], (executeOnUpdated)=>executeOnUpdated.run());
+    },
+    // 更新资源后首次触发的事件
+    onUpdated(){
+
+      // uiutils.showMessage("资源更新成功！");
+      // 显示更新说明
+      utils.get("data/update.html").then(html => uiutils.showMessageDialog("资源更新说明", html));
     },
 
     // 主题管理器

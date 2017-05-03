@@ -29,7 +29,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(BookShelf, [{
       key: "__getSaveCatalogLocation",
       value: function __getSaveCatalogLocation(bookName, bookAuthor, sourceId) {
-        return "catalog_" + bookName + "." + bookAuthor + "_" + sourceId;
+        if (!sourceId) return "catalog/" + bookName + "_" + bookAuthor + "/";
+        return "catalog/" + bookName + "_" + bookAuthor + "/" + sourceId + ".json";
       }
     }, {
       key: "load",
@@ -61,7 +62,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return Promise.all(tasks);
         }
 
-        return utils.loadData(this.name).then(function (data) {
+        return utils.loadData(this.name + ".json").then(function (data) {
           var bookShelf = data;
           Object.assign(_this, bookShelf);
           _this.books.forEach(function (b) {
@@ -89,7 +90,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           }
         }
-        return utils.saveTextData(this.name, utils.persistent(this)).then(function () {
+        return utils.saveTextData(this.name + ".json", utils.persistent(this)).then(function () {
           return _this2.fireEvent("savedData");
         });
       }
@@ -176,13 +177,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
         if (index < 0) return;
 
-        for (var bsk in book.sources) {
-          var bs = book.sources[bsk];
-          utils.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
-        }
+        utils.removeData(this.__getSaveCatalogLocation(book.name, book.author));
+        utils.removeData("chapter/" + book.name + "_" + book.author + "/", true);
         this.books.splice(index, 1);
         this.sortBooks();
-
         this.fireEvent("removedBook", { book: book });
       }
     }]);

@@ -4,11 +4,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-;(function (factory) {
+;(function (deps, factory) {
   "use strict";
 
-  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["utils"] = factory();
-})(function () {
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["utils"] = factory();
+})(["fileSystem"], function (fileSystem) {
   "use strict";
 
   return {
@@ -346,107 +348,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         }
       }
     },
-    __convertFileName: function __convertFileName(file) {
-      return file.replace(/[\\:*?"<>|/]/g, "");
-    },
-    __saveTextToFile: function __saveTextToFile(file, data) {
-      var isCacheDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-      file = this.__convertFileName(file);
-
-      return new Promise(function (resolve, reject) {
-        function createAndWriteFile() {
-          var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-
-          window.requestFileSystem(fileSystem, 0, function (fs) {
-            fs.root.getFile(file + ".json", { create: true, exclusive: false }, function (fileEntry) {
-              var dataObj = new Blob([data], { type: 'text/plain' });
-
-              writeFile(fileEntry, dataObj);
-            }, reject);
-          }, reject);
-        }
-
-        function writeFile(fileEntry, dataObj) {
-          fileEntry.createWriter(function (fileWriter) {
-            fileWriter.onwriteend = function () {};
-
-            fileWriter.onerror = function (e) {};
-
-            fileWriter.write(dataObj);
-            resolve();
-          });
-        }
-        createAndWriteFile();
-      });
-    },
-    __loadTextFromFile: function __loadTextFromFile(file) {
-      var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      file = this.__convertFileName(file);
-
-      return new Promise(function (resolve, reject) {
-        function handleError() {
-          resolve(null);
-        }
-        function readFile() {
-          var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-
-          window.requestFileSystem(fileSystem, 0, function (fs) {
-            fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-              fileEntry.file(function (file) {
-                var reader = new FileReader();
-
-                reader.onloadend = function () {
-                  resolve(this.result);
-                };
-
-                reader.readAsText(file);
-              }, handleError);
-            }, handleError);
-          }, reject);
-        }
-
-        readFile();
-      });
-    },
-    __fileExists: function __fileExists(file) {
-      var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      file = this.__convertFileName(file);
-
-      return new Promise(function (resolve, reject) {
-        var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-        window.requestFileSystem(fileSystem, 0, function (fs) {
-
-          fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-            resolve(fileEntry.isFile ? true : false);
-          }, function () {
-            return resolve(false);
-          });
-        }, function () {
-          return resolve(false);
-        });
-      });
-    },
-    __removeFile: function __removeFile(file) {
-      var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      return new Promise(function (resolve, reject) {
-        var fileSystem = !isCacheDir ? LocalFileSystem.PERSISTENT : window.TEMPORARY;
-        window.requestFileSystem(fileSystem, 0, function (fs) {
-          fs.root.getFile(file + ".json", { create: false, exclusive: false }, function (fileEntry) {
-            return fileEntry.remove(resolve, reject);
-          }, reject);
-        }, reject);
-      });
-    },
     saveTextData: function saveTextData(key, data) {
       var onlyCache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       if (!key || !data) return Promise.reject(new Error("Illegal args"));
       if (window.requestFileSystem) {
-        return this.__saveTextToFile(key, data, onlyCache);
+        return fileSystem.saveTextToFile(key, data, onlyCache);
       } else {
         var s = onlyCache ? sessionStorage : localStorage;
         s.setItem(key, data);
@@ -466,7 +373,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       if (!key) return Promise.reject(new Error("Illegal args"));
 
-      if (window.requestFileSystem) return this.__loadTextFromFile(key, onlyCache).then(function (data) {
+      if (window.requestFileSystem) return fileSystem.loadTextFromFile(key, onlyCache).then(function (data) {
         return JSON.parse(data);
       });else {
         var s = onlyCache ? sessionStorage : localStorage;
@@ -481,10 +388,16 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       if (!key) return Promise.reject(new Error("Illegal args"));
 
       if (window.requestFileSystem) {
-        return this.__removeFile(key, onlyCache);
+        return fileSystem.removePath(key, onlyCache);
       } else {
         var s = onlyCache ? sessionStorage : localStorage;
-        var data = s.removeItem(key);
+        if (key[key.length - 1] == "/") {
+          debugger;
+          var pattern = new RegExp("^" + key);
+          for (var key in s) {
+            if (key.match(pattern)) delete s[key];
+          }
+        } else s.removeItem(key);
         return Promise.resolve();
       }
     },
@@ -492,7 +405,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var onlyCache = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       if (window.requestFileSystem) {
-        return this.__fileExists(key, onlyCache);
+        return fileSystem.fileExists(key, onlyCache);
       } else {
         var s = onlyCache ? sessionStorage : localStorage;
         return Promise.resolve(key in s);

@@ -283,6 +283,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         if(this.lastReadingScrollTop){
           const cs = $('#chapterContainer').scrollTop();
           $('#chapterContainer').scrollTop(cs + this.lastReadingScrollTop);
+          this.lastReadingScrollTop = 0;
         }
       };
 

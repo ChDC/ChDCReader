@@ -92,25 +92,31 @@ define(["chai", "utils"], function (chai, utils) {
       var p1 = utils.saveData().catch(function (error) {
         equal("Illegal args", error.message);
       });
-      var p2 = utils.saveData("abc", { abc: "test", def: "fff" }).then(function () {
-        return utils.loadData("abc");
+      var p2 = utils.saveData("abc/def/fff.json", { abc: "test", def: "fff" }).then(function () {
+        return utils.loadData("abc/def/fff.json");
       }).then(function (data) {
         equal("test", data.abc);
         equal("fff", data.def);
       }).then(function () {
-        return utils.dataExists("abc");
+        return utils.dataExists("abc/def/fff.json");
       }).then(function (r) {
         return equal(true, r);
       }).then(function () {
-        return utils.removeData("abc");
+        return utils.removeData("abc/def/fff.json");
       }).then(function () {
-        return utils.dataExists("abc");
+        return utils.dataExists("abc/def/fff.json");
       }).then(function (r) {
         return equal(false, r);
       }).then(function () {
-        return utils.loadData("abc");
+        return utils.loadData("abc/def/fff.json");
       }).then(function (data) {
-        equal(null, data);
+        return equal(null, data);
+      }).then(function () {
+        return utils.removeData("abc/");
+      }).then(function () {
+        return utils.dataExists("abc/");
+      }).then(function (r) {
+        return equal(false, r);
       });
 
       return Promise.all([p1, p2]);

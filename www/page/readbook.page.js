@@ -320,6 +320,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           if (_this6.lastReadingScrollTop) {
             var cs = $('#chapterContainer').scrollTop();
             $('#chapterContainer').scrollTop(cs + _this6.lastReadingScrollTop);
+            _this6.lastReadingScrollTop = 0;
           }
         };
 

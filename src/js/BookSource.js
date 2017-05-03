@@ -158,7 +158,7 @@
     // 获取章节的缓存位置
     // * cacheDir 缓存章节的目录
     __getCacheChapterLocation(id){
-      return `chapter_${this.book.name}.${this.book.author}_${id}.${this.id}`;
+      return `chapter/${this.book.name}_${this.book.author}/${id}_${this.id}.json`;
     }
 
     // 获取指定的章节
