@@ -124,6 +124,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
             _ref$forceRefresh = _ref.forceRefresh,
             forceRefresh = _ref$forceRefresh === undefined ? false : _ref$forceRefresh,
+            _ref$refresh = _ref.refresh,
+            refresh = _ref$refresh === undefined ? false : _ref$refresh,
             _ref$bookSourceId = _ref.bookSourceId,
             bookSourceId = _ref$bookSourceId === undefined ? this.mainSourceId : _ref$bookSourceId,
             _ref$groupByVolume = _ref.groupByVolume,
@@ -132,7 +134,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             countPerGroup = _ref$countPerGroup === undefined ? 100 : _ref$countPerGroup;
 
         return this.getBookSource(bookSourceId).then(function (bs) {
-          return bs.getCatalog(forceRefresh);
+          return bs.getCatalog({ forceRefresh: forceRefresh, refresh: refresh });
         }).then(function (catalog) {
           if (!catalog || catalog.length <= 0) return Promise.reject(501);
           if (!groupByVolume) return catalog;
@@ -223,7 +225,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "index",
-      value: function index(chapterIndex, forceRefresh) {
+      value: function index(chapterIndex, refresh) {
         var bookSourceId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.mainSourceId;
 
         if (typeof chapterIndex != "number") {
@@ -234,18 +236,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return Promise.reject(203);
         }
 
-        return this.getCatalog({ forceRefresh: forceRefresh, bookSourceId: bookSourceId }).then(function (catalog) {
+        return this.getCatalog({ refresh: refresh, bookSourceId: bookSourceId }).then(function (catalog) {
           if (chapterIndex >= 0 && chapterIndex < catalog.length) return catalog[chapterIndex];else if (chapterIndex >= catalog.length) return Promise.reject(202);else return Promise.reject(203);
         });
       }
     }, {
       key: "fuzzySearch",
-      value: function fuzzySearch(sourceB, index, forceRefresh) {
+      value: function fuzzySearch(sourceB, index, refresh) {
         var bookSourceId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.mainSourceId;
 
 
         if (bookSourceId == sourceB) {
-          return this.index(index, forceRefresh, sourceB).then(function (chapter) {
+          return this.index(index, refresh, sourceB).then(function (chapter) {
             return { "chapter": chapter, "index": index };
           });
         }
@@ -259,12 +261,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               switch (_context.prev = _context.next) {
                 case 0:
                   _context.next = 2;
-                  return self.getCatalog({ forceRefresh: forceRefresh, bookSourceId: bookSourceId });
+                  return self.getCatalog({ refresh: refresh, bookSourceId: bookSourceId });
 
                 case 2:
                   catalog = _context.sent;
                   _context.next = 5;
-                  return self.getCatalog({ forceRefresh: forceRefresh, bookSourceId: sourceB });
+                  return self.getCatalog({ refresh: refresh, bookSourceId: sourceB });
 
                 case 5:
                   catalogB = _context.sent;
@@ -358,11 +360,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         options = Object.assign({}, options);
         options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
-        return this.index(chapterIndex, options.forceRefresh, options.bookSourceId).catch(function (error) {
-          if (error != 202 || options.forceRefresh) return Promise.reject(error);
-          options.forceRefresh = true;
+        return this.index(chapterIndex, options.refresh, options.bookSourceId).catch(function (error) {
+          if (error != 202 || options.refresh) return Promise.reject(error);
+          options.refresh = true;
 
-          return _this5.index(chapterIndex, options.forceRefresh, options.bookSourceId);
+          return _this5.index(chapterIndex, options.refresh, options.bookSourceId);
         }).then(function (chapter) {
           return co(_this5.__getChapterFromContentSources(chapterIndex, options));
         });
@@ -380,7 +382,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             onlyCacheNoLoad = _ref3.onlyCacheNoLoad,
             _ref3$noInfluenceWeig = _ref3.noInfluenceWeight,
             noInfluenceWeight = _ref3$noInfluenceWeig === undefined ? false : _ref3$noInfluenceWeig,
-            forceRefresh = _ref3.forceRefresh;
+            refresh = _ref3.refresh;
 
         var _marked, catalog, chapterA, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
 
@@ -400,7 +402,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           chapterB = void 0;
                           _context3.prev = 2;
                           _context3.next = 5;
-                          return self.index(contentSourceChapterIndex, forceRefresh, contentSourceId);
+                          return self.index(contentSourceChapterIndex, refresh, contentSourceId);
 
                         case 5:
                           chapterB = _context3.sent;
@@ -411,7 +413,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           _context3.prev = 8;
                           _context3.t0 = _context3["catch"](2);
 
-                          if (!(_context3.t0 != 202 || forceRefresh)) {
+                          if (!(_context3.t0 != 202 || refresh)) {
                             _context3.next = 12;
                             break;
                           }
@@ -517,7 +519,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           _result = void 0;
                           _context2.prev = 9;
                           _context2.next = 12;
-                          return self.fuzzySearch(sourceB, index, forceRefresh, bookSourceId);
+                          return self.fuzzySearch(sourceB, index, refresh, bookSourceId);
 
                         case 12:
                           _result = _context2.sent;
@@ -528,7 +530,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           _context2.prev = 15;
                           _context2.t0 = _context2["catch"](9);
 
-                          if (!(_context2.t0 != 201 || forceRefresh)) {
+                          if (!(_context2.t0 != 201 || refresh)) {
                             _context2.next = 19;
                             break;
                           }
@@ -613,7 +615,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 _marked = [getChapterFromContentSources2, getChapterFromSelectBookSourceAndSelectSourceChapterIndex].map(regeneratorRuntime.mark);
                 _context4.next = 8;
-                return this.getCatalog({ forceRefresh: forceRefresh, bookSourceId: bookSourceId });
+                return this.getCatalog({ refresh: refresh, bookSourceId: bookSourceId });
 
               case 8:
                 catalog = _context4.sent;
@@ -652,10 +654,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _ref4 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
             _ref4$bookSourceId = _ref4.bookSourceId,
             bookSourceId = _ref4$bookSourceId === undefined ? this.mainSourceId : _ref4$bookSourceId,
-            _ref4$forceRefresh = _ref4.forceRefresh,
-            forceRefresh = _ref4$forceRefresh === undefined ? false : _ref4$forceRefresh;
+            _ref4$refresh = _ref4.refresh,
+            refresh = _ref4$refresh === undefined ? false : _ref4$refresh;
 
-        return this.getCatalog({ bookSourceId: bookSourceId, forceRefresh: forceRefresh }).then(function (catalog) {
+        return this.getCatalog({ bookSourceId: bookSourceId, refresh: refresh }).then(function (catalog) {
           if (index != undefined) {
             var tc = catalog[index];
             if (Chapter.equalTitle(tc, title)) return index;

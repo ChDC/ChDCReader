@@ -85,7 +85,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "f8934bab24c21209f95a2c7a64882cbd"
+    "hash": "3c4f3aa8e2b340f1b0170b5dd09ca96d"
   },
   {
     "file": "js/BookShelf.js",
@@ -93,7 +93,7 @@
   },
   {
     "file": "js/BookSource.js",
-    "hash": "dbc4bef73581b3c270cfebe65ea00c47"
+    "hash": "75ff535b0f5f09701cc41121f9f0292e"
   },
   {
     "file": "js/BookSourceManager.js",
@@ -297,7 +297,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "7c547434ac25cb6a30e4f2136eeb97be"
+    "hash": "fec1536130a15e5e9b012e6aa978f90f"
   },
   {
     "file": "mylib/Page.js",

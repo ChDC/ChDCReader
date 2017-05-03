@@ -117,7 +117,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         Array.from(this.__elementList.children).forEach(function (e) {
           return e.remove();
         });
-
+        this.__container.scrollTop = 0;
         for (var key in this) {
           delete this[key];
         }
