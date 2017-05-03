@@ -206,7 +206,7 @@
 
       // uiutils.showMessage("资源更新成功！");
       // 显示更新说明
-      utils.get("data/update.html").then(html => uiutils.showMessageDialog("资源更新说明", html));
+      utils.get("data/Update.html").then(html => uiutils.showMessageDialog("资源更新说明", html));
     },
 
     // 主题管理器
