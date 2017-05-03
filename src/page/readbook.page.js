@@ -238,7 +238,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       app.showLoading();
       $('#listCatalogContainer').height($(window).height() * 0.5);
 
-      return this.book.getCatalog(({forceRefresh: forceRefresh, groupByVolume: true}))
+      return this.book.getCatalog({forceRefresh: forceRefresh, groupByVolume: true})
         .then(catalog => {
           const listCatalog = $("#listCatalog");
           listCatalog.empty();

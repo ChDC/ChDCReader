@@ -110,7 +110,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       // 刷新最新章节
       book.getLastestChapter()
         .then(([lastestChapter]) => {
-          let isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
+          let isNewChapter = lastestChapter && !readingRecord.equalChapterTitle(lastestChapter);
           let lce = bookElement.find(".book-lastestchapter")
             .text("最新：" + (lastestChapter? lastestChapter : "无"));
           if(isNewChapter)
@@ -120,8 +120,16 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
           if(readingRecord.isFinished && isNewChapter){
             // 更新最新章节
-            // 缓存后面章节内容
-            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+            // 强制刷新目录
+            book.getChapterIndex(lastestChapter)
+              .then(index => {
+                if(index < 0)
+                  return book.getCatalog({forceRefresh: true})
+              })
+              .then(() => {
+                // 缓存后面章节内容
+                book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+              });
           }
         });
     }
