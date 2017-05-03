@@ -110,10 +110,10 @@
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
-    getCatalog({forceRefresh=false, bookSourceId=this.mainSourceId, groupByVolume=false, countPerGroup=100}={}){
+    getCatalog({forceRefresh=false, refresh=false, bookSourceId=this.mainSourceId, groupByVolume=false, countPerGroup=100}={}){
 
       return this.getBookSource(bookSourceId)
-        .then(bs => bs.getCatalog(forceRefresh))
+        .then(bs => bs.getCatalog({forceRefresh: forceRefresh, refresh: refresh}))
         .then(catalog => {
           if(!catalog || catalog.length <= 0)
             return Promise.reject(501);
@@ -175,7 +175,7 @@
     // *************************** 章节部分 ****************
 
     // 获取指定源的指定索引的章节
-    index(chapterIndex, forceRefresh, bookSourceId=this.mainSourceId){
+    index(chapterIndex, refresh, bookSourceId=this.mainSourceId){
       if(typeof chapterIndex != "number"){
         return Promise.reject(205);
       }
@@ -184,7 +184,7 @@
         return Promise.reject(203);
       }
 
-      return this.getCatalog({forceRefresh: forceRefresh, bookSourceId: bookSourceId})
+      return this.getCatalog({refresh: refresh, bookSourceId: bookSourceId})
         .then(catalog => {
           if(chapterIndex >= 0 && chapterIndex < catalog.length)
             // 存在于目录中
@@ -199,11 +199,11 @@
     }
 
     // 在指定的源 B 中搜索目录源的中某章节的相对应的章节
-    fuzzySearch(sourceB, index, forceRefresh, bookSourceId=this.mainSourceId){
+    fuzzySearch(sourceB, index, refresh, bookSourceId=this.mainSourceId){
 
       if(bookSourceId == sourceB){
         // 两源相同
-        return this.index(index, forceRefresh, sourceB)
+        return this.index(index, refresh, sourceB)
           .then(chapter => {
             return {"chapter": chapter, "index": index}
           });
@@ -212,11 +212,11 @@
       const self = this;
       return co(function*(){
         // 获取目录源的目录
-        const catalog = yield self.getCatalog({forceRefresh: forceRefresh, bookSourceId: bookSourceId});
+        const catalog = yield self.getCatalog({refresh: refresh, bookSourceId: bookSourceId});
 
         // 获取源B 的目录
 
-        const catalogB = yield self.getCatalog({forceRefresh: forceRefresh, bookSourceId: sourceB});
+        const catalogB = yield self.getCatalog({refresh: refresh, bookSourceId: sourceB});
 
         const matchs = [
           [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
@@ -260,13 +260,13 @@
       options = Object.assign({}, options);
       options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
-      return this.index(chapterIndex, options.forceRefresh, options.bookSourceId)
+      return this.index(chapterIndex, options.refresh, options.bookSourceId)
         .catch(error => {
-          if(error != 202 || options.forceRefresh)
+          if(error != 202 || options.refresh)
             return Promise.reject(error);
-          options.forceRefresh = true;
+          options.refresh = true;
           // 强制更新目录
-          return this.index(chapterIndex, options.forceRefresh, options.bookSourceId);
+          return this.index(chapterIndex, options.refresh, options.bookSourceId);
         })
         .then(chapter =>
           co(this.__getChapterFromContentSources(chapterIndex, options)));
@@ -291,9 +291,9 @@
           contentSourceChapterIndex,
           onlyCacheNoLoad,
           noInfluenceWeight = false,
-          forceRefresh
+          refresh
         }){
-      const catalog = yield this.getCatalog({forceRefresh: forceRefresh, bookSourceId: bookSourceId});
+      const catalog = yield this.getCatalog({refresh: refresh, bookSourceId: bookSourceId});
       const chapterA = catalog[index];
       const result = []; // 结果的集合，按权重排序
       const errorCodeList = []; // 用于存放每次获取章节失败的原因
@@ -388,10 +388,10 @@
           try{
             let result;
             try {
-              result = yield self.fuzzySearch(sourceB, index, forceRefresh, bookSourceId);
+              result = yield self.fuzzySearch(sourceB, index, refresh, bookSourceId);
             }
             catch(error){
-              if(error != 201 || forceRefresh)
+              if(error != 201 || refresh)
                 throw error;
               result = yield self.fuzzySearch(sourceB, index, true, bookSourceId);
             }
@@ -428,10 +428,10 @@
 
         let chapterB;
         try{
-          chapterB = yield self.index(contentSourceChapterIndex, forceRefresh, contentSourceId);
+          chapterB = yield self.index(contentSourceChapterIndex, refresh, contentSourceId);
         }
         catch(error){
-          if(error != 202 || forceRefresh)
+          if(error != 202 || refresh)
             throw error;
           // 强制更新目录
           chapterB = yield self.index(contentSourceChapterIndex, true, contentSourceId);
@@ -458,8 +458,8 @@
     }
 
     // 根据标题获取章节在目录中的索引值
-    getChapterIndex(title, index, {bookSourceId=this.mainSourceId, forceRefresh=false}={}){
-      return this.getCatalog({bookSourceId: bookSourceId, forceRefresh: forceRefresh})
+    getChapterIndex(title, index, {bookSourceId=this.mainSourceId, refresh=false}={}){
+      return this.getCatalog({bookSourceId: bookSourceId, refresh: refresh})
         .then(catalog => {
           if(index != undefined){
             let tc = catalog[index];

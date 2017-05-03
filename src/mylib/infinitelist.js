@@ -130,7 +130,7 @@
     close(){
       this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
       Array.from(this.__elementList.children).forEach(e => e.remove());
-
+      this.__container.scrollTop = 0;
       for(let key in this)
         delete this[key];
     }
