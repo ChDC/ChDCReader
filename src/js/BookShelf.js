@@ -22,7 +22,9 @@
 
     // 获取存储目录的文件路径
     __getSaveCatalogLocation(bookName, bookAuthor, sourceId){
-      return `catalog_${bookName}.${bookAuthor}_${sourceId}`;
+      if(!sourceId)
+        return `catalog/${bookName}_${bookAuthor}/`;
+      return `catalog/${bookName}_${bookAuthor}/${sourceId}.json`;
     }
 
     // 加载书籍
@@ -53,7 +55,7 @@
         return Promise.all(tasks);
       }
 
-      return utils.loadData(this.name)
+      return utils.loadData(this.name+".json")
         .then(data => {
           const bookShelf = data;
           Object.assign(this, bookShelf);
@@ -79,7 +81,7 @@
           }
         }
       }
-      return utils.saveTextData(this.name, utils.persistent(this))
+      return utils.saveTextData(this.name+".json", utils.persistent(this))
         .then(() => this.fireEvent("savedData"));
     }
 
@@ -165,14 +167,10 @@
         return;
 
       // 清除目录
-      for(const bsk in book.sources){
-        const bs = book.sources[bsk];
-        utils.removeData(this.__getSaveCatalogLocation(book.name, book.author, bsk));
-      }
+      utils.removeData(this.__getSaveCatalogLocation(book.name, book.author));
+      utils.removeData(`chapter/${book.name}_${book.author}/`, true);
       this.books.splice(index, 1);
       this.sortBooks();
-
-      // TODO: 清空缓存章节
       this.fireEvent("removedBook", {book: book});
       // return this.save();
     }

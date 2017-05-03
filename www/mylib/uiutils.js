@@ -33,7 +33,7 @@
         default:
           break;
       }
-      msgBox.text(msg);
+      msgBox.html(msg);
       msgBoxContainer.append(msgBox);
       $(document.body).append(msgBoxContainer);
       msgBoxContainer.fadeIn().delay(delay).fadeOut("", function () {
@@ -50,7 +50,7 @@
           _ref$canceltext = _ref.canceltext,
           canceltext = _ref$canceltext === undefined ? "取消" : _ref$canceltext;
 
-      var dialog = $("<div class=\"modal fade\" id=\"modalMessage\">\n          <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h4 class=\"modal-title\">\n                </h4>\n              </div>\n              <div class=\"modal-body\">\n                <p class=\"modal-message\"></p>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default btnCancel\" data-dismiss=\"modal\">\n                  " + canceltext + "\n                </button>\n                <button type=\"button\" class=\"btn btn-primary btnOK\" data-dismiss=\"modal\">\n                  " + oktext + "\n                </button>\n              </div>\n            </div>\n          </div>\n        </div>");
+      var dialog = $("<div class=\"modal fade\" id=\"modalMessage\">\n          <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h4 class=\"modal-title\">\n                </h4>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"modal-message\"></div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default btnCancel\" data-dismiss=\"modal\">\n                  " + canceltext + "\n                </button>\n                <button type=\"button\" class=\"btn btn-primary btnOK\" data-dismiss=\"modal\">\n                  " + oktext + "\n                </button>\n              </div>\n            </div>\n          </div>\n        </div>");
 
       $(document.body).append(dialog);
 
@@ -58,9 +58,9 @@
         dialog.remove();
       });
       dialog.find('.modal-title').text(title);
-      dialog.find('.modal-message').text(msg);
+      dialog.find('.modal-message').html(msg);
       dialog.find('.btnOK').click(okEvent);
-      dialog.find('.btnCancel').click(cancelEvent);
+      if (!okEvent && !cancelEvent) dialog.find('.btnCancel').remove();else dialog.find('.btnCancel').click(cancelEvent);
       dialog.modal('show');
     },
 

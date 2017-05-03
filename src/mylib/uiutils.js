@@ -34,7 +34,7 @@
         default:
           break;
       }
-      msgBox.text(msg);
+      msgBox.html(msg);
       msgBoxContainer.append(msgBox);
       $(document.body).append(msgBoxContainer);
       msgBoxContainer.fadeIn().delay(delay).fadeOut("", () => msgBoxContainer.remove());
@@ -55,7 +55,7 @@
                 </h4>
               </div>
               <div class="modal-body">
-                <p class="modal-message"></p>
+                <div class="modal-message"></div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default btnCancel" data-dismiss="modal">
@@ -76,9 +76,12 @@
         dialog.remove();
       });
       dialog.find('.modal-title').text(title);
-      dialog.find('.modal-message').text(msg);
+      dialog.find('.modal-message').html(msg);
       dialog.find('.btnOK').click(okEvent);
-      dialog.find('.btnCancel').click(cancelEvent);
+      if(!okEvent && !cancelEvent)
+        dialog.find('.btnCancel').remove();
+      else
+        dialog.find('.btnCancel').click(cancelEvent);
       dialog.modal('show');
     },
 

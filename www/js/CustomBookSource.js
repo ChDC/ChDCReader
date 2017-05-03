@@ -164,6 +164,13 @@
     },
 
     "sfnovel": {
+      afterGetBookCatalog: function afterGetBookCatalog(catalog, args) {
+        var book = args[1].book;
+        catalog.forEach(function (c) {
+          return c.volume = c.volume.replace("\u3010" + book.name + "\u3011", "").trim();
+        });
+        return catalog;
+      },
       afterGetChapter: function afterGetChapter(chapter) {
         if (chapter.content) chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
         return chapter;

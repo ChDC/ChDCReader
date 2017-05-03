@@ -21,13 +21,15 @@ requirejs.config({
     "chai": "../lib/chai",
     "cookie": "../lib/cookie",
 
+    "uifactory": "../page/uifactory",
     "utils": "../mylib/utils",
     "uiutils": "../mylib/uiutils",
     "Test": "../mylib/Test",
     "Page": "../mylib/Page",
     "PageManager": "../mylib/PageManager",
     "Spider": "../mylib/Spider",
-    "translate": "../mylib/translate"
+    "translate": "../mylib/translate",
+    "fileSystem": "../mylib/fileSystem"
   }
 });
 

@@ -22,8 +22,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
     _createClass(MyPage, [{
       key: "onLoad",
-      value: function onLoad(params) {
+      value: function onLoad(_ref) {
         var _this2 = this;
+
+        var params = _ref.params;
 
         this.loadView();
         this.loaded = false;
@@ -136,9 +138,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         var book = bookshelfitem.book;
         bookElement.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
 
-        book.getLastestChapter().then(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 1),
-              lastestChapter = _ref2[0];
+        book.getLastestChapter().then(function (_ref2) {
+          var _ref3 = _slicedToArray(_ref2, 1),
+              lastestChapter = _ref3[0];
 
           var isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
           var lce = bookElement.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无"));

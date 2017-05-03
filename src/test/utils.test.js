@@ -110,27 +110,25 @@ define(["chai", "utils"], function(chai, utils){
         .catch(error => {
           equal("Illegal args", error.message);
         });
-      let p2 = utils.saveData("abc", {abc: "test", def: "fff"})
+      let p2 = utils.saveData("abc/def/fff.json", {abc: "test", def: "fff"})
         .then(() =>
-          utils.loadData("abc"))
+          utils.loadData("abc/def/fff.json"))
         .then(data => {
               equal("test", data.abc);
               equal("fff", data.def);
             })
-        .then(() => utils.dataExists("abc"))
+        .then(() => utils.dataExists("abc/def/fff.json"))
 
         .then(r => equal(true, r))
-        .then(() => utils.removeData("abc"))
+        .then(() => utils.removeData("abc/def/fff.json"))
 
-        .then(() => utils.dataExists("abc"))
+        .then(() => utils.dataExists("abc/def/fff.json"))
         .then(r => equal(false, r))
-
-        .then(() =>
-          utils.loadData("abc"))
-        .then(data => {
-          equal(null, data);
-        })
-        ;
+        .then(() => utils.loadData("abc/def/fff.json"))
+        .then(data => equal(null, data))
+        .then(() => utils.removeData("abc/"))
+        .then(()=> utils.dataExists("abc/"))
+        .then(r => equal(false, r))
 
       return Promise.all([p1, p2]);
     });
