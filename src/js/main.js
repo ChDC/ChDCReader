@@ -77,7 +77,6 @@
         document.addEventListener("chcp_updateInstalled", this.onUpdateInstalled.bind(this), false);
       }
       else{
-        // debugger;
         $(this.onDeviceReady.bind(this));
         // document.addEventListener("load", this.onDeviceReady.bind(this));
       }

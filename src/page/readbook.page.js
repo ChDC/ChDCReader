@@ -75,6 +75,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       $("#chapterContainer").on("click", event => {
           // 弹出工具栏
           $('.toolbar').toggle();
+          let excludes = ["btnNext", "btnLast"];
+          let x = event.clientX, y = event.clientY;
+
+          for(let e of excludes){
+            let rect = document.getElementById(e).getBoundingClientRect();
+            if(utils.isPointInRect(rect, {x:x, y:y}))
+              return $('.toolbar').toggle();
+          }
       });
       $(".toolbar").blur((e) => $('.toolbar').hide());
       $(".toolbar").click((e) => $('.toolbar').hide());
@@ -257,11 +265,12 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         $('#chapterContainer')[0],
         $('#chapters')[0],
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)),
-        this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this))
+        this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)),
+        {disableCheckPrevious: true} // 禁止向前加载
       );
-      this.chapterList.onError = (o,e) => uiutils.showError(app.error.getMessage(e));
+      this.chapterList.onError = e => uiutils.showError(app.error.getMessage(e.error));
 
-      this.chapterList.onCurrentElementChanged = (event, newValue, oldValue) => {
+      this.chapterList.onCurrentElementChanged = ({new: newValue, old: oldValue}) => {
         newValue = $(newValue);
         const index = newValue.data('chapterIndex');
         const title = newValue.data('chapterTitle');
@@ -278,7 +287,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         $(".labelChapterTitle").text(title);
         app.hideLoading();
       };
-      this.chapterList.onFirstNewElementFinished = (e, newElement, direction) => {
+      this.chapterList.onFirstNewElementFinished = ({newElement, direction}) => {
         app.hideLoading();
         if(this.lastReadingScrollTop){
           const cs = $('#chapterContainer').scrollTop();
@@ -338,9 +347,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
     }
 
-    buildChapter({chapter, index, options}={}){
-      if(!chapter) // 加载完成页面
-        return this.buildLastPage();
+    buildChapter({chapter, index, options}={}, direction){
+      if(!chapter){
+        // 加载完成页面
+        if(direction > 0)
+          return this.buildLastPage();
+        else
+          return null;
+      }
 
       this.book.getCatalog()
         .then(catalog => $(".labelBookPercent").text(`${parseInt(index / catalog.length * 100)} %`));
@@ -367,7 +381,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
     nextChapter(){
       app.showLoading();
       this.chapterList.nextElement(false)
-        .then(() => app.hideLoading());
+        .then(() => app.hideLoading())
     }
 
     // 上一章节

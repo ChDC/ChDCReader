@@ -531,11 +531,11 @@
       obj.fireEvent = fireEvent.bind(obj);
       obj.removeEventListener = removeEventListener.bind(obj);
 
-      function addEventListener(eventName, handler){
+      function addEventListener(eventName, handler, runonce=false){
         if(!eventName || !handler) return;
         if(!(eventName in this.__events))
           this.__events[eventName] = [];
-        this.__events[eventName].push(handler);
+        this.__events[eventName].push({handler: handler, runonce: runonce});
       }
 
       function fireEvent(eventName, e={}){
@@ -554,15 +554,21 @@
 
         // addEventListener
         if(eventName in this.__events){
-          for(let eh of this.__events[eventName]){
+          let removeList = [];
+          let handlers = this.__events[eventName];
+          for(let eh of handlers){
+            if(!eh) continue;
             try{
               if(e.__stopPropagation) break;
-              eh(e)
+              if(eh.runonce)
+                removeList.push(eh);
+              eh.handler(e);
             }
             catch(error){
               console.error(error);
             }
           }
+          removeList.forEach(e => handlers.splice(handlers.indexOf(e), 1));
         }
 
         // onEvent
@@ -574,7 +580,7 @@
       function removeEventListener(eventName, handler){
         if(!eventName || !handler) return;
         if(eventName in this.__events){
-          let i = this.__events[eventName].findIndex(m => m == handler);
+          let i = this.__events[eventName].findIndex(m => m.handler == handler);
           if(i >= 0)
             this.__events[eventName].splice(i, 1);
         }
@@ -639,6 +645,17 @@
         }
       }
       return __persistent(o);
+    },
+
+    // 判断点是否在区域内
+    isPointInRect(rect, point){
+      if(!point || !rect) return false;
+      let x = point.x || point.X;
+      let y = point.y || point.Y;
+
+      if(y > rect.top && y < rect.bottom && x > rect.left && x < rect.right)
+        return true;
+      return false;
     }
   };
 
