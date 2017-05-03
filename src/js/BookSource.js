@@ -85,14 +85,14 @@
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
-    getCatalog(forceRefresh){
-      if(!forceRefresh && this.catalog)
+    getCatalog({forceRefresh=false, refresh=false}){
+      if(!forceRefresh && !refresh && this.catalog)
         return Promise.resolve(this.catalog);
 
       let self = this;
       return co(function*(){
         yield self.__assertBookSource();
-        if(/*!forceRefresh && */(new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
+        if(!forceRefresh && (new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
           return self.catalog;
 
         yield self.__assertBookSourceCatalogLink();
