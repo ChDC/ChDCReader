@@ -88,6 +88,35 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         $("#chapterContainer").on("click", function (event) {
           $('.toolbar').toggle();
+          var excludes = ["btnNext", "btnLast"];
+          var x = event.clientX,
+              y = event.clientY;
+
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = excludes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var e = _step.value;
+
+              var rect = document.getElementById(e).getBoundingClientRect();
+              if (utils.isPointInRect(rect, { x: x, y: y })) return $('.toolbar').toggle();
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
         });
         $(".toolbar").blur(function (e) {
           return $('.toolbar').hide();
@@ -229,13 +258,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         var listBookSource = $("#listBookSource");
         listBookSource.empty();
         var listBookSourceEntry = $(".template .listBookSourceEntry");
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator = sources[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var bsk = _step.value;
+          for (var _iterator2 = sources[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var bsk = _step2.value;
 
             if (bsk == currentSourceId) continue;
             var nlbse = listBookSourceEntry.clone();
@@ -245,16 +274,16 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
             listBookSource.append(nlbse);
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
             }
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            if (_didIteratorError2) {
+              throw _iteratorError2;
             }
           }
         }
@@ -294,12 +323,15 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         app.showLoading();
         var opts = Object.assign({}, this.readingRecord.getOptions(), options);
         if (this.chapterList) this.chapterList.close();
-        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)));
-        this.chapterList.onError = function (o, e) {
-          return uiutils.showError(app.error.getMessage(e));
+        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)), { disableCheckPrevious: true });
+        this.chapterList.onError = function (e) {
+          return uiutils.showError(app.error.getMessage(e.error));
         };
 
-        this.chapterList.onCurrentElementChanged = function (event, newValue, oldValue) {
+        this.chapterList.onCurrentElementChanged = function (_ref3) {
+          var newValue = _ref3.new,
+              oldValue = _ref3.old;
+
           newValue = $(newValue);
           var index = newValue.data('chapterIndex');
           var title = newValue.data('chapterTitle');
@@ -315,7 +347,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           $(".labelChapterTitle").text(title);
           app.hideLoading();
         };
-        this.chapterList.onFirstNewElementFinished = function (e, newElement, direction) {
+        this.chapterList.onFirstNewElementFinished = function (_ref4) {
+          var newElement = _ref4.newElement,
+              direction = _ref4.direction;
+
           app.hideLoading();
           if (_this6.lastReadingScrollTop) {
             var cs = $('#chapterContainer').scrollTop();
@@ -373,9 +408,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           return e.readingRecord.isFinished && e.book != _this8.book;
         });
         finishedBooks.forEach(function (e) {
-          e.book.getLastestChapter().then(function (_ref3) {
-            var _ref4 = _slicedToArray(_ref3, 1),
-                lastestChapter = _ref4[0];
+          e.book.getLastestChapter().then(function (_ref5) {
+            var _ref6 = _slicedToArray(_ref5, 1),
+                lastestChapter = _ref6[0];
 
             if (!e.readingRecord.equalChapterTitle(lastestChapter)) addBook(e, true);
           });
@@ -384,12 +419,16 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "buildChapter",
       value: function buildChapter() {
-        var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-            chapter = _ref5.chapter,
-            index = _ref5.index,
-            options = _ref5.options;
+        var _ref7 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+            chapter = _ref7.chapter,
+            index = _ref7.index,
+            options = _ref7.options;
 
-        if (!chapter) return this.buildLastPage();
+        var direction = arguments[1];
+
+        if (!chapter) {
+          if (direction > 0) return this.buildLastPage();else return null;
+        }
 
         this.book.getCatalog().then(function (catalog) {
           return $(".labelBookPercent").text(parseInt(index / catalog.length * 100) + " %");

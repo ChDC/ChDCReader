@@ -10,7 +10,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
   }));else window["Infinitelist"] = factory();
-})(["co"], function (co) {
+})(["co", "utils"], function (co, utils) {
 
   "use strict";
 
@@ -26,10 +26,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.nextElementGenerator = nextElementGenerator;
       this.options = options;
 
-      this.onNewElementFinished = undefined;
-      this.onNoNewElementToLoad = undefined;
-      this.onError = undefined;
-      this.onCurrentElementChanged = null;
       this.__currentElement = null;
       this.__isCheckingBoundary = false;
       this.DOWN_THRESHOLD = 3;
@@ -39,6 +35,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.NEXT = 1;
 
       this.__enableScrollSupport();
+      utils.addEventSupport(this);
     }
 
     _createClass(Infinitelist, [{
@@ -58,19 +55,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function nextElement() {
         var _this = this;
 
-        var forceUpdate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
         var i = this.__getCurrentElementIndex();
         var ics = this.__elementList.children;
         if (i >= 0 && ++i < ics.length) {
           this.__container.scrollTop = ics[i].offsetTop;
           return Promise.resolve();
         }
-        if (!forceUpdate) return Promise.resolve();
+
+        if (!this.options.disableCheckNext) return new Promise(function (resolve, reject) {
+          _this.addEventListener("newElementAddedToDOM", function () {
+            resolve();
+          }, true);
+        });
 
         return co(this.__addElement(this.NEXT)).then(function (newElement) {
           if (newElement) {
-            _this.__checkCurrentElementChange(_this.NEXT);
             _this.__container.scrollTop = newElement.offsetTop;
             _this.__checkCurrentElementChange(_this.NEXT);
           }
@@ -80,8 +79,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "previousElement",
       value: function previousElement() {
         var _this2 = this;
-
-        var forceUpdate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
         var st = this.getPageScorllTop();
         if (st > 0) {
@@ -95,11 +92,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.__container.scrollTop = ics[i].offsetTop;
           return Promise.resolve();
         }
-        if (!forceUpdate) return Promise.resolve();
 
+        if (!this.options.disableCheckPrevious) return Promise.reject();
         return co(this.__addElement(this.PREVIOUS)).then(function (newElement) {
           if (newElement) {
-            _this2.__checkCurrentElementChange(_this2.PREVIOUS);
             _this2.__container.scrollTop = newElement.offsetTop;
             _this2.__checkCurrentElementChange(_this2.PREVIOUS);
           }
@@ -111,7 +107,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _this3 = this;
 
         return this.checkBoundary(this.NEXT).then(function () {
-          if (_this3.options.ifCheckPrevious) return _this3.checkBoundary(_this3.PREVIOUS, true);
+          if (!_this3.options.disableCheckPrevious) return _this3.checkBoundary(_this3.PREVIOUS, true);
         });
       }
     }, {
@@ -168,7 +164,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
 
           if (!_this4.__isCheckingBoundary && Math.abs(event.scrollTop - __lastCheckScrollY) > wh * CHECK_SCROLL_THRESHOLD) {
-            if (!_this4.options.ifCheckPrevious && direction == _this4.PREVIOUS) return;
+            if (_this4.options.disableCheckPrevious && direction == _this4.PREVIOUS) return;
             __lastCheckScrollY = _this4.__container.scrollTop;
             _this4.checkBoundary(direction);
           }
@@ -201,7 +197,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (newCurrentElement == oldValue) return;
 
         this.__currentElement = newCurrentElement;
-        if (this.onCurrentElementChanged) this.onCurrentElementChanged(this, newCurrentElement, oldValue);
+        this.fireEvent("currentElementChanged", { new: newCurrentElement, old: oldValue });
       }
     }, {
       key: "checkBoundary",
@@ -326,7 +322,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _context.prev = 18;
                 _context.t0 = _context["catch"](2);
 
-                if (this.onError) this.onError(this, _context.t0);
+                this.fireEvent("error", { error: _context.t0 });
                 throw _context.t0;
 
               case 22:
@@ -339,22 +335,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   this.__container.scrollTop = cs + newElement.offsetHeight;
                 }
 
+                if (newElement) this.fireEvent("newElementAddedToDOM", { newElement: newElement, direction: direction });
+
                 if (isFirstElement) this.setCurrentElement(newElement);
 
                 if (done) {
                   be = this.__getBoundaryElement(direction);
 
                   if (be) be.dataset['end'] = direction;
-                  if (this.onNoNewElementToLoad) this.onNoNewElementToLoad(this, be);
+                  this.fireEvent("noNewElementToLoad", { boundaryElement: be });
                 }
 
                 if (!newElement) {
-                  _context.next = 30;
+                  _context.next = 31;
                   break;
                 }
 
                 imgs = newElement.querySelectorAll('img');
-                _context.next = 30;
+                _context.next = 31;
                 return Promise.all(Array.from(imgs).map(function (img) {
                   return new Promise(function (resolve, reject) {
 
@@ -368,14 +366,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   });
                 }));
 
-              case 30:
+              case 31:
 
-                if (isFirstElement && this.onFirstNewElementFinished) this.onFirstNewElementFinished(this, newElement, direction);
-                if (newElement && this.onNewElementFinished) this.onNewElementFinished(this, newElement, direction);
+                if (isFirstElement) this.fireEvent("firstNewElementFinished", { newElement: newElement, direction: direction });
+                if (newElement) this.fireEvent("newElementFinished", { newElement: newElement, direction: direction });
 
                 return _context.abrupt("return", Promise.resolve(newElement));
 
-              case 33:
+              case 34:
               case "end":
                 return _context.stop();
             }

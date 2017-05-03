@@ -432,12 +432,16 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       obj.removeEventListener = removeEventListener.bind(obj);
 
       function addEventListener(eventName, handler) {
+        var runonce = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
         if (!eventName || !handler) return;
         if (!(eventName in this.__events)) this.__events[eventName] = [];
-        this.__events[eventName].push(handler);
+        this.__events[eventName].push({ handler: handler, runonce: runonce });
       }
 
       function fireEvent(eventName) {
+        var _this2 = this;
+
         var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         if (!eventName) return;
@@ -452,35 +456,45 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         if (__onevent in this) this[__onevent](e);
 
         if (eventName in this.__events) {
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+          (function () {
+            var removeList = [];
+            var handlers = _this2.__events[eventName];
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-          try {
-            for (var _iterator2 = this.__events[eventName][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var eh = _step2.value;
-
-              try {
-                if (e.__stopPropagation) break;
-                eh(e);
-              } catch (error) {
-                console.error(error);
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
+              for (var _iterator2 = handlers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var eh = _step2.value;
+
+                if (!eh) continue;
+                try {
+                  if (e.__stopPropagation) break;
+                  if (eh.runonce) removeList.push(eh);
+                  eh.handler(e);
+                } catch (error) {
+                  console.error(error);
+                }
               }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
             } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                  _iterator2.return();
+                }
+              } finally {
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
+                }
               }
             }
-          }
+
+            removeList.forEach(function (e) {
+              return handlers.splice(handlers.indexOf(e), 1);
+            });
+          })();
         }
 
         var onevent = "on" + eventName[0].toUpperCase() + eventName.substring(1);
@@ -491,7 +505,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         if (!eventName || !handler) return;
         if (eventName in this.__events) {
           var i = this.__events[eventName].findIndex(function (m) {
-            return m == handler;
+            return m.handler == handler;
           });
           if (i >= 0) this.__events[eventName].splice(i, 1);
         }
@@ -584,6 +598,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         }
       }
       return __persistent(o);
+    },
+    isPointInRect: function isPointInRect(rect, point) {
+      if (!point || !rect) return false;
+      var x = point.x || point.X;
+      var y = point.y || point.Y;
+
+      if (y > rect.top && y < rect.bottom && x > rect.left && x < rect.right) return true;
+      return false;
     }
   };
 });

@@ -39,7 +39,6 @@
     removeDirectory: function removeDirectory(dirEntry) {
       var recursively = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-      debugger;
       if (recursively) return new Promise(function (resolve, reject) {
         return dirEntry.removeRecursively(resolve, reject);
       });else return new Promise(function (resolve, reject) {
@@ -205,7 +204,6 @@
       var recursively = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       return this.getFileEntryFromPath(file, isCacheDir, { create: false, exclusive: false }).then(function (fe) {
-        debugger;
         if (fe.isFile) _this3.removeFile(fe);else _this3.removeDirectory(fe, recursively);
       });
     }
