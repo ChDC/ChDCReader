@@ -279,8 +279,8 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.chapterList.onCurrentElementChanged = ({new: newValue, old: oldValue}) => {
         newValue = $(newValue);
         const readingRecord = newValue.data('readingRecord');
-        const contentSourceId = readingRecord.options.contentSourceId;
         if(readingRecord.chapterIndex >= 0){
+          const contentSourceId = readingRecord.options.contentSourceId;
           Object.assign(this.readingRecord, readingRecord);
           $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name)
             .click(e => window.open(this.book.getOfficialDetailLink(contentSourceId), '_system'));
@@ -315,9 +315,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       nc.find(".offical-site").click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
       nc.find("img.offical-site").attr('src', `img/logo/${this.book.mainSourceId}.png`);
 
-      nc.data('chapterIndex', -1);
-      nc.data('chapterTitle', '读完啦');
-
+      nc.data("readingRecord", new ReadingRecord({chapterTitle: "读完啦", chapterIndex: -1}));
       this.loadElseBooks(nc.find(".elseBooks"));
       return nc[0];
     }
