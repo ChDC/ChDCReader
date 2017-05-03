@@ -655,11 +655,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               Object.assign(options, result.options);
               chapterIndex += direction >= 0 ? 1 : -1;
               options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
-              return { value: map(result), done: false };
+              return { value: map(result, direction), done: false };
             }).catch(function (error) {
               if (error == 203 || error == 202) {
                 finished = true;
-                return Promise.resolve({ value: map(undefined), done: true });
+                return Promise.resolve({ value: map(undefined, direction), done: true });
               }
               throw error;
             });
