@@ -365,12 +365,16 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
     // 下一章节
     nextChapter(){
-      this.chapterList.nextElement();
+      app.showLoading();
+      this.chapterList.nextElement(false)
+        .then(() => app.hideLoading());
     }
 
     // 上一章节
     previousChapter(){
-      this.chapterList.previousElement();
+      app.showLoading();
+      this.chapterList.previousElement(true)
+        .then(() => app.hideLoading());
     }
   }
 

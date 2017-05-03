@@ -229,7 +229,8 @@
       return this.__spider.get(bs.detail, dict)
         .then(m => {
           m.bookid = dict.bookid;
-          m.author = m.author || "";
+          m.catalogLink = dict.catalogLink;
+          m.detailLink = dict.detailLink;
           let book = this.__createBook(bs, m);
           return book;
         });

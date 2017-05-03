@@ -484,7 +484,6 @@
       else{
         const s = onlyCache? sessionStorage : localStorage;
         if(key[key.length - 1] == "/"){
-          debugger;
           let pattern = new RegExp(`^${key}`);
           for(var key in s)
             if(key.match(pattern))
