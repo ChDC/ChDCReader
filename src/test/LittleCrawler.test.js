@@ -32,7 +32,7 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
                 "true": "完本",
                 "false": "连载中"
               },
-              "coverImg": ".book-img-box img",
+              "coverImg": ".book-img-box img[src]",
               "introduce": ".book-mid-info .intro",
               "lastestChapter": ".book-mid-info .update>a",
               "detailLink": ".book-mid-info>h4>a",
@@ -115,7 +115,8 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
       assert.equal(html, LittleCrawler.replaceTag(html, null));
       assert.equal(html, LittleCrawler.replaceTag(html, ""));
 
-      assert.notInclude(LittleCrawler.replaceTag(html, 'div'), 'div');
+      assert.notInclude(LittleCrawler.replaceTag(html, 'div', 'ab-div'), '<div');
+      assert.include(LittleCrawler.replaceTag(html, 'div', 'ab-div'), 'ab-div');
     });
 
     it('text2html', () => {
@@ -138,12 +139,12 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         <script type="text/javascript" src="cordova.js"></script>
         <title>ChDCReader</title>
         <iframe src="cordova"></iframe>
-        <img src="test.png" />
+        <img src="test.png">
         <img src="test.png" />
       `;
 
       let fh = lc.__transformHTML(html);
-      assert.include(fh, '<img data-src="test.png" />');
+      assert.include(fh, '<img lc-src="test.png" />');
       assert.notInclude(fh, '<img src="test.png" />');
     });
 
@@ -160,7 +161,7 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         </script>
         <title>ChDCReader</title>
         <iframe src="cordova"></iframe>
-        <img class="css" src="test.png" />
+        <img class="css" src="test.png">
         <img align="right" src="test.png" />
         <img class="css" src="test.png"></img>
         <p class
@@ -214,7 +215,7 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         <script type="text/javascript" src="cordova.js"></script>
         <title>ChDCReader</title>
         <iframe src="cordova"></iframe>
-        <img src="test.png" />
+        <img src="test.png">
         <img src="test.png" />
       `;
       let fh = LittleCrawler.filterHtmlContent(html);
@@ -317,7 +318,10 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         }
       };
       return lc.get(config, {keyword: "神墓", url: 'http://se.qidian.com/?kw=神墓'})
-        .then(r => equal('神墓', r[0].name));
+        .then(r => {
+          equal('神墓', r[0].name);
+          equal(true, !!r[0].coverImg)
+        });
     });
 
     it('完整的 Request 类型为 HTML，类型为 Object，type 为 array', ()=>{

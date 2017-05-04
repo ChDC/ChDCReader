@@ -95,17 +95,15 @@
       };
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
-      this.insecurityAttributeList = [
-        ['src', 'data-src'],
-      ];
+      this.insecurityAttributeList = ['src'];
       this.insecurityTagList = ['header', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
 
-      this.fixurlAttributeList = ['href', "data-src"]; // 需要修复 url 的属性
+      this.fixurlAttributeList = ['href', "lc-src"]; // 需要修复 url 的属性
 
       // 如果给定的键名匹配下面的规则，就自动获取指定的属性
       this.specialKey2AttributeList = [
         [/link$/i, "href"],
-        [/img$|image$/i, "data-src"],
+        [/img$|image$/i, "lc-src"],
         [/html$/i, (element) => this.__reverseHTML(element.innerHTML)]
       ];
     }
@@ -297,9 +295,8 @@
           // 从 element 中获取属性值
           if(response.attribute){
             let attr;
-            let transAttrbite = this.insecurityAttributeList.find(e => e[0] == response.attribute)
-            if(transAttrbite)
-              attr = transAttrbite[1];
+            if(this.insecurityAttributeList.includes(response.attribute))
+              attr = `lc-${attr}`;
             else
               attr = response.attribute;
             result = e.getAttribute(attr);
@@ -410,13 +407,26 @@
       }
     }
 
+    // 将选择器也转换为内部的选择器
+    __transformSelector(selector){
+      if(!selector) return selector;
+      selector = this.insecurityTagList.reduce((s, tag) =>
+        s.replace(new RegExp(`([^#._-]|^)\\b${tag}\\b`, "gi"), `$1lc-${tag}`), selector);
+
+      // 图片的 src 属性转换成 lc-src 属性
+      selector = this.insecurityAttributeList.reduce((s, attr) =>
+        s.replace(new RegExp(`\\[\\b${attr}\\b`, "gi"), `[lc-${attr}`), selector);
+      return selector;
+    }
+
     // 获取 HTML 元素对象或者 JOSN 对象
     __getElement(element, selector){
       if(!element || !selector) return undefined;
 
       if("querySelector" in element){
         // html
-        return element.querySelector(selector);
+        // 将特殊属性和特殊标签转化
+        return element.querySelector(this.__transformSelector(selector));
       }
       else{
         // json
@@ -429,50 +439,31 @@
       if(!element || !selector) return undefined;
 
       if("querySelectorAll" in element){
-        return Array.from(element.querySelectorAll(selector));
+        // 将特殊属性和特殊标签转化
+        return Array.from(element.querySelectorAll(this.__transformSelector(selector)));
       }
       else{
         return LittleCrawler.getDataFromObject(element, selector) || [];
       }
     }
 
-
-    // 将不安全的标签转换掉
-    // __transformHTMLContent(html){
-    //   if(!html) return html;
-
-    //   // 只要 body
-    //   const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
-    //   if(m && m.length >= 2)
-    //     html = m[1];
-
-    //   let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
-    //   html = blackList.reduce((html, be) => LittleCrawler.filterTag(html, be), html);
-    //   return html;
-    // }
-
-    // 将诸如 img 标签的 src 属性转换为 data-src 防止浏览器加载图片
+    // 将诸如 img 标签的 src 属性转换为 lc-src 防止浏览器加载图片
     __transformHTML(html){
       if(!html) return html;
-      debugger;
-      // TODO
-      html = this.insecurityTagList.reduct((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
+      html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
 
-      // 图片的 src 属性转换成 data-src 属性
-      for(let [src, dest] of this.insecurityAttributeList)
-        html = html.replace(new RegExp(`\\b${src}=(?=["'])`, 'gi'), `${dest}=`);
+      // 图片的 src 属性转换成 lc-src 属性
+      html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, attr, `lc-${attr}`), html);
       return html;
     }
 
     // 将之前的转换逆转回来
     __reverseHTML(html){
       if(!html) return html;
-      debugger;
-      // TODO
+      html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, `lc-${tag}`, tag), html);
 
-      // 图片的 src 属性转换成 data-src 属性
-      for(let [src, dest] of this.insecurityAttributeList)
-        html = html.replace(new RegExp(`\\b${dest}=(?=["'])`, 'gi'), `${src}=`);
+      // 图片的 src 属性转换成 lc-src 属性
+      html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, `lc-${attr}`, attr), html);
       return html;
     }
 
@@ -783,29 +774,35 @@
 
 
   // 过滤某些标签
-  LittleCrawler.filterTag = function(html, element){
+  LittleCrawler.filterTag = function(html, tag){
 
-    if(!html || !element) return html;
+    if(!html || !tag) return html;
 
-    let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${element}>`;
+    let pattern = `<${tag}\\b( [^>]*?)?>[\\s\\S]*?</${tag}>`;
     html = html.replace(new RegExp(pattern, 'gi'), '');
     // 去除单标签
-    pattern = `<${element}([^>]*?)?>`;
+    pattern = `<${tag}\\b([^>]*?)?>`;
     html = html.replace(new RegExp(pattern, 'gi'), '');
     return html;
   }
 
   // 替换标签
   LittleCrawler.replaceTag = function(html, tag, retag){
-    // TODO
-    if(!html || !element) return html;
-
-    let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${element}>`;
-    html = html.replace(new RegExp(pattern, 'gi'), '');
-    // 去除单标签
-    pattern = `<${element}([^>]*?)?>`;
-    html = html.replace(new RegExp(pattern, 'gi'), '');
+    if(!html || !tag || !retag || tag == retag) return html;
+    // 替换开头
+    let pattern = `<${tag}\\b(?=[ >/])`;
+    html = html.replace(new RegExp(pattern, 'gi'), `<${retag}`);
+    // 替换结尾
+    pattern = `</${tag}>`;
+    html = html.replace(new RegExp(pattern, 'gi'), `</${retag}>`);
     return html;
+  }
+
+  // 替换标签
+  LittleCrawler.replaceAttribute = function(html, attr, reattr){
+    if(!html || !attr || !reattr || attr == reattr) return html;
+    // 替换开头
+    return html.replace(new RegExp(`\\b${attr}=(?=["'])`, 'gi'), `${reattr}=`);
   }
 
   /*
