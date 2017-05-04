@@ -173,7 +173,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getCacheChapterLocation",
       value: function __getCacheChapterLocation(id) {
-        return "chapter_" + this.book.name + "_" + this.book.author + "_" + id + "_" + this.id + ".json";
+        return "chapter/" + this.book.name + "_" + this.book.author + "/" + id + "_" + this.id + ".json";
       }
     }, {
       key: "__getCacheChapter",
