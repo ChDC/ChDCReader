@@ -127,7 +127,7 @@
     groupCatalogByVolume(catalog, {bookSourceId=this.mainSourceId, countPerGroup=100}={}){
 
       if(!catalog) return catalog;
-      catalog.forEach((c, i) => c.index = i); // TODO 对原始数据进行了修改
+      catalog.forEach((c, i) => c.index = i); // NOTE: 此处对原始数据进行了修改
 
       if(this.bookSourceManager.hasVolume(bookSourceId)){
         let result = [];
@@ -175,7 +175,7 @@
     // *************************** 章节部分 ****************
 
     // 获取指定源的指定索引的章节
-    index(chapterIndex, refresh, bookSourceId=this.mainSourceId){
+    index(chapterIndex, options){
       if(typeof chapterIndex != "number"){
         return Promise.reject(205);
       }
@@ -184,7 +184,7 @@
         return Promise.reject(203);
       }
 
-      return this.getCatalog({refresh: refresh, bookSourceId: bookSourceId})
+      return this.getCatalog(options)
         .then(catalog => {
           if(chapterIndex >= 0 && chapterIndex < catalog.length)
             // 存在于目录中
@@ -199,11 +199,12 @@
     }
 
     // 在指定的源 B 中搜索目录源的中某章节的相对应的章节
-    fuzzySearch(sourceB, index, refresh, bookSourceId=this.mainSourceId){
+    fuzzySearch(sourceB, index, options){
 
-      if(bookSourceId == sourceB){
+      let opts = Object.assign({}, options, {bookSourceId: sourceB});
+      if(options.bookSourceId == sourceB){
         // 两源相同
-        return this.index(index, refresh, sourceB)
+        return this.index(index, opts)
           .then(chapter => {
             return {"chapter": chapter, "index": index}
           });
@@ -212,11 +213,10 @@
       const self = this;
       return co(function*(){
         // 获取目录源的目录
-        const catalog = yield self.getCatalog({refresh: refresh, bookSourceId: bookSourceId});
+        const catalog = yield self.getCatalog({}); // NOTE: 此处默认不更新目录
 
         // 获取源B 的目录
-
-        const catalogB = yield self.getCatalog({refresh: refresh, bookSourceId: sourceB});
+        const catalogB = yield self.getCatalog(opts);
 
         const matchs = [
           [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
@@ -260,16 +260,16 @@
       options = Object.assign({}, options);
       options.bookSourceId = options.bookSourceId || this.mainSourceId;
 
-      return this.index(chapterIndex, options.refresh, options.bookSourceId)
+      return this.index(chapterIndex, options)
         .catch(error => {
-          if(error != 202 || options.refresh)
+          if(error != 202 || options.refresh || options.forceRefresh)
             return Promise.reject(error);
-          options.refresh = true;
+          options.refresh = true; // NOTE: 此处设置了 refresh 为 true，也就是当主目录没有找到制定的索引，比如最新章节索引的时候，会更新主目录，然后 refresh 向下传递会自动更新内容目录
           // 强制更新目录
-          return this.index(chapterIndex, options.refresh, options.bookSourceId);
+          return this.index(chapterIndex, options);
         })
         .then(chapter =>
-          co(this.__getChapterFromContentSources(chapterIndex, options)));
+          co(this.__getChapterFromContentSources(chapter, chapterIndex, options)));
 
     }
 
@@ -282,19 +282,20 @@
     // * count 获取的数目
     // * onlyCacheNoLoad 只缓存章节，不加载章节
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
-    *__getChapterFromContentSources(index,
-        {
-          bookSourceId = this.mainSourceId,
-          count = 1,
-          excludes,
-          contentSourceId,
-          contentSourceChapterIndex,
-          onlyCacheNoLoad,
-          noInfluenceWeight = false,
-          refresh
-        }){
-      const catalog = yield this.getCatalog({refresh: refresh, bookSourceId: bookSourceId});
-      const chapterA = catalog[index];
+    *__getChapterFromContentSources(chapterA, index, options={}){
+
+      let {
+        // bookSourceId = this.mainSourceId,
+        count = 1,
+        excludes,
+        contentSourceId,
+        contentSourceChapterIndex,
+        onlyCacheNoLoad,
+        noInfluenceWeight = false
+      } = options;
+
+      // const catalog = yield this.getCatalog(options);
+      // const chapterA = catalog[index];
       const result = []; // 结果的集合，按权重排序
       const errorCodeList = []; // 用于存放每次获取章节失败的原因
       let remainCount = count;// 想获取的数目
@@ -388,12 +389,13 @@
           try{
             let result;
             try {
-              result = yield self.fuzzySearch(sourceB, index, refresh, bookSourceId);
+              result = yield self.fuzzySearch(sourceB, index, options);
             }
             catch(error){
-              if(error != 201 || refresh)
+              if(error != 201 || options.refresh || options.forceRefresh)
                 throw error;
-              result = yield self.fuzzySearch(sourceB, index, true, bookSourceId);
+              let opts = Object.assign({}, options, {refresh: true});
+              result = yield self.fuzzySearch(sourceB, index, opts);
             }
             const {chapter: chapterBB, index: indexB} = result;
             const bs = yield self.getBookSource(sourceB);
@@ -425,16 +427,17 @@
 
         if(!noInfluenceWeight)
           self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
-
+        let opts = Object.assing({}, options, {bookSourceId: contentSourceId});
         let chapterB;
         try{
-          chapterB = yield self.index(contentSourceChapterIndex, refresh, contentSourceId);
+          chapterB = yield self.index(contentSourceChapterIndex, opts);
         }
         catch(error){
-          if(error != 202 || refresh)
+          if(error != 202 || opts.refresh)
             throw error;
+          opts.refresh = true;
           // 强制更新目录
-          chapterB = yield self.index(contentSourceChapterIndex, true, contentSourceId);
+          chapterB = yield self.index(contentSourceChapterIndex, opts);
         }
         if(!Chapter.equalTitle(chapterA, chapterB)){
           throw new Error();
@@ -458,8 +461,8 @@
     }
 
     // 根据标题获取章节在目录中的索引值
-    getChapterIndex(title, index, {bookSourceId=this.mainSourceId, refresh=false}={}){
-      return this.getCatalog({bookSourceId: bookSourceId, refresh: refresh})
+    getChapterIndex(title, index, options={}){
+      return this.getCatalog(options)
         .then(catalog => {
           if(index != undefined){
             let tc = catalog[index];
@@ -502,6 +505,8 @@
           if(finished) return Promise.resolve({done: true});
           return self.getChapter(chapterIndex, options)
             .then(result => {
+                if(options.forceRefresh)
+                  options.forceRefresh = false;
                 Object.assign(options, result.options);
                 chapterIndex += (direction >= 0? 1 : -1);
                 options.contentSourceChapterIndex += (direction >= 0? 1 : -1);

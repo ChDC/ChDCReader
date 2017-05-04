@@ -1,6 +1,6 @@
 /*!
- * JavaScript Spider v1.0.0
- * https://github.com/ChDC/ChDCSpider
+ * JavaScript LittleCrawler v1.0.0
+ * https://github.com/ChDC/LittleCrawlerJS
  *
  * Copyright 2016, 2017 Chen Dacai
  * Released under the MIT license
@@ -12,7 +12,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory();
   else
-    window["Spider"] = factory();
+    window["LittleCrawler"] = factory();
 }(function(){
   /******* 格式说明 ************
 
@@ -76,7 +76,7 @@
 
   *****************************/
 
-  class Spider{
+  class LittleCrawler{
 
     // ajax：用于发送 HTTP 请求的对象
     // 可以设置为 map，在 request 中用 ajax 来指定使用哪个 ajax，默认使用 default 键指定的 ajax
@@ -126,7 +126,7 @@
 
       // 获取 ajax 操作对象
       let ajax;
-      switch(this.type(this.ajax)){
+      switch(LittleCrawler.type(this.ajax)){
         case "function":
           ajax = this.ajax;
           break;
@@ -170,7 +170,7 @@
         };
 
       // the request arg can be a single string
-      if(this.type(request) == "string"){
+      if(LittleCrawler.type(request) == "string"){
         request = {
           "url": request
         };
@@ -201,7 +201,7 @@
           return this.__handleResponse(html, response, null,  dict);
         case "json":
           let json;
-          if(this.type(data) != 'object')
+          if(LittleCrawler.type(data) != 'object')
             json = JSON.parse(data);
           else
             json = data;
@@ -216,7 +216,7 @@
 
       if(!response) return undefined;
 
-      switch(this.type(response)){
+      switch(LittleCrawler.type(response)){
         case "array":
           return this.__handleArray(data, response, keyName, globalDict, dict);
         case "object":
@@ -268,8 +268,8 @@
             // 指定了验证类型，验证每一个值是否有效
             result = result.filter(m => {
               let gatherDict = Object.assign({}, globalDict,
-                  this.type(data) == "object" ? data : {},
-                  this.type(m) == "object" ? m : {});
+                  LittleCrawler.type(data) == "object" ? data : {},
+                  LittleCrawler.type(m) == "object" ? m : {});
               const validCode = '"use strict"\n' + this.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
@@ -345,7 +345,7 @@
           if(!response.value)
             return undefined;
           let gatherDict = Object.assign({}, globalDict,
-              this.type(data) == "object" ? data : {}, dict);
+              LittleCrawler.type(data) == "object" ? data : {}, dict);
           result = this.format(response.value, gatherDict);
         }
         break;
@@ -358,7 +358,7 @@
       if("valid" in response){
         // 有验证的类型
         let gatherDict = Object.assign({}, globalDict,
-            this.type(data) == "object" ? data : {}, dict);
+            LittleCrawler.type(data) == "object" ? data : {}, dict);
         const validCode = '"use strict"\n' + this.format(response.valid, gatherDict, true);
         if(!eval(validCode))
           return undefined; // 验证失败，返回空值
@@ -384,13 +384,13 @@
         for(let [pattern, attr] of this.specialKey2AttributeList){
           if(keyName.match(pattern)){
             matched = true;
-            if(this.type(attr) == "string"){
+            if(LittleCrawler.type(attr) == "string"){
               result = element.getAttribute(attr);
               // 修复 url
               if(this.fixurlAttributeList.indexOf(attr) >= 0)
                 result = this.fixurl(result, globalDict.host);
             }
-            else if(this.type(attr) == "function")
+            else if(LittleCrawler.type(attr) == "function")
               result = attr(element);
             break;
           }
@@ -469,7 +469,7 @@
 
         let [k, operator, args] = splitKeyAndOperatorAndArgs(key);
 
-        if(this.type(result) == 'array'){
+        if(LittleCrawler.type(result) == 'array'){
           // 多个值的情况
           if(operator == 'concat')
             result = result.reduce((s, m) => s.concat(m[k]), []);
@@ -483,7 +483,7 @@
           // 单个值的情况
           if(operator == "filter"){
             result = result[k];
-            if(this.type(result) == 'array')
+            if(LittleCrawler.type(result) == 'array')
               result = result.filter(e => operatorFilter(e, args));
           }
           else
@@ -635,63 +635,61 @@
       html = html.replace(new RegExp(pattern, 'gi'), '');
       return html;
     }
-
-    /*
-    * 判断对象的类型
-    * null -> null
-    * undefined -> undefined
-    * [] -> array
-    * {} -> object
-    * '' -> string
-    * 0.1 -> number
-    * new Error() -> error
-    * ()->{} -> function
-    */
-    type(obj){
-      // return $.type(obj); // 只有这里用了 jquery
-      let type = typeof(obj);
-      if(type != 'object')
-        return type;
-      return obj.constructor.name.toLowerCase();
-    }
-
-    // transform text to html
-    text2html(text){
-      if(!text) return text;
-
-      // 将每一行都加上 p 标签
-      const lines = text.split("\n")
-        .map(line => `<p>${escapeHTML(line.trim())}</p>`);
-      return lines.join('\n');
-
-      function escapeHTML(t) {
-        return t
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/ /g, "&nbsp;")
-          .replace(/"/g, "&#34;")
-          .replace(/'/g, "&#39;");
-      }
-    }
-
-
-
-    // 将第二个对象中的属性复制到第一个对象中
-    // 只复制第一个对象中有的属性
-    // 并且只有当第二个对象中对应的键值不为空的时候才复制
-    // 该函数用于用 get 或 parse 函数获取到结果后对结果进行筛选
-    cloneObjectValues(dest, src){
-      if(!dest || !src) return dest;
-
-      for(let key in dest){
-        if(src[key] != undefined)
-          dest[key] = src[key];
-      }
-      return dest;
-    }
-
   }
 
-  return Spider;
+
+  /*
+  * 判断对象的类型
+  * null -> null
+  * undefined -> undefined
+  * [] -> array
+  * {} -> object
+  * '' -> string
+  * 0.1 -> number
+  * new Error() -> error
+  * ()->{} -> function
+  */
+  LittleCrawler.type = function(obj){
+    // return $.type(obj); // 只有这里用了 jquery
+    let type = typeof(obj);
+    if(type != 'object')
+      return type;
+    return obj.constructor.name.toLowerCase();
+  }
+
+  // transform text to html
+  LittleCrawler.text2html = function(text){
+    if(!text) return text;
+
+    // 将每一行都加上 p 标签
+    const lines = text.split("\n")
+      .map(line => `<p>${escapeHTML(line.trim())}</p>`);
+    return lines.join('\n');
+
+    function escapeHTML(t) {
+      return t
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/ /g, "&nbsp;")
+        .replace(/"/g, "&#34;")
+        .replace(/'/g, "&#39;");
+    }
+  }
+
+  // 将第二个对象中的属性复制到第一个对象中
+  // 只复制第一个对象中有的属性
+  // 并且只有当第二个对象中对应的键值不为空的时候才复制
+  // 该函数用于用 get 或 parse 函数获取到结果后对结果进行筛选
+  LittleCrawler.cloneObjectValues = function(dest, src){
+    if(!dest || !src) return dest;
+
+    for(let key in dest){
+      if(src[key] != undefined)
+        dest[key] = src[key];
+    }
+    return dest;
+  }
+
+  return LittleCrawler;
 }));

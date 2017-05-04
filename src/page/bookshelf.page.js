@@ -122,13 +122,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             // 更新最新章节
             // 强制刷新目录
             book.getChapterIndex(lastestChapter)
-              .then(index => {
-                if(index < 0)
-                  return book.getCatalog({forceRefresh: true})
-              })
-              .then(() => {
-                // 缓存后面章节内容
-                book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+              .then(index => index < 0)
+              .then(forceRefresh => {
+                debugger;
+                // 缓存后面章节内容，使用强制更新模式
+                book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {forceRefresh: forceRefresh});
               });
           }
         });

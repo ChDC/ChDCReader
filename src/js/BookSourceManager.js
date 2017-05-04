@@ -6,7 +6,7 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["BookSourceManager"] = factory();
-}(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
+}(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function(co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // **** BookSourceManager *****
@@ -16,7 +16,7 @@
 
       this.__sources;
       this.__customBookSource = customBookSource;
-      this.__spider = new Spider({
+      this.__lc = new LittleCrawler({
         "default": utils.ajax.bind(utils),
         "cordova": utils.cordovaAjax.bind(utils),
       });
@@ -166,8 +166,8 @@
 
       m.cover = m.coverImg;
 
-      const book = this.__spider.cloneObjectValues(new Book(this), m);
-      const bss = this.__spider.cloneObjectValues(new BookSource(book, this, bs.id, bs.contentSourceWeight), m);
+      const book = LittleCrawler.cloneObjectValues(new Book(this), m);
+      const bss = LittleCrawler.cloneObjectValues(new BookSource(book, this, bs.id, bs.contentSourceWeight), m);
       book.sources = {}; // 内容来源
       if(bss.lastestChapter)
         bss.lastestChapter = bss.lastestChapter.replace(/^最新更新\s+/, '');  // 最新的章节
@@ -188,7 +188,7 @@
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bs.search, {keyword: keyword})
+      return this.__lc.get(bs.search, {keyword: keyword})
         .then(getBooks);
 
       function getBooks(data){
@@ -226,7 +226,7 @@
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bs.detail, dict)
+      return this.__lc.get(bs.detail, dict)
         .then(m => {
           m.bookid = dict.bookid;
           m.catalogLink = dict.catalogLink;
@@ -243,7 +243,7 @@
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bsm.detail, dict)
+      return this.__lc.get(bsm.detail, dict)
         .then(data => {
           return data.lastestChapter.replace(/^最新更新\s+/, '');
         });
@@ -260,7 +260,7 @@
       if(!bs.catalogLink)
         return Promise.resolve(null);
 
-      return this.__spider.get(bs.catalogLink, dict);
+      return this.__lc.get(bs.catalogLink, dict);
     }
 
 
@@ -272,13 +272,13 @@
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bsm.catalog, dict)
+      return this.__lc.get(bsm.catalog, dict)
         .then(data => {
           if(bsm.catalog.hasVolume)
             data = data
               .map(v => v.chapters.map(c => (c.volume = v.name, c)))
               .reduce((s,e) => s.concat(e), []);
-          return data.map(c => this.__spider.cloneObjectValues(new Chapter(), c));
+          return data.map(c => LittleCrawler.cloneObjectValues(new Chapter(), c));
         });
     }
 
@@ -292,13 +292,13 @@
       const bsm = this.__sources[bsid];
       if(!bsm) return Promise.reject("Illegal booksource!");
 
-      return this.__spider.get(bsm.chapter, dict)
+      return this.__lc.get(bsm.chapter, dict)
         .then(data => {
           const c = new Chapter();
           if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
-            c.content = this.__spider.text2html(data.contentHTML);
+            c.content = LittleCrawler.text2html(data.contentHTML);
           else
-            c.content = this.__spider.clearHtml(data.contentHTML);
+            c.content = this.__lc.clearHtml(data.contentHTML);
           if(!c.content) return Promise.reject(206);
 
           c.title = data.title ? data.title : dict.title;
@@ -328,11 +328,11 @@
       let config = bs.officialurls;
       if(!config) return null;
       if(key && config[key])
-        return this.__spider.format(config[key], dict);
+        return this.__lc.format(config[key], dict);
       if(!key){
         let result = {};
         for(let key in config)
-          result[key] = this.__spider.format(config[key], dict);
+          result[key] = this.__lc.format(config[key], dict);
       }
       return null;
     }
@@ -344,7 +344,7 @@
       const bs = this.__sources[bsid];
       if(!bs) throw new Error("Illegal booksource!");
 
-      return this.__spider.getLink(bs.detail.request, dict);
+      return this.__lc.getLink(bs.detail.request, dict);
     }
 
     // 获取书籍的章节链接
@@ -356,7 +356,7 @@
       const bsm = this.__sources[bsid];
       if(!bsm) throw new Error("Illegal booksource!");
 
-      return this.__spider.getLink(bsm.chapter.request, dict);
+      return this.__lc.getLink(bsm.chapter.request, dict);
     }
 
     // 按主源权重从大到小排序的数组

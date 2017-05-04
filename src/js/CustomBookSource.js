@@ -6,7 +6,7 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["customBookSource"] = factory();
-}(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function(co, utils, Spider, translate, Book, BookSource, Chapter) {
+}(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function(co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // 定义一个用于存放自定义获取信息的钩子的集合
@@ -135,8 +135,8 @@
           .then(json => {
             let content = decryptByBaseCode(json.Content, 30);
             const bsm = this.__sources[bsid];
-            let data = this.__spider.parse(content, "html", bsm.chapter.response, link, {});
-            content = this.__spider.clearHtml(data.contentHTML);
+            let data = this.__lc.parse(content, "html", bsm.chapter.response, link, {});
+            content = this.__lc.clearHtml(data.contentHTML);
 
             const c = new Chapter();
             c.content = content;
@@ -193,26 +193,26 @@
           let result = [];
           // 获取章节总数和免费章节数目
           // maxfreechapter
-          let link = self.__spider.format(linkTmp, {bookid: dict.bookid, pageNo: 1});
+          let link = self.__lc.format(linkTmp, {bookid: dict.bookid, pageNo: 1});
           let json = yield utils.getJSON(link);
 
           let total = json.total;
           dict.maxfreechapter = json.book.maxfreechapter;
-          result[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
+          result[0] = self.__lc.parse(json, "json", bs.catalog.response, link, dict);
 
           let pageNos = (new Array(Math.ceil(total / 100) - 1)).fill(0).map((e,i) => i+2)
 
           // 获取所有章节列表
           yield Promise.all(pageNos.map(pageNo => {
             let gatcherDict = Object.assign({pageNo: pageNo}, dict);
-            return self.__spider.get(bs.catalog, gatcherDict)
+            return self.__lc.get(bs.catalog, gatcherDict)
               .then(cs => {
                 result[pageNo - 1] = cs;
               });
           }));
           // 合并结果并返回
           result = result.reduce((s, e) => s.concat(e), []);
-          return result.map(c => self.__spider.cloneObjectValues(new Chapter(), c));
+          return result.map(c => LittleCrawler.cloneObjectValues(new Chapter(), c));
         });
       }
     },
@@ -226,7 +226,7 @@
         return utils.get(link)
           .then(data => {
             let url = data.match(/'(\/novelsearch\/reader\/transcode\/siteid\/\d+\/url\/.*?)'/)[1];
-            args[1].link = this.__spider.fixurl(url, link);
+            args[1].link = this.__lc.fixurl(url, link);
             return args;
           });
       },

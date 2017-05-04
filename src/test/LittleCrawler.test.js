@@ -1,4 +1,4 @@
-define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
+define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
 
   /************************************
     测试用例规范：
@@ -10,13 +10,13 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
   let assert = chai.assert;
   let equal = assert.equal;
 
-  describe('Spider.js 测试', () => {
+  describe('LittleCrawler.js 测试', () => {
 
-    let spider;
+    let lc;
     let config;
 
     before(() => {
-      spider = new Spider(utils.ajax.bind(utils));
+      lc = new LittleCrawler(utils.ajax.bind(utils));
       config = {
         "request": "http://se.qidian.com/?kw={keyword}",
         "response": {
@@ -49,66 +49,66 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
     it('cloneObjectValues', () => {
       let src = {abc: 1, def: 2, fff: undefined};
       let dest = {abc: 0, fff: 2};
-      spider.cloneObjectValues(dest, src);
+      LittleCrawler.cloneObjectValues(dest, src);
       equal(1, dest.abc);
       equal(2, dest.fff);
       equal(false, "def" in dest);
     });
 
     it('string format', ()=> {
-      equal(null, spider.format());
-      equal('', spider.format(''));
-      equal('', spider.format('', {}));
-      equal('abc123', spider.format('abc{def}', {def: 123}));
-      try{spider.format('abc{def}')}catch(error){ equal("can't find the key def in object", error.message)};
-      try{spider.format('abc{def}', {})}catch(error){ equal("can't find the key def in object", error.message)};
-      try{spider.format('abc{def}', {}, true)}catch(error){ equal("can't find the key def in object", error.message)};
+      equal(null, lc.format());
+      equal('', lc.format(''));
+      equal('', lc.format('', {}));
+      equal('abc123', lc.format('abc{def}', {def: 123}));
+      try{lc.format('abc{def}')}catch(error){ equal("can't find the key def in object", error.message)};
+      try{lc.format('abc{def}', {})}catch(error){ equal("can't find the key def in object", error.message)};
+      try{lc.format('abc{def}', {}, true)}catch(error){ equal("can't find the key def in object", error.message)};
 
-      equal('abc"123"', spider.format('abc{def}', {def: "123"}, true));
-      equal('abc123', spider.format('abc{def}', {def: "123"}, false));
-      equal('abc', spider.format('abc{def}', {def: undefined}, false));
-      equal('abcundefined', spider.format('abc{def}', {def: undefined}, true));
-      equal('abc', spider.format('abc{def}', {def: null}, false));
-      equal('abcnull', spider.format('abc{def}', {def: null}, true));
+      equal('abc"123"', lc.format('abc{def}', {def: "123"}, true));
+      equal('abc123', lc.format('abc{def}', {def: "123"}, false));
+      equal('abc', lc.format('abc{def}', {def: undefined}, false));
+      equal('abcundefined', lc.format('abc{def}', {def: undefined}, true));
+      equal('abc', lc.format('abc{def}', {def: null}, false));
+      equal('abcnull', lc.format('abc{def}', {def: null}, true));
 
     });
 
     it('fixurl', () => {
       let host1 = "http://www.test.com";
       let host2 = "http://www.test.com/abc/def?test";
-      equal(undefined, spider.fixurl());
-      equal("http://www.abc.com", spider.fixurl("http://www.abc.com"));
-      equal("http://www.abc.com", spider.fixurl("://www.abc.com"));
-      equal("http://www.abc.com", spider.fixurl("//www.abc.com"));
-      equal("http://www.test.com/www.abc.com", spider.fixurl("www.abc.com", host1));
-      equal("http://www.test.com/def/abc/ddd", spider.fixurl("/def/abc/ddd", host1));
+      equal(undefined, lc.fixurl());
+      equal("http://www.abc.com", lc.fixurl("http://www.abc.com"));
+      equal("http://www.abc.com", lc.fixurl("://www.abc.com"));
+      equal("http://www.abc.com", lc.fixurl("//www.abc.com"));
+      equal("http://www.test.com/www.abc.com", lc.fixurl("www.abc.com", host1));
+      equal("http://www.test.com/def/abc/ddd", lc.fixurl("/def/abc/ddd", host1));
 
-      equal("http://www.test.com/abc/www.abc.com", spider.fixurl("www.abc.com", host2));
-      equal("http://www.test.com/def/abc/ddd", spider.fixurl("/def/abc/ddd", host2));
-      equal("http://www.test.com/def/abc/ddd", spider.fixurl("../def/abc/ddd", host2));
+      equal("http://www.test.com/abc/www.abc.com", lc.fixurl("www.abc.com", host2));
+      equal("http://www.test.com/def/abc/ddd", lc.fixurl("/def/abc/ddd", host2));
+      equal("http://www.test.com/def/abc/ddd", lc.fixurl("../def/abc/ddd", host2));
     });
 
     it('__filterElement', () => {
       let html = '<div>abcdef</div><br/><div/><div />';
 
-      assert.equal(null, spider.__filterElement(null, null));
-      assert.equal(html, spider.__filterElement(html, null));
-      assert.equal(html, spider.__filterElement(html, ""));
+      assert.equal(null, lc.__filterElement(null, null));
+      assert.equal(html, lc.__filterElement(html, null));
+      assert.equal(html, lc.__filterElement(html, ""));
 
-      assert.notInclude(spider.__filterElement(html, 'div'), 'div');
+      assert.notInclude(lc.__filterElement(html, 'div'), 'div');
     });
 
     it('text2html', () => {
-      equal(undefined, spider.text2html());
-      equal('<p>test</p>', spider.text2html('test'));
-      equal('<p>test</p>', spider.text2html('test'));
-      equal('<p>test</p>', spider.text2html('test'));
-      equal('<p>test</p>\n<p>test2</p>', spider.text2html('test\ntest2'));
+      equal(undefined,     LittleCrawler.text2html());
+      equal('<p>test</p>', LittleCrawler.text2html('test'));
+      equal('<p>test</p>', LittleCrawler.text2html('test'));
+      equal('<p>test</p>', LittleCrawler.text2html('test'));
+      equal('<p>test</p>\n<p>test2</p>', LittleCrawler.text2html('test\ntest2'));
     });
 
     it('__transformHTMLTagProperty', () => {
-      assert.equal("", spider.__transformHTMLTagProperty(""));
-      assert.equal(null, spider.__transformHTMLTagProperty());
+      assert.equal("", lc.__transformHTMLTagProperty(""));
+      assert.equal(null, lc.__transformHTMLTagProperty());
 
       let html = `
         <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
@@ -122,14 +122,14 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
         <img src="test.png" />
       `;
 
-      let fh = spider.__transformHTMLTagProperty(html);
+      let fh = lc.__transformHTMLTagProperty(html);
       assert.include(fh, '<img data-src="test.png" />');
       assert.notInclude(fh, '<img src="test.png" />');
     });
 
     it('clearHtml', () => {
-      assert.equal("", spider.clearHtml(""));
-      assert.equal(null, spider.clearHtml());
+      assert.equal("", lc.clearHtml(""));
+      assert.equal(null, lc.clearHtml());
 
       let html = `
         <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
@@ -156,7 +156,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
         <p class="css" style="color='red'">Test10</p>
       `;
 
-      let fh = spider.clearHtml(html);
+      let fh = lc.clearHtml(html);
       assert.notInclude(fh, '<style');
       assert.notInclude(fh, '<meta');
       assert.notInclude(fh, '<link');
@@ -172,17 +172,17 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
       assert.include(fh, 'Test10');
       assert.include(fh, 'Test4');
 
-      equal('<p>test1</p><p>test2</p><p>test3</p>', spider.clearHtml('test1<br>test2<br>test3'));
-      equal('<div><p>test1</p><p>test2</p><p>test3</p></div>', spider.clearHtml('<div>test1<br>test2<br>test3</div>'));
-      equal('<p>test1</p><p>test2</p><p>test3</p><p>test4</p>', spider.clearHtml('test1<br>test2<br>test3<p>test4</p>'));
-      equal('<p>test1</p><p>test3</p><p>test4</p>', spider.clearHtml('test1<br><br>test3<p>test4</p>'));
-      equal('<p></p><p>1</p><p>test3</p><p>test4</p>', spider.clearHtml('<br>1<br>test3<p>test4</p>'));
-      equal('<p>test1</p><p>test2</p><p>test3</p>', spider.clearHtml('test1<br><br>test2<br><br>test3'));
+      equal('<p>test1</p><p>test2</p><p>test3</p>', lc.clearHtml('test1<br>test2<br>test3'));
+      equal('<div><p>test1</p><p>test2</p><p>test3</p></div>', lc.clearHtml('<div>test1<br>test2<br>test3</div>'));
+      equal('<p>test1</p><p>test2</p><p>test3</p><p>test4</p>', lc.clearHtml('test1<br>test2<br>test3<p>test4</p>'));
+      equal('<p>test1</p><p>test3</p><p>test4</p>', lc.clearHtml('test1<br><br>test3<p>test4</p>'));
+      equal('<p></p><p>1</p><p>test3</p><p>test4</p>', lc.clearHtml('<br>1<br>test3<p>test4</p>'));
+      equal('<p>test1</p><p>test2</p><p>test3</p>', lc.clearHtml('test1<br><br>test2<br><br>test3'));
     });
 
     it('filterHtmlContent', () => {
-      assert.equal("", spider.filterHtmlContent(""));
-      assert.equal(null, spider.filterHtmlContent());
+      assert.equal("", lc.filterHtmlContent(""));
+      assert.equal(null, lc.filterHtmlContent());
 
       let html = `
         <link rel="stylesheet"
@@ -197,7 +197,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
         <img src="test.png" />
         <img src="test.png" />
       `;
-      let fh = spider.filterHtmlContent(html);
+      let fh = lc.filterHtmlContent(html);
       assert.notInclude(fh, '<style');
       assert.notInclude(fh, '<meta');
       assert.notInclude(fh, '<link');
@@ -206,9 +206,9 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
     });
 
     it('getDataFromObject', () => {
-      equal(undefined, spider.__getDataFromObject());
-      assert.isObject(spider.__getDataFromObject({}));
-      equal(1, spider.__getDataFromObject({abc:1}, "abc"));
+      equal(undefined, lc.__getDataFromObject());
+      assert.isObject(lc.__getDataFromObject({}));
+      equal(1, lc.__getDataFromObject({abc:1}, "abc"));
 
       let obj = {
         abc:{
@@ -247,16 +247,16 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
           }
         ]
       };
-      equal(2, spider.__getDataFromObject(obj, "abc::def::hij::mno"));
-      assert.sameMembers([2,3], spider.__getDataFromObject(obj, "def::abc::def"));
-      equal('[[1,2,3],[4,5,6]]', JSON.stringify(spider.__getDataFromObject(obj, "def::abc::ddd")));
-      assert.sameMembers([1,2,3,4,5,6], spider.__getDataFromObject(obj, "fff::abc::ddd#concat::a"));
-      assert.sameMembers([4,5,6], spider.__getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a"));
-      assert.sameMembers([5,6], spider.__getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a#filter(\"$element >=5\")"));
+      equal(2, lc.__getDataFromObject(obj, "abc::def::hij::mno"));
+      assert.sameMembers([2,3], lc.__getDataFromObject(obj, "def::abc::def"));
+      equal('[[1,2,3],[4,5,6]]', JSON.stringify(lc.__getDataFromObject(obj, "def::abc::ddd")));
+      assert.sameMembers([1,2,3,4,5,6], lc.__getDataFromObject(obj, "fff::abc::ddd#concat::a"));
+      assert.sameMembers([4,5,6], lc.__getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a"));
+      assert.sameMembers([5,6], lc.__getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a#filter(\"$element >=5\")"));
     });
 
     it('空 Request 和 空 Response', ()=>{
-      return spider.get()
+      return lc.get()
         .catch(error => equal("Empty response", error.message));
     });
 
@@ -265,7 +265,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
         "response": {
         }
       };
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .catch(error => equal("Empty URL", error.message));
     });
 
@@ -296,7 +296,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
             }
         }
       };
-      return spider.get(config, {keyword: "神墓", url: 'http://se.qidian.com/?kw=神墓'})
+      return lc.get(config, {keyword: "神墓", url: 'http://se.qidian.com/?kw=神墓'})
         .then(r => equal('神墓', r[0].name));
     });
 
@@ -331,7 +331,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
             }
         }
       };
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => equal('神墓', r[0].name));
     });
 
@@ -357,7 +357,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
             }
         }
       }
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => {
           equal('第一章 远古神墓', r[0].name);
           assert.lengthOf(r[0].link.match(/^http/), 1);
@@ -395,13 +395,13 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
             }
         }
       };
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .catch(error => equal('Request Timeout', error.message));
     });
 
     it('string 的 Request', ()=>{
 
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => equal('神墓', r[0].name));
     });
 
@@ -416,7 +416,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
               "div.book-info > h1 > span > a"
           ]
       };
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => {
           equal('神墓', r[0])
           equal('辰东', r[1])
@@ -431,29 +431,29 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
           },
           "response": "div.book-info > h1 > em"
       };
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
               .then(r => equal('神墓', r));
     });
 
     it('Response 类型为 Object，type 为 boolean', ()=>{
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => {
           equal(true, r[0].complete);
         });
     });
 
     it('Response 类型为 Object，type 为 string', ()=>{
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => {
           equal('63856', r[0].bookid);
         });
     });
 
     it('特殊的键名：image, link', ()=>{
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => {
           equal('http://qidian.qpic.cn/qdbimg/349573/63856/150', r[0].coverImg);
-          equal('http://book.qidian.com/info/3068557', r[1].detailLink);
+          equal('http://book.qidian.com/info/63856', r[0].detailLink);
         });
     });
 
@@ -491,7 +491,7 @@ define(["chai", 'utils', "Spider"], function(chai, utils, Spider){
             }
         }
       };
-      return spider.get(config, {keyword: "神墓"})
+      return lc.get(config, {keyword: "神墓"})
         .then(r => equal('神墓深渊', r[0].name));
     });
 
