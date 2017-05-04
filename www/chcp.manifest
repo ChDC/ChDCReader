@@ -85,11 +85,7 @@
   },
   {
     "file": "js/Book.js",
-<<<<<<< HEAD
-    "hash": "3c4f3aa8e2b340f1b0170b5dd09ca96d"
-=======
     "hash": "169ce7a5d94be6448daaacf666d0553c"
->>>>>>> dev
   },
   {
     "file": "js/BookShelf.js",
@@ -97,11 +93,7 @@
   },
   {
     "file": "js/BookSource.js",
-<<<<<<< HEAD
     "hash": "75ff535b0f5f09701cc41121f9f0292e"
-=======
-    "hash": "aebb5a15fe88efe5d3e110960fcb7ed8"
->>>>>>> dev
   },
   {
     "file": "js/BookSourceManager.js",
@@ -393,11 +385,7 @@
   },
   {
     "file": "page/readbook.page.js",
-<<<<<<< HEAD
-    "hash": "b1b95171acb51e5d82d49a360e27d021"
-=======
     "hash": "e84515aab6283cd699d88af5287f586f"
->>>>>>> dev
   },
   {
     "file": "page/readbook.page.night1.css",
