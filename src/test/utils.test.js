@@ -5,16 +5,6 @@ define(["chai", "utils"], function(chai, utils){
 
   describe('utils.js 测试', () => {
 
-    it('__urlJoin', ()=>{
-      equal(null, utils.__urlJoin(null, null));
-      equal('http://www.test.com/abc', utils.__urlJoin('http://www.test.com/abc', null));
-      equal('http://www.test.com/abc', utils.__urlJoin('http://www.test.com/abc', {}));
-      equal('http://www.test.com/abc?id=1', utils.__urlJoin('http://www.test.com/abc?id=1', {}));
-      equal('http://www.test.com/abc?id=1&abc=2', utils.__urlJoin('http://www.test.com/abc?id=1', {abc:2}));
-      equal('http://www.test.com/abc?id=1&abc=2&def=abc', utils.__urlJoin('http://www.test.com/abc?id=1', {abc:2, def:"abc"}));
-      equal('http://www.test.com/abc?abc=2&def=abc', utils.__urlJoin('http://www.test.com/abc', {abc:2, def:"abc"}));
-    });
-
     it("get", () => {
       let p1 = utils.get().catch(error => {
           assert.equal("url is null", error.message);

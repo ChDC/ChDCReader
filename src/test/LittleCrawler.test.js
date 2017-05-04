@@ -1,4 +1,4 @@
-define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
+define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
 
   /************************************
     测试用例规范：
@@ -16,7 +16,7 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
     let config;
 
     before(() => {
-      lc = new LittleCrawler(utils.ajax.bind(utils));
+      lc = new LittleCrawler();
       config = {
         "request": "http://se.qidian.com/?kw={keyword}",
         "response": {
@@ -46,6 +46,16 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
       };
     });
 
+    it('__urlJoin', ()=>{
+      equal(null, LittleCrawler.__urlJoin(null, null));
+      equal('http://www.test.com/abc', LittleCrawler.__urlJoin('http://www.test.com/abc', null));
+      equal('http://www.test.com/abc', LittleCrawler.__urlJoin('http://www.test.com/abc', {}));
+      equal('http://www.test.com/abc?id=1', LittleCrawler.__urlJoin('http://www.test.com/abc?id=1', {}));
+      equal('http://www.test.com/abc?id=1&abc=2', LittleCrawler.__urlJoin('http://www.test.com/abc?id=1', {abc:2}));
+      equal('http://www.test.com/abc?id=1&abc=2&def=abc', LittleCrawler.__urlJoin('http://www.test.com/abc?id=1', {abc:2, def:"abc"}));
+      equal('http://www.test.com/abc?abc=2&def=abc', LittleCrawler.__urlJoin('http://www.test.com/abc', {abc:2, def:"abc"}));
+    });
+
     it('cloneObjectValues', () => {
       let src = {abc: 1, def: 2, fff: undefined};
       let dest = {abc: 0, fff: 2};
@@ -56,46 +66,46 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
     });
 
     it('string format', ()=> {
-      equal(null, lc.format());
-      equal('', lc.format(''));
-      equal('', lc.format('', {}));
-      equal('abc123', lc.format('abc{def}', {def: 123}));
-      try{lc.format('abc{def}')}catch(error){ equal("can't find the key def in object", error.message)};
-      try{lc.format('abc{def}', {})}catch(error){ equal("can't find the key def in object", error.message)};
-      try{lc.format('abc{def}', {}, true)}catch(error){ equal("can't find the key def in object", error.message)};
+      equal(null, LittleCrawler.format());
+      equal('', LittleCrawler.format(''));
+      equal('', LittleCrawler.format('', {}));
+      equal('abc123', LittleCrawler.format('abc{def}', {def: 123}));
+      try{LittleCrawler.format('abc{def}')}catch(error){ equal("can't find the key def in object", error.message)};
+      try{LittleCrawler.format('abc{def}', {})}catch(error){ equal("can't find the key def in object", error.message)};
+      try{LittleCrawler.format('abc{def}', {}, true)}catch(error){ equal("can't find the key def in object", error.message)};
 
-      equal('abc"123"', lc.format('abc{def}', {def: "123"}, true));
-      equal('abc123', lc.format('abc{def}', {def: "123"}, false));
-      equal('abc', lc.format('abc{def}', {def: undefined}, false));
-      equal('abcundefined', lc.format('abc{def}', {def: undefined}, true));
-      equal('abc', lc.format('abc{def}', {def: null}, false));
-      equal('abcnull', lc.format('abc{def}', {def: null}, true));
+      equal('abc"123"', LittleCrawler.format('abc{def}', {def: "123"}, true));
+      equal('abc123', LittleCrawler.format('abc{def}', {def: "123"}, false));
+      equal('abc', LittleCrawler.format('abc{def}', {def: undefined}, false));
+      equal('abcundefined', LittleCrawler.format('abc{def}', {def: undefined}, true));
+      equal('abc', LittleCrawler.format('abc{def}', {def: null}, false));
+      equal('abcnull', LittleCrawler.format('abc{def}', {def: null}, true));
 
     });
 
     it('fixurl', () => {
       let host1 = "http://www.test.com";
       let host2 = "http://www.test.com/abc/def?test";
-      equal(undefined, lc.fixurl());
-      equal("http://www.abc.com", lc.fixurl("http://www.abc.com"));
-      equal("http://www.abc.com", lc.fixurl("://www.abc.com"));
-      equal("http://www.abc.com", lc.fixurl("//www.abc.com"));
-      equal("http://www.test.com/www.abc.com", lc.fixurl("www.abc.com", host1));
-      equal("http://www.test.com/def/abc/ddd", lc.fixurl("/def/abc/ddd", host1));
+      equal(undefined, LittleCrawler.fixurl());
+      equal("http://www.abc.com", LittleCrawler.fixurl("http://www.abc.com"));
+      equal("http://www.abc.com", LittleCrawler.fixurl("://www.abc.com"));
+      equal("http://www.abc.com", LittleCrawler.fixurl("//www.abc.com"));
+      equal("http://www.test.com/www.abc.com", LittleCrawler.fixurl("www.abc.com", host1));
+      equal("http://www.test.com/def/abc/ddd", LittleCrawler.fixurl("/def/abc/ddd", host1));
 
-      equal("http://www.test.com/abc/www.abc.com", lc.fixurl("www.abc.com", host2));
-      equal("http://www.test.com/def/abc/ddd", lc.fixurl("/def/abc/ddd", host2));
-      equal("http://www.test.com/def/abc/ddd", lc.fixurl("../def/abc/ddd", host2));
+      equal("http://www.test.com/abc/www.abc.com", LittleCrawler.fixurl("www.abc.com", host2));
+      equal("http://www.test.com/def/abc/ddd", LittleCrawler.fixurl("/def/abc/ddd", host2));
+      equal("http://www.test.com/def/abc/ddd", LittleCrawler.fixurl("../def/abc/ddd", host2));
     });
 
     it('__filterElement', () => {
       let html = '<div>abcdef</div><br/><div/><div />';
 
-      assert.equal(null, lc.__filterElement(null, null));
-      assert.equal(html, lc.__filterElement(html, null));
-      assert.equal(html, lc.__filterElement(html, ""));
+      assert.equal(null, LittleCrawler.__filterElement(null, null));
+      assert.equal(html, LittleCrawler.__filterElement(html, null));
+      assert.equal(html, LittleCrawler.__filterElement(html, ""));
 
-      assert.notInclude(lc.__filterElement(html, 'div'), 'div');
+      assert.notInclude(LittleCrawler.__filterElement(html, 'div'), 'div');
     });
 
     it('text2html', () => {
@@ -128,8 +138,8 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
     });
 
     it('clearHtml', () => {
-      assert.equal("", lc.clearHtml(""));
-      assert.equal(null, lc.clearHtml());
+      assert.equal("", LittleCrawler.clearHtml(""));
+      assert.equal(null, LittleCrawler.clearHtml());
 
       let html = `
         <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
@@ -156,7 +166,7 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
         <p class="css" style="color='red'">Test10</p>
       `;
 
-      let fh = lc.clearHtml(html);
+      let fh = LittleCrawler.clearHtml(html);
       assert.notInclude(fh, '<style');
       assert.notInclude(fh, '<meta');
       assert.notInclude(fh, '<link');
@@ -172,17 +182,17 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
       assert.include(fh, 'Test10');
       assert.include(fh, 'Test4');
 
-      equal('<p>test1</p><p>test2</p><p>test3</p>', lc.clearHtml('test1<br>test2<br>test3'));
-      equal('<div><p>test1</p><p>test2</p><p>test3</p></div>', lc.clearHtml('<div>test1<br>test2<br>test3</div>'));
-      equal('<p>test1</p><p>test2</p><p>test3</p><p>test4</p>', lc.clearHtml('test1<br>test2<br>test3<p>test4</p>'));
-      equal('<p>test1</p><p>test3</p><p>test4</p>', lc.clearHtml('test1<br><br>test3<p>test4</p>'));
-      equal('<p></p><p>1</p><p>test3</p><p>test4</p>', lc.clearHtml('<br>1<br>test3<p>test4</p>'));
-      equal('<p>test1</p><p>test2</p><p>test3</p>', lc.clearHtml('test1<br><br>test2<br><br>test3'));
+      equal('<p>test1</p><p>test2</p><p>test3</p>', LittleCrawler.clearHtml('test1<br>test2<br>test3'));
+      equal('<div><p>test1</p><p>test2</p><p>test3</p></div>', LittleCrawler.clearHtml('<div>test1<br>test2<br>test3</div>'));
+      equal('<p>test1</p><p>test2</p><p>test3</p><p>test4</p>', LittleCrawler.clearHtml('test1<br>test2<br>test3<p>test4</p>'));
+      equal('<p>test1</p><p>test3</p><p>test4</p>', LittleCrawler.clearHtml('test1<br><br>test3<p>test4</p>'));
+      equal('<p></p><p>1</p><p>test3</p><p>test4</p>', LittleCrawler.clearHtml('<br>1<br>test3<p>test4</p>'));
+      equal('<p>test1</p><p>test2</p><p>test3</p>', LittleCrawler.clearHtml('test1<br><br>test2<br><br>test3'));
     });
 
     it('filterHtmlContent', () => {
-      assert.equal("", lc.filterHtmlContent(""));
-      assert.equal(null, lc.filterHtmlContent());
+      assert.equal("", LittleCrawler.filterHtmlContent(""));
+      assert.equal(null, LittleCrawler.filterHtmlContent());
 
       let html = `
         <link rel="stylesheet"
@@ -197,7 +207,7 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
         <img src="test.png" />
         <img src="test.png" />
       `;
-      let fh = lc.filterHtmlContent(html);
+      let fh = LittleCrawler.filterHtmlContent(html);
       assert.notInclude(fh, '<style');
       assert.notInclude(fh, '<meta');
       assert.notInclude(fh, '<link');
@@ -206,9 +216,9 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
     });
 
     it('getDataFromObject', () => {
-      equal(undefined, lc.__getDataFromObject());
-      assert.isObject(lc.__getDataFromObject({}));
-      equal(1, lc.__getDataFromObject({abc:1}, "abc"));
+      equal(undefined, LittleCrawler.getDataFromObject());
+      assert.isObject(LittleCrawler.getDataFromObject({}));
+      equal(1, LittleCrawler.getDataFromObject({abc:1}, "abc"));
 
       let obj = {
         abc:{
@@ -247,12 +257,12 @@ define(["chai", 'utils', "LittleCrawler"], function(chai, utils, LittleCrawler){
           }
         ]
       };
-      equal(2, lc.__getDataFromObject(obj, "abc::def::hij::mno"));
-      assert.sameMembers([2,3], lc.__getDataFromObject(obj, "def::abc::def"));
-      equal('[[1,2,3],[4,5,6]]', JSON.stringify(lc.__getDataFromObject(obj, "def::abc::ddd")));
-      assert.sameMembers([1,2,3,4,5,6], lc.__getDataFromObject(obj, "fff::abc::ddd#concat::a"));
-      assert.sameMembers([4,5,6], lc.__getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a"));
-      assert.sameMembers([5,6], lc.__getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a#filter(\"$element >=5\")"));
+      equal(2, LittleCrawler.getDataFromObject(obj, "abc::def::hij::mno"));
+      assert.sameMembers([2,3], LittleCrawler.getDataFromObject(obj, "def::abc::def"));
+      equal('[[1,2,3],[4,5,6]]', JSON.stringify(LittleCrawler.getDataFromObject(obj, "def::abc::ddd")));
+      assert.sameMembers([1,2,3,4,5,6], LittleCrawler.getDataFromObject(obj, "fff::abc::ddd#concat::a"));
+      assert.sameMembers([4,5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a"));
+      assert.sameMembers([5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a#filter(\"$element >=5\")"));
     });
 
     it('空 Request 和 空 Response', ()=>{

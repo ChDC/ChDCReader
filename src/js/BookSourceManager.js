@@ -16,10 +16,7 @@
 
       this.__sources;
       this.__customBookSource = customBookSource;
-      this.__lc = new LittleCrawler({
-        "default": utils.ajax.bind(utils),
-        "cordova": utils.cordovaAjax.bind(utils),
-      });
+      this.__lc = new LittleCrawler();
 
       this.loadConfig(configFileOrConfig);
       this.addCustomSourceFeature();
@@ -298,7 +295,7 @@
           if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
             c.content = LittleCrawler.text2html(data.contentHTML);
           else
-            c.content = this.__lc.clearHtml(data.contentHTML);
+            c.content = LittleCrawler.clearHtml(data.contentHTML);
           if(!c.content) return Promise.reject(206);
 
           c.title = data.title ? data.title : dict.title;
@@ -328,11 +325,11 @@
       let config = bs.officialurls;
       if(!config) return null;
       if(key && config[key])
-        return this.__lc.format(config[key], dict);
+        return LittleCrawler.format(config[key], dict);
       if(!key){
         let result = {};
         for(let key in config)
-          result[key] = this.__lc.format(config[key], dict);
+          result[key] = LittleCrawler.format(config[key], dict);
       }
       return null;
     }

@@ -127,7 +127,7 @@
         let link = this.getChapterLink(bsid, dict);
         const bsm = this.__sources[bsid];
 
-        return utils.cordovaAjax("get", link, {}, 'json',
+        return LittleCrawler.cordovaAjax("get", link, {}, 'json',
               {
                 "Referer": "http://chuangshi.qq.com/",
                 "X-Requested-With": "XMLHttpRequest"
@@ -136,7 +136,7 @@
             let content = decryptByBaseCode(json.Content, 30);
             const bsm = this.__sources[bsid];
             let data = this.__lc.parse(content, "html", bsm.chapter.response, link, {});
-            content = this.__lc.clearHtml(data.contentHTML);
+            content = LittleCrawler.clearHtml(data.contentHTML);
 
             const c = new Chapter();
             c.content = content;
@@ -193,7 +193,7 @@
           let result = [];
           // 获取章节总数和免费章节数目
           // maxfreechapter
-          let link = self.__lc.format(linkTmp, {bookid: dict.bookid, pageNo: 1});
+          let link = LittleCrawler.format(linkTmp, {bookid: dict.bookid, pageNo: 1});
           let json = yield utils.getJSON(link);
 
           let total = json.total;
@@ -226,7 +226,7 @@
         return utils.get(link)
           .then(data => {
             let url = data.match(/'(\/novelsearch\/reader\/transcode\/siteid\/\d+\/url\/.*?)'/)[1];
-            args[1].link = this.__lc.fixurl(url, link);
+            args[1].link = LittleCrawler.fixurl(url, link);
             return args;
           });
       },

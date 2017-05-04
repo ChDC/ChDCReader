@@ -88,7 +88,12 @@
     // * options -> Object
     //    * timeout
     constructor(ajax){
-      this.ajax = ajax;
+
+      this.ajax = ajax || {
+        "default": LittleCrawler.ajax,
+        "cordova": LittleCrawler.cordovaAjax,
+      };
+
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.secureAttributeList = [
         ['src', 'data-src'],
@@ -179,7 +184,7 @@
       if(!request.url)
         throw new Error("Empty URL");
 
-      return this.format(request.url, dict);
+      return LittleCrawler.format(request.url, dict);
     }
 
     // parse the response data
@@ -194,7 +199,7 @@
 
       switch(type){
         case "html":
-          data = this.filterHtmlContent(data);
+          data = LittleCrawler.filterHtmlContent(data);
           data = this.__transformHTMLTagProperty(data);
           let html = document.createElement("div");
           html.innerHTML = data;
@@ -270,7 +275,7 @@
               let gatherDict = Object.assign({}, globalDict,
                   LittleCrawler.type(data) == "object" ? data : {},
                   LittleCrawler.type(m) == "object" ? m : {});
-              const validCode = '"use strict"\n' + this.format(response.valideach, gatherDict, true);
+              const validCode = '"use strict"\n' + LittleCrawler.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
         }
@@ -299,7 +304,7 @@
               attr = response.attribute;
             result = e.getAttribute(attr);
             if(this.fixurlAttributeList.indexOf(attr) >= 0)
-              result = this.fixurl(result, globalDict.host);
+              result = LittleCrawler.fixurl(result, globalDict.host);
             if(attr == 'innerHTML')
               result = this.__reverseTransformHTMLTagProperty(result);
           }
@@ -346,7 +351,7 @@
             return undefined;
           let gatherDict = Object.assign({}, globalDict,
               LittleCrawler.type(data) == "object" ? data : {}, dict);
-          result = this.format(response.value, gatherDict);
+          result = LittleCrawler.format(response.value, gatherDict);
         }
         break;
         default: {
@@ -359,7 +364,7 @@
         // 有验证的类型
         let gatherDict = Object.assign({}, globalDict,
             LittleCrawler.type(data) == "object" ? data : {}, dict);
-        const validCode = '"use strict"\n' + this.format(response.valid, gatherDict, true);
+        const validCode = '"use strict"\n' + LittleCrawler.format(response.valid, gatherDict, true);
         if(!eval(validCode))
           return undefined; // 验证失败，返回空值
       }
@@ -388,7 +393,7 @@
               result = element.getAttribute(attr);
               // 修复 url
               if(this.fixurlAttributeList.indexOf(attr) >= 0)
-                result = this.fixurl(result, globalDict.host);
+                result = LittleCrawler.fixurl(result, globalDict.host);
             }
             else if(LittleCrawler.type(attr) == "function")
               result = attr(element);
@@ -415,7 +420,7 @@
       }
       else{
         // json
-        return this.__getDataFromObject(element, selector);
+        return LittleCrawler.getDataFromObject(element, selector);
       }
     }
 
@@ -427,181 +432,10 @@
         return Array.from(element.querySelectorAll(selector));
       }
       else{
-        return this.__getDataFromObject(element, selector) || [];
+        return LittleCrawler.getDataFromObject(element, selector) || [];
       }
     }
 
-    // 从 Object 中获取数据
-    // eg: get "abc.def" from "{abc: {def: 1}}" using "abc::def"
-    __getDataFromObject(obj, key){
-
-      function operatorFilter(element, args){
-        let codeStart = '"use strict"\n';
-        let env = `var $element=${JSON.stringify(element)};\n`;
-        let code = codeStart + env + args[0];
-        return eval(code);
-      }
-
-      function splitKeyAndOperatorAndArgs(operatorAndArgs){
-        if(!operatorAndArgs) return [];
-        let i = operatorAndArgs.indexOf('#');
-        if(i < 0)
-          return [operatorAndArgs];
-        let key = operatorAndArgs.substring(0, i);
-        operatorAndArgs = operatorAndArgs.substring(i+1);
-
-        i = operatorAndArgs.indexOf('(');
-        if(i < 0)  return [key, operatorAndArgs, undefined];
-        let opertaor = operatorAndArgs.substring(0, i);
-        let args = operatorAndArgs.substring(i);
-        if(args.length > 2)
-          args = args.substring(1, args.length - 1).split('#').map(e => JSON.parse(e));
-        else
-          args = [];
-        return [key, opertaor, args];
-      }
-
-      if(!obj || !key) return obj;
-      const keys = key.split('::');
-      let result = obj;
-      for(let key of keys){
-        if(!result) return undefined;
-
-        let [k, operator, args] = splitKeyAndOperatorAndArgs(key);
-
-        if(LittleCrawler.type(result) == 'array'){
-          // 多个值的情况
-          if(operator == 'concat')
-            result = result.reduce((s, m) => s.concat(m[k]), []);
-          else if(operator == "filter")
-            result = result.map(m => m[k])
-              .filter(e => operatorFilter(e, args));
-          else
-            result = result.map(m => m[k]);
-        }
-        else{
-          // 单个值的情况
-          if(operator == "filter"){
-            result = result[k];
-            if(LittleCrawler.type(result) == 'array')
-              result = result.filter(e => operatorFilter(e, args));
-          }
-          else
-            result = result[k];
-        }
-      }
-      return result
-    }
-
-
-    // fix the url
-    // args:
-    // * url: the url to fix
-    // * host: the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
-    fixurl(url, host){
-      if(!url || url.match("^https?://"))
-        return url;
-
-      if(url.match("^//"))
-        url = "http:" + url;
-      else if(url.match("^://"))
-        url = "http" + url;
-      else if(url.match("^javascript:"))
-        url = "";
-      else {
-
-        // 需要用到 host 了
-        let matcher = host.match(/^(.*?):\/\//);
-        let scheme = matcher ? matcher[0] : "";
-        host = host.substring(scheme.length);
-
-        if(url.match("^/")){
-          host = host.replace(/\/.*$/, ""); // 去掉第一个 / 后面的内容
-          url = `${scheme}${host}${url}`;
-        }
-        else{
-          // host = host.replace(/\?.*$/, ""); // 去掉?后面的内容
-          host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
-          let m2 = url.match(/^\.\.\//g);
-          url = url.replace(/^\.\.\//g, '');
-          if(m2){
-            for(let i = 0; i < m2.length; i++)
-              host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
-          }
-          url = `${scheme}${host}/${url}`;
-
-        }
-      }
-      return url;
-    }
-
-    // 字符串格式化，类似于 Python 的 string.format
-    // stringify 为 true 表示将属性先 用 JSON.stringify() 处理之后再放入
-    format(string, object={}, stringify=false){
-      if(!string) return string;
-
-      const result = string.replace(/{(\w+)}/g, (p0, p1) => {
-
-        if(!(p1 in object))
-          throw new Error(`can't find the key ${p1} in object`);
-
-        if(object[p1] == undefined && !stringify)
-          return '';
-        if(stringify)
-          return JSON.stringify(object[p1]);
-        else
-          return object[p1];
-      });
-      return result;
-    }
-
-    // 将复杂的 HTML 内容转换成只有文字和图片的简单的内容
-    clearHtml(html){
-      if(!html) return html;
-
-      // 清除黑名单标签
-      html = this.filterHtmlContent(html);
-
-      // 清空标签属性，排除白名单属性 src
-      let whitePropertyList = ['src'];
-      html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, (p0, p1)=>
-          whitePropertyList.includes(p1) ? p0 : ""
-        );
-
-      // 转换 <br> 为 p 标签
-      if(html.match(/<br\s*\/?>/gi)){
-        // 替换双 br
-        let dbrhtml = html.replace(/([^>]*)<br\s*\/?>\s*<br\s*\/?>/gi, '<p>$1</pchange>');
-        if(dbrhtml.match(/<br\s*\/?>\s*/i))
-          html = html.replace(/([^>]*)<br\s*\/?>/gi, '<p>$1</pchange>');
-        else
-          html = dbrhtml;
-        // 转换了 br
-        // 转换最后一行
-        html = html.replace(/<\/pchange>([^<]+)($|<)/gi, '</p><p>$1</p>$2');
-        html = html.replace(/<\/pchange>/gi, '</p>');
-      }
-
-      // 去掉标签前后的空格 &nbsp;
-      html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
-      html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
-
-      return html;
-    }
-
-    // 过滤 HTML 中的不需要的内容（如link、meta、script 等标签），用于爬虫
-    filterHtmlContent(html){
-      if(!html) return html;
-
-      // 只要 body
-      const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
-      if(m && m.length >= 2)
-        html = m[1];
-
-      let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
-      html = blackList.reduce((html, be) => this.__filterElement(html, be), html);
-      return html;
-    }
 
     // 将诸如 img 标签的 src 属性转换为 data-src 防止浏览器加载图片
     __transformHTMLTagProperty(html){
@@ -623,20 +457,324 @@
       return html;
     }
 
-    // 过滤某些标签
-    __filterElement(html, element, endElement=element){
-
-      if(!html || !element) return html;
-
-      let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${endElement}>`;
-      html = html.replace(new RegExp(pattern, 'gi'), '');
-      // 去除单标签
-      pattern = `<${element}([^>]*?)?>`;
-      html = html.replace(new RegExp(pattern, 'gi'), '');
-      return html;
-    }
   }
 
+  /******************** Class Methods ********************/
+
+
+  LittleCrawler.cordovaAjax = function(method='get', url, params={}, dataType, headers={},
+                options){
+    if(typeof cordovaHTTP == 'undefined')
+      return LittleCrawler.ajax(method, url, params, dataType, headers, options);
+    return new Promise((resolve, reject) => {
+      if(!url) return reject(new Error("url is null"));
+
+      let func;
+      switch(method.toLowerCase()){
+        case "get":
+          func = cordovaHTTP.get.bind(cordovaHTTP);
+          break;
+
+        case "post":
+          func = cordovaHTTP.post.bind(cordovaHTTP);
+          break;
+        default:
+          return reject(new Error("method is illegal"));
+      }
+
+      if(!('User-Agent' in headers))
+        headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
+
+      func(url, params, headers,
+        function(response) {
+          switch(dataType){
+            case "json":
+              resolve(JSON.parse(response.data));
+              break;
+            default:
+              resolve(response.data);
+              break;
+          }
+        },
+        function(response) {
+          reject(response.error);
+        });
+    });
+  },
+
+
+  /*
+  * 获取 URL 的参数字符串
+  */
+  LittleCrawler.__urlJoin = function(url, params){
+
+    if(!params) return url;
+    params = Object.keys(params).map(k => `${k}=${params[k]}`).join("&");
+    if(!params) return url;
+
+    let i = url.indexOf("?");
+    if(i == -1)
+      return `${url}?${params}`;
+    else if(i < url.length - 1)
+      return `${url}&${params}`;
+    else
+      return `${url}${params}`;
+  }
+
+
+  /*
+  * 原始的 HTTP XHR
+  * url: 完整的 URL
+  * params: 参数
+  */
+  LittleCrawler.ajax = function(method="GET", url, params, dataType, headers, {timeout=5, retry=1}={}) {
+
+    return new Promise((resolve, reject) => {
+      if(!url) return reject(new Error("url is null"));
+      url = LittleCrawler.__urlJoin(url, params);
+      console.log(`Get: ${url}`);
+      url = encodeURI(url);
+      retry = retry || 0;
+
+      let request = new XMLHttpRequest();
+      request.open(method, url);
+      request.timeout = timeout * 1000;
+
+      dataType = (dataType || "").toLowerCase();
+      switch(dataType){
+        case "json":
+          request.setRequestHeader("Content-Type", "application/json");
+          break;
+        // default undefined:
+        //     request.setRequestHeader("Content-Type", "text/plain");
+        //     break;
+      }
+
+      request.onload = () => {
+        // success
+        switch(dataType){
+          case "json":
+            resolve(JSON.parse(request.responseText));
+            break;
+          default:
+            resolve(request.responseText);
+            break;
+        }
+      };
+
+      request.ontimeout = () => {
+        if(retry > 0){
+          // 超时重传
+          // request.abort();
+          request.open(method, url);
+          request.send(null);
+          retry -= 1;
+        }
+        else{
+          console.error(`Fail to get: ${url}, 网络超时`);
+          reject(new Error("Request Timeout"));
+        }
+      };
+
+      request.onabort = () => {
+        console.error(`Fail to get: ${url}, 传输中断`);
+        reject(new Error("Request Abort"));
+      }
+
+      request.onerror = () => {
+        console.error("Fail to get: " + url + ", 网络错误");
+        reject(new Error("Request Error"));
+      }
+
+      request.send(null);
+    });
+  },
+
+  // 从 Object 中获取数据
+  // eg: get "abc.def" from "{abc: {def: 1}}" using "abc::def"
+  LittleCrawler.getDataFromObject = function(obj, key){
+
+    function operatorFilter(element, args){
+      let codeStart = '"use strict"\n';
+      let env = `var $element=${JSON.stringify(element)};\n`;
+      let code = codeStart + env + args[0];
+      return eval(code);
+    }
+
+    function splitKeyAndOperatorAndArgs(operatorAndArgs){
+      if(!operatorAndArgs) return [];
+      let i = operatorAndArgs.indexOf('#');
+      if(i < 0)
+        return [operatorAndArgs];
+      let key = operatorAndArgs.substring(0, i);
+      operatorAndArgs = operatorAndArgs.substring(i+1);
+
+      i = operatorAndArgs.indexOf('(');
+      if(i < 0)  return [key, operatorAndArgs, undefined];
+      let opertaor = operatorAndArgs.substring(0, i);
+      let args = operatorAndArgs.substring(i);
+      if(args.length > 2)
+        args = args.substring(1, args.length - 1).split('#').map(e => JSON.parse(e));
+      else
+        args = [];
+      return [key, opertaor, args];
+    }
+
+    if(!obj || !key) return obj;
+    const keys = key.split('::');
+    let result = obj;
+    for(let key of keys){
+      if(!result) return undefined;
+
+      let [k, operator, args] = splitKeyAndOperatorAndArgs(key);
+
+      if(LittleCrawler.type(result) == 'array'){
+        // 多个值的情况
+        if(operator == 'concat')
+          result = result.reduce((s, m) => s.concat(m[k]), []);
+        else if(operator == "filter")
+          result = result.map(m => m[k])
+            .filter(e => operatorFilter(e, args));
+        else
+          result = result.map(m => m[k]);
+      }
+      else{
+        // 单个值的情况
+        if(operator == "filter"){
+          result = result[k];
+          if(LittleCrawler.type(result) == 'array')
+            result = result.filter(e => operatorFilter(e, args));
+        }
+        else
+          result = result[k];
+      }
+    }
+    return result
+  }
+
+
+  // fix the url
+  // args:
+  // * url: the url to fix
+  // * host: the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
+  LittleCrawler.fixurl = function(url, host){
+    if(!url || url.match("^https?://"))
+      return url;
+
+    if(url.match("^//"))
+      url = "http:" + url;
+    else if(url.match("^://"))
+      url = "http" + url;
+    else if(url.match("^javascript:"))
+      url = "";
+    else {
+
+      // 需要用到 host 了
+      let matcher = host.match(/^(.*?):\/\//);
+      let scheme = matcher ? matcher[0] : "";
+      host = host.substring(scheme.length);
+
+      if(url.match("^/")){
+        host = host.replace(/\/.*$/, ""); // 去掉第一个 / 后面的内容
+        url = `${scheme}${host}${url}`;
+      }
+      else{
+        // host = host.replace(/\?.*$/, ""); // 去掉?后面的内容
+        host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
+        let m2 = url.match(/^\.\.\//g);
+        url = url.replace(/^\.\.\//g, '');
+        if(m2){
+          for(let i = 0; i < m2.length; i++)
+            host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
+        }
+        url = `${scheme}${host}/${url}`;
+
+      }
+    }
+    return url;
+  }
+
+  // 字符串格式化，类似于 Python 的 string.format
+  // stringify 为 true 表示将属性先 用 JSON.stringify() 处理之后再放入
+  LittleCrawler.format = function(string, object={}, stringify=false){
+    if(!string) return string;
+
+    const result = string.replace(/{(\w+)}/g, (p0, p1) => {
+
+      if(!(p1 in object))
+        throw new Error(`can't find the key ${p1} in object`);
+
+      if(object[p1] == undefined && !stringify)
+        return '';
+      if(stringify)
+        return JSON.stringify(object[p1]);
+      else
+        return object[p1];
+    });
+    return result;
+  }
+
+  // 将复杂的 HTML 内容转换成只有文字和图片的简单的内容
+  LittleCrawler.clearHtml = function(html){
+    if(!html) return html;
+
+    // 清除黑名单标签
+    html = LittleCrawler.filterHtmlContent(html);
+
+    // 清空标签属性，排除白名单属性 src
+    let whitePropertyList = ['src'];
+    html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, (p0, p1)=>
+        whitePropertyList.includes(p1) ? p0 : ""
+      );
+
+    // 转换 <br> 为 p 标签
+    if(html.match(/<br\s*\/?>/gi)){
+      // 替换双 br
+      let dbrhtml = html.replace(/([^>]*)<br\s*\/?>\s*<br\s*\/?>/gi, '<p>$1</pchange>');
+      if(dbrhtml.match(/<br\s*\/?>\s*/i))
+        html = html.replace(/([^>]*)<br\s*\/?>/gi, '<p>$1</pchange>');
+      else
+        html = dbrhtml;
+      // 转换了 br
+      // 转换最后一行
+      html = html.replace(/<\/pchange>([^<]+)($|<)/gi, '</p><p>$1</p>$2');
+      html = html.replace(/<\/pchange>/gi, '</p>');
+    }
+
+    // 去掉标签前后的空格 &nbsp;
+    html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
+    html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
+
+    return html;
+  }
+
+  // 过滤 HTML 中的不需要的内容（如link、meta、script 等标签），用于爬虫
+  LittleCrawler.filterHtmlContent = function(html){
+    if(!html) return html;
+
+    // 只要 body
+    const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
+    if(m && m.length >= 2)
+      html = m[1];
+
+    let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
+    html = blackList.reduce((html, be) => LittleCrawler.__filterElement(html, be), html);
+    return html;
+  }
+
+
+  // 过滤某些标签
+  LittleCrawler.__filterElement = function(html, element, endElement=element){
+
+    if(!html || !element) return html;
+
+    let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${endElement}>`;
+    html = html.replace(new RegExp(pattern, 'gi'), '');
+    // 去除单标签
+    pattern = `<${element}([^>]*?)?>`;
+    html = html.replace(new RegExp(pattern, 'gi'), '');
+    return html;
+  }
 
   /*
   * 判断对象的类型
