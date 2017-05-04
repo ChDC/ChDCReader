@@ -544,6 +544,11 @@
       // return co(this.getChapters(chapterIndex, nextCount, 1, options));
     }
 
+    // 清除缓存章节
+    clearCacheChapters(){
+      utils.removeData(`chapter/${this.name}_${this.author}/`, true);
+    }
+
     // *************************** 章节部分结束 ****************
 
     // 获取最新章节
