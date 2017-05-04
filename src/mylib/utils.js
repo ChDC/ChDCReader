@@ -26,13 +26,7 @@
     * new Error() -> error
     * ()->{} -> function
     */
-    type(obj){
-      // return $.type(obj); // 只有这里用了 jquery
-      let type = typeof(obj);
-      if(type != 'object')
-        return type;
-      return obj.constructor.name.toLowerCase();
-    },
+    type: LittleCrawler.type,
 
     /*
     * 输出log 信息
