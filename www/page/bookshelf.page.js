@@ -150,8 +150,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             book.getChapterIndex(lastestChapter).then(function (index) {
               return index < 0;
             }).then(function (forceRefresh) {
-              debugger;
-
               book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { forceRefresh: forceRefresh });
             });
           }

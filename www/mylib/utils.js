@@ -16,11 +16,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   return {
     DEBUG: true,
 
-    type: function type(obj) {
-      var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
-      if (type != 'object') return type;
-      return obj.constructor.name.toLowerCase();
-    },
+    type: LittleCrawler.type,
+
     log: function log(content, detailContent) {
       var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.log(msg);

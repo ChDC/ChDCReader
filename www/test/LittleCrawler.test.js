@@ -27,7 +27,7 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
               "true": "完本",
               "false": "连载中"
             },
-            "coverImg": ".book-img-box img",
+            "coverImg": ".book-img-box img[src]",
             "introduce": ".book-mid-info .intro",
             "lastestChapter": ".book-mid-info .update>a",
             "detailLink": ".book-mid-info>h4>a",
@@ -104,14 +104,25 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
       equal("http://www.test.com/def/abc/ddd", LittleCrawler.fixurl("../def/abc/ddd", host2));
     });
 
-    it('__filterElement', function () {
+    it('filterTag', function () {
       var html = '<div>abcdef</div><br/><div/><div />';
 
-      assert.equal(null, LittleCrawler.__filterElement(null, null));
-      assert.equal(html, LittleCrawler.__filterElement(html, null));
-      assert.equal(html, LittleCrawler.__filterElement(html, ""));
+      assert.equal(null, LittleCrawler.filterTag(null, null));
+      assert.equal(html, LittleCrawler.filterTag(html, null));
+      assert.equal(html, LittleCrawler.filterTag(html, ""));
 
-      assert.notInclude(LittleCrawler.__filterElement(html, 'div'), 'div');
+      assert.notInclude(LittleCrawler.filterTag(html, 'div'), 'div');
+    });
+
+    it('replaceTag', function () {
+      var html = '<div>abcdef</div><br/><div/><div />';
+
+      assert.equal(null, LittleCrawler.replaceTag(null, null));
+      assert.equal(html, LittleCrawler.replaceTag(html, null));
+      assert.equal(html, LittleCrawler.replaceTag(html, ""));
+
+      assert.notInclude(LittleCrawler.replaceTag(html, 'div', 'ab-div'), '<div');
+      assert.include(LittleCrawler.replaceTag(html, 'div', 'ab-div'), 'ab-div');
     });
 
     it('text2html', function () {
@@ -122,14 +133,14 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
       equal('<p>test</p>\n<p>test2</p>', LittleCrawler.text2html('test\ntest2'));
     });
 
-    it('__transformHTMLTagProperty', function () {
-      assert.equal("", lc.__transformHTMLTagProperty(""));
-      assert.equal(null, lc.__transformHTMLTagProperty());
+    it('__transformHTML', function () {
+      assert.equal("", lc.__transformHTML(""));
+      assert.equal(null, lc.__transformHTML());
 
-      var html = "\n        <link rel=\"stylesheet\" href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc</style>\n        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img src=\"test.png\" />\n        <img src=\"test.png\" />\n      ";
+      var html = "\n        <link rel=\"stylesheet\" href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc</style>\n        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img src=\"test.png\">\n        <img src=\"test.png\" />\n      ";
 
-      var fh = lc.__transformHTMLTagProperty(html);
-      assert.include(fh, '<img data-src="test.png" />');
+      var fh = lc.__transformHTML(html);
+      assert.include(fh, '<img lc-src="test.png" />');
       assert.notInclude(fh, '<img src="test.png" />');
     });
 
@@ -137,7 +148,7 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
       assert.equal("", LittleCrawler.clearHtml(""));
       assert.equal(null, LittleCrawler.clearHtml());
 
-      var html = "\n        <link rel=\"stylesheet\" href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc</style>\n        <script type=\"text/javascript\" src=\"cordova.js\">\n        </script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img class=\"css\" src=\"test.png\" />\n        <img align=\"right\" src=\"test.png\" />\n        <img class=\"css\" src=\"test.png\"></img>\n        <p class\n        =\"css\" style\n        =\"color:red;\">Test1</p>\n\n        Test2<br/>\n        Test3<br/>\n        Test4<br/>\n        Test2<br/>\n        Test2<br/>\n        Test2<br/>\n        <p class=\"css\" style=\"color='red'\">Test10</p>\n      ";
+      var html = "\n        <link rel=\"stylesheet\" href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc</style>\n        <script type=\"text/javascript\" src=\"cordova.js\">\n        </script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img class=\"css\" src=\"test.png\">\n        <img align=\"right\" src=\"test.png\" />\n        <img class=\"css\" src=\"test.png\"></img>\n        <p class\n        =\"css\" style\n        =\"color:red;\">Test1</p>\n\n        Test2<br/>\n        Test3<br/>\n        Test4<br/>\n        Test2<br/>\n        Test2<br/>\n        Test2<br/>\n        <p class=\"css\" style=\"color='red'\">Test10</p>\n      ";
 
       var fh = LittleCrawler.clearHtml(html);
       assert.notInclude(fh, '<style');
@@ -167,7 +178,7 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
       assert.equal("", LittleCrawler.filterHtmlContent(""));
       assert.equal(null, LittleCrawler.filterHtmlContent());
 
-      var html = "\n        <link rel=\"stylesheet\"\n        href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc\n        </style>\n        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img src=\"test.png\" />\n        <img src=\"test.png\" />\n      ";
+      var html = "\n        <link rel=\"stylesheet\"\n        href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc\n        </style>\n        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img src=\"test.png\">\n        <img src=\"test.png\" />\n      ";
       var fh = LittleCrawler.filterHtmlContent(html);
       assert.notInclude(fh, '<style');
       assert.notInclude(fh, '<meta');
@@ -263,7 +274,8 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
         }
       };
       return lc.get(config, { keyword: "神墓", url: 'http://se.qidian.com/?kw=神墓' }).then(function (r) {
-        return equal('神墓', r[0].name);
+        equal('神墓', r[0].name);
+        equal(true, !!r[0].coverImg);
       });
     });
 

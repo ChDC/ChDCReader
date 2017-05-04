@@ -96,7 +96,8 @@
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['header', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
+      this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
+      this.singleTagList = ['meta', 'link']; // 用于转换单标签
 
       this.fixurlAttributeList = ['href', "lc-src"]; // 需要修复 url 的属性
 
@@ -199,7 +200,7 @@
       switch(type){
         case "html":
           data = this.__transformHTML(data); // 转换不安全的标签和属性
-          let html = document.createElement("div");
+          let html = document.createElement("container-html");
           html.innerHTML = data;
           return this.__handleResponse(html, response, null,  dict);
         case "json":
@@ -450,6 +451,10 @@
     // 将诸如 img 标签的 src 属性转换为 lc-src 防止浏览器加载图片
     __transformHTML(html){
       if(!html) return html;
+      // 将 meta link img 等无结束标签变成单结束标签
+      html = this.singleTagList.reduce((h, tag) =>
+        h.replace(new RegExp(`(<${tag}\\b(?: [^>]*?)?)/?>`, "gi"), `$1></${tag}>`), html);
+
       html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
 
       // 图片的 src 属性转换成 lc-src 属性
@@ -733,7 +738,7 @@
 
     // 清空标签属性，排除白名单属性 src
     let whitePropertyList = ['src'];
-    html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, (p0, p1)=>
+    html = html.replace(/\s*([\w-]+)\s*=\s*"[^"]*"/gi, (p0, p1)=>
         whitePropertyList.includes(p1) ? p0 : ""
       );
 

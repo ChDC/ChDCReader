@@ -24,11 +24,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         "cordova": LittleCrawler.cordovaAjax
       };
 
-      this.secureAttributeList = [['src', 'data-src']];
+      this.insecurityAttributeList = ['src'];
+      this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
+      this.singleTagList = ['meta', 'link'];
 
-      this.fixurlAttributeList = ['href', "data-src"];
-      this.specialKey2AttributeList = [[/link$/i, "href"], [/img$|image$/i, "data-src"], [/html$/i, function (element) {
-        return _this.__reverseTransformHTMLTagProperty(element.innerHTML);
+      this.fixurlAttributeList = ['href', "lc-src"];
+      this.specialKey2AttributeList = [[/link$/i, "href"], [/img$|image$/i, "lc-src"], [/html$/i, function (element) {
+        return _this.__reverseHTML(element.innerHTML);
       }]];
     }
 
@@ -105,9 +107,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         switch (type) {
           case "html":
-            data = LittleCrawler.filterHtmlContent(data);
-            data = this.__transformHTMLTagProperty(data);
-            var html = document.createElement("div");
+            data = this.__transformHTML(data);
+            var html = document.createElement("container-html");
             html.innerHTML = data;
             return this.__handleResponse(html, response, null, dict);
           case "json":
@@ -208,13 +209,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               if (response.attribute) {
                 var attr = void 0;
-                var transAttrbite = this.secureAttributeList.find(function (e) {
-                  return e[0] == response.attribute;
-                });
-                if (transAttrbite) attr = transAttrbite[1];else attr = response.attribute;
+                if (this.insecurityAttributeList.includes(response.attribute)) attr = "lc-" + attr;else attr = response.attribute;
                 result = e.getAttribute(attr);
                 if (this.fixurlAttributeList.indexOf(attr) >= 0) result = LittleCrawler.fixurl(result, globalDict.host);
-                if (attr == 'innerHTML') result = this.__reverseTransformHTMLTagProperty(result);
+                if (attr == 'innerHTML') result = this.__reverseHTML(result);
               } else result = this.__getValue(e, keyName, globalDict, dict);
 
               if (result == undefined) return result;
@@ -326,12 +324,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
     }, {
+      key: "__transformSelector",
+      value: function __transformSelector(selector) {
+        if (!selector) return selector;
+        selector = this.insecurityTagList.reduce(function (s, tag) {
+          return s.replace(new RegExp("([^#._-]|^)\\b" + tag + "\\b", "gi"), "$1lc-" + tag);
+        }, selector);
+
+        selector = this.insecurityAttributeList.reduce(function (s, attr) {
+          return s.replace(new RegExp("\\[\\b" + attr + "\\b", "gi"), "[lc-" + attr);
+        }, selector);
+        return selector;
+      }
+    }, {
       key: "__getElement",
       value: function __getElement(element, selector) {
         if (!element || !selector) return undefined;
 
         if ("querySelector" in element) {
-          return element.querySelector(selector);
+          return element.querySelector(this.__transformSelector(selector));
         } else {
           return LittleCrawler.getDataFromObject(element, selector);
         }
@@ -342,77 +353,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (!element || !selector) return undefined;
 
         if ("querySelectorAll" in element) {
-          return Array.from(element.querySelectorAll(selector));
+          return Array.from(element.querySelectorAll(this.__transformSelector(selector)));
         } else {
           return LittleCrawler.getDataFromObject(element, selector) || [];
         }
       }
     }, {
-      key: "__transformHTMLTagProperty",
-      value: function __transformHTMLTagProperty(html) {
+      key: "__transformHTML",
+      value: function __transformHTML(html) {
         if (!html) return html;
 
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        html = this.singleTagList.reduce(function (h, tag) {
+          return h.replace(new RegExp("(<" + tag + "\\b(?: [^>]*?)?)/?>", "gi"), "$1></" + tag + ">");
+        }, html);
 
-        try {
-          for (var _iterator2 = this.secureAttributeList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var _step2$value = _slicedToArray(_step2.value, 2),
-                src = _step2$value[0],
-                dest = _step2$value[1];
+        html = this.insecurityTagList.reduce(function (h, tag) {
+          return LittleCrawler.replaceTag(h, tag, "lc-" + tag);
+        }, html);
 
-            html = html.replace(new RegExp("\\b" + src + "=(?=[\"'])", 'gi'), dest + "=");
-          }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
-        }
-
+        html = this.insecurityAttributeList.reduce(function (h, attr) {
+          return LittleCrawler.replaceAttribute(h, attr, "lc-" + attr);
+        }, html);
         return html;
       }
     }, {
-      key: "__reverseTransformHTMLTagProperty",
-      value: function __reverseTransformHTMLTagProperty(html) {
+      key: "__reverseHTML",
+      value: function __reverseHTML(html) {
         if (!html) return html;
+        html = this.insecurityTagList.reduce(function (h, tag) {
+          return LittleCrawler.replaceTag(h, "lc-" + tag, tag);
+        }, html);
 
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
-
-        try {
-          for (var _iterator3 = this.secureAttributeList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var _step3$value = _slicedToArray(_step3.value, 2),
-                src = _step3$value[0],
-                dest = _step3$value[1];
-
-            html = html.replace(new RegExp("\\b" + dest + "=(?=[\"'])", 'gi'), src + "=");
-          }
-        } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-              _iterator3.return();
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
-            }
-          }
-        }
-
+        html = this.insecurityAttributeList.reduce(function (h, attr) {
+          return LittleCrawler.replaceAttribute(h, "lc-" + attr, attr);
+        }, html);
         return html;
       }
     }]);
@@ -566,13 +540,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     if (!obj || !key) return obj;
     var keys = key.split('::');
     var result = obj;
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
 
     try {
       var _loop = function _loop() {
-        var key = _step4.value;
+        var key = _step2.value;
 
         if (!result) return {
             v: undefined
@@ -604,22 +578,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       };
 
-      for (var _iterator4 = keys[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
         var _ret = _loop();
 
         if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
       }
     } catch (err) {
-      _didIteratorError4 = true;
-      _iteratorError4 = err;
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion4 && _iterator4.return) {
-          _iterator4.return();
+        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+          _iterator2.return();
         }
       } finally {
-        if (_didIteratorError4) {
-          throw _iteratorError4;
+        if (_didIteratorError2) {
+          throw _iteratorError2;
         }
       }
     }
@@ -675,7 +649,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     html = LittleCrawler.filterHtmlContent(html);
 
     var whitePropertyList = ['src'];
-    html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, function (p0, p1) {
+    html = html.replace(/\s*([\w-]+)\s*=\s*"[^"]*"/gi, function (p0, p1) {
       return whitePropertyList.includes(p1) ? p0 : "";
     });
 
@@ -701,23 +675,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
     html = blackList.reduce(function (html, be) {
-      return LittleCrawler.__filterElement(html, be);
+      return LittleCrawler.filterTag(html, be);
     }, html);
     return html;
   };
 
-  LittleCrawler.__filterElement = function (html, element) {
-    var endElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : element;
+  LittleCrawler.filterTag = function (html, tag) {
 
+    if (!html || !tag) return html;
 
-    if (!html || !element) return html;
-
-    var pattern = "<" + element + "( [^>]*?)?>[\\s\\S]*?</" + endElement + ">";
+    var pattern = "<" + tag + "\\b( [^>]*?)?>[\\s\\S]*?</" + tag + ">";
     html = html.replace(new RegExp(pattern, 'gi'), '');
 
-    pattern = "<" + element + "([^>]*?)?>";
+    pattern = "<" + tag + "\\b([^>]*?)?>";
     html = html.replace(new RegExp(pattern, 'gi'), '');
     return html;
+  };
+
+  LittleCrawler.replaceTag = function (html, tag, retag) {
+    if (!html || !tag || !retag || tag == retag) return html;
+
+    var pattern = "<" + tag + "\\b(?=[ >/])";
+    html = html.replace(new RegExp(pattern, 'gi'), "<" + retag);
+
+    pattern = "</" + tag + ">";
+    html = html.replace(new RegExp(pattern, 'gi'), "</" + retag + ">");
+    return html;
+  };
+
+  LittleCrawler.replaceAttribute = function (html, attr, reattr) {
+    if (!html || !attr || !reattr || attr == reattr) return html;
+
+    return html.replace(new RegExp("\\b" + attr + "=(?=[\"'])", 'gi'), reattr + "=");
   };
 
   LittleCrawler.type = function (obj) {
