@@ -745,6 +745,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }));
       }
     }, {
+      key: "clearCacheChapters",
+      value: function clearCacheChapters() {
+        utils.removeData("chapter/" + this.name + "_" + this.author + "/", true);
+      }
+    }, {
       key: "getLastestChapter",
       value: function getLastestChapter(bookSourceId) {
         return this.getBookSource(bookSourceId).then(function (bs) {
