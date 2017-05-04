@@ -54,6 +54,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "onLoad",
       value: function onLoad(_ref) {
+        var _this3 = this;
+
         var params = _ref.params;
 
         var bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
@@ -68,7 +70,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         this.lastReadingScrollTop = this.readingRecord.getPageScrollTop();
         this.book.checkBookSources();
         this.loadView();
-        this.refreshChapterList();
+
+        this.book.getChapterIndex(this.readingRecord.chapterTitle, this.readingRecord.chapterIndex).then(function (index) {
+          _this3.readingRecord.chapterIndex = index;
+          _this3.refreshChapterList();
+        });
       }
     }, {
       key: "onPause",
@@ -84,7 +90,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this3 = this;
+        var _this4 = this;
 
         $("#chapterContainer").on("click", function (event) {
           $('.toolbar').toggle();
@@ -133,7 +139,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         });
 
         $("#btnCatalog").click(function (e) {
-          return _this3.loadCatalog();
+          return _this4.loadCatalog();
         });
         $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
 
@@ -143,12 +149,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           $("#labelNight").text(app.theme.isNight() ? "白天" : "夜间");
         });
         $("#btnBadChapter").click(function (e) {
-          _this3.refreshChapterList({
-            excludes: [_this3.readingRecord.options.contentSourceId]
+          _this4.refreshChapterList({
+            excludes: [_this4.readingRecord.options.contentSourceId]
           });
         });
         $("#btnRefresh").click(function (e) {
-          _this3.refreshChapterList();
+          _this4.refreshChapterList();
         });
         $("#btnSortReversed").click(function (e) {
           var list = $('#listCatalog');
@@ -157,11 +163,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         $("#btnChangeMainSource").click(function () {
           $("#modalBookSource").modal('show');
-          _this3.loadBookSource();
+          _this4.loadBookSource();
         });
         $("#btnChangeContentSource").click(function () {
           $("#modalBookSource").modal('show');
-          _this3.loadBookSource(true);
+          _this4.loadBookSource(true);
         });
         $('#modalCatalog').on('shown.bs.modal', function (e) {
           var targetChapter = $('#current-catalog-chapter');
@@ -174,17 +180,17 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           }
         });
         $('#btnBookDetail').click(function (e) {
-          return app.page.showPage("bookdetail", { book: _this3.book });
+          return app.page.showPage("bookdetail", { book: _this4.book });
         });
         $(".labelMainSource").text(app.bookSourceManager.getBookSource(this.book.mainSourceId).name).click(function (e) {
-          return window.open(_this3.book.getOfficialDetailLink(), '_system');
+          return window.open(_this4.book.getOfficialDetailLink(), '_system');
         });
         $("#btnRefreshCatalog").click(function () {
-          return _this3.loadCatalog(true);
+          return _this4.loadCatalog(true);
         });
         if (this.isNewBook) {
           $("#btnAddtoBookShelf").show().click(function (e) {
-            app.bookShelf.addBook(_this3.book, _this3.readingRecord);
+            app.bookShelf.addBook(_this4.book, _this4.readingRecord);
             $(event.currentTarget).css("display", "none");
             app.bookShelf.save().then(function () {
               uiutils.showMessage("添加成功！");
@@ -194,13 +200,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           });
         }
         $('#chapterContainer').on("scroll", function (e) {
-          $(".labelChatperPercent").text(parseInt(_this3.chapterList.getScrollRate() * 100) + " %");
+          $(".labelChatperPercent").text(parseInt(_this4.chapterList.getScrollRate() * 100) + " %");
         });
       }
     }, {
       key: "loadBookSource",
       value: function loadBookSource() {
-        var _this4 = this;
+        var _this5 = this;
 
         var changeContentSource = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
@@ -213,10 +219,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           if (!target) return;
           var bid = $(target).data('bsid');
 
-          _this4.readingRecord.options.contentSourceId = bid;
-          _this4.readingRecord.options.contentSourceChapterIndex = null;
+          _this5.readingRecord.options.contentSourceId = bid;
+          _this5.readingRecord.options.contentSourceChapterIndex = null;
 
-          _this4.refreshChapterList();
+          _this5.refreshChapterList();
         };
 
         var changeCatalogSourceClickEvent = function changeCatalogSourceClickEvent(event) {
@@ -225,7 +231,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           var bid = $(target).data('bsid');
           var oldMainSource = currentSourceId;
 
-          _this4.book.setMainSourceId(bid).then(function (book) {
+          _this5.book.setMainSourceId(bid).then(function (book) {
             return app.bookShelf.save();
           }).catch(function (error) {
             return uiutils.showError(app.error.getMessage(error));
@@ -233,24 +239,24 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
           $("#modalCatalog").modal('hide');
 
-          $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this4.book.mainSourceId).name);
+          $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this5.book.mainSourceId).name);
 
-          if (_this4.readingRecord.chapterIndex) {
-            _this4.book.fuzzySearch(_this4.book.mainSourceId, _this4.readingRecord.getChapterIndex(), undefined, oldMainSource).then(function (_ref2) {
+          if (_this5.readingRecord.chapterIndex) {
+            _this5.book.fuzzySearch(_this5.book.mainSourceId, _this5.readingRecord.getChapterIndex(), undefined, oldMainSource).then(function (_ref2) {
               var chapter = _ref2.chapter,
                   index = _ref2.index;
 
-              _this4.readingRecord.setReadingRecord(index, chapter.title, {});
-              _this4.refreshChapterList();
+              _this5.readingRecord.setReadingRecord(chapter.title, index, {});
+              _this5.refreshChapterList();
             }).catch(function (error) {
-              _this4.readingRecord.reset();
-              _this4.refreshChapterList();
+              _this5.readingRecord.reset();
+              _this5.refreshChapterList();
             });
           } else {
-            _this4.refreshChapterList();
+            _this5.refreshChapterList();
           }
 
-          _this4.book.refreshBookInfo();
+          _this5.book.refreshBookInfo();
         };
 
         var nlbseClickEvent = changeContentSource ? changeContentSourceClickEvent : changeCatalogSourceClickEvent;
@@ -293,20 +299,20 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "loadCatalog",
       value: function loadCatalog(forceRefresh) {
-        var _this5 = this;
+        var _this6 = this;
 
         app.showLoading();
         $('#listCatalogContainer').height($(window).height() * 0.5);
 
-        return this.book.getCatalog(forceRefresh, undefined, true).then(function (catalog) {
+        return this.book.getCatalog({ forceRefresh: forceRefresh, groupByVolume: true }).then(function (catalog) {
           var listCatalog = $("#listCatalog");
           listCatalog.empty();
-          listCatalog.append(_this5.buildCatalogView(catalog, function (e) {
+          listCatalog.append(_this6.buildCatalogView(catalog, function (e) {
             var chapter = $(e.currentTarget).data("chapter");
-            _this5.readingRecord.setReadingRecord(chapter.index, chapter.title, {});
-            _this5.refreshChapterList();
+            _this6.readingRecord.setReadingRecord(chapter.title, chapter.index, {});
+            _this6.refreshChapterList();
           }, "#listCatalog", function (chapter, nc) {
-            if (chapter.index == _this5.readingRecord.chapterIndex) nc.attr("id", "current-catalog-chapter");
+            if (chapter.index == _this6.readingRecord.chapterIndex) nc.attr("id", "current-catalog-chapter");
             if (chapter.isVIP()) nc.addClass("vip-chapter");
           }));
           app.hideLoading();
@@ -318,11 +324,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "refreshChapterList",
       value: function refreshChapterList(options) {
-        var _this6 = this;
+        var _this7 = this;
 
         app.showLoading();
         var opts = Object.assign({}, this.readingRecord.getOptions(), options);
         if (this.chapterList) this.chapterList.close();
+
         this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)), { disableCheckPrevious: true });
         this.chapterList.onError = function (e) {
           return uiutils.showError(app.error.getMessage(e.error));
@@ -333,18 +340,19 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
               oldValue = _ref3.old;
 
           newValue = $(newValue);
-          var index = newValue.data('chapterIndex');
-          var title = newValue.data('chapterTitle');
-          var options = newValue.data('options');
-          if (index >= 0) {
-            _this6.readingRecord.setReadingRecord(index, title, options);
-            $(".labelContentSource").text(app.bookSourceManager.getBookSource(options.contentSourceId).name).click(function (e) {
-              return window.open(_this6.book.getOfficialDetailLink(options.contentSourceId), '_system');
-            });
+          var readingRecord = newValue.data('readingRecord');
+          if (readingRecord.chapterIndex >= 0) {
+            (function () {
+              var contentSourceId = readingRecord.options.contentSourceId;
+              Object.assign(_this7.readingRecord, readingRecord);
+              $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name).click(function (e) {
+                return window.open(_this7.book.getOfficialDetailLink(contentSourceId), '_system');
+              });
+            })();
           } else {
-            _this6.readingRecord.setFinished(true);
+            _this7.readingRecord.setFinished(true);
           }
-          $(".labelChapterTitle").text(title);
+          $(".labelChapterTitle").text(readingRecord.chapterTitle);
           app.hideLoading();
         };
         this.chapterList.onFirstNewElementFinished = function (_ref4) {
@@ -352,10 +360,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
               direction = _ref4.direction;
 
           app.hideLoading();
-          if (_this6.lastReadingScrollTop) {
+          if (_this7.lastReadingScrollTop) {
             var cs = $('#chapterContainer').scrollTop();
-            $('#chapterContainer').scrollTop(cs + _this6.lastReadingScrollTop);
-            _this6.lastReadingScrollTop = 0;
+            $('#chapterContainer').scrollTop(cs + _this7.lastReadingScrollTop);
+            _this7.lastReadingScrollTop = 0;
           }
         };
 
@@ -364,7 +372,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "buildLastPage",
       value: function buildLastPage() {
-        var _this7 = this;
+        var _this8 = this;
 
         var nc = $('.template .readFinished').clone();
         if (!nc || nc.length <= 0) return null;
@@ -372,20 +380,18 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         nc.height($('#chapterContainer').height());
 
         nc.find(".offical-site").click(function (e) {
-          return window.open(_this7.book.getOfficialDetailLink(), '_system');
+          return window.open(_this8.book.getOfficialDetailLink(), '_system');
         });
         nc.find("img.offical-site").attr('src', "img/logo/" + this.book.mainSourceId + ".png");
 
-        nc.data('chapterIndex', -1);
-        nc.data('chapterTitle', '读完啦');
-
+        nc.data("readingRecord", new ReadingRecord({ chapterTitle: "读完啦", chapterIndex: -1 }));
         this.loadElseBooks(nc.find(".elseBooks"));
         return nc[0];
       }
     }, {
       key: "loadElseBooks",
       value: function loadElseBooks(list) {
-        var _this8 = this;
+        var _this9 = this;
 
         function addBook(bookshelfitem) {
           var prepend = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -400,12 +406,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         }
 
         var unFinishedBooks = app.bookShelf.books.filter(function (e) {
-          return !e.readingRecord.isFinished && e.book != _this8.book;
+          return !e.readingRecord.isFinished && e.book != _this9.book;
         }).reverse();
         unFinishedBooks.forEach(addBook);
 
         var finishedBooks = app.bookShelf.books.filter(function (e) {
-          return e.readingRecord.isFinished && e.book != _this8.book;
+          return e.readingRecord.isFinished && e.book != _this9.book;
         });
         finishedBooks.forEach(function (e) {
           e.book.getLastestChapter().then(function (_ref5) {
@@ -444,9 +450,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         nc.find(".chapter-content").html(content);
 
-        nc.data('chapterIndex', index);
-        nc.data('chapterTitle', chapter.title);
-        nc.data('options', options);
+        nc.data("readingRecord", new ReadingRecord({ chapterTitle: chapter.title, chapterIndex: index, options: options }));
         return nc[0];
       }
     }, {

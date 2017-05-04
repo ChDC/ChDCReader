@@ -142,12 +142,16 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           var _ref3 = _slicedToArray(_ref2, 1),
               lastestChapter = _ref3[0];
 
-          var isNewChapter = !readingRecord.equalChapterTitle(lastestChapter);
+          var isNewChapter = lastestChapter && !readingRecord.equalChapterTitle(lastestChapter);
           var lce = bookElement.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无"));
           if (isNewChapter) lce.addClass('unread-chapter');else lce.removeClass('unread-chapter');
 
           if (readingRecord.isFinished && isNewChapter) {
-            book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+            book.getChapterIndex(lastestChapter).then(function (index) {
+              if (index < 0) return book.getCatalog({ forceRefresh: true });
+            }).then(function () {
+              book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+            });
           }
         });
       }

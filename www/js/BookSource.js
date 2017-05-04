@@ -79,8 +79,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "getCatalog",
-      value: function getCatalog(forceRefresh) {
-        if (!forceRefresh && this.catalog) return Promise.resolve(this.catalog);
+      value: function getCatalog(_ref) {
+        var _ref$forceRefresh = _ref.forceRefresh,
+            forceRefresh = _ref$forceRefresh === undefined ? false : _ref$forceRefresh,
+            _ref$refresh = _ref.refresh,
+            refresh = _ref$refresh === undefined ? false : _ref$refresh;
+
+        if (!forceRefresh && !refresh && this.catalog) return Promise.resolve(this.catalog);
 
         var self = this;
         return co(regeneratorRuntime.mark(function _callee() {
@@ -93,7 +98,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   return self.__assertBookSource();
 
                 case 2:
-                  if (!(new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
+                  if (!(!forceRefresh && new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
                     _context.next = 4;
                     break;
                   }

@@ -79,7 +79,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord", "uifactor
         var _this3 = this;
 
         this.bookChapterList.empty();
-        this.book.getCatalog(false, undefined, true).then(function (catalog) {
+        this.book.getCatalog({ groupByVolume: true }).then(function (catalog) {
           _this3.bookChapterList.append(_this3.buildCatalogView(catalog, function (e) {
             var chapter = $(e.currentTarget).data("chapter");
             app.page.showPage("readbook", {

@@ -32,19 +32,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return Chapter;
   }();
 
-  Chapter.equalTitle = function (chapterA, chapterB) {
-    return Chapter.equalTitle2(chapterA.title, chapterB.title);
-  };
+  Chapter.equalTitle = function (ca, cb) {
 
-  Chapter.equalTitle2 = function (chapterTitleA, chapterTitleB) {
+    if (ca == cb) return 4;
+    if (!ca || !cb) return 0;
 
-    if (chapterTitleA == chapterTitleB) return true;
-    if (!chapterTitleA || !chapterTitleB) return false;
-
-    var cs = [chapterTitleA, chapterTitleB];
+    var cs = [ca, cb].map(function (c) {
+      return typeof c != "string" ? c.title : c;
+    });
+    if (cs[0] == cs[1]) return 4;
 
     cs = cs.map(Chapter.stripString);
-    if (cs[0] == cs[1]) return true;
+    if (cs[0] == cs[1]) return 3;
 
     var nums = '零一二两三四五六七八九';
     cs = cs.map(function (c) {
@@ -53,15 +52,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return i <= 2 ? i : i - 1;
       });
     });
-    if (cs[0] == cs[1]) return true;
+    if (cs[0] == cs[1]) return 2;
 
     var numPattern = /第[0123456789零一二两三四五六七八九十百千万亿\d]+[章节卷]/g;
     cs = cs.map(function (c) {
       return c.replace(numPattern, '');
     });
-    if (cs[0] == cs[1]) return true;
+    if (cs[0] == cs[1]) return 1;
 
-    return false;
+    return 0;
   };
 
   Chapter.stripString = function (str) {
