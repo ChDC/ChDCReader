@@ -44,6 +44,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
                 _this2.fireEvent("myclose");
               });
             }, function () {
+              _this2.book.clearCacheChapters();
               _this2.fireEvent("myclose");
             });
           } else {
@@ -72,7 +73,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         this.loadView();
 
         this.book.getChapterIndex(this.readingRecord.chapterTitle, this.readingRecord.chapterIndex).then(function (index) {
-          _this3.readingRecord.chapterIndex = index;
+          if (index >= 0) _this3.readingRecord.chapterIndex = index;
           _this3.refreshChapterList();
         });
       }

@@ -33,6 +33,8 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
               },
               () => {
+                // 不添加，清除缓存章节
+                this.book.clearCacheChapters();
                 this.fireEvent("myclose");
               });
         }
@@ -60,7 +62,8 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
       this.book.getChapterIndex(this.readingRecord.chapterTitle, this.readingRecord.chapterIndex)
         .then(index => {
-          this.readingRecord.chapterIndex = index;
+          if(index >= 0)
+            this.readingRecord.chapterIndex = index;
           this.refreshChapterList();
         })
     }
