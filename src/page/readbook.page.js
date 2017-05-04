@@ -202,7 +202,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
         // 从新的目录源中搜索之前的阅读记录
         if(this.readingRecord.chapterIndex){
-          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.getChapterIndex(), undefined, oldMainSource)
+          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.getChapterIndex(), {bookSourceId: oldMainSource})
             .then(({chapter, index}) => {
               this.readingRecord.setReadingRecord(chapter.title, index, {});
               this.refreshChapterList();
@@ -277,7 +277,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)),
         {disableCheckPrevious: true} // 禁止向前加载
       );
-      this.chapterList.onError = e => uiutils.showError(app.error.getMessage(e.error));
+      this.chapterList.onError = e => {
+        app.hideLoading();
+        uiutils.showError(app.error.getMessage(e.error));
+      };
 
       this.chapterList.onCurrentElementChanged = ({new: newValue, old: oldValue}) => {
         newValue = $(newValue);

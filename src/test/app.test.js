@@ -14,7 +14,7 @@ require(["../js/config"], function(){
             "BookSourceManager",
             "utils",
             "translate",
-            "Spider",
+            "LittleCrawler",
         ];
 
         //---- 配置结束 ----

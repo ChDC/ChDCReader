@@ -6,7 +6,7 @@
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
   }));else window["customBookSource"] = factory();
-})(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function (co, utils, Spider, translate, Book, BookSource, Chapter) {
+})(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict";
 
   var customBookSource = {
@@ -132,14 +132,14 @@
         var link = this.getChapterLink(bsid, dict);
         var bsm = this.__sources[bsid];
 
-        return utils.cordovaAjax("get", link, {}, 'json', {
+        return LittleCrawler.cordovaAjax("get", link, {}, 'json', {
           "Referer": "http://chuangshi.qq.com/",
           "X-Requested-With": "XMLHttpRequest"
         }).then(function (json) {
           var content = decryptByBaseCode(json.Content, 30);
           var bsm = _this.__sources[bsid];
-          var data = _this.__spider.parse(content, "html", bsm.chapter.response, link, {});
-          content = _this.__spider.clearHtml(data.contentHTML);
+          var data = _this.__lc.parse(content, "html", bsm.chapter.response, link, {});
+          content = LittleCrawler.clearHtml(data.contentHTML);
 
           var c = new Chapter();
           c.content = content;
@@ -196,7 +196,7 @@
               switch (_context.prev = _context.next) {
                 case 0:
                   result = [];
-                  link = self.__spider.format(linkTmp, { bookid: dict.bookid, pageNo: 1 });
+                  link = LittleCrawler.format(linkTmp, { bookid: dict.bookid, pageNo: 1 });
                   _context.next = 4;
                   return utils.getJSON(link);
 
@@ -205,7 +205,7 @@
                   total = json.total;
 
                   dict.maxfreechapter = json.book.maxfreechapter;
-                  result[0] = self.__spider.parse(json, "json", bs.catalog.response, link, dict);
+                  result[0] = self.__lc.parse(json, "json", bs.catalog.response, link, dict);
 
                   pageNos = new Array(Math.ceil(total / 100) - 1).fill(0).map(function (e, i) {
                     return i + 2;
@@ -213,7 +213,7 @@
                   _context.next = 11;
                   return Promise.all(pageNos.map(function (pageNo) {
                     var gatcherDict = Object.assign({ pageNo: pageNo }, dict);
-                    return self.__spider.get(bs.catalog, gatcherDict).then(function (cs) {
+                    return self.__lc.get(bs.catalog, gatcherDict).then(function (cs) {
                       result[pageNo - 1] = cs;
                     });
                   }));
@@ -223,7 +223,7 @@
                     return s.concat(e);
                   }, []);
                   return _context.abrupt("return", result.map(function (c) {
-                    return self.__spider.cloneObjectValues(new Chapter(), c);
+                    return LittleCrawler.cloneObjectValues(new Chapter(), c);
                   }));
 
                 case 13:
@@ -238,14 +238,12 @@
 
     "daizhuzai": {
       beforeGetChapter: function beforeGetChapter() {
-        var _this2 = this;
-
         var args = arguments;
         var link = args[1].link;
         if (link.match(/novelsearch/)) return Promise.resolve(args);
         return utils.get(link).then(function (data) {
           var url = data.match(/'(\/novelsearch\/reader\/transcode\/siteid\/\d+\/url\/.*?)'/)[1];
-          args[1].link = _this2.__spider.fixurl(url, link);
+          args[1].link = LittleCrawler.fixurl(url, link);
           return args;
         });
       }

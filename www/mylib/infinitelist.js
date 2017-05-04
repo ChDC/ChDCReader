@@ -210,6 +210,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         return co(this.__checkBoundary(direction, false)).then(function () {
           _this5.__isCheckingBoundary = false;
+        }).catch(function (error) {
+          _this5.__isCheckingBoundary = false;
+          throw error;
         });
       }
     }, {

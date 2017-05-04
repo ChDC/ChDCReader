@@ -6,7 +6,7 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["utils"] = factory();
-}(["fileSystem"], function(fileSystem){
+}(["fileSystem", "LittleCrawler"], function(fileSystem, LittleCrawler){
   "use strict"
 
   return {
@@ -26,13 +26,7 @@
     * new Error() -> error
     * ()->{} -> function
     */
-    type(obj){
-      // return $.type(obj); // 只有这里用了 jquery
-      let type = typeof(obj);
-      if(type != 'object')
-        return type;
-      return obj.constructor.name.toLowerCase();
-    },
+    type: LittleCrawler.type,
 
     /*
     * 输出log 信息
@@ -45,32 +39,7 @@
       const msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
       console.error(msg);
     },
-    /*
-    * 获取 URL 的参数字符串
-    */
-    __urlJoin(url, params){
 
-      if(!params)
-        return url;
-
-      let r = []
-      for(const k in params){
-        r.push(`${k}=${params[k]}`)
-      };
-
-      if(r.length <= 0)
-        return url;
-
-      params = r.join("&");
-
-      let i = url.indexOf("?");
-      if(i == -1)
-        return `${url}?${params}`;
-      else if(i < url.length - 1)
-        return `${url}&${params}`;
-      else
-        return `${url}${params}`;
-    },
 
     /*
     * 原始的 HTTP Get
@@ -102,116 +71,8 @@
     //         });
     // },
 
-    cordovaAjax(method='get', url, params={}, dataType, headers={},
-                  options){
-      if(typeof cordovaHTTP == 'undefined')
-        return this.ajax(method, url, params, dataType, headers, options);
-      return new Promise((resolve, reject) => {
-        if(!url) return reject(new Error("url is null"));
-
-        let func;
-        switch(method.toLowerCase()){
-          case "get":
-            func = cordovaHTTP.get.bind(cordovaHTTP);
-            break;
-
-          case "post":
-            func = cordovaHTTP.post.bind(cordovaHTTP);
-            break;
-          default:
-            return reject(new Error("method is illegal"));
-        }
-
-        if(!('User-Agent' in headers))
-          headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
-
-        func(url, params, headers,
-          function(response) {
-            switch(dataType){
-              case "json":
-                resolve(JSON.parse(response.data));
-                break;
-              default:
-                resolve(response.data);
-                break;
-            }
-          },
-          function(response) {
-            reject(response.error);
-          });
-      });
-    },
-
-    /*
-    * 原始的 HTTP XHR
-    * url: 完整的 URL
-    * params: 参数
-    */
-    ajax(method="GET", url, params, dataType, headers, {timeout=5, retry=1}={}) {
-
-      return new Promise((resolve, reject) => {
-        if(!url) return reject(new Error("url is null"));
-        url = this.__urlJoin(url, params);
-        this.log(`Get: ${url}`);
-        url = encodeURI(url);
-        retry = retry || 0;
-
-        let request = new XMLHttpRequest();
-        request.open(method, url);
-        request.timeout = timeout * 1000;
-
-        dataType = (dataType || "").toLowerCase();
-        switch(dataType){
-          case "json":
-            request.setRequestHeader("Content-Type", "application/json");
-            break;
-          // default undefined:
-          //     request.setRequestHeader("Content-Type", "text/plain");
-          //     break;
-        }
-
-        request.onload = () => {
-          // success
-          switch(dataType){
-            case "json":
-              resolve(JSON.parse(request.responseText));
-              break;
-            default:
-              resolve(request.responseText);
-              break;
-          }
-        };
-
-        request.ontimeout = () => {
-          if(retry > 0){
-            // 超时重传
-            // request.abort();
-            request.open(method, url);
-            request.send(null);
-            retry -= 1;
-          }
-          else{
-            this.error(`Fail to get: ${url}, 网络超时`);
-            reject(new Error("Request Timeout"));
-          }
-        };
-
-        request.onabort = () => {
-          this.error(`Fail to get: ${url}, 传输中断`);
-          reject(new Error("Request Abort"));
-        }
-
-        request.onerror = () => {
-          this.error("Fail to get: " + url + ", 网络错误");
-          reject(new Error("Request Error"));
-        }
-
-        request.send(null);
-      });
-    },
-
     get(url, params, dataType, options){
-      return this.ajax("GET", url, params, dataType, {}, options);
+      return LittleCrawler.ajax("GET", url, params, dataType, {}, options);
     },
 
     // 获取 JSON 格式

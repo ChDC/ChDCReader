@@ -38,7 +38,7 @@
 
 * 本项目基于 Corodva 框架实现。
 
-* 本项目中的爬虫部分使用的是本人创作的爬虫框架 [Spider](https://github.com/ChDC/ChDCSpider)
+* 本项目中的爬虫部分使用的是本人创作的爬虫框架 [LittleCrawlerJS](https://github.com/ChDC/LittleCrawlerJS)
 
   它是基于配置的爬虫框架，只需要在配置文件中写好请求的链接和用于选取元素的 CSS 选择器就可以获取到想要的信息。
 

@@ -27,7 +27,7 @@ requirejs.config({
     "Test": "../mylib/Test",
     "Page": "../mylib/Page",
     "PageManager": "../mylib/PageManager",
-    "Spider": "../mylib/Spider",
+    "LittleCrawler": "../mylib/LittleCrawler",
     "translate": "../mylib/translate",
     "fileSystem": "../mylib/fileSystem"
   }

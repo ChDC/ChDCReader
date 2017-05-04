@@ -148,9 +148,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
           if (readingRecord.isFinished && isNewChapter) {
             book.getChapterIndex(lastestChapter).then(function (index) {
-              if (index < 0) return book.getCatalog({ forceRefresh: true });
-            }).then(function () {
-              book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount);
+              return index < 0;
+            }).then(function (forceRefresh) {
+              book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { forceRefresh: forceRefresh });
             });
           }
         });
