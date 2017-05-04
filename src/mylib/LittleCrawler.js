@@ -95,9 +95,10 @@
       };
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
-      this.secureAttributeList = [
+      this.insecurityAttributeList = [
         ['src', 'data-src'],
       ];
+      this.insecurityTagList = ['header', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
 
       this.fixurlAttributeList = ['href', "data-src"]; // 需要修复 url 的属性
 
@@ -105,7 +106,7 @@
       this.specialKey2AttributeList = [
         [/link$/i, "href"],
         [/img$|image$/i, "data-src"],
-        [/html$/i, (element) => this.__reverseTransformHTMLTagProperty(element.innerHTML)]
+        [/html$/i, (element) => this.__reverseHTML(element.innerHTML)]
       ];
     }
 
@@ -199,8 +200,7 @@
 
       switch(type){
         case "html":
-          data = LittleCrawler.filterHtmlContent(data);
-          data = this.__transformHTMLTagProperty(data);
+          data = this.__transformHTML(data); // 转换不安全的标签和属性
           let html = document.createElement("div");
           html.innerHTML = data;
           return this.__handleResponse(html, response, null,  dict);
@@ -297,7 +297,7 @@
           // 从 element 中获取属性值
           if(response.attribute){
             let attr;
-            let transAttrbite = this.secureAttributeList.find(e => e[0] == response.attribute)
+            let transAttrbite = this.insecurityAttributeList.find(e => e[0] == response.attribute)
             if(transAttrbite)
               attr = transAttrbite[1];
             else
@@ -306,7 +306,7 @@
             if(this.fixurlAttributeList.indexOf(attr) >= 0)
               result = LittleCrawler.fixurl(result, globalDict.host);
             if(attr == 'innerHTML')
-              result = this.__reverseTransformHTMLTagProperty(result);
+              result = this.__reverseHTML(result);
           }
           else
             // 没有指定属性则按键的名字获取值，缺省获取 textContent
@@ -437,22 +437,41 @@
     }
 
 
+    // 将不安全的标签转换掉
+    // __transformHTMLContent(html){
+    //   if(!html) return html;
+
+    //   // 只要 body
+    //   const m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
+    //   if(m && m.length >= 2)
+    //     html = m[1];
+
+    //   let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
+    //   html = blackList.reduce((html, be) => LittleCrawler.filterTag(html, be), html);
+    //   return html;
+    // }
+
     // 将诸如 img 标签的 src 属性转换为 data-src 防止浏览器加载图片
-    __transformHTMLTagProperty(html){
+    __transformHTML(html){
       if(!html) return html;
+      debugger;
+      // TODO
+      html = this.insecurityTagList.reduct((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
 
       // 图片的 src 属性转换成 data-src 属性
-      for(let [src, dest] of this.secureAttributeList)
+      for(let [src, dest] of this.insecurityAttributeList)
         html = html.replace(new RegExp(`\\b${src}=(?=["'])`, 'gi'), `${dest}=`);
       return html;
     }
 
     // 将之前的转换逆转回来
-    __reverseTransformHTMLTagProperty(html){
+    __reverseHTML(html){
       if(!html) return html;
+      debugger;
+      // TODO
 
       // 图片的 src 属性转换成 data-src 属性
-      for(let [src, dest] of this.secureAttributeList)
+      for(let [src, dest] of this.insecurityAttributeList)
         html = html.replace(new RegExp(`\\b${dest}=(?=["'])`, 'gi'), `${src}=`);
       return html;
     }
@@ -758,17 +777,30 @@
       html = m[1];
 
     let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
-    html = blackList.reduce((html, be) => LittleCrawler.__filterElement(html, be), html);
+    html = blackList.reduce((html, be) => LittleCrawler.filterTag(html, be), html);
     return html;
   }
 
 
   // 过滤某些标签
-  LittleCrawler.__filterElement = function(html, element, endElement=element){
+  LittleCrawler.filterTag = function(html, element){
 
     if(!html || !element) return html;
 
-    let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${endElement}>`;
+    let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${element}>`;
+    html = html.replace(new RegExp(pattern, 'gi'), '');
+    // 去除单标签
+    pattern = `<${element}([^>]*?)?>`;
+    html = html.replace(new RegExp(pattern, 'gi'), '');
+    return html;
+  }
+
+  // 替换标签
+  LittleCrawler.replaceTag = function(html, tag, retag){
+    // TODO
+    if(!html || !element) return html;
+
+    let pattern = `<${element}( [^>]*?)?>[\\s\\S]*?</${element}>`;
     html = html.replace(new RegExp(pattern, 'gi'), '');
     // 去除单标签
     pattern = `<${element}([^>]*?)?>`;

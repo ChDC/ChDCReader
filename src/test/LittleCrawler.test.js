@@ -98,14 +98,24 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
       equal("http://www.test.com/def/abc/ddd", LittleCrawler.fixurl("../def/abc/ddd", host2));
     });
 
-    it('__filterElement', () => {
+    it('filterTag', () => {
       let html = '<div>abcdef</div><br/><div/><div />';
 
-      assert.equal(null, LittleCrawler.__filterElement(null, null));
-      assert.equal(html, LittleCrawler.__filterElement(html, null));
-      assert.equal(html, LittleCrawler.__filterElement(html, ""));
+      assert.equal(null, LittleCrawler.filterTag(null, null));
+      assert.equal(html, LittleCrawler.filterTag(html, null));
+      assert.equal(html, LittleCrawler.filterTag(html, ""));
 
-      assert.notInclude(LittleCrawler.__filterElement(html, 'div'), 'div');
+      assert.notInclude(LittleCrawler.filterTag(html, 'div'), 'div');
+    });
+
+    it('replaceTag', () => {
+      let html = '<div>abcdef</div><br/><div/><div />';
+
+      assert.equal(null, LittleCrawler.replaceTag(null, null));
+      assert.equal(html, LittleCrawler.replaceTag(html, null));
+      assert.equal(html, LittleCrawler.replaceTag(html, ""));
+
+      assert.notInclude(LittleCrawler.replaceTag(html, 'div'), 'div');
     });
 
     it('text2html', () => {
@@ -116,9 +126,9 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
       equal('<p>test</p>\n<p>test2</p>', LittleCrawler.text2html('test\ntest2'));
     });
 
-    it('__transformHTMLTagProperty', () => {
-      assert.equal("", lc.__transformHTMLTagProperty(""));
-      assert.equal(null, lc.__transformHTMLTagProperty());
+    it('__transformHTML', () => {
+      assert.equal("", lc.__transformHTML(""));
+      assert.equal(null, lc.__transformHTML());
 
       let html = `
         <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
@@ -132,7 +142,7 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         <img src="test.png" />
       `;
 
-      let fh = lc.__transformHTMLTagProperty(html);
+      let fh = lc.__transformHTML(html);
       assert.include(fh, '<img data-src="test.png" />');
       assert.notInclude(fh, '<img src="test.png" />');
     });

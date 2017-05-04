@@ -11,15 +11,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 ;(function (factory) {
   "use strict";
 
-  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["Spider"] = factory();
+  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["LittleCrawler"] = factory();
 })(function () {
-  var Spider = function () {
-    function Spider(ajax) {
+  var LittleCrawler = function () {
+    function LittleCrawler(ajax) {
       var _this = this;
 
-      _classCallCheck(this, Spider);
+      _classCallCheck(this, LittleCrawler);
 
-      this.ajax = ajax;
+      this.ajax = ajax || {
+        "default": LittleCrawler.ajax,
+        "cordova": LittleCrawler.cordovaAjax
+      };
 
       this.secureAttributeList = [['src', 'data-src']];
 
@@ -29,7 +32,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]];
     }
 
-    _createClass(Spider, [{
+    _createClass(LittleCrawler, [{
       key: "get",
       value: function get() {
         var _this2 = this;
@@ -55,7 +58,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var headers = request.headers || {};
 
         var ajax = void 0;
-        switch (this.type(this.ajax)) {
+        switch (LittleCrawler.type(this.ajax)) {
           case "function":
             ajax = this.ajax;
             break;
@@ -83,7 +86,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           "url": dict.url
         };
 
-        if (this.type(request) == "string") {
+        if (LittleCrawler.type(request) == "string") {
           request = {
             "url": request
           };
@@ -91,7 +94,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         if (!request.url) throw new Error("Empty URL");
 
-        return this.format(request.url, dict);
+        return LittleCrawler.format(request.url, dict);
       }
     }, {
       key: "parse",
@@ -102,14 +105,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         switch (type) {
           case "html":
-            data = this.filterHtmlContent(data);
+            data = LittleCrawler.filterHtmlContent(data);
             data = this.__transformHTMLTagProperty(data);
             var html = document.createElement("div");
             html.innerHTML = data;
             return this.__handleResponse(html, response, null, dict);
           case "json":
             var json = void 0;
-            if (this.type(data) != 'object') json = JSON.parse(data);else json = data;
+            if (LittleCrawler.type(data) != 'object') json = JSON.parse(data);else json = data;
             return this.__handleResponse(json, response, null, dict);
           default:
             throw new Error("Illegal type");
@@ -124,7 +127,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         if (!response) return undefined;
 
-        switch (this.type(response)) {
+        switch (LittleCrawler.type(response)) {
           case "array":
             return this.__handleArray(data, response, keyName, globalDict, dict);
           case "object":
@@ -184,8 +187,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return _this4.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                  var gatherDict = Object.assign({}, globalDict, _this4.type(data) == "object" ? data : {}, _this4.type(m) == "object" ? m : {});
-                  var validCode = '"use strict"\n' + _this4.format(response.valideach, gatherDict, true);
+                  var gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, LittleCrawler.type(m) == "object" ? m : {});
+                  var validCode = '"use strict"\n' + LittleCrawler.format(response.valideach, gatherDict, true);
                   return eval(validCode);
                 });
             }
@@ -210,7 +213,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
                 if (transAttrbite) attr = transAttrbite[1];else attr = response.attribute;
                 result = e.getAttribute(attr);
-                if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
+                if (this.fixurlAttributeList.indexOf(attr) >= 0) result = LittleCrawler.fixurl(result, globalDict.host);
                 if (attr == 'innerHTML') result = this.__reverseTransformHTMLTagProperty(result);
               } else result = this.__getValue(e, keyName, globalDict, dict);
 
@@ -243,8 +246,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           case "format":
             {
               if (!response.value) return undefined;
-              var gatherDict = Object.assign({}, globalDict, this.type(data) == "object" ? data : {}, dict);
-              result = this.format(response.value, gatherDict);
+              var gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, dict);
+              result = LittleCrawler.format(response.value, gatherDict);
             }
             break;
           default:
@@ -254,8 +257,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
 
         if ("valid" in response) {
-          var _gatherDict = Object.assign({}, globalDict, this.type(data) == "object" ? data : {}, dict);
-          var validCode = '"use strict"\n' + this.format(response.valid, _gatherDict, true);
+          var _gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, dict);
+          var validCode = '"use strict"\n' + LittleCrawler.format(response.valid, _gatherDict, true);
           if (!eval(validCode)) return undefined;
         }
         return result;
@@ -293,11 +296,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               if (keyName.match(pattern)) {
                 matched = true;
-                if (this.type(attr) == "string") {
+                if (LittleCrawler.type(attr) == "string") {
                   result = element.getAttribute(attr);
 
-                  if (this.fixurlAttributeList.indexOf(attr) >= 0) result = this.fixurl(result, globalDict.host);
-                } else if (this.type(attr) == "function") result = attr(element);
+                  if (this.fixurlAttributeList.indexOf(attr) >= 0) result = LittleCrawler.fixurl(result, globalDict.host);
+                } else if (LittleCrawler.type(attr) == "function") result = attr(element);
                 break;
               }
             }
@@ -330,7 +333,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if ("querySelector" in element) {
           return element.querySelector(selector);
         } else {
-          return this.__getDataFromObject(element, selector);
+          return LittleCrawler.getDataFromObject(element, selector);
         }
       }
     }, {
@@ -341,83 +344,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if ("querySelectorAll" in element) {
           return Array.from(element.querySelectorAll(selector));
         } else {
-          return this.__getDataFromObject(element, selector) || [];
+          return LittleCrawler.getDataFromObject(element, selector) || [];
         }
       }
     }, {
-      key: "__getDataFromObject",
-      value: function __getDataFromObject(obj, key) {
-        var _this5 = this;
+      key: "__transformHTMLTagProperty",
+      value: function __transformHTMLTagProperty(html) {
+        if (!html) return html;
 
-        function operatorFilter(element, args) {
-          var codeStart = '"use strict"\n';
-          var env = "var $element=" + JSON.stringify(element) + ";\n";
-          var code = codeStart + env + args[0];
-          return eval(code);
-        }
-
-        function splitKeyAndOperatorAndArgs(operatorAndArgs) {
-          if (!operatorAndArgs) return [];
-          var i = operatorAndArgs.indexOf('#');
-          if (i < 0) return [operatorAndArgs];
-          var key = operatorAndArgs.substring(0, i);
-          operatorAndArgs = operatorAndArgs.substring(i + 1);
-
-          i = operatorAndArgs.indexOf('(');
-          if (i < 0) return [key, operatorAndArgs, undefined];
-          var opertaor = operatorAndArgs.substring(0, i);
-          var args = operatorAndArgs.substring(i);
-          if (args.length > 2) args = args.substring(1, args.length - 1).split('#').map(function (e) {
-            return JSON.parse(e);
-          });else args = [];
-          return [key, opertaor, args];
-        }
-
-        if (!obj || !key) return obj;
-        var keys = key.split('::');
-        var result = obj;
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
         try {
-          var _loop = function _loop() {
-            var key = _step2.value;
+          for (var _iterator2 = this.secureAttributeList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var _step2$value = _slicedToArray(_step2.value, 2),
+                src = _step2$value[0],
+                dest = _step2$value[1];
 
-            if (!result) return {
-                v: undefined
-              };
-
-            var _splitKeyAndOperatorA = splitKeyAndOperatorAndArgs(key),
-                _splitKeyAndOperatorA2 = _slicedToArray(_splitKeyAndOperatorA, 3),
-                k = _splitKeyAndOperatorA2[0],
-                operator = _splitKeyAndOperatorA2[1],
-                args = _splitKeyAndOperatorA2[2];
-
-            if (_this5.type(result) == 'array') {
-              if (operator == 'concat') result = result.reduce(function (s, m) {
-                return s.concat(m[k]);
-              }, []);else if (operator == "filter") result = result.map(function (m) {
-                return m[k];
-              }).filter(function (e) {
-                return operatorFilter(e, args);
-              });else result = result.map(function (m) {
-                return m[k];
-              });
-            } else {
-              if (operator == "filter") {
-                result = result[k];
-                if (_this5.type(result) == 'array') result = result.filter(function (e) {
-                  return operatorFilter(e, args);
-                });
-              } else result = result[k];
-            }
-          };
-
-          for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var _ret = _loop();
-
-            if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+            html = html.replace(new RegExp("\\b" + src + "=(?=[\"'])", 'gi'), dest + "=");
           }
         } catch (err) {
           _didIteratorError2 = true;
@@ -434,96 +379,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
 
-        return result;
-      }
-    }, {
-      key: "fixurl",
-      value: function fixurl(url, host) {
-        if (!url || url.match("^https?://")) return url;
-
-        if (url.match("^//")) url = "http:" + url;else if (url.match("^://")) url = "http" + url;else if (url.match("^javascript:")) url = "";else {
-          var matcher = host.match(/^(.*?):\/\//);
-          var scheme = matcher ? matcher[0] : "";
-          host = host.substring(scheme.length);
-
-          if (url.match("^/")) {
-            host = host.replace(/\/.*$/, "");
-            url = "" + scheme + host + url;
-          } else {
-            host = host.replace(/\/[^\/]*$/, "");
-            var m2 = url.match(/^\.\.\//g);
-            url = url.replace(/^\.\.\//g, '');
-            if (m2) {
-              for (var i = 0; i < m2.length; i++) {
-                host = host.replace(/\/[^\/]*$/, "");
-              }
-            }
-            url = "" + scheme + host + "/" + url;
-          }
-        }
-        return url;
-      }
-    }, {
-      key: "format",
-      value: function format(string) {
-        var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        var stringify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-        if (!string) return string;
-
-        var result = string.replace(/{(\w+)}/g, function (p0, p1) {
-
-          if (!(p1 in object)) throw new Error("can't find the key " + p1 + " in object");
-
-          if (object[p1] == undefined && !stringify) return '';
-          if (stringify) return JSON.stringify(object[p1]);else return object[p1];
-        });
-        return result;
-      }
-    }, {
-      key: "clearHtml",
-      value: function clearHtml(html) {
-        if (!html) return html;
-
-        html = this.filterHtmlContent(html);
-
-        var whitePropertyList = ['src'];
-        html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, function (p0, p1) {
-          return whitePropertyList.includes(p1) ? p0 : "";
-        });
-
-        if (html.match(/<br\s*\/?>/gi)) {
-          var dbrhtml = html.replace(/([^>]*)<br\s*\/?>\s*<br\s*\/?>/gi, '<p>$1</pchange>');
-          if (dbrhtml.match(/<br\s*\/?>\s*/i)) html = html.replace(/([^>]*)<br\s*\/?>/gi, '<p>$1</pchange>');else html = dbrhtml;
-
-          html = html.replace(/<\/pchange>([^<]+)($|<)/gi, '</p><p>$1</p>$2');
-          html = html.replace(/<\/pchange>/gi, '</p>');
-        }
-
-        html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
-        html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
-
         return html;
       }
     }, {
-      key: "filterHtmlContent",
-      value: function filterHtmlContent(html) {
-        var _this6 = this;
-
-        if (!html) return html;
-
-        var m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
-        if (m && m.length >= 2) html = m[1];
-
-        var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
-        html = blackList.reduce(function (html, be) {
-          return _this6.__filterElement(html, be);
-        }, html);
-        return html;
-      }
-    }, {
-      key: "__transformHTMLTagProperty",
-      value: function __transformHTMLTagProperty(html) {
+      key: "__reverseTransformHTMLTagProperty",
+      value: function __reverseTransformHTMLTagProperty(html) {
         if (!html) return html;
 
         var _iteratorNormalCompletion3 = true;
@@ -536,7 +396,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 src = _step3$value[0],
                 dest = _step3$value[1];
 
-            html = html.replace(new RegExp("\\b" + src + "=(?=[\"'])", 'gi'), dest + "=");
+            html = html.replace(new RegExp("\\b" + dest + "=(?=[\"'])", 'gi'), src + "=");
           }
         } catch (err) {
           _didIteratorError3 = true;
@@ -555,90 +415,338 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         return html;
       }
-    }, {
-      key: "__reverseTransformHTMLTagProperty",
-      value: function __reverseTransformHTMLTagProperty(html) {
-        if (!html) return html;
-
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
-
-        try {
-          for (var _iterator4 = this.secureAttributeList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var _step4$value = _slicedToArray(_step4.value, 2),
-                src = _step4$value[0],
-                dest = _step4$value[1];
-
-            html = html.replace(new RegExp("\\b" + dest + "=(?=[\"'])", 'gi'), src + "=");
-          }
-        } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-              _iterator4.return();
-            }
-          } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
-            }
-          }
-        }
-
-        return html;
-      }
-    }, {
-      key: "__filterElement",
-      value: function __filterElement(html, element) {
-        var endElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : element;
-
-
-        if (!html || !element) return html;
-
-        var pattern = "<" + element + "( [^>]*?)?>[\\s\\S]*?</" + endElement + ">";
-        html = html.replace(new RegExp(pattern, 'gi'), '');
-
-        pattern = "<" + element + "([^>]*?)?>";
-        html = html.replace(new RegExp(pattern, 'gi'), '');
-        return html;
-      }
-    }, {
-      key: "type",
-      value: function type(obj) {
-        var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
-        if (type != 'object') return type;
-        return obj.constructor.name.toLowerCase();
-      }
-    }, {
-      key: "text2html",
-      value: function text2html(text) {
-        if (!text) return text;
-
-        var lines = text.split("\n").map(function (line) {
-          return "<p>" + escapeHTML(line.trim()) + "</p>";
-        });
-        return lines.join('\n');
-
-        function escapeHTML(t) {
-          return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/ /g, "&nbsp;").replace(/"/g, "&#34;").replace(/'/g, "&#39;");
-        }
-      }
-    }, {
-      key: "cloneObjectValues",
-      value: function cloneObjectValues(dest, src) {
-        if (!dest || !src) return dest;
-
-        for (var key in dest) {
-          if (src[key] != undefined) dest[key] = src[key];
-        }
-        return dest;
-      }
     }]);
 
-    return Spider;
+    return LittleCrawler;
   }();
 
-  return Spider;
+  LittleCrawler.cordovaAjax = function () {
+    var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'get';
+    var url = arguments[1];
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var dataType = arguments[3];
+    var headers = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+    var options = arguments[5];
+
+    if (typeof cordovaHTTP == 'undefined') return LittleCrawler.ajax(method, url, params, dataType, headers, options);
+    return new Promise(function (resolve, reject) {
+      if (!url) return reject(new Error("url is null"));
+
+      var func = void 0;
+      switch (method.toLowerCase()) {
+        case "get":
+          func = cordovaHTTP.get.bind(cordovaHTTP);
+          break;
+
+        case "post":
+          func = cordovaHTTP.post.bind(cordovaHTTP);
+          break;
+        default:
+          return reject(new Error("method is illegal"));
+      }
+
+      if (!('User-Agent' in headers)) headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
+
+      func(url, params, headers, function (response) {
+        switch (dataType) {
+          case "json":
+            resolve(JSON.parse(response.data));
+            break;
+          default:
+            resolve(response.data);
+            break;
+        }
+      }, function (response) {
+        reject(response.error);
+      });
+    });
+  }, LittleCrawler.__urlJoin = function (url, params) {
+
+    if (!params) return url;
+    params = Object.keys(params).map(function (k) {
+      return k + "=" + params[k];
+    }).join("&");
+    if (!params) return url;
+
+    var i = url.indexOf("?");
+    if (i == -1) return url + "?" + params;else if (i < url.length - 1) return url + "&" + params;else return "" + url + params;
+  };
+
+  LittleCrawler.ajax = function () {
+    var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "GET";
+    var url = arguments[1];
+    var params = arguments[2];
+    var dataType = arguments[3];
+    var headers = arguments[4];
+
+    var _ref2 = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {},
+        _ref2$timeout = _ref2.timeout,
+        timeout = _ref2$timeout === undefined ? 5 : _ref2$timeout,
+        _ref2$retry = _ref2.retry,
+        retry = _ref2$retry === undefined ? 1 : _ref2$retry;
+
+    return new Promise(function (resolve, reject) {
+      if (!url) return reject(new Error("url is null"));
+      url = LittleCrawler.__urlJoin(url, params);
+      console.log("Get: " + url);
+      url = encodeURI(url);
+      retry = retry || 0;
+
+      var request = new XMLHttpRequest();
+      request.open(method, url);
+      request.timeout = timeout * 1000;
+
+      dataType = (dataType || "").toLowerCase();
+      switch (dataType) {
+        case "json":
+          request.setRequestHeader("Content-Type", "application/json");
+          break;
+      }
+
+      request.onload = function () {
+        switch (dataType) {
+          case "json":
+            resolve(JSON.parse(request.responseText));
+            break;
+          default:
+            resolve(request.responseText);
+            break;
+        }
+      };
+
+      request.ontimeout = function () {
+        if (retry > 0) {
+          request.open(method, url);
+          request.send(null);
+          retry -= 1;
+        } else {
+          console.error("Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
+          reject(new Error("Request Timeout"));
+        }
+      };
+
+      request.onabort = function () {
+        console.error("Fail to get: " + url + ", \u4F20\u8F93\u4E2D\u65AD");
+        reject(new Error("Request Abort"));
+      };
+
+      request.onerror = function () {
+        console.error("Fail to get: " + url + ", 网络错误");
+        reject(new Error("Request Error"));
+      };
+
+      request.send(null);
+    });
+  }, LittleCrawler.getDataFromObject = function (obj, key) {
+
+    function operatorFilter(element, args) {
+      var codeStart = '"use strict"\n';
+      var env = "var $element=" + JSON.stringify(element) + ";\n";
+      var code = codeStart + env + args[0];
+      return eval(code);
+    }
+
+    function splitKeyAndOperatorAndArgs(operatorAndArgs) {
+      if (!operatorAndArgs) return [];
+      var i = operatorAndArgs.indexOf('#');
+      if (i < 0) return [operatorAndArgs];
+      var key = operatorAndArgs.substring(0, i);
+      operatorAndArgs = operatorAndArgs.substring(i + 1);
+
+      i = operatorAndArgs.indexOf('(');
+      if (i < 0) return [key, operatorAndArgs, undefined];
+      var opertaor = operatorAndArgs.substring(0, i);
+      var args = operatorAndArgs.substring(i);
+      if (args.length > 2) args = args.substring(1, args.length - 1).split('#').map(function (e) {
+        return JSON.parse(e);
+      });else args = [];
+      return [key, opertaor, args];
+    }
+
+    if (!obj || !key) return obj;
+    var keys = key.split('::');
+    var result = obj;
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
+
+    try {
+      var _loop = function _loop() {
+        var key = _step4.value;
+
+        if (!result) return {
+            v: undefined
+          };
+
+        var _splitKeyAndOperatorA = splitKeyAndOperatorAndArgs(key),
+            _splitKeyAndOperatorA2 = _slicedToArray(_splitKeyAndOperatorA, 3),
+            k = _splitKeyAndOperatorA2[0],
+            operator = _splitKeyAndOperatorA2[1],
+            args = _splitKeyAndOperatorA2[2];
+
+        if (LittleCrawler.type(result) == 'array') {
+          if (operator == 'concat') result = result.reduce(function (s, m) {
+            return s.concat(m[k]);
+          }, []);else if (operator == "filter") result = result.map(function (m) {
+            return m[k];
+          }).filter(function (e) {
+            return operatorFilter(e, args);
+          });else result = result.map(function (m) {
+            return m[k];
+          });
+        } else {
+          if (operator == "filter") {
+            result = result[k];
+            if (LittleCrawler.type(result) == 'array') result = result.filter(function (e) {
+              return operatorFilter(e, args);
+            });
+          } else result = result[k];
+        }
+      };
+
+      for (var _iterator4 = keys[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        var _ret = _loop();
+
+        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+      }
+    } catch (err) {
+      _didIteratorError4 = true;
+      _iteratorError4 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+          _iterator4.return();
+        }
+      } finally {
+        if (_didIteratorError4) {
+          throw _iteratorError4;
+        }
+      }
+    }
+
+    return result;
+  };
+
+  LittleCrawler.fixurl = function (url, host) {
+    if (!url || url.match("^https?://")) return url;
+
+    if (url.match("^//")) url = "http:" + url;else if (url.match("^://")) url = "http" + url;else if (url.match("^javascript:")) url = "";else {
+      var matcher = host.match(/^(.*?):\/\//);
+      var scheme = matcher ? matcher[0] : "";
+      host = host.substring(scheme.length);
+
+      if (url.match("^/")) {
+        host = host.replace(/\/.*$/, "");
+        url = "" + scheme + host + url;
+      } else {
+        host = host.replace(/\/[^\/]*$/, "");
+        var m2 = url.match(/^\.\.\//g);
+        url = url.replace(/^\.\.\//g, '');
+        if (m2) {
+          for (var i = 0; i < m2.length; i++) {
+            host = host.replace(/\/[^\/]*$/, "");
+          }
+        }
+        url = "" + scheme + host + "/" + url;
+      }
+    }
+    return url;
+  };
+
+  LittleCrawler.format = function (string) {
+    var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var stringify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    if (!string) return string;
+
+    var result = string.replace(/{(\w+)}/g, function (p0, p1) {
+
+      if (!(p1 in object)) throw new Error("can't find the key " + p1 + " in object");
+
+      if (object[p1] == undefined && !stringify) return '';
+      if (stringify) return JSON.stringify(object[p1]);else return object[p1];
+    });
+    return result;
+  };
+
+  LittleCrawler.clearHtml = function (html) {
+    if (!html) return html;
+
+    html = LittleCrawler.filterHtmlContent(html);
+
+    var whitePropertyList = ['src'];
+    html = html.replace(/[\s\r\n]*([\w-]+)[\s\r\n]*=[\s\r\n]*"[^"]*"/gi, function (p0, p1) {
+      return whitePropertyList.includes(p1) ? p0 : "";
+    });
+
+    if (html.match(/<br\s*\/?>/gi)) {
+      var dbrhtml = html.replace(/([^>]*)<br\s*\/?>\s*<br\s*\/?>/gi, '<p>$1</pchange>');
+      if (dbrhtml.match(/<br\s*\/?>\s*/i)) html = html.replace(/([^>]*)<br\s*\/?>/gi, '<p>$1</pchange>');else html = dbrhtml;
+
+      html = html.replace(/<\/pchange>([^<]+)($|<)/gi, '</p><p>$1</p>$2');
+      html = html.replace(/<\/pchange>/gi, '</p>');
+    }
+
+    html = html.replace(/>(　|\s|&nbsp;)+/gi, '>');
+    html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
+
+    return html;
+  };
+
+  LittleCrawler.filterHtmlContent = function (html) {
+    if (!html) return html;
+
+    var m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
+    if (m && m.length >= 2) html = m[1];
+
+    var blackList = ['script', 'style', 'link', 'meta', 'iframe'];
+    html = blackList.reduce(function (html, be) {
+      return LittleCrawler.__filterElement(html, be);
+    }, html);
+    return html;
+  };
+
+  LittleCrawler.__filterElement = function (html, element) {
+    var endElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : element;
+
+
+    if (!html || !element) return html;
+
+    var pattern = "<" + element + "( [^>]*?)?>[\\s\\S]*?</" + endElement + ">";
+    html = html.replace(new RegExp(pattern, 'gi'), '');
+
+    pattern = "<" + element + "([^>]*?)?>";
+    html = html.replace(new RegExp(pattern, 'gi'), '');
+    return html;
+  };
+
+  LittleCrawler.type = function (obj) {
+    var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
+    if (type != 'object') return type;
+    return obj.constructor.name.toLowerCase();
+  };
+
+  LittleCrawler.text2html = function (text) {
+    if (!text) return text;
+
+    var lines = text.split("\n").map(function (line) {
+      return "<p>" + escapeHTML(line.trim()) + "</p>";
+    });
+    return lines.join('\n');
+
+    function escapeHTML(t) {
+      return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/ /g, "&nbsp;").replace(/"/g, "&#34;").replace(/'/g, "&#39;");
+    }
+  };
+
+  LittleCrawler.cloneObjectValues = function (dest, src) {
+    if (!dest || !src) return dest;
+
+    for (var key in dest) {
+      if (src[key] != undefined) dest[key] = src[key];
+    }
+    return dest;
+  };
+
+  return LittleCrawler;
 });

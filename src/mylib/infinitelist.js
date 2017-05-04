@@ -238,6 +238,10 @@
           // 解锁
           // this.__container.addEventListener('scroll', this.__scrollEventBindThis);
           this.__isCheckingBoundary = false;
+        })
+        .catch(error => {
+          this.__isCheckingBoundary = false;
+          throw error;
         });
     }
 

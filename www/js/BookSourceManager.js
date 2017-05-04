@@ -12,7 +12,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
   }));else window["BookSourceManager"] = factory();
-})(['co', "utils", "Spider", "translate", "Book", "BookSource", "Chapter"], function (co, utils, Spider, translate, Book, BookSource, Chapter) {
+})(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict";
 
   var BookSourceManager = function () {
@@ -21,10 +21,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       this.__sources;
       this.__customBookSource = customBookSource;
-      this.__spider = new Spider({
-        "default": utils.ajax.bind(utils),
-        "cordova": utils.cordovaAjax.bind(utils)
-      });
+      this.__lc = new LittleCrawler();
 
       this.loadConfig(configFileOrConfig);
       this.addCustomSourceFeature();
@@ -261,8 +258,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         m.cover = m.coverImg;
 
-        var book = this.__spider.cloneObjectValues(new Book(this), m);
-        var bss = this.__spider.cloneObjectValues(new BookSource(book, this, bs.id, bs.contentSourceWeight), m);
+        var book = LittleCrawler.cloneObjectValues(new Book(this), m);
+        var bss = LittleCrawler.cloneObjectValues(new BookSource(book, this, bs.id, bs.contentSourceWeight), m);
         book.sources = {};
         if (bss.lastestChapter) bss.lastestChapter = bss.lastestChapter.replace(/^最新更新\s+/, '');
 
@@ -282,7 +279,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
 
-        return this.__spider.get(bs.search, { keyword: keyword }).then(getBooks);
+        return this.__lc.get(bs.search, { keyword: keyword }).then(getBooks);
 
         function getBooks(data) {
 
@@ -360,7 +357,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
 
-        return this.__spider.get(bs.detail, dict).then(function (m) {
+        return this.__lc.get(bs.detail, dict).then(function (m) {
           m.bookid = dict.bookid;
           m.catalogLink = dict.catalogLink;
           m.detailLink = dict.detailLink;
@@ -376,7 +373,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bsm = this.__sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.__spider.get(bsm.detail, dict).then(function (data) {
+        return this.__lc.get(bsm.detail, dict).then(function (data) {
           return data.lastestChapter.replace(/^最新更新\s+/, '');
         });
       }
@@ -391,19 +388,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         if (!bs.catalogLink) return Promise.resolve(null);
 
-        return this.__spider.get(bs.catalogLink, dict);
+        return this.__lc.get(bs.catalogLink, dict);
       }
     }, {
       key: "getBookCatalog",
       value: function getBookCatalog(bsid, dict) {
-        var _this6 = this;
 
         utils.log("BookSourceManager: Refresh Catalog from " + bsid);
 
         var bsm = this.__sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.__spider.get(bsm.catalog, dict).then(function (data) {
+        return this.__lc.get(bsm.catalog, dict).then(function (data) {
           if (bsm.catalog.hasVolume) data = data.map(function (v) {
             return v.chapters.map(function (c) {
               return c.volume = v.name, c;
@@ -412,15 +408,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return s.concat(e);
           }, []);
           return data.map(function (c) {
-            return _this6.__spider.cloneObjectValues(new Chapter(), c);
+            return LittleCrawler.cloneObjectValues(new Chapter(), c);
           });
         });
       }
     }, {
       key: "getChapter",
       value: function getChapter(bsid) {
-        var _this7 = this;
-
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
@@ -431,9 +425,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bsm = this.__sources[bsid];
         if (!bsm) return Promise.reject("Illegal booksource!");
 
-        return this.__spider.get(bsm.chapter, dict).then(function (data) {
+        return this.__lc.get(bsm.chapter, dict).then(function (data) {
           var c = new Chapter();
-          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = _this7.__spider.text2html(data.contentHTML);else c.content = _this7.__spider.clearHtml(data.contentHTML);
+          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = LittleCrawler.text2html(data.contentHTML);else c.content = LittleCrawler.clearHtml(data.contentHTML);
           if (!c.content) return Promise.reject(206);
 
           c.title = data.title ? data.title : dict.title;
@@ -460,11 +454,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var config = bs.officialurls;
         if (!config) return null;
-        if (key && config[key]) return this.__spider.format(config[key], dict);
+        if (key && config[key]) return LittleCrawler.format(config[key], dict);
         if (!key) {
           var result = {};
           for (var _key in config) {
-            result[_key] = this.__spider.format(config[_key], dict);
+            result[_key] = LittleCrawler.format(config[_key], dict);
           }
         }
         return null;
@@ -477,7 +471,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bs = this.__sources[bsid];
         if (!bs) throw new Error("Illegal booksource!");
 
-        return this.__spider.getLink(bs.detail.request, dict);
+        return this.__lc.getLink(bs.detail.request, dict);
       }
     }, {
       key: "getChapterLink",
@@ -491,7 +485,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bsm = this.__sources[bsid];
         if (!bsm) throw new Error("Illegal booksource!");
 
-        return this.__spider.getLink(bsm.chapter.request, dict);
+        return this.__lc.getLink(bsm.chapter.request, dict);
       }
     }, {
       key: "getSourcesKeysByMainSourceWeight",

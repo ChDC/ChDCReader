@@ -124,7 +124,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             book.getChapterIndex(lastestChapter)
               .then(index => index < 0)
               .then(forceRefresh => {
-                debugger;
                 // 缓存后面章节内容，使用强制更新模式
                 book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {forceRefresh: forceRefresh});
               });

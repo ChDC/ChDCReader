@@ -10,7 +10,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
   }));else window["utils"] = factory();
-})(["fileSystem"], function (fileSystem) {
+})(["fileSystem", "LittleCrawler"], function (fileSystem, LittleCrawler) {
   "use strict";
 
   return {
@@ -29,134 +29,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.error(msg);
     },
-    __urlJoin: function __urlJoin(url, params) {
-
-      if (!params) return url;
-
-      var r = [];
-      for (var k in params) {
-        r.push(k + "=" + params[k]);
-      };
-
-      if (r.length <= 0) return url;
-
-      params = r.join("&");
-
-      var i = url.indexOf("?");
-      if (i == -1) return url + "?" + params;else if (i < url.length - 1) return url + "&" + params;else return "" + url + params;
-    },
-    cordovaAjax: function cordovaAjax() {
-      var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'get';
-      var url = arguments[1];
-      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      var dataType = arguments[3];
-      var headers = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
-      var options = arguments[5];
-
-      if (typeof cordovaHTTP == 'undefined') return this.ajax(method, url, params, dataType, headers, options);
-      return new Promise(function (resolve, reject) {
-        if (!url) return reject(new Error("url is null"));
-
-        var func = void 0;
-        switch (method.toLowerCase()) {
-          case "get":
-            func = cordovaHTTP.get.bind(cordovaHTTP);
-            break;
-
-          case "post":
-            func = cordovaHTTP.post.bind(cordovaHTTP);
-            break;
-          default:
-            return reject(new Error("method is illegal"));
-        }
-
-        if (!('User-Agent' in headers)) headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
-
-        func(url, params, headers, function (response) {
-          switch (dataType) {
-            case "json":
-              resolve(JSON.parse(response.data));
-              break;
-            default:
-              resolve(response.data);
-              break;
-          }
-        }, function (response) {
-          reject(response.error);
-        });
-      });
-    },
-    ajax: function ajax() {
-      var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "GET";
-      var url = arguments[1];
-      var params = arguments[2];
-      var dataType = arguments[3];
-
-      var _this = this;
-
-      var headers = arguments[4];
-
-      var _ref = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {},
-          _ref$timeout = _ref.timeout,
-          timeout = _ref$timeout === undefined ? 5 : _ref$timeout,
-          _ref$retry = _ref.retry,
-          retry = _ref$retry === undefined ? 1 : _ref$retry;
-
-      return new Promise(function (resolve, reject) {
-        if (!url) return reject(new Error("url is null"));
-        url = _this.__urlJoin(url, params);
-        _this.log("Get: " + url);
-        url = encodeURI(url);
-        retry = retry || 0;
-
-        var request = new XMLHttpRequest();
-        request.open(method, url);
-        request.timeout = timeout * 1000;
-
-        dataType = (dataType || "").toLowerCase();
-        switch (dataType) {
-          case "json":
-            request.setRequestHeader("Content-Type", "application/json");
-            break;
-        }
-
-        request.onload = function () {
-          switch (dataType) {
-            case "json":
-              resolve(JSON.parse(request.responseText));
-              break;
-            default:
-              resolve(request.responseText);
-              break;
-          }
-        };
-
-        request.ontimeout = function () {
-          if (retry > 0) {
-            request.open(method, url);
-            request.send(null);
-            retry -= 1;
-          } else {
-            _this.error("Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
-            reject(new Error("Request Timeout"));
-          }
-        };
-
-        request.onabort = function () {
-          _this.error("Fail to get: " + url + ", \u4F20\u8F93\u4E2D\u65AD");
-          reject(new Error("Request Abort"));
-        };
-
-        request.onerror = function () {
-          _this.error("Fail to get: " + url + ", 网络错误");
-          reject(new Error("Request Error"));
-        };
-
-        request.send(null);
-      });
-    },
     get: function get(url, params, dataType, options) {
-      return this.ajax("GET", url, params, dataType, {}, options);
+      return LittleCrawler.ajax("GET", url, params, dataType, {}, options);
     },
     getJSON: function getJSON(url, params) {
       return this.get(url, params, "json");
@@ -440,7 +314,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }
 
       function fireEvent(eventName) {
-        var _this2 = this;
+        var _this = this;
 
         var e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -458,7 +332,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         if (eventName in this.__events) {
           (function () {
             var removeList = [];
-            var handlers = _this2.__events[eventName];
+            var handlers = _this.__events[eventName];
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
             var _iteratorError2 = undefined;
