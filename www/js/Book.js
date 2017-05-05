@@ -384,7 +384,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         case 0:
 
                           if (!noInfluenceWeight) self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
-                          opts = Object.assing({}, options, { bookSourceId: contentSourceId });
+                          opts = Object.assign({}, options, { bookSourceId: contentSourceId });
                           chapterB = void 0;
                           _context3.prev = 3;
                           _context3.next = 6;
@@ -420,7 +420,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             break;
                           }
 
-                          throw new Error();
+                          throw new Error(204);
 
                         case 19:
                           _context3.next = 21;
@@ -457,7 +457,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 };
 
                 handleWithNormalMethod = function handleWithNormalMethod(error) {
-                  errorCodeList.push(error);
+                  if (error != 204 && typeof error == "string" && !error.includes('AjaxError')) {
+                    debugger;
+                    errorCodeList.push(error);
+                  }
                   return co(getChapterFromContentSources2());
                 };
 

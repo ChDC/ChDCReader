@@ -9,7 +9,7 @@
   },
   {
     "file": "data/errorCode.json",
-    "hash": "eb7492d5e684220dfa4cbad314c75df4"
+    "hash": "46dcd4436225cbda37c0ee92b68c254e"
   },
   {
     "file": "data/exploresource.json",
@@ -77,7 +77,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "c05cddea84de612046fcc29b0188ba79"
+    "hash": "40660b1b966972e54af11ecaeffd33dc"
   },
   {
     "file": "js/BookShelf.js",
@@ -293,7 +293,7 @@
   },
   {
     "file": "mylib/LittleCrawler.js",
-    "hash": "d3930a414d6dc01fe7b9bfd5b26d44dd"
+    "hash": "8640ee710a50919670813d1855b4c399"
   },
   {
     "file": "mylib/Page.js",
