@@ -88,7 +88,7 @@
       };
 
       this.hide = function () {
-        _this.__loadingbar.remove();
+        if (_this.__loadingbar) _this.__loadingbar.remove();
       };
     },
 

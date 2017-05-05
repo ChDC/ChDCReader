@@ -446,7 +446,6 @@
         }
 
         const bs = yield self.getBookSource(contentSourceId);
-
         chapterB = yield bs.getChapter(chapterB, onlyCacheNoLoad);
 
         // 找到了章节

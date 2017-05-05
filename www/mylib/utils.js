@@ -355,7 +355,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         };
 
         var __onevent = "__on" + eventName[0].toUpperCase() + eventName.substring(1);
-        if (__onevent in this) this[__onevent](e);
+        if (__onevent in this) {
+          try {
+            this[__onevent](e);
+          } catch (error) {
+            console.error(error);
+          }
+        }
 
         if (eventName in this.__events) {
           (function () {
@@ -400,7 +406,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         }
 
         var onevent = "on" + eventName[0].toUpperCase() + eventName.substring(1);
-        if (onevent in this) this[onevent](e);
+        if (onevent in this) {
+          try {
+            this[onevent](e);
+          } catch (error) {
+            console.error(error);
+          }
+        }
       }
 
       function removeEventListener(eventName, handler) {

@@ -445,8 +445,14 @@
 
         // __onEvent
         let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
-        if(__onevent in this)
-          this[__onevent](e);
+        if(__onevent in this){
+          try{
+            this[__onevent](e);
+          }
+          catch(error){
+            console.error(error);
+          }
+        }
 
         // addEventListener
         if(eventName in this.__events){
@@ -469,8 +475,14 @@
 
         // onEvent
         let onevent = `on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
-        if(onevent in this)
-          this[onevent](e);
+        if(onevent in this){
+          try{
+            this[onevent](e);
+          }
+          catch(error){
+            console.error(error);
+          }
+        }
       }
 
       function removeEventListener(eventName, handler){

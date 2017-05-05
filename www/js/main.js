@@ -41,6 +41,8 @@
     bookSourceManager: null,
 
     bookShelf: null,
+    utils: utils,
+    uiutils: uiutils,
 
     page: null,
 

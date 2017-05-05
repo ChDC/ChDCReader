@@ -47,7 +47,8 @@
 
     // 书架
     bookShelf: null,
-    // utils: utils,
+    utils: utils,
+    uiutils: uiutils,
 
     // 页面管理器
     page: null,

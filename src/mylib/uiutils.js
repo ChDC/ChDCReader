@@ -108,7 +108,7 @@
 
       // 隐藏加载进度条
       this.hide = () => {
-        this.__loadingbar.remove();
+        if(this.__loadingbar) this.__loadingbar.remove();
       };
     },
 
