@@ -109,7 +109,7 @@
   },
   {
     "file": "js/main.js",
-    "hash": "ae9f0b5f7e3d2ced844db16cb862e0ad"
+    "hash": "9a909783c99f5f5dabfde9a542ce549f"
   },
   {
     "file": "js/ReadingRecord.js",
@@ -285,7 +285,7 @@
   },
   {
     "file": "mylib/fileSystem.js",
-    "hash": "478dcd1cb507f19ae2b9b5490834f66d"
+    "hash": "e7c8fbf1b772ffdfb5405f1a82fa08be"
   },
   {
     "file": "mylib/infinitelist.js",
@@ -309,11 +309,11 @@
   },
   {
     "file": "mylib/uiutils.js",
-    "hash": "ec491e540f0dc05ab5af7d0373283284"
+    "hash": "af266e4b777acc5732f0501defbadca9"
   },
   {
     "file": "mylib/utils.js",
-    "hash": "f2bfa6706e3dd16888def3137136c634"
+    "hash": "3deec98efe8eee209ba25eb1ea26ec64"
   },
   {
     "file": "page/bookdetail.page.css",
