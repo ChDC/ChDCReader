@@ -134,6 +134,41 @@
     //   return html.trim();
     // },
 
+    // 将大写数字转换为小写的
+    // 仅支持四位
+    lowerCaseNumbers(str){
+      if(!str) return str;
+      str.replace('两', '二');
+      const nums = '一二三四五六七八九';
+      const digit = '万千百十';
+      return str.replace(/[零一二三四五六七八九十百千万]+/g,
+        numStr => {
+          if(numStr.match(/^[零一二三四五六七八九]+$/)) // 纯数字没有 十百千万
+            return parseInt(Array.from(numStr).map(n => nums.indexOf(n) + 1).join('').replace('零', '0'));
+          let result = new Array(5).fill(0); // 万千百十个
+          let p = -1;
+          let lastMatchDigit = 3;
+          for(let i = 0; i < 4; i++){
+            let j = numStr.indexOf(digit[i], p + 1);
+            if(j < 0) continue;
+            result[i] = p == j ? '1' : numStr.substring(j-1, j);
+            lastMatchDigit = i;
+            p = j;
+          }
+          // 最后一个
+          let numPart = numStr.substring(p + 1);
+          if(numPart){
+            if(numPart[0] != "零") // 诸如 一千三 这种数字
+              result[lastMatchDigit + 1] = numPart;
+            else
+              result[4] = numPart[1];
+          }
+
+          result = result.map(n => nums.indexOf(n) + 1)
+          return parseInt(result.join(''));
+        });
+    },
+
     // 将 Object 类型转换为指定的类
     objectCast(obj, ClassFunction){
       if(!obj || !ClassFunction) return obj;
