@@ -1,12 +1,12 @@
-;(function(factory) {
+;(function(deps, factory) {
   "use strict";
   if (typeof define === "function" && define.amd)
-    define(factory);
+    define(deps, factory);
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
-    module.exports = factory();
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["Chapter"] = factory();
-}(function() {
+}(["utils"], function(utils) {
   "use strict"
 
   // **** Chapter ****
@@ -44,13 +44,7 @@
     if(cs[0] == cs[1]) return 3;
 
     // 将大写数字转换为小写数字
-    const nums = '零一二两三四五六七八九';
-    cs = cs.map(c =>
-      c.replace(/[十百千万亿]/gi, '')
-       .replace(new RegExp(`[${nums}]`, 'gi'), m => {
-        let i = nums.indexOf(m);
-        return i <= 2 ? i : i - 1;
-      }));
+    cs = cs.map(utils.lowerCaseNumbers);
     if(cs[0] == cs[1]) return 2;
 
     if(!removeNumbers) return 0;
@@ -67,12 +61,18 @@
   Chapter.stripString = function(str, {removeNumbers=false}={}){
     if(!str) return str;
 
-    const repl = removeNumbers ? '' : p1 => p1.replace(/[^\d零一二两三四五六七八九十百千万亿]/gi, '');
-
     // 去除括号括起来的文字
-    str = str.replace(/\((.*?)\)/g, repl); // 除了数字
-    str = ["【】", "（）", "《》", "<>"].reduce((s, e) =>
-      s.replace(new RegExp(`${e[0]}(.*?)${e[1]}`, 'gi'), repl), str);
+    str = ["()", "【】", "（）", "《》", "<>"].reduce((s, e) => {
+        let il = s.indexOf(e[0]);
+        if(il < 0) return s;
+        let ir = s.indexOf(e[1], il + 1);
+        if(ir < 0) return s;
+        let lstr = s.substring(0, il), rstr = s.substring(ir + 1);
+        if(removeNumbers)
+          return lstr + rstr;
+        let mstr = s.substring(il + 1, ir);
+        return lstr + mstr.replace(/[^\d零一二两三四五六七八九十百千万亿]/gi, '') + rstr;
+      }, str);
 
     // 去除英文字符串
     str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
