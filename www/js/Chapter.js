@@ -33,6 +33,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }();
 
   Chapter.equalTitle = function (ca, cb) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 
     if (ca == cb) return 4;
     if (!ca || !cb) return 0;
@@ -42,7 +44,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
     if (cs[0] == cs[1]) return 4;
 
-    cs = cs.map(Chapter.stripString);
+    var _options$removeNumber = options.removeNumbers,
+        removeNumbers = _options$removeNumber === undefined ? false : _options$removeNumber;
+
+    cs = cs.map(function (s) {
+      return Chapter.stripString(s, options);
+    });
     if (cs[0] == cs[1]) return 3;
 
     var nums = '零一二两三四五六七八九';
@@ -54,7 +61,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
     if (cs[0] == cs[1]) return 2;
 
-    var numPattern = /第[0123456789零一二两三四五六七八九十百千万亿\d]+[章节卷]/g;
+    if (!removeNumbers) return 0;
+
+    var numPattern = /第[\d零一二两三四五六七八九十百千万亿]+[章节卷]/g;
     cs = cs.map(function (c) {
       return c.replace(numPattern, '');
     });
@@ -64,11 +73,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   };
 
   Chapter.stripString = function (str) {
+    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref$removeNumbers = _ref.removeNumbers,
+        removeNumbers = _ref$removeNumbers === undefined ? false : _ref$removeNumbers;
+
     if (!str) return str;
 
-    str = str.replace(/（.*?）/g, '');
-    str = str.replace(/\(.*?\)/g, '');
-    str = str.replace(/【.*?】/g, '');
+    var repl = removeNumbers ? '' : function (p1) {
+      return p1.replace(/[^\d零一二两三四五六七八九十百千万亿]/gi, '');
+    };
+
+    str = str.replace(/\((.*?)\)/g, repl);
+    str = ["【】", "（）", "《》", "<>"].reduce(function (s, e) {
+      return s.replace(new RegExp(e[0] + "(.*?)" + e[1], 'gi'), repl);
+    }, str);
 
     str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');
 

@@ -93,7 +93,7 @@
   },
   {
     "file": "js/Chapter.js",
-    "hash": "8fe7144d5ca840612f5e96ef3c08c1db"
+    "hash": "06fb4760ec287f8c187c4175ca7433eb"
   },
   {
     "file": "js/config.js",
@@ -433,7 +433,7 @@
   },
   {
     "file": "test/Chapter.test.js",
-    "hash": "a67b5759d424be68f9f743217420de82"
+    "hash": "1b3079ef250f7336859486328cad6be7"
   },
   {
     "file": "test/LittleCrawler.test.js",

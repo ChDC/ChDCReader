@@ -19,6 +19,9 @@ define(["chai", "Chapter"], function (chai, Chapter) {
       equal(undefined, Chapter.stripString());
       equal('', Chapter.stripString(''));
       equal('第一章好的啊', Chapter.stripString('第一章 好的啊【啊啊】(test)'));
+      equal('第一章好的啊1', Chapter.stripString('第一章 好的啊【1啊啊】(test)'));
+      equal('第一章好的啊12', Chapter.stripString('第一章 好的啊【啊1啊】(2test)'));
+      equal('第一章好的啊零2', Chapter.stripString('第一章 好的啊【啊零啊】(2test)'));
     });
 
     it('equal', function () {
@@ -28,7 +31,12 @@ define(["chai", "Chapter"], function (chai, Chapter) {
       equal(true, !!Chapter.equalTitle({ title: "第58章节 好的【abc】" }, { title: "第五八章节    好的【abc】" }));
       equal(true, !!Chapter.equalTitle({ title: "第584章节 好的【abc】" }, { title: "第五百八十四章节    好的【abc】" }));
       equal(true, !!Chapter.equalTitle({ title: "第504章节 好的【abc】" }, { title: "第五百零四章节    好的【abc】" }));
-      equal(true, !!Chapter.equalTitle({ title: "第504章节 好的【abc】" }, { title: "第五百零三章节    好的【abc】" }));
+      equal(true, !!Chapter.equalTitle({ title: "第504章节 好的【abc】" }, { title: "第五百零三章节    好的【abc】" }, { removeNumbers: true }));
+      equal(false, !!Chapter.equalTitle({ title: "第504章节 好的【abc】" }, { title: "第五百零三章节    好的【abc】" }));
+      equal(false, !!Chapter.equalTitle({ title: "第503章节 好的(1)" }, { title: "第五百零三章节    好的(2)【abc】" }));
+      equal(false, !!Chapter.equalTitle({ title: "第503章节 好的(1)" }, { title: "第五百零三章节    好的(2)【abc】" }));
+      equal(true, !!Chapter.equalTitle({ title: "第503章节 好的(2)" }, { title: "第503章节 好的【二】" }));
+      equal(false, !!Chapter.equalTitle({ title: "第503章节 好的(3)" }, { title: "第503章节 好的【二】" }));
     });
   });
 });
