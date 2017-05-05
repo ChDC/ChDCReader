@@ -123,7 +123,7 @@
       function imgClick(e){
         e.stopPropagation();
         let img = e.currentTarget;
-        img.src = `${img.src.replace(/\?[^\/]*$/i, '')}?${new Date().getTime()}`;
+        img.src = img.src;// `${img.src.replace(/\?[^\/]*$/i, '')}?${new Date().getTime()}`;
         img.onload = (e) => {
           img.onclick = null;
           img.classList.remove("img-errorloaded");
