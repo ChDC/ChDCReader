@@ -147,7 +147,7 @@
         .then(c => onlyCacheNoLoad? chapter: c)
         .catch(error => {
           if(error != 207)
-            throw error;
+            console.error(error);
           // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
           return this.bookSourceManager.getChapter(this.id, Object.assign({}, this, chapter))
             .then(chapter => // 缓存该章节
