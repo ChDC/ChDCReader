@@ -4,11 +4,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-;(function (factory) {
+;(function (deps, factory) {
   "use strict";
 
-  if (typeof define === "function" && define.amd) define(factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory();else window["Chapter"] = factory();
-})(function () {
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["Chapter"] = factory();
+})(["utils"], function (utils) {
   "use strict";
 
   var Chapter = function () {
@@ -52,13 +54,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
     if (cs[0] == cs[1]) return 3;
 
-    var nums = '零一二两三四五六七八九';
-    cs = cs.map(function (c) {
-      return c.replace(/[十百千万亿]/gi, '').replace(new RegExp("[" + nums + "]", 'gi'), function (m) {
-        var i = nums.indexOf(m);
-        return i <= 2 ? i : i - 1;
-      });
-    });
+    cs = cs.map(utils.lowerCaseNumbers);
     if (cs[0] == cs[1]) return 2;
 
     if (!removeNumbers) return 0;
@@ -79,13 +75,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     if (!str) return str;
 
-    var repl = removeNumbers ? '' : function (p1) {
-      return p1.replace(/[^\d零一二两三四五六七八九十百千万亿]/gi, '');
-    };
-
-    str = str.replace(/\((.*?)\)/g, repl);
-    str = ["【】", "（）", "《》", "<>"].reduce(function (s, e) {
-      return s.replace(new RegExp(e[0] + "(.*?)" + e[1], 'gi'), repl);
+    str = ["()", "【】", "（）", "《》", "<>"].reduce(function (s, e) {
+      var il = s.indexOf(e[0]);
+      if (il < 0) return s;
+      var ir = s.indexOf(e[1], il + 1);
+      if (ir < 0) return s;
+      var lstr = s.substring(0, il),
+          rstr = s.substring(ir + 1);
+      if (removeNumbers) return lstr + rstr;
+      var mstr = s.substring(il + 1, ir);
+      return lstr + mstr.replace(/[^\d零一二两三四五六七八九十百千万亿]/gi, '') + rstr;
     }, str);
 
     str = str.replace(/[!"#$%&'()*+,./:;<=>?@[\]^_`{|}~\\-]/g, '');

@@ -37,6 +37,11 @@ define(["chai", "Chapter"], function (chai, Chapter) {
       equal(false, !!Chapter.equalTitle({ title: "第503章节 好的(1)" }, { title: "第五百零三章节    好的(2)【abc】" }));
       equal(true, !!Chapter.equalTitle({ title: "第503章节 好的(2)" }, { title: "第503章节 好的【二】" }));
       equal(false, !!Chapter.equalTitle({ title: "第503章节 好的(3)" }, { title: "第503章节 好的【二】" }));
+      equal(true, !!Chapter.equalTitle("1009", "一千零九"));
+      equal(true, !!Chapter.equalTitle("109", "一百零九"));
+      equal(true, !!Chapter.equalTitle("19", "十九"));
+      equal(true, !!Chapter.equalTitle("29", "二十九"));
+      equal(true, !!Chapter.equalTitle("9", "九"));
     });
   });
 });

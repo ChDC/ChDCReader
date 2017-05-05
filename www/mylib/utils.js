@@ -50,6 +50,37 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       }
       return params;
     },
+    lowerCaseNumbers: function lowerCaseNumbers(str) {
+      if (!str) return str;
+      str.replace('两', '二');
+      var nums = '一二三四五六七八九';
+      var digit = '万千百十';
+      return str.replace(/[零一二三四五六七八九十百千万]+/g, function (numStr) {
+        if (numStr.match(/^[零一二三四五六七八九]+$/)) return parseInt(Array.from(numStr).map(function (n) {
+            return nums.indexOf(n) + 1;
+          }).join('').replace('零', '0'));
+        var result = new Array(5).fill(0);
+        var p = -1;
+        var lastMatchDigit = 3;
+        for (var i = 0; i < 4; i++) {
+          var j = numStr.indexOf(digit[i], p + 1);
+          if (j < 0) continue;
+          result[i] = p == j ? '1' : numStr.substring(j - 1, j);
+          lastMatchDigit = i;
+          p = j;
+        }
+
+        var numPart = numStr.substring(p + 1);
+        if (numPart) {
+          if (numPart[0] != "零") result[lastMatchDigit + 1] = numPart;else result[4] = numPart[1];
+        }
+
+        result = result.map(function (n) {
+          return nums.indexOf(n) + 1;
+        });
+        return parseInt(result.join(''));
+      });
+    },
     objectCast: function objectCast(obj, ClassFunction) {
       if (!obj || !ClassFunction) return obj;
 

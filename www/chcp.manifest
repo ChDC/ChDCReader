@@ -93,7 +93,7 @@
   },
   {
     "file": "js/Chapter.js",
-    "hash": "06fb4760ec287f8c187c4175ca7433eb"
+    "hash": "35d29b0b3183f401e8ea804d2d3edba1"
   },
   {
     "file": "js/config.js",
@@ -313,7 +313,7 @@
   },
   {
     "file": "mylib/utils.js",
-    "hash": "6cb65849b01f2a92f66fe9a30cd0130e"
+    "hash": "f2bfa6706e3dd16888def3137136c634"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -433,7 +433,7 @@
   },
   {
     "file": "test/Chapter.test.js",
-    "hash": "1b3079ef250f7336859486328cad6be7"
+    "hash": "54d4fca3115654888a11009c823a9040"
   },
   {
     "file": "test/LittleCrawler.test.js",
@@ -449,6 +449,6 @@
   },
   {
     "file": "test/utils.test.js",
-    "hash": "e8c157c7aaec2573bcfdf9ba5b12c7d8"
+    "hash": "0fed6af29baaba64bc38186fd0baf066"
   }
 ]

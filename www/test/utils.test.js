@@ -27,6 +27,19 @@ define(["chai", "utils"], function (chai, utils) {
       });
     });
 
+    it('lowerCaseNumbers', function () {
+      equal(123, utils.lowerCaseNumbers("一百二十三"));
+      equal(123, utils.lowerCaseNumbers("一二三"));
+      equal(1003, utils.lowerCaseNumbers("一千零三"));
+      equal(1300, utils.lowerCaseNumbers("一千三"));
+      equal(1030, utils.lowerCaseNumbers("一千零三十"));
+      equal(13, utils.lowerCaseNumbers("一十三"));
+      equal(23, utils.lowerCaseNumbers("二十三"));
+      equal(13, utils.lowerCaseNumbers("十三"));
+      equal(103, utils.lowerCaseNumbers("一百零三"));
+      equal(10853, utils.lowerCaseNumbers("一万零八百五十三"));
+    });
+
     it('getParamsFromURL', function () {
       assert.isObject(utils.getParamsFromURL(""));
       var o1 = utils.getParamsFromURL("http://www.baidu.com/abc?def=123&ttt=4546&");
