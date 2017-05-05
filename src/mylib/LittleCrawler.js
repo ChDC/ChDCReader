@@ -586,19 +586,19 @@
           retry -= 1;
         }
         else{
-          console.error(`Fail to get: ${url}, 网络超时`);
-          reject(new Error("Request Timeout"));
+          console.error(`AjaxError: Fail to get: ${url}, 网络超时`);
+          reject(new Error("AjaxError: Request Timeout"));
         }
       };
 
       request.onabort = () => {
         console.error(`Fail to get: ${url}, 传输中断`);
-        reject(new Error("Request Abort"));
+        reject(new Error("AjaxError: Request Abort"));
       }
 
       request.onerror = () => {
         console.error("Fail to get: " + url + ", 网络错误");
-        reject(new Error("Request Error"));
+        reject(new Error("AjaxError: Request Error"));
       }
 
       request.send(null);

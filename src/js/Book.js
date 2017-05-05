@@ -414,11 +414,13 @@
         return submitResult();
       }
 
-
       function handleWithNormalMethod(error){
         // 失败则按正常方式获取
         // 注意网络不通的问题
-        errorCodeList.push(error);
+        if(error != 204 && typeof(error) == "string" && !error.includes('AjaxError')){
+          debugger;
+          errorCodeList.push(error);
+        }
         return co(getChapterFromContentSources2());
       }
 
@@ -427,7 +429,7 @@
 
         if(!noInfluenceWeight)
           self.sources[contentSourceId].weight += INCLUDE_WEIGHT;
-        let opts = Object.assing({}, options, {bookSourceId: contentSourceId});
+        let opts = Object.assign({}, options, {bookSourceId: contentSourceId});
         let chapterB;
         try{
           chapterB = yield self.index(contentSourceChapterIndex, opts);
@@ -440,7 +442,7 @@
           chapterB = yield self.index(contentSourceChapterIndex, opts);
         }
         if(!Chapter.equalTitle(chapterA, chapterB)){
-          throw new Error();
+          throw new Error(204);
         }
 
         const bs = yield self.getBookSource(contentSourceId);
