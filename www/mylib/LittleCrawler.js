@@ -494,19 +494,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           request.send(null);
           retry -= 1;
         } else {
-          console.error("Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
-          reject(new Error("Request Timeout"));
+          console.error("AjaxError: Fail to get: " + url + ", \u7F51\u7EDC\u8D85\u65F6");
+          reject(new Error("AjaxError: Request Timeout"));
         }
       };
 
       request.onabort = function () {
         console.error("Fail to get: " + url + ", \u4F20\u8F93\u4E2D\u65AD");
-        reject(new Error("Request Abort"));
+        reject(new Error("AjaxError: Request Abort"));
       };
 
       request.onerror = function () {
         console.error("Fail to get: " + url + ", 网络错误");
-        reject(new Error("Request Error"));
+        reject(new Error("AjaxError: Request Error"));
       };
 
       request.send(null);

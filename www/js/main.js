@@ -41,6 +41,8 @@
     bookSourceManager: null,
 
     bookShelf: null,
+    utils: utils,
+    uiutils: uiutils,
 
     page: null,
 
@@ -164,7 +166,7 @@
       });
     },
     onUpdated: function onUpdated() {
-      utils.get("data/Update.html").then(function (html) {
+      utils.get("data/UpdateLog.html").then(function (html) {
         return uiutils.showMessageDialog("资源更新说明", html);
       });
     },

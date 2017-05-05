@@ -90,8 +90,11 @@
       this.currentPath = path;
     },
     getFileEntryFromPath: function getFileEntryFromPath(path) {
+      var _this = this;
+
       var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
 
       if (!path) path = this.currentPath;
 
@@ -99,10 +102,14 @@
 
       if (path[0] != "/") path = this.currentPath + path;
 
-      while (path.indexOf("../") >= 0) {
+      while (path.includes("../")) {
         path = path.replace(/([^\/]+\/)?\.\.\//i, "");
       }
       path = path.replace("./", "");
+
+      if (path[path.length - 1] != "/" && !options.create) return this.getFileSystemRootDirectory(isCacheDir).then(function (dirEntry) {
+          return _this.getFileEntry(dirEntry, path, options);
+        });
 
       var dirs = path.match(/[^\/]+\/?/gi);
       if (!dirs) return this.getFileSystemRootDirectory(isCacheDir);
@@ -168,22 +175,22 @@
       return file.replace(/[\\:*?"<>|]/g, "");
     },
     saveTextToFile: function saveTextToFile(file, data) {
-      var _this = this;
+      var _this2 = this;
 
       var isCacheDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       return this.getFileEntryFromPath(file, isCacheDir, { create: true, exclusive: false }).then(function (fe) {
         var dataObj = new Blob([data], { type: 'text/plain' });
-        return _this.writeFile(fe, dataObj);
+        return _this2.writeFile(fe, dataObj);
       });
     },
     loadTextFromFile: function loadTextFromFile(file) {
-      var _this2 = this;
+      var _this3 = this;
 
       var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       return this.getFileEntryFromPath(file, isCacheDir, { create: false, exclusive: false }).then(function (fe) {
-        return _this2.readFile(fe);
+        return _this3.readFile(fe);
       }).catch(function (error) {
         return null;
       });
@@ -198,13 +205,13 @@
       });
     },
     removePath: function removePath(file) {
-      var _this3 = this;
+      var _this4 = this;
 
       var isCacheDir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var recursively = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       return this.getFileEntryFromPath(file, isCacheDir, { create: false, exclusive: false }).then(function (fe) {
-        if (fe.isFile) _this3.removeFile(fe);else _this3.removeDirectory(fe, recursively);
+        if (fe.isFile) _this4.removeFile(fe);else _this4.removeDirectory(fe, recursively);
       });
     }
   };

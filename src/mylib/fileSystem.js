@@ -91,6 +91,7 @@
     // 从路径中获取文件对象或者目录对象
     // 末尾不加 / 的视为是文件，加 / 的视为目录
     getFileEntryFromPath(path, isCacheDir=false, options={}){
+
       if(!path)
         path = this.currentPath;
 
@@ -100,9 +101,13 @@
       if(path[0] != "/")
         path = this.currentPath + path;
 
-      while(path.indexOf("../") >= 0)
+      while(path.includes("../"))
         path = path.replace(/([^\/]+\/)?\.\.\//i, ""); // 清除 dd/../ 或 ../
       path = path.replace("./", ""); // 清除 ./
+
+      if(path[path.length-1] != "/" && !options.create) // 如果不是创建文件则直接获取，不一级目录一级目录的创建
+        return this.getFileSystemRootDirectory(isCacheDir)
+          .then(dirEntry => this.getFileEntry(dirEntry, path, options));
 
       let dirs = path.match(/[^\/]+\/?/gi);
       if(!dirs)

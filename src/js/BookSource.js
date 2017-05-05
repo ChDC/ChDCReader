@@ -176,6 +176,7 @@
       // 获取章节内容
       try{
         const data = yield utils.loadData(dest, true);
+
         // 章节存在
         if(!data)
           return Promise.reject(207);
