@@ -21,9 +21,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             this.__onDevicePauseHandler = function (e) {
                 _this.fireEvent("devicePause", e);
+                _this.fireEvent("pause", e);
             };
             this.__onDeviceResumeHandler = function (e) {
                 _this.fireEvent("deviceResume", e);
+                _this.fireEvent("resume", e);
             };
         }
 
@@ -51,12 +53,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 document.removeEventListener("pause", this.__onDevicePauseHandler, false);
                 document.removeEventListener("resume", this.__onDeviceResumeHandler, false);
             }
-        }, {
-            key: "onDevicePause",
-            value: function onDevicePause() {}
-        }, {
-            key: "onDeviceResume",
-            value: function onDeviceResume() {}
         }]);
 
         return Page;

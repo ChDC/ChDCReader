@@ -1,4 +1,12 @@
-define(["chai", "utils"], function(chai, utils){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["utils_test"] = factory();
+}(["chai", "utils"], function(chai, utils){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -174,4 +182,4 @@ define(["chai", "utils"], function(chai, utils){
       equal('{"def":"test","ddd":"fff","fff":"eee"}', utils.persistent(a));
     });
   });
-});
+}));

@@ -42,7 +42,7 @@
               "type": "string",
               "element": "a",
               "attribute": "href",
-              "extract": "http://book.sfacg.com/Novel/(\\d+)"
+              "extract": "^http://book.sfacg.com/Novel/(\\d+)"
             }
           }
         }
@@ -142,7 +142,7 @@
               "type": "string",
               "element": ".comic-link",
               "attribute": "href",
-              "extract": "http://m.ac.qq.com/comic/index/id/(\\d+)"
+              "extract": "^http://m.ac.qq.com/comic/index/id/(\\d+)"
             }
           }
         }
@@ -235,7 +235,7 @@
               "type": "string",
               "element": "div > div.info > h3 > strong > a",
               "attribute": "href",
-              "extract": "http://www.u17.com/comic/(\\d+).html"
+              "extract": "^http://www.u17.com/comic/(\\d+).html"
             }
           }
         }
@@ -444,7 +444,7 @@
         },
         "response": {
           "type": "array",
-          "element": "data::vs",
+          "element": "data.vs",
           "children": {
             "name": "vN",
             "chapters": {
@@ -519,7 +519,6 @@
               },
               "introduce": "pushName",
               "lastestChapter": "lastChapterName",
-              "detailLink": ".book-mid-info>h4>a",
               "bookid": "id"
             }
         }
@@ -531,18 +530,18 @@
           "timeout": 5
         },
         "response": {
-          "author": "book::author",
+          "author": "book.author",
           "catagory": "caname",
           "complete": {
-            "element": "book::finished",
+            "element": "book.finished",
             "type": "boolean",
             "false": "0",
             "default": false
           },
-          "coverImg": "book::cover",
-          "introduce": "book::intro",
-          "lastestChapter": "book::lastChapterName",
-          "name": "book::title"
+          "coverImg": "book.cover",
+          "introduce": "book.intro",
+          "lastestChapter": "book.lastChapterName",
+          "name": "book.title"
         }
       },
       "catalog": {
@@ -570,8 +569,8 @@
         },
         "response": {
           "contentHTML": "content",
-          "modifyTime": "chapter::updateTime",
-          "title": "chapter::title"
+          "modifyTime": "chapter.updateTime",
+          "title": "chapter.title"
         }
       }
     },

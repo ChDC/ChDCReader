@@ -163,7 +163,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }).then(function (c) {
           return onlyCacheNoLoad ? chapter : c;
         }).catch(function (error) {
-          if (error != 207) throw error;
+          if (error != 207) console.error(error);
 
           return _this5.bookSourceManager.getChapter(_this5.id, Object.assign({}, _this5, chapter)).then(function (chapter) {
             return _this5.__cacheChapter(chapter);

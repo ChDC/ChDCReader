@@ -28,10 +28,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.refreshAllReadingRecord();
     }
 
-    onDeviceResume(){
-      this.onResume();
-    }
-
     removeBook(book){
       uiutils.showMessageDialog("确定", "确定要删除该书？",
         () => {

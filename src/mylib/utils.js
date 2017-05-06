@@ -444,15 +444,15 @@
         e.stopPropagation = () => { e.__stopPropagation = true;};
 
         // __onEvent
-        let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
-        if(__onevent in this){
-          try{
-            this[__onevent](e);
-          }
-          catch(error){
-            console.error(error);
-          }
-        }
+        // let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
+        // if(__onevent in this){
+        //   try{
+        //     this[__onevent](e);
+        //   }
+        //   catch(error){
+        //     console.error(error);
+        //   }
+        // }
 
         // addEventListener
         if(eventName in this.__events){

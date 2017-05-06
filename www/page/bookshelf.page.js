@@ -49,11 +49,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         });else this.refreshAllReadingRecord();
       }
     }, {
-      key: "onDeviceResume",
-      value: function onDeviceResume() {
-        this.onResume();
-      }
-    }, {
       key: "removeBook",
       value: function removeBook(book) {
         var _this4 = this;

@@ -1,14 +1,161 @@
 "use strict";
 
-define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
+;(function (deps, factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["LittleCrawler_test"] = factory();
+})(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
 
   var assert = chai.assert;
   var equal = assert.equal;
+
+  describe('使用说明示例', function () {
+
+    var lc = void 0;
+    var html = void 0;
+    var json = void 0;
+
+    before(function () {
+      lc = new LittleCrawler();
+      return LittleCrawler.ajax("get", "test/LittleCrawler.test.data.html").then(function (data) {
+        return html = data;
+      }).then(function () {
+        return LittleCrawler.ajax("get", "test/LittleCrawler.test.data.json");
+      }).then(function (data) {
+        return json = data;
+      });
+    });
+
+    it('type 属性为 array', function () {
+      var response = {
+        "type": "array",
+        "element": "#books",
+        "children": {
+          "name": ".name",
+          "author": ".author"
+        }
+      };
+      var result = lc.parse(html, "html", response);
+
+      equal(true, result.every(function (e) {
+        return e.author != '李四';
+      }));
+      equal(true, result.some(function (e) {
+        return e.author == '张三';
+      }));
+    });
+
+    it("type 属性为 string：valid 操作", function () {
+      var response = {
+        "type": "string",
+        "element": "#content",
+        "attribute": "data-title",
+        "valid": "{value} == '书籍列表'"
+      };
+      equal('书籍列表', lc.parse(html, "html", response));
+      response = {
+        "type": "string",
+        "element": "#content",
+        "attribute": "data-title",
+        "valid": "{value} != '书籍列表'"
+      };
+      equal(undefined, lc.parse(html, "html", response));
+    });
+
+    it("type 属性为 string：remove 操作", function () {
+      var response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "remove": "\\w+"
+      };
+      equal('这本书很好', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "remove": {
+          "regexp": ".",
+          "options": "i"
+        }
+      };
+      equal('本书很好abcdef1234567', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "remove": ["\\w+", "^."]
+      };
+      equal('本书很好', lc.parse(html, "html", response));
+    });
+
+    it("type 属性为 string：extract 操作", function () {
+      var response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": "\\d+"
+      };
+      equal('1234567', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": "[01267]"
+      };
+      equal('1', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": {
+          "regexp": "[01267]",
+          "options": "gi"
+        }
+      };
+      equal('1267', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": ["\\d+", { "regexp": ".", "options": "i" }]
+      };
+      equal('1', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": ["\\d+", { "regexp": "(.).(.)", "options": "i" }]
+      };
+      equal('13', lc.parse(html, "html", response));
+    });
+
+    it("解析 JOSN 格式的数据", function () {
+      var response = "data.chapterTotalCnt";
+      equal(788, lc.parse(json, "json", response));
+
+      response = "data.vs.cCnt";
+      equal("[13,10,10,10]", JSON.stringify(lc.parse(json, "json", response)));
+
+      response = "data.vs.cs#concat.id";
+      equal("[2333784,2403463,4325986,20322705,1698931,2393792,2393793,2393794,2393796,2393822,2393823,2393859,2393864,2393869]", JSON.stringify(lc.parse(json, "json", response)));
+
+      response = "data.vs#concat.cs.id";
+      equal("[[2333784,2403463,4325986,20322705],[1698931,2393792,2393793,2393794,2393796],[2393822,2393823],[2393859,2393864,2393869]]", JSON.stringify(lc.parse(json, "json", response)));
+
+      response = "data.vs.cs.id";
+      equal("[[2333784,2403463,4325986,20322705],[1698931,2393792,2393793,2393794,2393796],[2393822,2393823],[2393859,2393864,2393869]]", JSON.stringify(lc.parse(json, "json", response)));
+
+      response = "data.vs.1.cs.id";
+      equal("[1698931,2393792,2393793,2393794,2393796]", JSON.stringify(lc.parse(json, "json", response)));
+    });
+  });
 
   describe('LittleCrawler.js 测试', function () {
 
     var lc = void 0;
     var config = void 0;
+    var html = void 0;
 
     before(function () {
       lc = new LittleCrawler();
@@ -224,11 +371,14 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
         }]
       };
       equal(2, LittleCrawler.getDataFromObject(obj, "abc::def::hij::mno"));
+      equal(2, LittleCrawler.getDataFromObject(obj, "abc.def.hij.mno"));
       assert.sameMembers([2, 3], LittleCrawler.getDataFromObject(obj, "def::abc::def"));
+      assert.sameMembers([2, 3], LittleCrawler.getDataFromObject(obj, "def.abc.def"));
       equal('[[1,2,3],[4,5,6]]', JSON.stringify(LittleCrawler.getDataFromObject(obj, "def::abc::ddd")));
-      assert.sameMembers([1, 2, 3, 4, 5, 6], LittleCrawler.getDataFromObject(obj, "fff::abc::ddd#concat::a"));
-      assert.sameMembers([4, 5, 6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a"));
-      assert.sameMembers([5, 6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a#filter(\"$element >=5\")"));
+      equal('[[1,2,3],[4,5,6]]', JSON.stringify(LittleCrawler.getDataFromObject(obj, "def.abc.ddd")));
+      assert.sameMembers([1, 2, 3, 4, 5, 6], LittleCrawler.getDataFromObject(obj, "fff::abc#concat::ddd::a"));
+      assert.sameMembers([4, 5, 6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")#concat::ddd::a"));
+      assert.sameMembers([5, 6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")#concat::ddd::a#filter(\"$element >=5\")"));
     });
 
     it('空 Request 和 空 Response', function () {
@@ -324,20 +474,18 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
         },
         "response": {
           "type": "array",
-          "element": "data::vs#filter(\"$element.vN.indexOf(\\\"相关\\\") < 0\")::cs#concat",
+          "element": "data::vs::cs#filter(\"$parent.vN.indexOf(\\\"相关\\\") < 0\")#concat",
           "children": {
             "name": "cN",
             "linkid": "cU",
-            "vip": "sS",
             "link": {
               "type": "format",
-              "value": "http://read.qidian.com/chapter/{linkid}",
-              "valid": "{vip}==1"
+              "value": "http://read.qidian.com/chapter/{linkid}"
             }
           }
         }
       };
-      return lc.get(config, { keyword: "神墓" }).then(function (r) {
+      return lc.get(config).then(function (r) {
         equal('第一章 远古神墓', r[0].name);
         assert.lengthOf(r[0].link.match(/^http/), 1);
       });
@@ -375,7 +523,7 @@ define(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
         }
       };
       return lc.get(config, { keyword: "神墓" }).catch(function (error) {
-        return equal('Request Timeout', error.message);
+        return equal('AjaxError: Request Timeout', error.message);
       });
     });
 

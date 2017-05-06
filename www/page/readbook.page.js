@@ -84,11 +84,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         app.bookShelf.save();
       }
     }, {
-      key: "onDevicePause",
-      value: function onDevicePause() {
-        this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-      }
-    }, {
       key: "loadView",
       value: function loadView() {
         var _this4 = this;

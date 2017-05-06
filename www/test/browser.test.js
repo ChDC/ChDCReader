@@ -1,6 +1,12 @@
-'use strict';
+"use strict";
 
-define(["chai"], function (chai) {
+;(function (deps, factory) {
+  "use strict";
+
+  if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
+    return require(e);
+  }));else window["browser_test"] = factory();
+})(["chai"], function (chai) {
 
   var assert = chai.assert;
   var equal = assert.equal;

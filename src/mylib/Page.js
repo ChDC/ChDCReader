@@ -15,56 +15,14 @@
 
       this.__onDevicePauseHandler = (e) => {
         this.fireEvent("devicePause", e);
+        this.fireEvent("pause", e);
       };
       this.__onDeviceResumeHandler = (e) => {
         this.fireEvent("deviceResume", e);
+        this.fireEvent("resume", e);
       };
-      // this.__onBackButtonHandler = (e) => {
-      //   this.fireEvent("backbutton", e);
-      //   if(!e.__stopPropagation)
-      //     window.history.back();
-      // };
+
     }
-
-    // addEventListener(eventName, handler){
-    //   if(!eventName || !handler) return;
-    //   if(!(eventName in this.__events))
-    //     this.__events[eventName] = [];
-    //   this.__events[eventName].push(handler);
-    // }
-
-    // fireEvent(eventName, e={}){
-    //   if(!eventName) return;
-
-    //   if(!("currentTarget" in e)) e.currentTarget = this;
-    //   if(!("target" in e)) e.target = this;
-
-    //   // __onEvent
-    //   let __onevent = `__on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
-    //   if(__onevent in this)
-    //     this[__onevent](e);
-
-    //   // addEventListener
-    //   if(eventName in this.__events){
-    //     this.__events[eventName].forEach(eh => {
-    //       try{ eh(e) } catch(error){ console.error(error); }
-    //     });
-    //   }
-
-    //   // onEvent
-    //   let onevent = `on${eventName[0].toUpperCase()}${eventName.substring(1)}`;
-    //   if(onevent in this)
-    //     this[onevent](e);
-    // }
-
-    // removeEventListener(eventName, handler){
-    //   if(!eventName || !handler) return;
-    //   if(eventName in this.__events){
-    //     let i = this.__events[eventName].findIndex(m => m == handler);
-    //     if(i >= 0)
-    //       this.__events[eventName].splice(i, 1);
-    //   }
-    // }
 
     // 关闭当前页
     close(params){
@@ -98,13 +56,13 @@
     // }
 
 
-    onDevicePause(){
+    // onDevicePause(){
       // console.error(this.name, "DevicePause");
-    }
+    // }
 
-    onDeviceResume(){
+    // onDeviceResume(){
       // console.error(this.name, "DeviceResume");
-    }
+    // }
     /*
     onLoad(params){
 

@@ -1,0 +1,182 @@
+﻿{
+  "code" : 0,
+  "data" : {
+    "chapterTotalCnt" : 788,
+    "firstChapterJumpurl" : "//read.qidian.com/chapter/DDWg34LzrfY1/sIQsyE1CauQ1",
+    "hasRead" : 0,
+    "loginStatus" : 0,
+    "vs" : [
+      {
+        "cCnt" : 13,
+        "cs" : [
+          {
+            "cN" : "上架公告",
+            "cU" : "DDWg34LzrfY1/LHJPPrERyD01",
+            "cnt" : 241,
+            "id" : 2333784,
+            "sS" : 1,
+            "uT" : "2006-12-02 09:12:00",
+            "uuid" : 769
+          },
+          {
+            "cN" : "外篇——战天时代",
+            "cU" : "DDWg34LzrfY1/yVXDlr1Zigo1",
+            "cnt" : 3237,
+            "id" : 2403463,
+            "sS" : 1,
+            "uT" : "2006-12-20 15:04:00",
+            "uuid" : 766
+          },
+          {
+            "cN" : "神墓之谜",
+            "cU" : "DDWg34LzrfY1/o9YL4SGjsc01",
+            "cnt" : 1237,
+            "id" : 4325986,
+            "sS" : 1,
+            "uT" : "2007-12-25 16:10:00",
+            "uuid" : 770
+          },
+          {
+            "cN" : "援手",
+            "cU" : "DDWg34LzrfY1/oNLSpgOuqKIex0RJOkJclQ2",
+            "cnt" : 262,
+            "id" : 20322705,
+            "sS" : 1,
+            "uT" : "2008-05-14 21:04:31",
+            "uuid" : 767
+          }
+        ],
+        "hS" : false,
+        "isD" : 0,
+        "vId" : 408457,
+        "vN" : "相关",
+        "vS" : 0,
+        "wC" : 7238
+      },
+      {
+        "cCnt" : 10,
+        "cs" : [
+          {
+            "cN" : "第一章 远古神墓",
+            "cU" : "DDWg34LzrfY1/sIQsyE1CauQ1",
+            "cnt" : 7198,
+            "id" : 1698931,
+            "sS" : 1,
+            "uT" : "2006-05-25 10:31:00",
+            "uuid" : 1
+          },
+          {
+            "cN" : "第二章 惊艳",
+            "cU" : "DDWg34LzrfY1/i0EMyS2IRXM1",
+            "cnt" : 6955,
+            "id" : 2393792,
+            "sS" : 1,
+            "uT" : "2006-12-18 00:55:00",
+            "uuid" : 2
+          },
+          {
+            "cN" : "第三章 小恶魔公主",
+            "cU" : "DDWg34LzrfY1/Ea2F1Z4UswU1",
+            "cnt" : 7162,
+            "id" : 2393793,
+            "sS" : 1,
+            "uT" : "2006-12-18 00:56:00",
+            "uuid" : 3
+          },
+          {
+            "cN" : "第四章 后羿屠龙",
+            "cU" : "DDWg34LzrfY1/-R0cgFMzgQA1",
+            "cnt" : 7475,
+            "id" : 2393794,
+            "sS" : 1,
+            "uT" : "2006-12-18 00:57:00",
+            "uuid" : 4
+          },
+          {
+            "cN" : "第五章 暗战",
+            "cU" : "DDWg34LzrfY1/ytvWX7GfFe81",
+            "cnt" : 7667,
+            "id" : 2393796,
+            "sS" : 1,
+            "uT" : "2006-12-18 00:57:00",
+            "uuid" : 5
+          }
+        ],
+        "hS" : false,
+        "isD" : 0,
+        "vId" : 253255,
+        "vN" : "第一卷 走出神墓",
+        "vS" : 0,
+        "wC" : 75187
+      },
+      {
+        "cCnt" : 10,
+        "cs" : [
+          {
+            "cN" : "第一章 初临帝都",
+            "cU" : "DDWg34LzrfY1/ajWaUDmwsjQ1",
+            "cnt" : 6974,
+            "id" : 2393822,
+            "sS" : 1,
+            "uT" : "2006-12-18 01:07:00",
+            "uuid" : 11
+          },
+          {
+            "cN" : "第二章 奇士",
+            "cU" : "DDWg34LzrfY1/F8fTADbINgc1",
+            "cnt" : 7269,
+            "id" : 2393823,
+            "sS" : 1,
+            "uT" : "2006-12-18 01:08:00",
+            "uuid" : 12
+          }
+        ],
+        "hS" : false,
+        "isD" : 0,
+        "vId" : 258078,
+        "vN" : "第二卷 龙腾帝都",
+        "vS" : 0,
+        "wC" : 75922
+      },
+      {
+        "cCnt" : 10,
+        "cs" : [
+          {
+            "cN" : "第一章 落难公主",
+            "cU" : "DDWg34LzrfY1/JymyNNRDcKs1",
+            "cnt" : 6553,
+            "id" : 2393859,
+            "sS" : 1,
+            "uT" : "2006-12-18 01:18:00",
+            "uuid" : 21
+          },
+          {
+            "cN" : "第二章 西出楚境",
+            "cU" : "DDWg34LzrfY1/N_Ak8_fhHYo1",
+            "cnt" : 6823,
+            "id" : 2393864,
+            "sS" : 1,
+            "uT" : "2006-12-18 01:19:00",
+            "uuid" : 22
+          },
+          {
+            "cN" : "第三章 生翼虎王",
+            "cU" : "DDWg34LzrfY1/_IJKb4iyPZ01",
+            "cnt" : 6559,
+            "id" : 2393869,
+            "sS" : 1,
+            "uT" : "2006-12-18 01:19:00",
+            "uuid" : 23
+          }
+        ],
+        "hS" : false,
+        "isD" : 0,
+        "vId" : 263682,
+        "vN" : "第三卷 罪恶之城",
+        "vS" : 0,
+        "wC" : 70099
+      }
+    ]
+  },
+  "msg" : "suc"
+}
