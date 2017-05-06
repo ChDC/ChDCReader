@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["Page"] = factory();
+    window["Page"] = factory(utils);
 }(['utils'], function(utils){
   class Page{
 
