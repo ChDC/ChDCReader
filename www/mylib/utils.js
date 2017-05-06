@@ -354,15 +354,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           e.__stopPropagation = true;
         };
 
-        var __onevent = "__on" + eventName[0].toUpperCase() + eventName.substring(1);
-        if (__onevent in this) {
-          try {
-            this[__onevent](e);
-          } catch (error) {
-            console.error(error);
-          }
-        }
-
         if (eventName in this.__events) {
           (function () {
             var removeList = [];

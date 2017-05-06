@@ -1,4 +1,12 @@
-define(["chai", "utils", "BookSourceManager", "CustomBookSource"], function(chai, utils, BookSourceManager, customBookSource){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["BookSourceManager_test"] = factory();
+}(["chai", "utils", "BookSourceManager", "CustomBookSource"], function(chai, utils, BookSourceManager, customBookSource){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -141,4 +149,4 @@ define(["chai", "utils", "BookSourceManager", "CustomBookSource"], function(chai
     });
   }
 
-});
+}));

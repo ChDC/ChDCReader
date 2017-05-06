@@ -1,4 +1,12 @@
-define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["LittleCrawler_test"] = factory();
+}(["chai", "LittleCrawler"], function(chai, LittleCrawler){
 
   /************************************
     测试用例规范：
@@ -10,10 +18,159 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
   let assert = chai.assert;
   let equal = assert.equal;
 
+  describe('使用说明示例', () => {
+
+    let lc;
+    let html;
+    let json;
+
+    before(() => {
+      lc = new LittleCrawler();
+      return LittleCrawler.ajax("get", "test/LittleCrawler.test.data.html")
+        .then(data => html = data)
+        .then(() => LittleCrawler.ajax("get", "test/LittleCrawler.test.data.json"))
+        .then(data => json = data);
+    });
+
+    it('type 属性为 array', ()=>{
+      let response = {
+        "type": "array",
+        "element": "#books",
+        "children": {
+          "name": ".name",
+          "author": ".author"
+        }
+      }
+      let result = lc.parse(html, "html", response);
+      /*
+      [
+        {
+          "name": "从我的全世界走过",
+          "author": "张三"
+        }
+      ]
+      */
+      equal(true, result.every(e => e.author != '李四'));
+      equal(true, result.some(e => e.author == '张三'));
+    });
+
+    it("type 属性为 string：valid 操作", ()=>{
+      let response = {
+        "type": "string",
+        "element": "#content",
+        "attribute": "data-title",
+        "valid": "{value} == '书籍列表'"
+      }
+      equal('书籍列表', lc.parse(html, "html", response));
+      response = {
+        "type": "string",
+        "element": "#content",
+        "attribute": "data-title",
+        "valid": "{value} != '书籍列表'"
+      }
+      equal(undefined, lc.parse(html, "html", response));
+    });
+
+    it("type 属性为 string：remove 操作", ()=>{
+      let response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "remove": "\\w+"
+      }
+      equal('这本书很好', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "remove": {
+          "regexp": ".",
+          "options": "i"
+        }
+      }
+      equal('本书很好abcdef1234567', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "remove": ["\\w+", "^."]
+      }
+      equal('本书很好', lc.parse(html, "html", response));
+    });
+
+    it("type 属性为 string：extract 操作", ()=>{
+      let response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": "\\d+"
+      }
+      equal('1234567', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": "[01267]"
+      }
+      equal('1', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": {
+          "regexp": "[01267]",
+          "options": "gi"
+        }
+      }
+      equal('1267', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": ["\\d+", {"regexp": ".", "options": "i"}]
+      }
+      equal('1', lc.parse(html, "html", response));
+
+      response = {
+        "type": "string",
+        "element": "#books > li:nth-child(1) > p.desc",
+        "extract": ["\\d+", {"regexp": "(.).(.)", "options": "i"}]
+      }
+      equal('13', lc.parse(html, "html", response));
+
+    });
+
+    it("解析 JOSN 格式的数据", () => {
+      let response = "data.chapterTotalCnt";
+      equal(788, lc.parse(json, "json", response));
+
+      // 如果中间有属性是数组，自动遍历数组中的每个元素
+      response = "data.vs.cCnt";
+      equal("[13,10,10,10]", JSON.stringify(lc.parse(json, "json", response)));
+
+      // 在数组中使用 concat 操作把二维数组连接成一维数组
+      response = "data.vs.cs#concat.id";
+      equal("[2333784,2403463,4325986,20322705,1698931,2393792,2393793,2393794,2393796,2393822,2393823,2393859,2393864,2393869]", JSON.stringify(lc.parse(json, "json", response)));
+
+      // concat 操作要在子数组中使用，不是在父亲数组中
+      response = "data.vs#concat.cs.id";
+      equal("[[2333784,2403463,4325986,20322705],[1698931,2393792,2393793,2393794,2393796],[2393822,2393823],[2393859,2393864,2393869]]", JSON.stringify(lc.parse(json, "json", response)));
+
+      response = "data.vs.cs.id";
+      equal("[[2333784,2403463,4325986,20322705],[1698931,2393792,2393793,2393794,2393796],[2393822,2393823],[2393859,2393864,2393869]]", JSON.stringify(lc.parse(json, "json", response)));
+
+      // 可一对数组使用索引来获取指定索引的元素
+      response = "data.vs.1.cs.id"; // 只获取第一卷的数据
+      equal("[1698931,2393792,2393793,2393794,2393796]", JSON.stringify(lc.parse(json, "json", response)));
+
+    });
+
+  });
+
+
   describe('LittleCrawler.js 测试', () => {
 
     let lc;
     let config;
+    let html;
 
     before(() => {
       lc = new LittleCrawler();
@@ -269,11 +426,14 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         ]
       };
       equal(2, LittleCrawler.getDataFromObject(obj, "abc::def::hij::mno"));
+      equal(2, LittleCrawler.getDataFromObject(obj, "abc.def.hij.mno"));
       assert.sameMembers([2,3], LittleCrawler.getDataFromObject(obj, "def::abc::def"));
+      assert.sameMembers([2,3], LittleCrawler.getDataFromObject(obj, "def.abc.def"));
       equal('[[1,2,3],[4,5,6]]', JSON.stringify(LittleCrawler.getDataFromObject(obj, "def::abc::ddd")));
-      assert.sameMembers([1,2,3,4,5,6], LittleCrawler.getDataFromObject(obj, "fff::abc::ddd#concat::a"));
-      assert.sameMembers([4,5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a"));
-      assert.sameMembers([5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")::ddd#concat::a#filter(\"$element >=5\")"));
+      equal('[[1,2,3],[4,5,6]]', JSON.stringify(LittleCrawler.getDataFromObject(obj, "def.abc.ddd")));
+      assert.sameMembers([1,2,3,4,5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#concat::ddd::a"));
+      assert.sameMembers([4,5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")#concat::ddd::a"));
+      assert.sameMembers([5,6], LittleCrawler.getDataFromObject(obj, "fff::abc#filter(\"$element.def==3\")#concat::ddd::a#filter(\"$element >=5\")"));
     });
 
     it('空 Request 和 空 Response', ()=>{
@@ -368,20 +528,18 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         },
         "response": {
             "type": "array",
-            "element": "data::vs#filter(\"$element.vN.indexOf(\\\"相关\\\") < 0\")::cs#concat",
+            "element": "data::vs::cs#filter(\"$parent.vN.indexOf(\\\"相关\\\") < 0\")#concat",
             "children": {
                 "name": "cN",
                 "linkid": "cU",
-                "vip": "sS",
                 "link": {
                     "type": "format",
-                    "value": "http://read.qidian.com/chapter/{linkid}",
-                    "valid": "{vip}==1"
+                    "value": "http://read.qidian.com/chapter/{linkid}"
                 }
             }
         }
       }
-      return lc.get(config, {keyword: "神墓"})
+      return lc.get(config)
         .then(r => {
           equal('第一章 远古神墓', r[0].name);
           assert.lengthOf(r[0].link.match(/^http/), 1);
@@ -420,7 +578,7 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
         }
       };
       return lc.get(config, {keyword: "神墓"})
-        .catch(error => equal('Request Timeout', error.message));
+        .catch(error => equal('AjaxError: Request Timeout', error.message));
     });
 
     it('string 的 Request', ()=>{
@@ -520,5 +678,5 @@ define(["chai", "LittleCrawler"], function(chai, LittleCrawler){
     });
 
   });
-});
+}));
 

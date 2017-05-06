@@ -1,4 +1,12 @@
-define(["chai"], function(chai){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["mocha._test"] = factory();
+}(["chai"], function(chai){
 
   /************************************
     测试用例规范：
@@ -33,5 +41,5 @@ define(["chai"], function(chai){
     });
 
   });
-});
+}));
 

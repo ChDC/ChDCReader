@@ -1,4 +1,12 @@
-define(["chai", "Chapter"], function(chai, Chapter){
+;(function(deps, factory) {
+  "use strict";
+  if (typeof define === "function" && define.amd)
+    define(deps, factory);
+  else if (typeof module != "undefined" && typeof module.exports != "undefined")
+    module.exports = factory.apply(undefined, deps.map(e => require(e)));
+  else
+    window["Chapter_test"] = factory();
+}(["chai", "Chapter"], function(chai, Chapter){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -53,5 +61,5 @@ define(["chai", "Chapter"], function(chai, Chapter){
 
 
   });
-});
+}));
 

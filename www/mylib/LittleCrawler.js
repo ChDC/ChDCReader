@@ -19,10 +19,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       _classCallCheck(this, LittleCrawler);
 
-      this.ajax = ajax || {
+      var a = {
         "default": LittleCrawler.ajax,
         "cordova": LittleCrawler.cordovaAjax
       };
+      if (!ajax) this.ajax = a;else if (LittleCrawler.type(ajax) == "object") this.ajax = Object.assign(a, ajax);else this.ajax = ajax;
 
       this.insecurityAttributeList = ['src'];
       this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
@@ -188,7 +189,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return _this4.__handleResponse(m, response.children, keyName, globalDict, dict);
               });
               if (response.valideach) result = result.filter(function (m) {
-                  var gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, LittleCrawler.type(m) == "object" ? m : {});
+                  var gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, LittleCrawler.type(m) == "object" ? m : { value: m });
                   var validCode = '"use strict"\n' + LittleCrawler.format(response.valideach, gatherDict, true);
                   return eval(validCode);
                 });
@@ -218,15 +219,49 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               if (result == undefined) return result;
 
               if (response.remove) {
-                var regex = new RegExp(response.remove, 'gi');
-                result = result.replace(regex, '');
+                switch (LittleCrawler.type(response.remove)) {
+                  case "array":
+                    result = response.remove.reduce(function (r, e) {
+                      return LittleCrawler.type(e) == "object" ? r.replace(new RegExp(e.regexp, e.options), '') : r.replace(new RegExp(e, "gi"), '');
+                    }, result);
+                    break;
+
+                  case "object":
+                    result = result.replace(new RegExp(response.remove.regexp, response.remove.options), '');
+                    break;
+
+                  case "string":
+                    result = result.replace(new RegExp(response.remove, 'gi'), '');
+                    break;
+                }
               }
 
               if (response.extract) {
-                var _regex = new RegExp(response.extract, 'i');
-                var matcher = result.match(_regex);
-                if (!matcher) return undefined;
-                result = matcher[1];
+                (function () {
+                  var doExtract = function doExtract(regex, str) {
+                    var matcher = str.match(regex);
+                    if (!matcher) return undefined;
+                    if (regex.global) return matcher.join('');else {
+                      var r = matcher.slice(1).join('');
+                      return r ? r : matcher[0];
+                    }
+                  };
+                  switch (LittleCrawler.type(response.extract)) {
+                    case "array":
+                      result = response.extract.reduce(function (r, e) {
+                        return LittleCrawler.type(e) == "object" ? doExtract(new RegExp(e.regexp, e.options), r) : doExtract(new RegExp(e, "i"), r);
+                      }, result);
+                      break;
+
+                    case "object":
+                      result = doExtract(new RegExp(response.extract.regexp, response.extract.options), result);
+                      break;
+
+                    case "string":
+                      result = doExtract(new RegExp(response.extract, 'i'), result);
+                      break;
+                  }
+                })();
               }
             }
             break;
@@ -255,7 +290,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
 
         if ("valid" in response) {
-          var _gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, dict);
+          var _gatherDict = Object.assign({}, globalDict, LittleCrawler.type(data) == "object" ? data : {}, dict, { value: result });
           var validCode = '"use strict"\n' + LittleCrawler.format(response.valid, _gatherDict, true);
           if (!eval(validCode)) return undefined;
         }
@@ -511,93 +546,77 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       request.send(null);
     });
-  }, LittleCrawler.getDataFromObject = function (obj, key) {
-
-    function operatorFilter(element, args) {
+  }, LittleCrawler.getDataFromObject = function (json, key) {
+    function operatorFilter(element, parent, args) {
       var codeStart = '"use strict"\n';
-      var env = "var $element=" + JSON.stringify(element) + ";\n";
+      var env = "var $element=" + JSON.stringify(element) + ";\nvar $parent=" + JSON.stringify(parent) + ";\n";
       var code = codeStart + env + args[0];
       return eval(code);
     }
 
-    function splitKeyAndOperatorAndArgs(operatorAndArgs) {
-      if (!operatorAndArgs) return [];
-      var i = operatorAndArgs.indexOf('#');
-      if (i < 0) return [operatorAndArgs];
-      var key = operatorAndArgs.substring(0, i);
-      operatorAndArgs = operatorAndArgs.substring(i + 1);
+    function splitKeyAndOperatorAndArgs(str) {
+      if (!str) return [];
+      var i = str.indexOf('#');
+      if (i < 0) return [str];
+      var key = str.substring(0, i);
+      str = str.substring(i + 1);
+      var oas = str.split("#").map(function (d) {
+        i = d.indexOf('(');
+        if (i < 0) return [d, undefined];
+        var operator = d.substring(0, i);
+        var args = d.substring(i + 1, d.length - 1);
+        if (!args) args = [];else args = eval("[" + args + "]");
+        return [operator, args];
+      });
 
-      i = operatorAndArgs.indexOf('(');
-      if (i < 0) return [key, operatorAndArgs, undefined];
-      var opertaor = operatorAndArgs.substring(0, i);
-      var args = operatorAndArgs.substring(i);
-      if (args.length > 2) args = args.substring(1, args.length - 1).split('#').map(function (e) {
-        return JSON.parse(e);
-      });else args = [];
-      return [key, opertaor, args];
+      return [key, oas];
     }
 
-    if (!obj || !key) return obj;
-    var keys = key.split('::');
-    var result = obj;
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
+    function getValue(obj, keys, i) {
+      while (i < keys.length && (LittleCrawler.type(obj) == "object" || LittleCrawler.type(obj) == "array" && keys[i][0].match(/^[0-9]+$/))) {
+        obj = obj[keys[i++][0]];
+      }if (i >= keys.length) return obj;
+      if (LittleCrawler.type(obj) != "array") return undefined;
 
-    try {
-      var _loop = function _loop() {
-        var key = _step2.value;
+      var result = obj;
 
-        if (!result) return {
-            v: undefined
-          };
+      var _keys$i = _slicedToArray(keys[i], 2),
+          key = _keys$i[0],
+          oas = _keys$i[1];
 
-        var _splitKeyAndOperatorA = splitKeyAndOperatorAndArgs(key),
-            _splitKeyAndOperatorA2 = _slicedToArray(_splitKeyAndOperatorA, 3),
-            k = _splitKeyAndOperatorA2[0],
-            operator = _splitKeyAndOperatorA2[1],
-            args = _splitKeyAndOperatorA2[2];
-
-        if (LittleCrawler.type(result) == 'array') {
-          if (operator == 'concat') result = result.reduce(function (s, m) {
-            return s.concat(m[k]);
-          }, []);else if (operator == "filter") result = result.map(function (m) {
-            return m[k];
-          }).filter(function (e) {
-            return operatorFilter(e, args);
-          });else result = result.map(function (m) {
-            return m[k];
+      if (!oas || oas.length <= 0) return result.map(function (m) {
+        return getValue(m, keys, i);
+      });else {
+        (function () {
+          var oa = oas.find(function (e) {
+            return e[0] == "filter";
           });
-        } else {
-          if (operator == "filter") {
-            result = result[k];
-            if (LittleCrawler.type(result) == 'array') result = result.filter(function (e) {
-              return operatorFilter(e, args);
-            });
-          } else result = result[k];
-        }
-      };
+          if (oa) result = result.filter(function (e) {
+            return operatorFilter(e[key], e, oa[1]);
+          });
 
-      for (var _iterator2 = keys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var _ret = _loop();
+          result = result.map(function (m) {
+            return getValue(m, keys, i);
+          });
 
-        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+          oa = oas.find(function (e) {
+            return e[0] == "concat";
+          });
+          if (oa) result = result.reduce(function (s, m) {
+            return s.concat(m);
+          }, []);
+        })();
       }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
+
+      return result;
     }
 
+    if (!json || !key) return json;
+    var keys = key.split(key.includes("::") ? '::' : '.');
+    keys = keys.map(function (k) {
+      return splitKeyAndOperatorAndArgs(k);
+    });
+    var result = getValue(json, keys, 0);
     return result;
   };
 

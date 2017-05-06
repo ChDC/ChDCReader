@@ -43,10 +43,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (this.__theme != theme) {
           this.__theme = theme;
 
-          var curpage = this.getPage();
-          if (!curpage) return;
+          var curPage = this.getPage();
+          if (!curPage) return;
 
-          var urls = this.getURLs(curpage.name);
+          var urls = this.getURLs(curPage.name);
           var cssthemeelemnt = this.__container.find(".page-content-container style.csstheme");
           return this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
         }
@@ -118,8 +118,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             });
           });
 
-          var curpage = _this.getPage();
-          if (curpage && !dontShowTargetPage) curpage.jsPage.fireEvent('pause');
+          var curPage = _this.getPage();
+          if (curPage && !dontShowTargetPage) {
+            curPage.jsPage.__onPause();
+            curPage.jsPage.fireEvent('pause');
+          }
 
           _this.__pageStack.unshift({
             name: name,
@@ -138,6 +141,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var page = _this.__newPageFactory(Page, name);
               _this.getPage().jsPage = page;
               page.fireEvent('load', { params: params });
+              page.__onResume();
               page.fireEvent('resume', { params: params });
               resolve(page);
             });
@@ -173,6 +177,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (!cp) return Promise.reject(new Error("empty page stack"));
         if (!name) name = cp.name;else if (!this.getPage(name)) return Promise.reject(new Error("don't exist this page"));
 
+        this.getPage().jsPage.__onPause();
         this.getPage().jsPage.fireEvent('pause', { params: params });
         this.__container.children().detach();
 
@@ -190,7 +195,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (cssthemeelemnt.data('url') != urls.cssthemeurl) this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
 
         this.__container.append(curPage.content);
-        if (!dontShowTargetPage) curPage.jsPage.fireEvent('resume');
+        if (!dontShowTargetPage) {
+          curPage.jsPage.__onResume();
+          curPage.jsPage.fireEvent('resume');
+        }
         return Promise.resolve(curPage.jsPage);
       }
     }, {

@@ -89,10 +89,16 @@
     //    * timeout
     constructor(ajax){
 
-      this.ajax = ajax || {
+      let a = {
         "default": LittleCrawler.ajax,
         "cordova": LittleCrawler.cordovaAjax,
       };
+      if(!ajax)
+        this.ajax = a;
+      else if(LittleCrawler.type(ajax) == "object")
+        this.ajax = Object.assign(a, ajax);
+      else
+        this.ajax = ajax;
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.insecurityAttributeList = ['src'];
@@ -273,7 +279,7 @@
             result = result.filter(m => {
               let gatherDict = Object.assign({}, globalDict,
                   LittleCrawler.type(data) == "object" ? data : {},
-                  LittleCrawler.type(m) == "object" ? m : {});
+                  LittleCrawler.type(m) == "object" ? m : {value: m});
               const validCode = '"use strict"\n' + LittleCrawler.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
@@ -313,16 +319,54 @@
           if(result == undefined) return result;
           // [operator] 指定 remove 操作来删除一些值
           if(response.remove){
-            let regex = new RegExp(response.remove, 'gi');
-            result = result.replace(regex, '');
+            switch(LittleCrawler.type(response.remove)){
+              case "array":
+                result = response.remove.reduce((r, e) =>
+                  LittleCrawler.type(e) == "object" ?
+                  r.replace(new RegExp(e.regexp, e.options), '') :
+                  r.replace(new RegExp(e, "gi"), '')
+                , result);
+                break;
+
+              case "object":
+                result = result.replace(new RegExp(response.remove.regexp, response.remove.options), '');
+                break;
+
+              case "string":
+                result = result.replace(new RegExp(response.remove, 'gi'), '');
+                break;
+            }
           }
 
           // [operator] 使用 extract 操作提取最终结果
           if(response.extract){
-            let regex = new RegExp(response.extract, 'i'); // 只匹配地址一个结果
-            let matcher = result.match(regex);
-            if(!matcher) return undefined;
-            result = matcher[1];
+            let doExtract = (regex, str) => {
+              let matcher = str.match(regex);
+              if(!matcher) return undefined;
+              if(regex.global)
+                return matcher.join('');
+              else {
+                let r = matcher.slice(1).join(''); // 如果正则表达式中使用了分组，则把结果的分组合并为结果
+                return r ? r : matcher[0];
+              }
+            }
+            switch(LittleCrawler.type(response.extract)){
+              case "array":
+                result = response.extract.reduce((r, e) =>
+                  LittleCrawler.type(e) == "object" ?
+                  doExtract(new RegExp(e.regexp, e.options), r) :
+                  doExtract(new RegExp(e, "i"), r)
+                , result);
+                break;
+
+              case "object":
+                result = doExtract(new RegExp(response.extract.regexp, response.extract.options), result);
+                break;
+
+              case "string":
+                result = doExtract(new RegExp(response.extract, 'i'), result);
+                break;
+            }
           }
         }
         break;
@@ -361,7 +405,8 @@
       if("valid" in response){
         // 有验证的类型
         let gatherDict = Object.assign({}, globalDict,
-            LittleCrawler.type(data) == "object" ? data : {}, dict);
+            LittleCrawler.type(data) == "object" ? data : {}, dict,
+            {value: result});
         const validCode = '"use strict"\n' + LittleCrawler.format(response.valid, gatherDict, true);
         if(!eval(validCode))
           return undefined; // 验证失败，返回空值
@@ -606,65 +651,106 @@
   },
 
   // 从 Object 中获取数据
-  // eg: get "abc.def" from "{abc: {def: 1}}" using "abc::def"
-  LittleCrawler.getDataFromObject = function(obj, key){
+  // eg: get "abc.def" from "{abc: {def: 1}}" using "abc::def" or "abc.def"
+  LittleCrawler.getDataFromObject = function(json, key){
 
-    function operatorFilter(element, args){
+    // filter 操作的实现函数
+    function operatorFilter(element, parent, args){
       let codeStart = '"use strict"\n';
-      let env = `var $element=${JSON.stringify(element)};\n`;
+      let env = `var $element=${JSON.stringify(element)};\nvar $parent=${JSON.stringify(parent)};\n`;
       let code = codeStart + env + args[0];
       return eval(code);
     }
 
-    function splitKeyAndOperatorAndArgs(operatorAndArgs){
-      if(!operatorAndArgs) return [];
-      let i = operatorAndArgs.indexOf('#');
-      if(i < 0)
-        return [operatorAndArgs];
-      let key = operatorAndArgs.substring(0, i);
-      operatorAndArgs = operatorAndArgs.substring(i+1);
+    // 分割键、操作符和操作参数
+    function splitKeyAndOperatorAndArgs(str){
+      if(!str) return [];
+      let i = str.indexOf('#');
+      if(i < 0) return [str];
+      let key = str.substring(0, i);
+      str = str.substring(i+1);
+      let oas = str.split("#").map(d => {
+        i = d.indexOf('(');
+        if(i < 0)  return [d, undefined];
+        let operator = d.substring(0, i);
+        let args = d.substring(i+1, d.length - 1);
+        if(!args)
+          args = [];
+        else
+          args = eval(`[${args}]`);
+        return [operator, args];
+      });
 
-      i = operatorAndArgs.indexOf('(');
-      if(i < 0)  return [key, operatorAndArgs, undefined];
-      let opertaor = operatorAndArgs.substring(0, i);
-      let args = operatorAndArgs.substring(i);
-      if(args.length > 2)
-        args = args.substring(1, args.length - 1).split('#').map(e => JSON.parse(e));
-      else
-        args = [];
-      return [key, opertaor, args];
+      return [key, oas];
     }
 
-    if(!obj || !key) return obj;
-    const keys = key.split('::');
-    let result = obj;
-    for(let key of keys){
-      if(!result) return undefined;
+    function getValue(obj, keys, i){
+      while(i < keys.length &&
+        (LittleCrawler.type(obj) == "object" ||
+         LittleCrawler.type(obj) == "array" && keys[i][0].match(/^[0-9]+$/)))
+        obj = obj[keys[i++][0]];
 
-      let [k, operator, args] = splitKeyAndOperatorAndArgs(key);
+      if(i >= keys.length)
+        return obj;
+      if(LittleCrawler.type(obj) != "array")
+        return undefined;
 
-      if(LittleCrawler.type(result) == 'array'){
-        // 多个值的情况
-        if(operator == 'concat')
-          result = result.reduce((s, m) => s.concat(m[k]), []);
-        else if(operator == "filter")
-          result = result.map(m => m[k])
-            .filter(e => operatorFilter(e, args));
-        else
-          result = result.map(m => m[k]);
-      }
+      let result = obj;
+      let [key, oas] = keys[i];
+      if(!oas || oas.length <= 0)
+        return result.map(m => getValue(m, keys, i));
       else{
-        // 单个值的情况
-        if(operator == "filter"){
-          result = result[k];
-          if(LittleCrawler.type(result) == 'array')
-            result = result.filter(e => operatorFilter(e, args));
-        }
-        else
-          result = result[k];
+        // filter
+        let oa = oas.find(e => e[0] == "filter");
+        if(oa)
+          result = result.filter(e => operatorFilter(e[key], e, oa[1]));
+
+        // 上面的是 Before 操作符
+        // 下面的是 After 操作符
+        result = result.map(m => getValue(m, keys, i));
+
+        oa = oas.find(e => e[0] == "concat");
+        if(oa)
+          result = result.reduce((s, m) => s.concat(m), []);
+
+
+        // for(let [operator, args] of oas){
+        //   switch(operator){
+        //     case "concat":
+        //       result = result.map(m => getValue(m, keys, i));
+        //       break;
+
+        //     case "filter":
+        //       result = result.filter(e => operatorFilter(e[key], args))
+        //         .map(m => getValue(m, keys, i));
+        //       break;
+        //   }
+        // }
+
       }
+
+      return result;
+      //       // 单个值的情况
+      //       if(operator == "filter"){  // [operator]
+      //         result = result[key];
+      //         if(LittleCrawler.type(result) == 'array')  // [operator]
+      //           result = result.filter(e => operatorFilter(e, args));
+
+      //     case "array":
+      //       // 多个值的情况
+      //       if(operator == 'concat') // [operator]
+      //         result = result.reduce((s, m) => s.concat(m[key]), []);
+      //       else if(operator == "filter"){ // [operator]
+      //         result = result.map(m => getValue(m, keys.slice(i)))
+      //           .filter(e => operatorFilter(e, args));
+      //       }
     }
-    return result
+
+    if(!json || !key) return json;
+    let keys = key.split(key.includes("::") ? '::' : '.');
+    keys = keys.map(k => splitKeyAndOperatorAndArgs(k));
+    let result = getValue(json, keys, 0);
+    return result;
   }
 
 

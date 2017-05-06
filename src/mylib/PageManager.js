@@ -40,11 +40,11 @@
       if(this.__theme != theme){
         this.__theme = theme;
 
-        let curpage = this.getPage();
-        if(!curpage) return;
+        let curPage = this.getPage();
+        if(!curPage) return;
 
         // 刷新当前页面的 CSS
-        const urls = this.getURLs(curpage.name);
+        const urls = this.getURLs(curPage.name);
         const cssthemeelemnt = this.__container.find(".page-content-container style.csstheme");
         return this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
       }
@@ -121,9 +121,11 @@
           });
 
           // 触发之前页面的暂停事件
-          let curpage = this.getPage();
-          if(curpage && !dontShowTargetPage)
-            curpage.jsPage.fireEvent('pause');
+          let curPage = this.getPage();
+          if(curPage && !dontShowTargetPage){
+            curPage.jsPage.__onPause();  // 用于管理 onDevicePause 事件
+            curPage.jsPage.fireEvent('pause');
+          }
 
           // 将当前的页面存储起来
           this.__pageStack.unshift({
@@ -146,6 +148,7 @@
               let page = this.__newPageFactory(Page, name);
               this.getPage().jsPage = page;
               page.fireEvent('load', {params: params});
+              page.__onResume(); // 用于管理 onDeviceResume 事件
               page.fireEvent('resume', {params: params});
               resolve(page);
             });
@@ -179,6 +182,7 @@
 
       // 关闭当前页面
       // 触发当前页面的暂停事件
+      this.getPage().jsPage.__onPause(); // 用于管理 onDevicePause 事件
       this.getPage().jsPage.fireEvent('pause', {params: params}); // 关闭当前页面要触发 pause 事件
       this.__container.children().detach();
 
@@ -200,7 +204,10 @@
         this.__changeThemeContent(cssthemeelemnt, urls.cssthemeurl);
 
       this.__container.append(curPage.content);
-      if(!dontShowTargetPage) curPage.jsPage.fireEvent('resume');
+      if(!dontShowTargetPage){
+        curPage.jsPage.__onResume(); // 用于管理 onDeviceResume 事件
+        curPage.jsPage.fireEvent('resume');
+      }
       return Promise.resolve(curPage.jsPage);
     }
 

@@ -73,11 +73,6 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       app.bookShelf.save();
     }
 
-    onDevicePause(){
-      // 保存阅读进度
-      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
-    }
-
     loadView(){
       // 弹出工具栏
       $("#chapterContainer").on("click", event => {
