@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "5970ef92fba524780c70536b9061a160"
+    "hash": "eaecd9fc550f4be33d7f47ae2dbdd156"
   },
   {
     "file": "data/errorCode.json",
@@ -293,15 +293,15 @@
   },
   {
     "file": "mylib/LittleCrawler.js",
-    "hash": "8640ee710a50919670813d1855b4c399"
+    "hash": "0849d5b84de14f87d51316a1f307d854"
   },
   {
     "file": "mylib/Page.js",
-    "hash": "a399e166d89e481eb15f68b812028cda"
+    "hash": "51e12cefdb388f48fef2ecce6a07df92"
   },
   {
     "file": "mylib/PageManager.js",
-    "hash": "54882e6b1731311453f5314a1e2d2990"
+    "hash": "76cd80336555452cc7e46087e57b7c52"
   },
   {
     "file": "mylib/translate.js",
@@ -313,7 +313,7 @@
   },
   {
     "file": "mylib/utils.js",
-    "hash": "3deec98efe8eee209ba25eb1ea26ec64"
+    "hash": "ce5c9dcf52cf221cb5776a012399007e"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -341,7 +341,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "685f9c31e630511f8313cba6980bca4e"
+    "hash": "1e716343969393eacb7b01b68541e679"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -373,7 +373,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "32a0b71824a5091776cec0a17e077039"
+    "hash": "5b6edc0c7dc8d26dc87678bbf2db6d7a"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -425,30 +425,38 @@
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "bddf2c9b8fad91531b90adead71d5d76"
+    "hash": "fd4a8453b22e83abea479bb5176bd745"
   },
   {
     "file": "test/browser.test.js",
-    "hash": "ba52e4510b1bbb236982c6761a53332b"
+    "hash": "0adad1b2c53002b890027f237371c350"
   },
   {
     "file": "test/Chapter.test.js",
-    "hash": "54d4fca3115654888a11009c823a9040"
+    "hash": "47c8098e065900a961d5229068afd825"
+  },
+  {
+    "file": "test/LittleCrawler.test.data.html",
+    "hash": "fbe004d3f764d955036974eba0c98c63"
+  },
+  {
+    "file": "test/LittleCrawler.test.data.json",
+    "hash": "eda5cd04ac84976ceabe807363a4c497"
   },
   {
     "file": "test/LittleCrawler.test.js",
-    "hash": "ba374c3bdccb3ef6cb1dbe73f1528075"
+    "hash": "4e4b44d7da5d1d0974ea972b9b279a99"
   },
   {
     "file": "test/mocha.test.js",
-    "hash": "c3eb3bc5dc4599e5ca785b73b004aa50"
+    "hash": "ca29763be58f81ca61c9a992017f48c2"
   },
   {
     "file": "test/translate.test.js",
-    "hash": "e8fec25b01bc54f9b900aa0dc63d2a17"
+    "hash": "4298fe087db87813e4d287f045b089ce"
   },
   {
     "file": "test/utils.test.js",
-    "hash": "0fed6af29baaba64bc38186fd0baf066"
+    "hash": "ef80242e50ef1c62aff010b104a5ce76"
   }
 ]
