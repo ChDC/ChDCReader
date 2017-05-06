@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["LittleCrawler_test"] = factory();
+    window["LittleCrawler_test"] = factory(chai, LittleCrawler);
 }(["chai", "LittleCrawler"], function(chai, LittleCrawler){
 
   /************************************
