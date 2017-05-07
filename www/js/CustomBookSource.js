@@ -277,10 +277,12 @@
           var data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
           if (!data) return null;
           data = atob(data[1]);
+          if (!data) return null;
           data = data.split("$qingtiandy$");
           if (filterBookId) data = data.filter(function (e) {
             return e.includes(dict.bookid);
           });
+          if (data.length <= 0) return null;
           return data.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
@@ -337,6 +339,7 @@
           data = data.files.map(function (e) {
             return "http://pic.fxdm.cc" + data.path + e;
           });
+          if (data.length <= 0) return null;
           return data.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
@@ -394,6 +397,7 @@
           data = data.fs.map(function (e) {
             return "http://tupianku.333dm.com" + e;
           });
+          if (data.length <= 0) return null;
           return data.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');

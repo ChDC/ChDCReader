@@ -415,7 +415,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                           chapterB = _context3.sent;
 
                         case 17:
-                          if (Chapter.equalTitle(chapterA, chapterB)) {
+                          if (Chapter.equalTitle(chapterA, chapterB, true)) {
                             _context3.next = 19;
                             break;
                           }
@@ -642,7 +642,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return this.getCatalog(options).then(function (catalog) {
           if (index != undefined) {
             var tc = catalog[index];
-            if (Chapter.equalTitle(tc, title)) return index;
+            if (Chapter.equalTitle(tc, title, true)) return index;
 
             var ir = catalog.slice(index + 1).findIndex(function (c) {
               return !!Chapter.equalTitle(c, title);

@@ -35,7 +35,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }();
 
   Chapter.equalTitle = function (ca, cb) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var loose = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 
     if (ca == cb) return 4;
@@ -46,11 +46,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
     if (cs[0] == cs[1]) return 4;
 
-    var _options$removeNumber = options.removeNumbers,
-        removeNumbers = _options$removeNumber === undefined ? false : _options$removeNumber;
-
     cs = cs.map(function (s) {
-      return Chapter.stripString(s, options);
+      return Chapter.stripString(s, loose);
     });
     if (cs[0] == cs[1]) return 3;
 
@@ -58,17 +55,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     if (cs[0] == cs[1]) return 2;
 
     cs = cs.map(function (e) {
-      return e.replace(/^.*?[第总]?(\d+)[弹话章节卷集]?/i, '$1');
+      return e.replace(/[第总]?0*(\d+)[弹话章节卷集]?/gi, '$1');
     });
     if (cs[0] == cs[1]) return 1;
+
+    if (!loose) return 0;
+
+    if (cs[0].includes(cs[1]) || cs[1].includes(cs[0])) return -1;
+
+    cs = cs.map(function (c) {
+      return c.replace(/\d/g, '');
+    });
+    if (cs[0].includes(cs[1]) || cs[1].includes(cs[0])) return -2;
 
     return 0;
   };
 
   Chapter.stripString = function (str) {
-    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref$removeNumbers = _ref.removeNumbers,
-        removeNumbers = _ref$removeNumbers === undefined ? false : _ref$removeNumbers;
+    var removeNumbers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
     if (!str) return str;
 

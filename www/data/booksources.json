@@ -155,7 +155,7 @@
       "id": "omanhua",
       "type": "comics",
       "name": "哦漫画",
-      "contentSourceWeight": 100,
+      "contentSourceWeight": 103,
       "mainSourceWeight": -10,
       "officialurls": {
         "host": "http://www.57mh.com",
@@ -238,7 +238,7 @@
       "id": "2manhua",
       "type": "comics",
       "name": "爱漫画网",
-      "contentSourceWeight": 100,
+      "contentSourceWeight": 101,
       "mainSourceWeight": -10,
       "officialurls": {
         "host": "http://www.2manhua.com/",
