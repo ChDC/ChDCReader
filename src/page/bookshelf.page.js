@@ -15,6 +15,14 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.addBook(e.bookShelfItem);
         this.refreshBooksOrder(this.bookShelf)
       });
+
+      this.container = $('.container');
+      this.scrollTop = app.settings.settings.scrollTop.bookshelf || 0; // 记住上次的滚动位置
+    }
+
+    onPause(){
+      app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
+      app.settings.save();
     }
 
     onResume(){
@@ -22,10 +30,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.bookShelf.load(app.bookSourceManager)
           .then(() => {
             this.loaded = true;
-            this.loadBooks(this.bookShelf)
+            this.loadBooks(this.bookShelf);
+            this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
           });
-      else
+      else{
         this.refreshAllReadingRecord();
+        this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
+      }
     }
 
     removeBook(book){

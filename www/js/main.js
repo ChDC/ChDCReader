@@ -20,6 +20,9 @@
           nighttheme: "night1",
           daytheme: "",
           night: false
+        },
+        scrollTop: {
+          "bookshelf": 0
         }
       },
 
