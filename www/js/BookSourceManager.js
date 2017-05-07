@@ -154,7 +154,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         return this.searchBook(bsid, bookName).then(function (books) {
           var book = books.find(function (e) {
-            return e.name == bookName && e.author == bookAuthor;
+            return e.name == bookName && (!e.author || !bookAuthor || e.author == bookAuthor);
           });
           return book ? book : Promise.reject(404);
         });
@@ -279,7 +279,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
 
-        return this.__lc.get(bs.search, { keyword: keyword }).then(getBooks);
+        var dict = void 0;
+        if (utils.type(keyword) == "object") {
+          dict = keyword;
+          keyword = dict.keyword;
+        } else dict = { keyword: keyword };
+
+        return this.__lc.get(bs.search, dict).then(getBooks);
 
         function getBooks(data) {
 
@@ -327,7 +333,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             for (var _iterator6 = keywords[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
               var kw = _step6.value;
 
-              if (kw.includes(name) || kw.includes(author) || name.includes(kw) || author.includes(kw)) return true;
+              if (kw.includes(name) || name.includes(kw) || author && kw.includes(author) || author.includes(kw)) return true;
             }
           } catch (err) {
             _didIteratorError6 = true;

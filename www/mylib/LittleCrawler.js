@@ -193,6 +193,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   var validCode = '"use strict"\n' + LittleCrawler.format(response.valideach, gatherDict, true);
                   return eval(validCode);
                 });
+              if (response.reverse) result = result.reverse();
             }
             break;
           case "object":
@@ -219,6 +220,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               if (result == undefined) return result;
 
               if (response.remove) {
+                result = result.toString();
                 switch (LittleCrawler.type(response.remove)) {
                   case "array":
                     result = response.remove.reduce(function (r, e) {
@@ -238,6 +240,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               if (response.extract) {
                 (function () {
+                  result = result.toString();
                   var doExtract = function doExtract(regex, str) {
                     var matcher = str.match(regex);
                     if (!matcher) return undefined;
@@ -263,6 +266,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   }
                 })();
               }
+              if (result == undefined) return result;
+              if (typeof result == "string") result = result.trim();
             }
             break;
           case "boolean":
@@ -352,8 +357,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           }
 
-          if (!matched) result = element.textContent.trim();
-          return result;
+          if (!matched) result = element.textContent;
+          return result.trim();
         } else {
           return element;
         }

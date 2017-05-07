@@ -283,6 +283,8 @@
               const validCode = '"use strict"\n' + LittleCrawler.format(response.valideach, gatherDict, true);
               return eval(validCode);
             });
+          if(response.reverse)
+            result = result.reverse();
         }
         break;
         case "object": {
@@ -319,6 +321,7 @@
           if(result == undefined) return result;
           // [operator] 指定 remove 操作来删除一些值
           if(response.remove){
+            result = result.toString();
             switch(LittleCrawler.type(response.remove)){
               case "array":
                 result = response.remove.reduce((r, e) =>
@@ -340,6 +343,7 @@
 
           // [operator] 使用 extract 操作提取最终结果
           if(response.extract){
+            result = result.toString();
             let doExtract = (regex, str) => {
               let matcher = str.match(regex);
               if(!matcher) return undefined;
@@ -368,6 +372,9 @@
                 break;
             }
           }
+          if(result == undefined) return result;
+          if(typeof(result) == "string")
+            result = result.trim();
         }
         break;
         case "boolean": {
@@ -444,8 +451,8 @@
           }
         }
         if(!matched)
-          result = element.textContent.trim();
-        return result;
+          result = element.textContent;
+        return result.trim();
       }
       else{
         // json

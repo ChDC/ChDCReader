@@ -6,7 +6,7 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["BookSourceManager_test"] = factory(chai, utils, BookSourceManager, customBookSource);
-}(["chai", "utils", "BookSourceManager", "CustomBookSource"], function(chai, utils, BookSourceManager, customBookSource){
+}(["chai", "utils", "BookSourceManager", "CustomBookSource", "Chapter"], function(chai, utils, BookSourceManager, customBookSource, Chapter){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -33,10 +33,13 @@
 
 
   // 小说书源测试
-  let bsids = ["qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = [ "dangniao", "chuiyao", "omanhua", "2manhua",
+    "733dm", "57mh",
+    "qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw",
+    "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
 
   for(let bsid of bsids){
-  // for(let bsid of ['comico']){
+  // for(let bsid of ["57mh"]){
 
     function equalBook(bsid, book, b){
       assert.isObject(b);
@@ -124,10 +127,10 @@
           return bsm.getBookCatalog(bsid, book)
             .then(catalog => {
               assert.isArray(catalog);
-              equal(true, catalog.length > 0);
+              equal(true, catalog.length > 0, `${book.name}`);
               book.chapters.forEach(chapter => {
                 equal(true, catalog.findIndex(e =>
-                  e.title == chapter.title && e.link == chapter.link && e.cid == chapter.cid) >= 0);
+                  Chapter.equalTitle(e, chapter) && e.link == chapter.link && e.cid == chapter.cid) >= 0, `${book.name} ${chapter.title}`);
               });
             })
         }));
