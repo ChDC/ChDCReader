@@ -1,5 +1,15 @@
 ## 更新说明
 
+## 2017-05-07
+
+* 添加漫画源：
+
+  * [吹妖动漫](http://www.chuiyao.com/)
+
+  * [当鸟漫画](http://www.dangniao.com)
+  * [爱漫画网](http://www.2manhua.com/)
+  * [哦漫画](http://www.omanhua.com/comic/)
+
 ## 2017-05-04
 
 * 未添加到书架的书籍在退出阅读页面的时候清空缓存章节

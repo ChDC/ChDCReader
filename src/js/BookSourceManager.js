@@ -99,7 +99,9 @@
       // 通过当前书名和作者名搜索添加源
       return this.searchBook(bsid, bookName)
         .then(books => {
-          const book = books.find(e => e.name == bookName && e.author == bookAuthor );
+          const book = books.find(e =>
+            e.name == bookName &&
+            (!e.author || !bookAuthor || e.author == bookAuthor ));
           return book ? book : Promise.reject(404);
         });
     }
@@ -185,7 +187,15 @@
       const bs = this.__sources[bsid];
       if(!bs) return Promise.reject("Illegal booksource!");
 
-      return this.__lc.get(bs.search, {keyword: keyword})
+      let dict;
+      if(utils.type(keyword) == "object"){
+        dict = keyword;
+        keyword = dict.keyword;
+      }
+      else
+        dict = {keyword: keyword};
+
+      return this.__lc.get(bs.search, dict)
         .then(getBooks);
 
       function getBooks(data){
@@ -207,8 +217,8 @@
         let author = book.author.toLowerCase();
         let keywords = keyword.toLowerCase().split(/ +/);
         for(let kw of keywords){
-          if(kw.includes(name) || kw.includes(author) ||
-             name.includes(kw) || author.includes(kw))
+          if(kw.includes(name) || name.includes(kw) ||
+            (author && kw.includes(author) || author.includes(kw) ))
             return true;
         }
         return false;

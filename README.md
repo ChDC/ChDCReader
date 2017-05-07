@@ -30,6 +30,11 @@
 * [comico](http://www.comico.com.tw/)
 * [腾讯动漫](http://ac.qq.com/)
 * [有妖气](http://www.u17.com)
+* [吹妖动漫](http://www.chuiyao.com/)
+
+* [当鸟漫画](http://www.dangniao.com)
+* [爱漫画网](http://www.2manhua.com/)
+* [哦漫画](http://www.omanhua.com/comic/)
 
 ## 声明
 
@@ -73,6 +78,7 @@
 | ![Screenshot_2017-05-01-12-02-52-691_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-52-691_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-46-37-751_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-46-37-751_com.chdc.reader.png) |
 | ![Screenshot_2017-05-01-12-03-02-646_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-03-02-646_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-47-02-873_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-47-02-873_com.chdc.reader.png) |
 | ![Screenshot_2017-05-01-12-02-56-677_com.chdc.reader](Screenshot/Screenshot_2017-05-01-12-02-56-677_com.chdc.reader.png) | ![Screenshot_2017-05-01-20-46-49-562_com.chdc.reader](Screenshot/Screenshot_2017-05-01-20-46-49-562_com.chdc.reader.png) |
+| ![Screenshot_2017-05-07-13-19-01-527_com.chdc.reader](Screenshot/Screenshot_2017-05-07-13-19-01-527_com.chdc.reader.png) | ![Screenshot_2017-05-07-13-19-01-527_com.chdc.reader](Screenshot/Screenshot_2017-05-07-13-12-41-997_com.chdc.reader.png) |
 
 ### 漫画阅读页面
 
@@ -107,5 +113,5 @@
 
 ### BUG
 
-* 腾讯动漫无作者信息
+* ​
 

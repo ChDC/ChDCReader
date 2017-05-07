@@ -247,6 +247,176 @@
           return args;
         });
       }
+    },
+
+    "chuiyao": {
+      getChapter: function getChapter(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var filterBookId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
+
+        var link = this.getChapterLink(bsid, dict);
+        var bsm = this.__sources[bsid];
+
+        return utils.get(link).then(function (html) {
+          var content = getImgs(html);
+
+          var c = new Chapter();
+          c.content = content;
+          if (!c.content) return Promise.reject(206);
+
+          c.cid = dict.cid;
+          c.title = dict.title;
+          if (!c.cid && link) c.link = link;
+          return c;
+        });
+
+        function getImgs(html) {
+          var data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
+          if (!data) return null;
+          data = atob(data[1]);
+          data = data.split("$qingtiandy$");
+          if (filterBookId) data = data.filter(function (e) {
+            return e.includes(dict.bookid);
+          });
+          return data.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
+        }
+      }
+    },
+
+    "dangniao": {
+      getChapter: function getChapter(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        return customBookSource["chuiyao"].getChapter.apply(this, ["dangniao", dict, false]);
+      }
+    },
+
+    "omanhua": {
+      beforeSearchBook: function beforeSearchBook() {
+        var keyword = arguments[1];
+        var letter = translate.getFirstPY(keyword);
+        arguments[1] = { keyword: keyword, litter: letter };
+        return Promise.resolve(arguments);
+      },
+      getChapter: function getChapter(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
+
+        var link = this.getChapterLink(bsid, dict);
+        var bsm = this.__sources[bsid];
+
+        return utils.get(link).then(function (html) {
+          var content = getImgs(html);
+
+          var c = new Chapter();
+          c.content = content;
+          if (!c.content) return Promise.reject(206);
+
+          c.cid = dict.cid;
+          c.title = dict.title;
+          if (!c.cid && link) c.link = link;
+          return c;
+        });
+
+        function getImgs(html) {
+          var data = html.match(/return p;}\((.*?)\)\)\s*<\/script>/i);
+          if (!data) return null;
+          var obj = eval("[" + data[1] + "]");
+          data = parse.apply(null, obj);
+          data = data.match(/({.*})\|\|{}/);
+          if (!data) return null;
+          data = JSON.parse(data[1]);
+
+          data = data.files.map(function (e) {
+            return "http://pic.fxdm.cc" + data.path + e;
+          });
+          return data.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
+        }
+
+        function parse(p, a, c, k, _e, d) {
+          _e = function e(c) {
+            return (c < a ? "" : _e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36));
+          };if (!''.replace(/^/, String)) {
+            while (c--) {
+              d[_e(c)] = k[c] || _e(c);
+            }k = [function (e) {
+              return d[e];
+            }];_e = function _e() {
+              return '\\w+';
+            };c = 1;
+          };while (c--) {
+            if (k[c]) p = p.replace(new RegExp('\\b' + _e(c) + '\\b', 'g'), k[c]);
+          }return p;
+        }
+      }
+    },
+
+    "2manhua": {
+      getChapter: function getChapter(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        utils.log("BookSourceManager: Load Chpater content from " + bsid);
+
+        var link = this.getChapterLink(bsid, dict);
+        var bsm = this.__sources[bsid];
+
+        return utils.get(link).then(function (html) {
+          var content = getImgs(html);
+
+          var c = new Chapter();
+          c.content = content;
+          if (!c.content) return Promise.reject(206);
+
+          c.cid = dict.cid;
+          c.title = dict.title;
+          if (!c.cid && link) c.link = link;
+          return c;
+        });
+
+        function getImgs(html) {
+          var data = html.match(/return p}\((.*?)\)\)/i);
+          if (!data) return null;
+          var obj = eval("[" + data[1] + "]");
+          data = parse.apply(null, obj);
+          data = data.match(/{.*}/);
+          if (!data) return null;
+          data = JSON.parse(data[0].replace(/'/g, '"'));
+
+          data = data.fs.map(function (e) {
+            return "http://tupianku.333dm.com" + e;
+          });
+          return data.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
+        }
+
+        function parse(p, a, c, k, e, d) {
+          e = function e(c) {
+            return c.toString(36);
+          };if (!''.replace(/^/, String)) {
+            while (c--) {
+              d[e(c)] = k[c] || e(c);
+            }k = [function (e) {
+              return d[e];
+            }];e = function e() {
+              return '\\w+';
+            };c = 1;
+          };while (c--) {
+            if (k[c]) {
+              p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
+            }
+          }return p;
+        }
+      }
     }
   };
 

@@ -150,9 +150,9 @@
 
         function decryptByBaseCode(text, base) {
             if (!text) return text;
-            var arrStr = [],
+            let arrStr = [],
             arrText = text.split('\\');
-            for (var i = 1,
+            for (let i = 1,
             len = arrText.length; i < len; i++) {
                 arrStr.push(String.fromCharCode(parseInt(arrText[i], base)));
             }
@@ -230,6 +230,131 @@
             return args;
           });
       },
+    },
+
+    "chuiyao": {
+      getChapter(bsid, dict={}, filterBookId=true){
+
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+
+        let link = this.getChapterLink(bsid, dict);
+        const bsm = this.__sources[bsid];
+
+        return utils.get(link)
+          .then(html => {
+            let content = getImgs(html);
+
+            const c = new Chapter();
+            c.content = content;
+            if(!c.content) return Promise.reject(206);
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
+            return c;
+          });
+
+        function getImgs(html) {
+            let data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
+            if(!data)
+              return null;
+            data = atob(data[1]);
+            data = data.split("$qingtiandy$");
+            if(filterBookId)
+              data = data.filter(e => e.includes(dict.bookid));
+            return data.map(e => `<img src="${e}">`).join('\n');
+        }
+      }
+    },
+
+    "dangniao": {
+      getChapter(bsid, dict={}){
+        return customBookSource["chuiyao"].getChapter.apply(this, ["dangniao", dict, false]);
+      }
+    },
+
+    "omanhua": {
+      beforeSearchBook(){
+        let keyword = arguments[1];
+        let letter = translate.getFirstPY(keyword);
+        arguments[1] = {keyword: keyword, litter: letter};
+        return Promise.resolve(arguments);
+      },
+
+      getChapter(bsid, dict={}){
+
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+
+        let link = this.getChapterLink(bsid, dict);
+        const bsm = this.__sources[bsid];
+
+        return utils.get(link)
+          .then(html => {
+            let content = getImgs(html);
+
+            const c = new Chapter();
+            c.content = content;
+            if(!c.content) return Promise.reject(206);
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
+            return c;
+          });
+
+        function getImgs(html) {
+            let data = html.match(/return p;}\((.*?)\)\)\s*<\/script>/i);
+            if(!data) return null;
+            let obj = eval(`[${data[1]}]`);
+            data = parse.apply(null, obj);
+            data = data.match(/({.*})\|\|{}/);
+            if(!data) return null;
+            data = JSON.parse(data[1]);
+
+            data = data.files.map(e => `http://pic.fxdm.cc${data.path}${e}`);
+            return data.map(e => `<img src="${e}">`).join('\n');
+        }
+
+        function parse(p,a,c,k,e,d){e=function(c){return(c<a?"":e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)d[e(c)]=k[c]||e(c);k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1;};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p;}
+      }
+    },
+
+    "2manhua": {
+      getChapter(bsid, dict={}){
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+
+        let link = this.getChapterLink(bsid, dict);
+        const bsm = this.__sources[bsid];
+
+        return utils.get(link)
+          .then(html => {
+            let content = getImgs(html);
+
+            const c = new Chapter();
+            c.content = content;
+            if(!c.content) return Promise.reject(206);
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
+            return c;
+          });
+
+        function getImgs(html) {
+            let data = html.match(/return p}\((.*?)\)\)/i);
+            if(!data) return null;
+            let obj = eval(`[${data[1]}]`);
+            data = parse.apply(null, obj);
+            data = data.match(/{.*}/);
+            if(!data) return null;
+            data = JSON.parse(data[0].replace(/'/g, '"'));
+
+            data = data.fs.map(e => `http://tupianku.333dm.com${e}`);
+            return data.map(e => `<img src="${e}">`).join('\n');
+        }
+
+        function parse(p,a,c,k,e,d){e=function(c){return c.toString(36)};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}
+      }
     }
   };
 

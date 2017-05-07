@@ -1,6 +1,484 @@
 {
-  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac",  "biquge", "biquge.tw", "daizhuzai", "biqugezw", "biqulou",  "dingdian"],
+  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac",  "biquge", "biquge.tw", "daizhuzai", "biqugezw", "biqulou",  "dingdian", "dangniao", "chuiyao", "omanhua", "2manhua"],
   "sources": {
+    "dangniao": {
+      "id": "dangniao",
+      "type": "comics",
+      "name": "当鸟漫画",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": -10,
+      "officialurls": {
+        "host": "http://www.57mh.com",
+        "bookdetail": "",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "url": "http://www.dangniao.com/search/{keyword}/"
+        },
+        "response": {
+          "type": "array",
+          "element": "div.dn_list div.dn_list_mh > ul",
+          "children": {
+            "name": "li.title > a",
+            "author": "",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "li:nth-child(1) > a > img",
+            "introduce": "li.info",
+            "bookid": {
+              "type": "string",
+              "element": "li.title > a",
+              "attribute": "href",
+              "extract": "^http://www.dangniao.com/mh/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://www.dangniao.com/mh/{bookid}/",
+        "response": {
+          "author": "",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#intro_l > div.dn_info_cover > a > img",
+          "introduce": "#comic-description",
+          "lastestChapter": "body > div.dn_content > div:nth-child(2) > div.dn_zhangjie > div.dn_zhangjie_top > p:nth-child(2) > a",
+          "name": "#intro_l > div.dn_title > h1"
+        }
+      },
+      "catalog": {
+        "request": "http://www.dangniao.com/mh/{bookid}/",
+        "response":{
+          "type": "array",
+          "element": "div.dn_plist > ul > li",
+          "reverse": true,
+          "children": {
+            "title": "a > p",
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#header > div > div > div.topnav_l > h1"
+        }
+      }
+    },
+    "chuiyao": {
+      "id": "chuiyao",
+      "type": "comics",
+      "name": "吹妖动漫",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": -10,
+      "officialurls": {
+        "host": "http://www.57mh.com",
+        "bookdetail": "",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "url": "http://www.chuiyao.com/search/{keyword}/"
+        },
+        "response": {
+          "type": "array",
+          "element": "div.cy_list > div.cy_list_r > div > ul",
+          "children": {
+            "name": "li.title > a",
+            "author": "",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "li:nth-child(1) > a > img",
+            "introduce": "li.info",
+            "bookid": {
+              "type": "string",
+              "element": "li.title > a",
+              "attribute": "href",
+              "extract": "^http://www.chuiyao.com/manhua/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://www.chuiyao.com/manhua/{bookid}/",
+        "response": {
+          "author": "",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#intro_l > div.cy_info_cover > a > img",
+          "introduce": "#comic-description",
+          "lastestChapter": "body > div.cy_content > div:nth-child(2) > div.cy_zhangjie > div.cy_zhangjie_top > p:nth-child(2) > a",
+          "name": "#intro_l > div.cy_title > h1"
+        }
+      },
+      "catalog": {
+        "request": "http://www.chuiyao.com/manhua/{bookid}/",
+        "response":{
+          "type": "array",
+          "element": "#play_0 > ul > li",
+          "reverse": true,
+          "children": {
+            "title": "a > p",
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#header > div > div > div.topnav_l > h1"
+        }
+      }
+    },
+    "omanhua": {
+      "id": "omanhua",
+      "type": "comics",
+      "name": "哦漫画",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": -10,
+      "officialurls": {
+        "host": "http://www.57mh.com",
+        "bookdetail": "",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "url": "http://www.omanhua.com/list/{litter}.htm"
+        },
+        "response": {
+          "type": "array",
+          "element": "ul.cartoon_list > li",
+          "children": {
+            "name": "p.font_a_1 > a",
+            "author": "",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "a > img",
+            "introduce": "",
+            "bookid": {
+              "type": "string",
+              "element": "p.font_a_1 > a",
+              "attribute": "href",
+              "extract": "^http://www.omanhua.com/comic/(\\d+)/"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://www.omanhua.com/comic/{bookid}",
+        "response": {
+          "author": "",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "default": "false"
+          },
+          "coverImg": "#scantop > div.right_main > div.main01 > div.main01-left.fleft > img",
+          "introduce": "#scantop > div.right_main > div.main01 > div.main01-right.fright > div.main01_content > div > p:nth-child(2) > span",
+          "lastestChapter": "#scantop > div.right_main > div.main01 > div.main01-title > h2 > a",
+          "name": {
+            "type": "string",
+            "element": "#scantop > div.right_main > div.main01 > div.main01-right.fright > div.main01_content > h2",
+            "extract": "^(.*)漫画简介"
+          }
+        }
+      },
+      "catalog": {
+        "request": "http://www.omanhua.com/comic/{bookid}",
+        "response":{
+          "type": "array",
+          "reverse": true,
+          "element": "div.subBookList > ul > li",
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
+    "2manhua": {
+      "id": "2manhua",
+      "type": "comics",
+      "name": "爱漫画网",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": -10,
+      "officialurls": {
+        "host": "http://www.2manhua.com/",
+        "bookdetail": "",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "url": "http://www.2manhua.com/search/q_{keyword}",
+          "timeout": 10
+        },
+        "response": {
+          "type": "array",
+          "element": "body > div:nth-child(4) > div.book-result",
+          "children": {
+            "name": "div.book-detail > dl > dt > a",
+            "author": "div.book-detail > dl > dd:nth-child(4) > span > a",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "div.book-cover > a > img",
+            "introduce": "div.book-detail > dl > dd.intro > span",
+            "bookid": {
+              "type": "string",
+              "element": "div.book-detail > dl > dt > a",
+              "attribute": "href",
+              "extract": "^http://www.2manhua.com/comic/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://www.2manhua.com/comic/{bookid}",
+        "response": {
+          "author": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li:nth-child(2) > span:nth-child(2) > a",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "element": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > span:nth-child(2)",
+            "true": "连载",
+            "false": "完",
+            "default": false
+          },
+          "coverImg": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-cover.fl > p > img",
+          "introduce": "#intro-cut > p",
+          "lastestChapter": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > a",
+          "name": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > div.book-title > h1"
+        }
+      },
+      "catalog": {
+        "request": "http://www.2manhua.com/comic/{bookid}",
+        "response":{
+          "type": "array",
+          "element": "#chpater-list-1 > ul > li",
+          "reverse": true,
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
+    "733dm": {
+      "id": "733dm",
+      "type": "comics",
+      "name": "733 动漫",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": -10,
+      "officialurls": {
+        "host": "http://www.57mh.com",
+        "bookdetail": "",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "url": "http://www.57mh.com/search/q_{keyword}"
+        },
+        "response": {
+          "type": "array",
+          "element": "body > div:nth-child(4) > div.book-result",
+          "children": {
+            "name": "div.book-detail > dl > dt > a",
+            "author": "div.book-detail > dl > dd:nth-child(4) > span > a",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "div.book-cover > a > img",
+            "introduce": "div.book-detail > dl > dd.intro > span",
+            "bookid": {
+              "type": "string",
+              "element": "div.book-detail > dl > dt > a",
+              "attribute": "href",
+              "extract": "^http://www.57mh.com/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://www.57mh.com/{bookid}",
+        "response": {
+          "author": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li:nth-child(2) > span:nth-child(2) > a",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "element": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > span:nth-child(2)",
+            "true": "连载",
+            "false": "完",
+            "default": false
+          },
+          "coverImg": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-cover.fl > p > img",
+          "introduce": "#intro-cut > p",
+          "lastestChapter": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > a",
+          "name": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > div.book-title > h1"
+        }
+      },
+      "catalog": {
+        "request": "http://www.57mh.com/{bookid}",
+        "response":{
+          "type": "array",
+          "element": "div.catalog-list > ul > li",
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
+    "57mh": {
+      "id": "57mh",
+      "type": "comics",
+      "name": "57漫画网",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": -10,
+      "officialurls": {
+        "host": "http://www.57mh.com",
+        "bookdetail": "",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "url": "http://www.57mh.com/search/q_{keyword}"
+        },
+        "response": {
+          "type": "array",
+          "element": "body > div:nth-child(4) > div.book-result",
+          "children": {
+            "name": "div.book-detail > dl > dt > a",
+            "author": "div.book-detail > dl > dd:nth-child(4) > span > a",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "div.book-cover > a > img",
+            "introduce": "div.book-detail > dl > dd.intro > span",
+            "bookid": {
+              "type": "string",
+              "element": "div.book-detail > dl > dt > a",
+              "attribute": "href",
+              "extract": "^http://www.57mh.com/(\\d+)"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": "http://www.57mh.com/{bookid}",
+        "response": {
+          "author": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li:nth-child(2) > span:nth-child(2) > a",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "element": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > span:nth-child(2)",
+            "true": "连载",
+            "false": "完",
+            "default": false
+          },
+          "coverImg": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-cover.fl > p > img",
+          "introduce": "#intro-cut > p",
+          "lastestChapter": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > a",
+          "name": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > div.book-title > h1"
+        }
+      },
+      "catalog": {
+        "request": "http://www.57mh.com/{bookid}",
+        "response":{
+          "type": "array",
+          "element": "div.catalog-list > ul > li",
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "#ChapterBody > div",
+          "title": "#ReadBg > div.list_menu_title"
+        }
+      }
+    },
     "sfnovel": {
       "id": "sfnovel",
       "type": "novel",
@@ -272,7 +750,8 @@
             "title": {
               "type": "string",
               "element": "a",
-              "attribute": "title"
+              "attribute": "title",
+              "remove": "\\d\\d\\d\\d-\\d\\d-\\d\\d"
             },
             "vip": {
               "type": "string",

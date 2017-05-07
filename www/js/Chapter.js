@@ -57,11 +57,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     cs = cs.map(utils.lowerCaseNumbers);
     if (cs[0] == cs[1]) return 2;
 
-    if (!removeNumbers) return 0;
-
-    var numPattern = /第[\d零一二两三四五六七八九十百千万亿]+[章节卷]/g;
-    cs = cs.map(function (c) {
-      return c.replace(numPattern, '');
+    cs = cs.map(function (e) {
+      return e.replace(/^.*?[第总]?(\d+)[弹话章节卷集]?/i, '$1');
     });
     if (cs[0] == cs[1]) return 1;
 

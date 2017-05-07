@@ -6,7 +6,7 @@
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
   }));else window["BookSourceManager_test"] = factory(chai, utils, BookSourceManager, customBookSource);
-})(["chai", "utils", "BookSourceManager", "CustomBookSource"], function (chai, utils, BookSourceManager, customBookSource) {
+})(["chai", "utils", "BookSourceManager", "CustomBookSource", "Chapter"], function (chai, utils, BookSourceManager, customBookSource, Chapter) {
 
   var assert = chai.assert;
   var equal = assert.equal;
@@ -30,7 +30,7 @@
     });
   });
 
-  var bsids = ["qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
+  var bsids = ["dangniao", "chuiyao", "omanhua", "2manhua", "733dm", "57mh", "qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw", "biqugezw", "biqulou", "chuangshi", "daizhuzai", "dingdian", "qidian"];
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -108,11 +108,11 @@
           return Promise.all(books.map(function (book) {
             return bsm.getBookCatalog(bsid, book).then(function (catalog) {
               assert.isArray(catalog);
-              equal(true, catalog.length > 0);
+              equal(true, catalog.length > 0, "" + book.name);
               book.chapters.forEach(function (chapter) {
                 equal(true, catalog.findIndex(function (e) {
-                  return e.title == chapter.title && e.link == chapter.link && e.cid == chapter.cid;
-                }) >= 0);
+                  return Chapter.equalTitle(e, chapter) && e.link == chapter.link && e.cid == chapter.cid;
+                }) >= 0, book.name + " " + chapter.title);
               });
             });
           }));

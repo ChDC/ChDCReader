@@ -47,12 +47,16 @@
     cs = cs.map(utils.lowerCaseNumbers);
     if(cs[0] == cs[1]) return 2;
 
-    if(!removeNumbers) return 0;
-
-    // 去掉所有的数字
-    const numPattern = /第[\d零一二两三四五六七八九十百千万亿]+[章节卷]/g;
-    cs = cs.map(c => c.replace(numPattern, ''));
+    // 将 章节卷 删除
+    cs = cs.map(e => e.replace(/^.*?[第总]?(\d+)[弹话章节卷集]?/i, '$1'));
     if(cs[0] == cs[1]) return 1;
+
+    // if(!removeNumbers) return 0;
+
+    // // 去掉所有的数字
+    // const numPattern = /第[\d零一二两三四五六七八九十百千万亿]+[章节卷]/g;
+    // cs = cs.map(c => c.replace(numPattern, ''));
+    // if(cs[0] == cs[1]) return 1;
 
     return 0;
   }
