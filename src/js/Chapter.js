@@ -28,8 +28,7 @@
   }
 
   // 判断两个标题是否相等，传入的是章节标题
-  Chapter.equalTitle = function(ca, cb, options={}){
-
+  Chapter.equalTitle = function(ca, cb, loose=false){
 
     if(ca == cb) return 4;
     if(!ca || !cb) return 0;
@@ -37,10 +36,8 @@
     let cs = [ca, cb].map(c => typeof(c) != "string" ? c.title : c);
     if(cs[0] == cs[1]) return 4;
 
-    let {removeNumbers=false} = options;
-
     // 去掉标点符号
-    cs = cs.map(s => Chapter.stripString(s, options));
+    cs = cs.map(s => Chapter.stripString(s, loose));
     if(cs[0] == cs[1]) return 3;
 
     // 将大写数字转换为小写数字
@@ -48,21 +45,24 @@
     if(cs[0] == cs[1]) return 2;
 
     // 将 章节卷 删除
-    cs = cs.map(e => e.replace(/^.*?[第总]?(\d+)[弹话章节卷集]?/i, '$1'));
+    cs = cs.map(e => e.replace(/[第总]?0*(\d+)[弹话章节卷集]?/gi, '$1'));
     if(cs[0] == cs[1]) return 1;
 
-    // if(!removeNumbers) return 0;
+    if(!loose) return 0;
 
-    // // 去掉所有的数字
-    // const numPattern = /第[\d零一二两三四五六七八九十百千万亿]+[章节卷]/g;
-    // cs = cs.map(c => c.replace(numPattern, ''));
-    // if(cs[0] == cs[1]) return 1;
+    if(cs[0].includes(cs[1]) || cs[1].includes(cs[0]))
+      return -1;
+
+    // 去掉所有的数字
+    cs = cs.map(c => c.replace(/\d/g, ''));
+    if(cs[0].includes(cs[1]) || cs[1].includes(cs[0]))
+      return -2;
 
     return 0;
   }
 
   // 比较去掉所有空格和标点符号之后的所有符号
-  Chapter.stripString = function(str, {removeNumbers=false}={}){
+  Chapter.stripString = function(str, removeNumbers=false){
     if(!str) return str;
 
     // 去除括号括起来的文字

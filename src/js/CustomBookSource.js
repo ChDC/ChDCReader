@@ -259,9 +259,12 @@
             if(!data)
               return null;
             data = atob(data[1]);
+            if(!data) return null;
             data = data.split("$qingtiandy$");
             if(filterBookId)
               data = data.filter(e => e.includes(dict.bookid));
+            if(data.length <= 0)
+              return null;
             return data.map(e => `<img src="${e}">`).join('\n');
         }
       }
@@ -312,6 +315,7 @@
             data = JSON.parse(data[1]);
 
             data = data.files.map(e => `http://pic.fxdm.cc${data.path}${e}`);
+            if(data.length <= 0) return null;
             return data.map(e => `<img src="${e}">`).join('\n');
         }
 
@@ -350,6 +354,7 @@
             data = JSON.parse(data[0].replace(/'/g, '"'));
 
             data = data.fs.map(e => `http://tupianku.333dm.com${e}`);
+            if(data.length <= 0) return null;
             return data.map(e => `<img src="${e}">`).join('\n');
         }
 
