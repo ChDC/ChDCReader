@@ -37,6 +37,15 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           _this2.addBook(e.bookShelfItem);
           _this2.refreshBooksOrder(_this2.bookShelf);
         });
+
+        this.container = $('.container');
+        this.scrollTop = app.settings.settings.scrollTop.bookshelf || 0;
+      }
+    }, {
+      key: "onPause",
+      value: function onPause() {
+        app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
+        app.settings.save();
       }
     }, {
       key: "onResume",
@@ -46,7 +55,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         if (!this.loaded) this.bookShelf.load(app.bookSourceManager).then(function () {
           _this3.loaded = true;
           _this3.loadBooks(_this3.bookShelf);
-        });else this.refreshAllReadingRecord();
+          _this3.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
+        });else {
+          this.refreshAllReadingRecord();
+          this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
+        }
       }
     }, {
       key: "removeBook",

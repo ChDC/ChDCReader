@@ -25,6 +25,9 @@
           nighttheme: "night1", // 夜间主题
           daytheme: "", // 白天主题
           night: false
+        },
+        scrollTop: {
+          "bookshelf": 0
         }
       },
 

@@ -245,7 +245,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     refreshCatalogInterval: 60 * 60 * 1,
     refreshLastestChapterInterval: 60 * 60 * 1 };
 
-  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "__updatedCatalogTime", "__updatedLastestChapterTime", "needSaveCatalog", "lastestChapter"];
+  BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink", "catalogLink", "bookid", "__updatedCatalogTime", "__updatedLastestChapterTime", "lastestChapter"];
 
   return BookSource;
 });

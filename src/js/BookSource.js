@@ -210,7 +210,8 @@
   BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink",
               "catalogLink", "bookid", // 不持久化目录 "catalog",
               "__updatedCatalogTime", "__updatedLastestChapterTime",
-              "needSaveCatalog", "lastestChapter"];
+              // "needSaveCatalog",
+              "lastestChapter"];
 
   return BookSource;
 }));
