@@ -5,7 +5,7 @@
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["LittleCrawler_test"] = factory();
+  }));else window["LittleCrawler_test"] = factory(chai, LittleCrawler);
 })(["chai", "LittleCrawler"], function (chai, LittleCrawler) {
 
   var assert = chai.assert;

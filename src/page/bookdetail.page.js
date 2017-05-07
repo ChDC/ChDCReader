@@ -15,6 +15,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.loadView();
     }
 
+    onClose({params}){
+      this.fireEvent("myclose");
+    }
+
     readbookpageclose({params}){
       if(app.bookShelf.hasBook(this.book))
         app.page.showPage("bookshelf");

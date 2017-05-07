@@ -30,9 +30,16 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord", "uifactor
         this.loadView();
       }
     }, {
-      key: "readbookpageclose",
-      value: function readbookpageclose(_ref2) {
+      key: "onClose",
+      value: function onClose(_ref2) {
         var params = _ref2.params;
+
+        this.fireEvent("myclose");
+      }
+    }, {
+      key: "readbookpageclose",
+      value: function readbookpageclose(_ref3) {
+        var params = _ref3.params;
 
         if (app.bookShelf.hasBook(this.book)) app.page.showPage("bookshelf");
       }

@@ -9,7 +9,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["utils"] = factory();
+  }));else window["utils"] = factory(fileSystem, LittleCrawler);
 })(["fileSystem", "LittleCrawler"], function (fileSystem, LittleCrawler) {
   "use strict";
 

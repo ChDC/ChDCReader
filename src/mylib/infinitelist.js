@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["Infinitelist"] = factory();
+    window["Infinitelist"] = factory(co, utils);
 }(["co", "utils"], function(co, utils) {
 
   "use strict"

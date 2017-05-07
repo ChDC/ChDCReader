@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["customBookSource"] = factory();
+    window["customBookSource"] = factory(co, utils, LittleCrawler, translate, Book, BookSource, Chapter);
 }(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function(co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict"
 

@@ -9,7 +9,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["Infinitelist"] = factory();
+  }));else window["Infinitelist"] = factory(co, utils);
 })(["co", "utils"], function (co, utils) {
 
   "use strict";

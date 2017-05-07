@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["mocha._test"] = factory();
+    window["mocha._test"] = factory(chai);
 }(["chai"], function(chai){
 
   /************************************

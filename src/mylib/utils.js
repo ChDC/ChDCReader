@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["utils"] = factory();
+    window["utils"] = factory(fileSystem, LittleCrawler);
 }(["fileSystem", "LittleCrawler"], function(fileSystem, LittleCrawler){
   "use strict"
 
