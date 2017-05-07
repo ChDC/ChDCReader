@@ -441,7 +441,9 @@
           // 强制更新目录
           chapterB = yield self.index(contentSourceChapterIndex, opts);
         }
-        if(!Chapter.equalTitle(chapterA, chapterB)){
+
+        // 放宽对比范围
+        if(!Chapter.equalTitle(chapterA, chapterB, true)){
           throw new Error(204);
         }
 
@@ -467,7 +469,7 @@
         .then(catalog => {
           if(index != undefined){
             let tc = catalog[index];
-            if(Chapter.equalTitle(tc, title))
+            if(Chapter.equalTitle(tc, title, true))
               return index;
 
             // right
