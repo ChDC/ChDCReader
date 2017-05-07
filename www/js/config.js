@@ -24,7 +24,6 @@ requirejs.config({
     "uifactory": "../page/uifactory",
     "utils": "../mylib/utils",
     "uiutils": "../mylib/uiutils",
-    "Test": "../mylib/Test",
     "Page": "../mylib/Page",
     "PageManager": "../mylib/PageManager",
     "LittleCrawler": "../mylib/LittleCrawler",

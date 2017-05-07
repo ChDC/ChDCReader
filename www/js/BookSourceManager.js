@@ -11,8 +11,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["BookSourceManager"] = factory();
-})(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
+  }));else window["BookSourceManager"] = factory(co, utils, LittleCrawler, Book, BookSource, Chapter);
+})(['co', "utils", "LittleCrawler", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, Book, BookSource, Chapter) {
   "use strict";
 
   var BookSourceManager = function () {

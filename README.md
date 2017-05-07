@@ -29,6 +29,7 @@
 
 * [comico](http://www.comico.com.tw/)
 * [腾讯动漫](http://ac.qq.com/)
+* [有妖气](http://www.u17.com)
 
 ## 声明
 
