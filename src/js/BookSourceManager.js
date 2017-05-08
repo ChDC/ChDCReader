@@ -110,14 +110,15 @@
     // 全网搜索
     // * options
     // *   filterSameResult
-    searchBookInAllBookSource(keyword, {filterSameResult=true}={}){
+    searchBookInAllBookSource(keyword, {filterSameResult=true, bookType=""}={}){
 
       utils.log(`BookSourceManager: Search Book in all booksource "${keyword}"`);
 
       let result = {};
       const errorList = [];
       const allBsids = this.getSourcesKeysByMainSourceWeight();
-      const tasks = allBsids.map(bsid =>
+      const bsids = !bookType ? allBsids : allBsids.filter(e => this.__sources[e].type == bookType);
+      const tasks = bsids.map(bsid =>
         // 单书源搜索
         this.searchBook(bsid, keyword)
           .then(books => {
@@ -132,7 +133,7 @@
         // 处理结果
         let finalResult = [];
 
-        for(let bsid of allBsids){
+        for(let bsid of bsids){
           let books = result[bsid];
           if(!books)break;
           for(let b of books){

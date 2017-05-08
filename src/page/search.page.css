@@ -6,11 +6,22 @@
     color: white;
 }
 
-#bookSource {
+.titlebar {
+    overflow: hidden;
+}
+.titlebar select{
     color: white;
     padding: 7px 5px;
     background-color: transparent;
     border-width: 0;
+}
+
+#lblFilterResult{
+    font-weight: normal;
+}
+
+#chkFilterResult{
+    margin: 8px;
 }
 
 #btnSearch{
@@ -54,7 +65,7 @@
 /*********** Color ***************/
 
 
-#bookSource option{
+.titlebar select > option{
     color: #000;
 }
 
