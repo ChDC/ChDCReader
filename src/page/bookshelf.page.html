@@ -7,6 +7,7 @@
     <button class="btn btn-link dropdown-toggle titlebar-menu" data-toggle="dropdown"><i class="glyphicon glyphicon-option-vertical"></i></button>
     <ul class="dropdown-menu dropdown-menu-right" role="menu">
       <li id="btnToggleNightMode"><a>夜间模式</a></li>
+      <li id="btnShowFinishedBooks" data-toggle="modal" data-target="#modalFinishedBooks"><a>读完的书</a></li>
       <li id="btnCheckUpdate"><a>检查更新</a></li>
       <li id="btnTest"><a href="test.html">单元测试</a></li>
       <!-- <li id="btnToggleDebugMode"><a>调试模式</a></li> -->
@@ -20,6 +21,25 @@
 <div class="container">
   <ul id="bookshelf">
   </ul>
+
+  <div class="modal fade" id="modalFinishedBooks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="myModalLabel">读完的书</h4>
+        </div>
+        <div class="modal-body">
+          <ul id="finishedBookshelf">
+
+          </ul>
+        </div>
+<!--         <div class="modal-footer">
+          <button class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="template">
@@ -31,7 +51,7 @@
       <div class="btn-group float-right">
         <button type="button" class="btn btn-link btnBookMenu" data-toggle="dropdown"><i class="glyphicon glyphicon-option-vertical"></i></button>
         <ul class="dropdown-menu dropdown-menu-right " role="menu">
-          <li class="btnLockLocation"><a>锁定位置</a></li>
+          <!-- <li class="btnLockLocation"><a>锁定位置</a></li> -->
           <li class="btnDetail"><a>书籍详情</a></li>
           <li class="btnRemoveBook"><a>删除本书</a></li>
           <!-- <li class="divider"></li> -->
@@ -44,4 +64,5 @@
       </div>
     </div>
   </li>
+
 </div>

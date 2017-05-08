@@ -19,7 +19,7 @@ body, .dropdown-menu, .modal-content{
     color: #fff;
 }
 
-.bookshelf .book{
+#bookshelf .book, #finishedBookshelf .book{
     border-color: #aaa;
 }
 

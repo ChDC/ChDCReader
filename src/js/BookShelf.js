@@ -89,7 +89,7 @@
       return {
         book: book,
         readingRecord: readingRecord || new ReadingRecord(),
-        lockLocation: -1 // 是否锁定了位置
+        // lockLocation: -1 // 是否锁定了位置
       };
     }
 
@@ -105,20 +105,20 @@
       }
     }
 
-    toggleLockBook(bookshelfitem){
-      if(this.isLockedBook(bookshelfitem))
-        bookshelfitem.lockLocation = -1;
-      else
-        bookshelfitem.lockLocation = this.books.indexOf(bookshelfitem);
-    }
+    // toggleLockBook(bookshelfitem){
+    //   if(this.isLockedBook(bookshelfitem))
+    //     bookshelfitem.lockLocation = -1;
+    //   else
+    //     bookshelfitem.lockLocation = this.books.indexOf(bookshelfitem);
+    // }
 
-    isLockedBook(bookshelfitem){
-      return bookshelfitem.lockLocation >= 0;
-    }
+    // isLockedBook(bookshelfitem){
+    //   return bookshelfitem.lockLocation >= 0;
+    // }
 
     // 用特定的排序函数或者新的排序传递进行排序
     sortBooks(functionOrArray){
-      let newOrder;
+      let newOrder, unIncludedItems;
       switch(utils.type(functionOrArray)){
         case "function":
           newOrder = Object.assign([], this.books);
@@ -126,10 +126,12 @@
           break;
 
         case "array":
-          // 检查是否有效
-          if(!functionOrArray.every(e => this.books.indexOf(e) >= 0))
+          // 检查是否每个都是已有的内容
+          if(!functionOrArray.every(e => this.books.includes(e)))
             return false;
           newOrder = functionOrArray;
+          unIncludedItems = this.books.filter(e => !newOrder.includes(e));
+          newOrder = newOrder.concat(unIncludedItems);
           break;
 
         default:
@@ -138,14 +140,15 @@
       }
 
       // 记录锁定的项目
-      let lockedItems = this.books.filter(e => this.isLockedBook(e));
-      let result = newOrder.filter(e => !this.isLockedBook(e));
-      lockedItems.forEach(e => {
-        if(e.lockLocation >= this.books.length)
-          e.lockLocation = this.books.length - 1;
-        result.splice(e.lockLocation, 0, e)
-      });
-      this.books = result;
+      // let lockedItems = this.books.filter(e => this.isLockedBook(e));
+      // let result = newOrder.filter(e => !this.isLockedBook(e));
+      // lockedItems.forEach(e => {
+      //   if(e.lockLocation >= this.books.length)
+      //     e.lockLocation = this.books.length - 1;
+      //   result.splice(e.lockLocation, 0, e)
+      // });
+      // this.books = result;
+      this.books = newOrder;
       this.fireEvent("sortedBook");
       return true;
     }
