@@ -9,6 +9,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       this.bookShelf = app.bookShelf;
       this.bookTemplateElement; // 模板元素
       this.bookShelfElement; // 书架的容器元素，用于存放书籍
+      this.modalFinishedBooks;
+      this.finishedBookShelfElement; // 读完的书的容器元素
       this.bookShelf.addEventListener("addedBook", (e)=>{
         // 添加了书籍
         // 更新UI
@@ -21,6 +23,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }
 
     onPause(){
+      this.modalFinishedBooks.modal('hide');
       app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
       app.settings.save();
     }
@@ -59,14 +62,20 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     // 只更新 UI 不重新加载数据
     refreshBooksOrder(bookShelf){
       const books = bookShelf.books;
-      let newOrders = [];
-      let children = this.bookShelfElement.children();
-      Array.from(children).forEach(e => {
-        let i = books.indexOf($(e).data("bookshelfitem"));
-        newOrders[i] = e;
+
+      [this.bookShelfElement, this.finishedBookShelfElement].forEach(bookShelfElement => {
+        let newOrders = [];
+        Array.from(bookShelfElement.children()).forEach(e => {
+          let i = books.indexOf($(e).data("bookshelfitem"));
+          if(i < 0)
+            e.remove();
+          else
+            newOrders.push(e);
+        });
+        newOrders.sort((e1, e2) =>
+          books.indexOf($(e1).data("bookshelfitem")) - books.indexOf($(e2).data("bookshelfitem")));
+        bookShelfElement.append(newOrders);
       });
-      children.detach();
-      this.bookShelfElement.append(newOrders);
     }
 
     addBook(bookshelfitem){
@@ -90,19 +99,25 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
       nb.find('.btnDetail').click(e => app.page.showPage("bookdetail", {book: bookshelfitem.book}));
       nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
-      nb.find('.btnLockLocation').click((e) => {
-        this.bookShelf.toggleLockBook(bookshelfitem);
-        $(e.currentTarget).find('a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
-        this.bookShelf.save();
-      });
-      nb.find('.btnLockLocation > a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
-      this.bookShelfElement.append(nb);
+      // nb.find('.btnLockLocation').click((e) => {
+      //   this.bookShelf.toggleLockBook(bookshelfitem);
+      //   $(e.currentTarget).find('a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+      //   this.bookShelf.save();
+      // });
+      // nb.find('.btnLockLocation > a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+
+      if(readingRecord.isFinished)
+        this.addBookElementToFinishedBookShelf(nb, true);
+      else
+        this.addBookElementToBookShelf(nb, true);
     }
 
     // 刷新所有的阅读记录
     refreshAllReadingRecord(){
-      Array.from(this.bookShelfElement.children())
+      [this.bookShelfElement, this.finishedBookShelfElement].forEach(bookShelf => {
+        Array.from(bookShelf.children())
           .forEach(e => this.refreshReadingRecord($(e)));
+      });
     }
 
     // 刷新阅读记录
@@ -126,6 +141,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             lce.removeClass('unread-chapter');
 
           if(readingRecord.isFinished && isNewChapter){
+            // 将书籍移动到主书架列表顶部
+            this.addBookElementToBookShelf(bookElement);
             // 更新最新章节
             // 强制刷新目录
             book.getChapterIndex(lastestChapter)
@@ -135,13 +152,39 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
                 book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {forceRefresh: forceRefresh});
               });
           }
+          else if(readingRecord.isFinished){
+            // 如果在主书架就移动到读完书架
+            this.addBookElementToFinishedBookShelf(bookElement);
+          }
         });
+    }
+
+    // 移动书籍
+    addBookElementToFinishedBookShelf(bookElement, append=false){
+      // 移动到读完书架
+      bookElement.detach();
+      bookElement.removeClass("card");
+      if(append)
+        this.finishedBookShelfElement.append(bookElement);
+      else
+        this.finishedBookShelfElement.prepend(bookElement);
+    }
+
+    addBookElementToBookShelf(bookElement, append=false){
+      // 移动到主书架
+      bookElement.detach();
+      bookElement.addClass("card");
+      if(append)
+        this.bookShelfElement.append(bookElement);
+      else
+        this.bookShelfElement.prepend(bookElement);
     }
 
     // 加载书架列表
     loadBooks(bookShelf){
       const books = bookShelf.books;
       this.bookShelfElement.empty();
+      this.finishedBookShelfElement.empty();
       books.forEach(this.addBook.bind(this));
       this.refreshAllReadingRecord();
     };
@@ -156,9 +199,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }
 
     loadView(){
-
+      this.modalFinishedBooks = $("#modalFinishedBooks");
       this.bookTemplateElement = $(".template .book");
       this.bookShelfElement = $("#bookshelf");
+      this.finishedBookShelfElement = $("#finishedBookshelf");
       sortablejs.create(this.bookShelfElement[0],
               {
                 handle: ".btnBookMenu",
