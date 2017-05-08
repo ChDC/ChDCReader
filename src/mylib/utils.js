@@ -28,6 +28,15 @@
     */
     type: LittleCrawler.type,
 
+    // 安全的执行 eval
+    eval(code){
+      let evalCode = `
+        'use strict'
+        var window = {}, document = {}, self = {}, global = {}, location = {};
+        ${code}`;
+      return eval(evalCode);
+    },
+
     /*
     * 输出log 信息
     */
