@@ -166,14 +166,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
             _ref$filterSameResult = _ref.filterSameResult,
-            filterSameResult = _ref$filterSameResult === undefined ? true : _ref$filterSameResult;
+            filterSameResult = _ref$filterSameResult === undefined ? true : _ref$filterSameResult,
+            _ref$bookType = _ref.bookType,
+            bookType = _ref$bookType === undefined ? "" : _ref$bookType;
 
         utils.log("BookSourceManager: Search Book in all booksource \"" + keyword + "\"");
 
         var result = {};
         var errorList = [];
         var allBsids = this.getSourcesKeysByMainSourceWeight();
-        var tasks = allBsids.map(function (bsid) {
+        var bsids = !bookType ? allBsids : allBsids.filter(function (e) {
+          return _this4.__sources[e].type == bookType;
+        });
+        var tasks = bsids.map(function (bsid) {
           return _this4.searchBook(bsid, keyword).then(function (books) {
             result[bsid] = books;
           }).catch(function (error) {
@@ -189,7 +194,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var _iteratorError3 = undefined;
 
           try {
-            for (var _iterator3 = allBsids[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            for (var _iterator3 = bsids[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
               var bsid = _step3.value;
 
               var books = result[bsid];

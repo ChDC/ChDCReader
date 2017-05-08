@@ -157,7 +157,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         if (this.bookSourceManager.hasVolume(bookSourceId)) {
           var result = [];
-          var volumeName = void 0;
+          var volumeName = NaN;
           var vi = -1;
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;

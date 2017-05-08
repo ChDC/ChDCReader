@@ -102,6 +102,9 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
         app.showLoading();
         var keyword = $("#keyword").val();
         var bookSourceId = $("#bookSource").val();
+        var bookType = $("#bookType").val();
+        var isFilterResult = $("#chkFilterResult")[0].checked;
+
         $('#result').empty();
         if (!keyword || !bookSourceId) {
           uiutils.showError("请输入要搜索的关键字");
@@ -109,7 +112,7 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
         }
 
         if (bookSourceId == "#all#") {
-          app.bookSourceManager.searchBookInAllBookSource(keyword).then(function (books) {
+          app.bookSourceManager.searchBookInAllBookSource(keyword, { filterSameResult: isFilterResult, bookType: bookType }).then(function (books) {
             app.hideLoading();
             _this2.loadBooks("#result", books);
           }).catch(function (error) {

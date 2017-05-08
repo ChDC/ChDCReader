@@ -293,17 +293,25 @@
       },
       "catalog": {
         "request": "http://www.2manhua.com/comic/{bookid}",
+        "hasVolume": true,
         "response":{
           "type": "array",
-          "element": "#chpater-list-1 > ul > li",
-          "reverse": true,
+          "element": "#chpater-list-1 > ul",
           "children": {
-            "title": {
-              "type": "string",
-              "element": "a",
-              "attribute": "title"
-            },
-            "link": "a"
+            "name": "",
+            "chapters": {
+              "type": "array",
+              "reverse": true,
+              "element": "li",
+              "children": {
+                "title": {
+                  "type": "string",
+                  "element": "a",
+                  "attribute": "title"
+                },
+                "link": "a"
+              }
+            }
           }
         }
       },

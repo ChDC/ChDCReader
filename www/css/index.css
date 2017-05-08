@@ -113,7 +113,7 @@ ul {
     height: 34px;
     line-height: 34px;
     position: relative;
-    /*overflow: hidden;*/
+    overflow: visible;
     box-shadow: 0 3px 9px rgba(0,0,0,.5);
     color: white;
     background-color: #EE0000;
@@ -156,4 +156,12 @@ ul {
 .card{
     box-shadow: 0 3px 9px rgba(0,0,0,.5);
     margin: 10px 10px;
+}
+
+
+input:focus, select:focus, button:focus, span:focus {
+    outline: none;
+    border-color: #cfdc00;
+    box-shadow: 0 0 5px rgba(207, 220, 0, 0.4);
+    border-radius: 5px;
 }
