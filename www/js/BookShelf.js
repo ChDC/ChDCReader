@@ -99,8 +99,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function newBookShelfItem(book, readingRecord) {
         return {
           book: book,
-          readingRecord: readingRecord || new ReadingRecord(),
-          lockLocation: -1 };
+          readingRecord: readingRecord || new ReadingRecord()
+        };
       }
     }, {
       key: "addBook",
@@ -113,21 +113,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
     }, {
-      key: "toggleLockBook",
-      value: function toggleLockBook(bookshelfitem) {
-        if (this.isLockedBook(bookshelfitem)) bookshelfitem.lockLocation = -1;else bookshelfitem.lockLocation = this.books.indexOf(bookshelfitem);
-      }
-    }, {
-      key: "isLockedBook",
-      value: function isLockedBook(bookshelfitem) {
-        return bookshelfitem.lockLocation >= 0;
-      }
-    }, {
       key: "sortBooks",
       value: function sortBooks(functionOrArray) {
         var _this3 = this;
 
-        var newOrder = void 0;
+        var newOrder = void 0,
+            unIncludedItems = void 0;
         switch (utils.type(functionOrArray)) {
           case "function":
             newOrder = Object.assign([], this.books);
@@ -136,9 +127,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           case "array":
             if (!functionOrArray.every(function (e) {
-              return _this3.books.indexOf(e) >= 0;
+              return _this3.books.includes(e);
             })) return false;
             newOrder = functionOrArray;
+            unIncludedItems = this.books.filter(function (e) {
+              return !newOrder.includes(e);
+            });
+            newOrder = newOrder.concat(unIncludedItems);
             break;
 
           default:
@@ -146,17 +141,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
         }
 
-        var lockedItems = this.books.filter(function (e) {
-          return _this3.isLockedBook(e);
-        });
-        var result = newOrder.filter(function (e) {
-          return !_this3.isLockedBook(e);
-        });
-        lockedItems.forEach(function (e) {
-          if (e.lockLocation >= _this3.books.length) e.lockLocation = _this3.books.length - 1;
-          result.splice(e.lockLocation, 0, e);
-        });
-        this.books = result;
+        this.books = newOrder;
         this.fireEvent("sortedBook");
         return true;
       }

@@ -81,7 +81,7 @@
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "c0e6dc82179044d33ff5e10483752bbf"
+    "hash": "c5a651181a1a4860449f61e4508d6c78"
   },
   {
     "file": "js/BookSource.js",
@@ -333,19 +333,19 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "27bd578593cab7698a0ad46d58001c6b"
+    "hash": "d632baa58a803582ff78e6c0b935628c"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "895742ffa1af477c1154f8d078fc104a"
+    "hash": "69d6c20af08acfe2d57f0acfb1c45ee9"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "cdc72c4393175d8ac216ea91fb486387"
+    "hash": "e6437a9dc87e6064053b92bf0c190f00"
   },
   {
     "file": "page/bookshelf.page.night1.css",
-    "hash": "a7b708d2d12c71c0396c4fede9652e61"
+    "hash": "f0e04bfc8ac3f1c90a42f38adddb3ea5"
   },
   {
     "file": "page/explorebook.page.css",
