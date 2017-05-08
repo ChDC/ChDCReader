@@ -130,13 +130,16 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         const targetChapter = $('#current-catalog-chapter');
         if(targetChapter && targetChapter.length > 0)
         {
-          for(let e = targetChapter.parent(); e.attr('id') != "listCatalog"; e = e.parent()){
-            if(e.hasClass("collapse"))
-              e.collapse('show')
-                .on("shown.bs.collapse", e => {
-                  targetChapter[0].scrollIntoView();
-                });
-          }
+          if(targetChapter.parent().attr('id') == "listCatalog")
+            targetChapter[0].scrollIntoView();
+          else
+            for(let e = targetChapter.parent(); e.attr('id') != "listCatalog"; e = e.parent()){
+              if(e.hasClass("collapse"))
+                e.collapse('show')
+                  .on("shown.bs.collapse", e => {
+                    targetChapter[0].scrollIntoView();
+                  });
+            }
         }
       });
       $('#btnBookDetail').click(e => app.page.showPage("bookdetail", {book: this.book}));

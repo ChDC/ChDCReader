@@ -55,6 +55,9 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
       app.showLoading();
       const keyword = $("#keyword").val();
       const bookSourceId = $("#bookSource").val();
+      const bookType = $("#bookType").val();
+      const isFilterResult = $("#chkFilterResult")[0].checked
+
       $('#result').empty();
       if(!keyword || !bookSourceId){
         uiutils.showError("请输入要搜索的关键字");
@@ -63,7 +66,8 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
 
       if(bookSourceId == "#all#"){
         // 全网搜索
-        app.bookSourceManager.searchBookInAllBookSource(keyword)
+        app.bookSourceManager.searchBookInAllBookSource(keyword,
+              {filterSameResult: isFilterResult, bookType: bookType})
           .then(books => {
             app.hideLoading();
             this.loadBooks("#result", books);

@@ -131,7 +131,7 @@
 
       if(this.bookSourceManager.hasVolume(bookSourceId)){
         let result = [];
-        let volumeName;
+        let volumeName = NaN;
         let vi = -1;
         for(let c of catalog){
           if(volumeName != c.volume){
