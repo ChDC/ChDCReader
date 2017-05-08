@@ -13,11 +13,12 @@
   let customBookSource = {
 
     "comico": {
-
+      // 把网站中的繁体中文转换为简体中文
       beforeSearchBook(){
         return Promise.resolve(Array.from(arguments).map(e => utils.type(e) =="string"? translate.toTraditionChinese(e) : e));
       },
 
+      // 把网站中的繁体中文转换为简体中文
       afterSearchBook(books){
         return books.map(book => {
           let needTranslateAttributes = ['name', 'author', 'catagory', 'introduce'];
@@ -30,6 +31,7 @@
         });
       },
 
+      // 把网站中的繁体中文转换为简体中文
       afterGetBookInfo(book){
         let needTranslateAttributes = ['name', 'author', 'catagory', 'introduce', 'lastestChapter'];
         needTranslateAttributes.forEach(e => {
@@ -38,11 +40,13 @@
         return book;
       },
 
+      // 把网站中的繁体中文转换为简体中文
       afterGetChapter(chapter){
         chapter.title = translate.toSimpleChinese(chapter.title);
         return chapter;
       },
 
+      // 把网站中的繁体中文转换为简体中文
       afterGetBookCatalog(catalog){
         return catalog.map(chapter => {
           chapter.title = translate.toSimpleChinese(chapter.title);
@@ -50,12 +54,14 @@
         });
       },
 
+      // 把网站中的繁体中文转换为简体中文
       afterGetLastestChapter(lc){
         return translate.toSimpleChinese(lc);
       },
     },
 
     "qqac": {
+      // 腾讯动漫的解码规则是把加密的字符串从索引位1开始取
       getChapter(bsid, dict={}){
 
         utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
@@ -86,8 +92,9 @@
     },
 
     "u17": {
-      getChapter(bsid, dict={}){
 
+      // 有妖气的漫画图片数据放在 HTML 中的 script 标签内
+      getChapter(bsid, dict={}){
 
         utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
@@ -120,6 +127,8 @@
     },
 
     "chuangshi": {
+
+      // 创世中文网的章节内容需要按一定的方式解码
       getChapter(bsid, dict={}){
 
         utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
@@ -148,6 +157,7 @@
             return c;
           });
 
+        // 解码函数
         function decryptByBaseCode(text, base) {
             if (!text) return text;
             let arrStr = [],
@@ -163,14 +173,15 @@
 
     "sfnovel": {
 
+      // 将每个章节的卷中的书名去掉
       afterGetBookCatalog(catalog, args){
-        // 将每个章节的卷中的书名去掉
         let book = args[1].book;
         if(!book || !book.name) return catalog;
         catalog.forEach(c => c.volume = c.volume.replace(`【${book.name}】`, "").trim());
         return catalog;
       },
 
+      // sfnovel 的章节内容是用换行符换行的
       afterGetChapter(chapter){
         if(chapter.content)
           chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
@@ -179,6 +190,8 @@
     },
 
     "qqbook": {
+
+      // 由于腾讯图书的章节列表是分页的，所以要把所有页面的数据整合到一起
       getBookCatalog(bsid, dict){
 
         utils.log(`BookSourceManager: Get Book Catalog Link from ${bsid}"`);
@@ -218,6 +231,8 @@
     },
 
     "daizhuzai": {
+
+      // daizhuzai 网是从其他网站中获取数据的，它的链接在 HTML 的 script 中
       beforeGetChapter(){
         let args = arguments;
         let link = args[1].link;
@@ -233,6 +248,8 @@
     },
 
     "chuiyao": {
+
+      // 章节内容数据在 script 标签中
       getChapter(bsid, dict={}, filterBookId=true){
 
         utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
@@ -255,22 +272,24 @@
           });
 
         function getImgs(html) {
-            let data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
-            if(!data)
-              return null;
-            data = atob(data[1]);
-            if(!data) return null;
-            data = data.split("$qingtiandy$");
-            if(filterBookId)
-              data = data.filter(e => e.includes(dict.bookid));
-            if(data.length <= 0)
-              return null;
-            return data.map(e => `<img src="${e}">`).join('\n');
+          let data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
+          if(!data)
+            return null;
+          data = atob(data[1]);
+          if(!data) return null;
+          data = data.split("$qingtiandy$");
+          if(filterBookId)
+            data = data.filter(e => e.includes(dict.bookid));
+          if(data.length <= 0)
+            return null;
+          return data.map(e => `<img src="${e}">`).join('\n');
         }
       }
     },
 
     "dangniao": {
+
+      // 和 吹妖 一样
       getChapter(bsid, dict={}){
         return customBookSource["chuiyao"].getChapter.apply(this, ["dangniao", dict, false]);
       }
@@ -306,20 +325,17 @@
           });
 
         function getImgs(html) {
-            let data = html.match(/return p;}\((.*?)\)\)\s*<\/script>/i);
-            if(!data) return null;
-            let obj = eval(`[${data[1]}]`);
-            data = parse.apply(null, obj);
-            data = data.match(/({.*})\|\|{}/);
-            if(!data) return null;
-            data = JSON.parse(data[1]);
+          let evalCode = html.match(/var uzmh = uzmh \|\| {};eval(\(.*return p;}\(.*?\)\))/i);
+          if(!evalCode) return null;
+          let data = utils.eval(evalCode[1]);
+          data = data.match(/({.*})\|\|{}/);
+          if(!data) return null;
+          data = JSON.parse(data[1]);
 
-            data = data.files.map(e => `http://pic.fxdm.cc${data.path}${e}`);
-            if(data.length <= 0) return null;
-            return data.map(e => `<img src="${e}">`).join('\n');
+          data = data.files.map(e => `http://pic.fxdm.cc${data.path}${e}`);
+          if(data.length <= 0) return null;
+          return data.map(e => `<img src="${e}">`).join('\n');
         }
-
-        function parse(p,a,c,k,e,d){e=function(c){return(c<a?"":e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)d[e(c)]=k[c]||e(c);k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1;};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p;}
       }
     },
 
@@ -344,21 +360,27 @@
             return c;
           });
 
+        // 获取章节内容的专用函数
         function getImgs(html) {
-            let data = html.match(/return p}\((.*?)\)\)/i);
-            if(!data) return null;
-            let obj = eval(`[${data[1]}]`);
-            data = parse.apply(null, obj);
-            data = data.match(/{.*}/);
-            if(!data) return null;
-            data = JSON.parse(data[0].replace(/'/g, '"'));
+          // let host = { // 取自 http://www.2manhua.com/templates/default/scripts/configs.js?v=1.0.3
+          //     'auto': ['tupianku.333dm.com'],
+          //     'telecom': ['pic.333dm.com'],
+          //     'unicom': ['images.333dm.com'],
+          //     'spare': ['pic.333dm.com']
+          // };
 
-            data = data.fs.map(e => `http://tupianku.333dm.com${e}`);
-            if(data.length <= 0) return null;
-            return data.map(e => `<img src="${e}">`).join('\n');
+          // 获取加密数据
+          let evalCode = html.match(/"text\/javascript">eval(\(.*return p}\(.*?\)\))/i);
+          if(!evalCode) return null;
+          let data = utils.eval(evalCode[1]);
+          data = data.match(/{.*}/);
+          if(!data) return null;
+          data = JSON.parse(data[0].replace(/'/g, '"'));
+
+          data = data.fs.map(e => `http://tupianku.333dm.com${e}`);
+          if(data.length <= 0) return null;
+          return data.map(e => `<img src="${e}">`).join('\n');
         }
-
-        function parse(p,a,c,k,e,d){e=function(c){return c.toString(36)};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}
       }
     }
   };
