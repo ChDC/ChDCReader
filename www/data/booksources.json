@@ -1,5 +1,5 @@
 {
-  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac",  "biquge", "biquge.tw", "daizhuzai", "biqugezw", "biqulou",  "dingdian", "dangniao", "chuiyao", "omanhua", "2manhua"],
+  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac", "biquge.tw", "daizhuzai", "biqugezw", "biqulou",  "dingdian", "dangniao", "chuiyao", "omanhua", "2manhua"],
   "sources": {
     "dangniao": {
       "id": "dangniao",

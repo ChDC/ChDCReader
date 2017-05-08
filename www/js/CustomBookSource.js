@@ -328,10 +328,9 @@
         });
 
         function getImgs(html) {
-          var data = html.match(/return p;}\((.*?)\)\)\s*<\/script>/i);
-          if (!data) return null;
-          var obj = eval("[" + data[1] + "]");
-          data = parse.apply(null, obj);
+          var evalCode = html.match(/var uzmh = uzmh \|\| {};eval(\(.*return p;}\(.*?\)\))/i);
+          if (!evalCode) return null;
+          var data = utils.eval(evalCode[1]);
           data = data.match(/({.*})\|\|{}/);
           if (!data) return null;
           data = JSON.parse(data[1]);
@@ -343,22 +342,6 @@
           return data.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
-        }
-
-        function parse(p, a, c, k, _e, d) {
-          _e = function e(c) {
-            return (c < a ? "" : _e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36));
-          };if (!''.replace(/^/, String)) {
-            while (c--) {
-              d[_e(c)] = k[c] || _e(c);
-            }k = [function (e) {
-              return d[e];
-            }];_e = function _e() {
-              return '\\w+';
-            };c = 1;
-          };while (c--) {
-            if (k[c]) p = p.replace(new RegExp('\\b' + _e(c) + '\\b', 'g'), k[c]);
-          }return p;
         }
       }
     },
@@ -386,10 +369,9 @@
         });
 
         function getImgs(html) {
-          var data = html.match(/return p}\((.*?)\)\)/i);
-          if (!data) return null;
-          var obj = eval("[" + data[1] + "]");
-          data = parse.apply(null, obj);
+          var evalCode = html.match(/"text\/javascript">eval(\(.*return p}\(.*?\)\))/i);
+          if (!evalCode) return null;
+          var data = utils.eval(evalCode[1]);
           data = data.match(/{.*}/);
           if (!data) return null;
           data = JSON.parse(data[0].replace(/'/g, '"'));
@@ -401,24 +383,6 @@
           return data.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
-        }
-
-        function parse(p, a, c, k, e, d) {
-          e = function e(c) {
-            return c.toString(36);
-          };if (!''.replace(/^/, String)) {
-            while (c--) {
-              d[e(c)] = k[c] || e(c);
-            }k = [function (e) {
-              return d[e];
-            }];e = function e() {
-              return '\\w+';
-            };c = 1;
-          };while (c--) {
-            if (k[c]) {
-              p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
-            }
-          }return p;
         }
       }
     }

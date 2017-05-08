@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "450af70e93841739c183e9c5b41d37de"
+    "hash": "b6dd530b979f6c7be5b32db58d422f0b"
   },
   {
     "file": "data/errorCode.json",
@@ -101,7 +101,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "683777ab0cbda6d16bd748be859338dc"
+    "hash": "82a38b12df435c943ba83b4b7ff26b42"
   },
   {
     "file": "js/executeOnUpdated.js",
@@ -313,7 +313,7 @@
   },
   {
     "file": "mylib/utils.js",
-    "hash": "a9671817333341480a892e4559a6d5f4"
+    "hash": "7590a49cdeb234617f5417d67b0c450c"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -457,6 +457,6 @@
   },
   {
     "file": "test/utils.test.js",
-    "hash": "25ab9a4b9416b343d01fbc6fc915b4e7"
+    "hash": "06206cd7eb9c9f21f410b9abccde99f9"
   }
 ]

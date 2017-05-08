@@ -18,6 +18,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
     type: LittleCrawler.type,
 
+    eval: function _eval(code) {
+      var evalCode = "\n        'use strict'\n        var window = {}, document = {}, self = {}, global = {}, location = {};\n        " + code;
+      return eval(evalCode);
+    },
     log: function log(content, detailContent) {
       var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.log(msg);
