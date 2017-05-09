@@ -33,10 +33,12 @@
 
 
   // 小说书源测试
-  let bsids = [ "dangniao", "chuiyao", "omanhua", "2manhua",
-    "733dm", "57mh",
-    "qqbook", "sfnovel", "qqac", "u17", "comico", "biquge", "biquge.tw",
-    "biqugezw", "biqulou", "chuangshi", "daizhuzai" , "dingdian", "qidian"];
+  let bsids = [  "omanhua", "2manhua",
+    "57mh", "77mh", "sfacg", "yyls", "cartoonmad", "kukudm",
+    "qqbook", "sfnovel", "qqac", "u17", "comico", "biquge.tw",
+    "biqulou",  "daizhuzai" , "dingdian", "qidian"];
+
+  let trashBsids = ["733dm", "dangniao", "chuiyao", "biquge", "biqugezw", "chuangshi",];
 
   for(let bsid of bsids){
   // for(let bsid of ["57mh"]){
@@ -70,7 +72,7 @@
 
     }
 
-    describe(`BookSourceManager 测试：${bsid}`, () => {
+    describe(`BookSource Test: ${bsid}`, () => {
       let bsm;
       let config;
       let books;

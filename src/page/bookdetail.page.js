@@ -78,7 +78,11 @@ define(["jquery", "main", "Page", "utils", "uiutils",
                 .then(page => {
                   page.addEventListener('myclose', this.readbookpageclose.bind(this));
                 });
-            }, "#book-chapters"));
+            }, "#book-chapters",
+            (chapter, nc) => {
+              if(chapter.isVIP())
+                nc.addClass("vip-chapter");
+            }));
         })
         .catch(error => uiutils.showError(app.error.getMessage(error)));
     }

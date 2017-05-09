@@ -1,0 +1,11 @@
+#floatPanel{
+    position: fixed;
+    right: 0;
+    top: 10%;
+    width: 50%;
+    height: 50%;
+}
+
+tr input{
+    width: 100%;
+}

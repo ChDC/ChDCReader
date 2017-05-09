@@ -102,7 +102,7 @@
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
+      this.insecurityTagList = ['body', 'head', 'title', 'style', 'link', 'meta', 'iframe'];
       this.singleTagList = ['meta', 'link']; // 用于转换单标签
 
       this.fixurlAttributeList = ['href', "lc-src"]; // 需要修复 url 的属性
@@ -509,6 +509,9 @@
 
       html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
 
+      // 将 script 标签的 type 修改
+      html = html.replace(/<script\b([^>]*)(type="[^"]*")?/gi, '<script$1 type="text/plain"');
+
       // 图片的 src 属性转换成 lc-src 属性
       html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, attr, `lc-${attr}`), html);
       return html;
@@ -518,6 +521,8 @@
     __reverseHTML(html){
       if(!html) return html;
       html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, `lc-${tag}`, tag), html);
+
+      html = html.replace(/<script\b([^>]*)type="text\/plain"/gi, '<script$1');
 
       // 图片的 src 属性转换成 lc-src 属性
       html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, `lc-${attr}`, attr), html);

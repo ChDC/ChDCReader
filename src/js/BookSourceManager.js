@@ -24,16 +24,19 @@
 
     // 加载配置
     loadConfig(configFileOrConfig){
+      let loadSources = (data) => {
+        this.__sources = {};
+        data.valid.forEach(key => this.__sources[key] = data.sources[key]);
+      }
       if(configFileOrConfig && typeof configFileOrConfig == 'string'){
         return utils.getJSON(configFileOrConfig)
           .then(data => {
-            this.__sources = {};
-            data.valid.forEach(key => this.__sources[key] = data.sources[key]);
+            loadSources(data);
             return this.__sources;
           });
       }
       else if(configFileOrConfig){
-        this.__sources = configFileOrConfig;
+        loadSources(configFileOrConfig);
       }
       return this.__sources;
     }
@@ -194,7 +197,7 @@
         keyword = dict.keyword;
       }
       else
-        dict = {keyword: keyword};
+        dict = {keyword: keyword ? keyword : ""};
 
       return this.__lc.get(bs.search, dict)
         .then(getBooks);
@@ -302,13 +305,15 @@
 
       return this.__lc.get(bsm.chapter, dict)
         .then(data => {
-          const c = new Chapter();
+          let content;
           if(!data.contentHTML.match(/<\/?\w+.*?>/i))// 不是 HTML 文本
-            c.content = LittleCrawler.text2html(data.contentHTML);
+            content = LittleCrawler.text2html(data.contentHTML);
           else
-            c.content = LittleCrawler.clearHtml(data.contentHTML);
-          if(!c.content) return Promise.reject(206);
+            content = LittleCrawler.clearHtml(data.contentHTML);
+          if(!content) return Promise.reject(206);
 
+          const c = new Chapter();
+          c.content = content;
           c.title = data.title ? data.title : dict.title;
           c.cid = data.cid ? data.cid : dict.cid;
           if(!c.cid && dict.link) c.link = dict.link;
@@ -316,8 +321,6 @@
           return c;
         });
     }
-
-
 
     // 该源的目录是否有卷
     hasVolume(bsid){

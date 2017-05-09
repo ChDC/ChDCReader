@@ -1,4 +1,45 @@
 {
+   "57mh": [
+     {
+       "bookid": "397",
+       "name": "魔法禁书目录",
+       "author": "近木野中哉",
+       "introduce": "",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://www.57mh.com/397/052.html",
+           "title": "50话"
+         }
+       ]
+     },
+     {
+       "bookid": "118",
+       "name": "进击的巨人",
+       "author": "諌山创",
+       "introduce": "",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://www.57mh.com/118/067.html",
+           "title": "58话"
+         }
+       ]
+     },
+     {
+       "bookid": "117",
+       "name": "妖精的尾巴",
+       "author": "真岛浩",
+       "introduce": "",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://www.57mh.com/117/0437.html",
+           "title": "497话 冬之魔导士"
+         }
+       ]
+     }
+   ],
    "dangniao": [
       {
          "author" : "",
@@ -186,60 +227,6 @@
       }
    ],
    "733dm": [
-      {
-         "author" : "夏天岛",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "",
-               "title" : "总167·约法三章"
-            }
-         ],
-         "bookid": "5883",
-         "introduce" : "迷糊萝莉小狐妖",
-         "name" : "狐妖小红娘"
-      },
-      {
-         "author" : "九月光合",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "",
-               "title" : "163.回到过去"
-            }
-         ],
-         "bookid": "28238",
-         "introduce" : "王一只是一个不起眼的屌丝",
-         "name" : "我是废柴"
-      },
-      {
-         "author" : "深圳518动漫",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "",
-               "title" : "第102弹 有难同当"
-            }
-         ],
-         "bookid": "23638",
-         "introduce" : "就是什么职业都可以插一脚的人",
-         "name" : "通职者"
-      },
-      {
-         "author" : "许辰",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "",
-               "title" : "177 一百六十八 化煞"
-            }
-         ],
-         "bookid": "6636",
-         "introduce" : "镇魂街，此乃吸纳亡灵镇压恶灵之地",
-         "name" : "镇魂街"
-      }
-   ],
-   "57mh": [
       {
          "author" : "夏天岛",
          "chapters" : [

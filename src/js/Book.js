@@ -285,13 +285,14 @@
     *__getChapterFromContentSources(chapterA, index, options={}){
 
       let {
-        // bookSourceId = this.mainSourceId,
+        bookSourceId = this.mainSourceId,
         count = 1,
         excludes,
         contentSourceId,
         contentSourceChapterIndex,
         onlyCacheNoLoad,
-        noInfluenceWeight = false
+        noInfluenceWeight = false,
+        searchedSource = [] // 已经搜索过的源
       } = options;
 
       // const catalog = yield this.getCatalog(options);
@@ -314,9 +315,12 @@
         contentSourceId = null;
 
       // 如果选项中有 contentSourceId 和 contentSourceChapterIndex，则比对指定的索引
-      if(contentSourceId && typeof contentSourceChapterIndex == 'number'){
+      if(contentSourceId && typeof contentSourceChapterIndex == 'number' && !searchedSource.includes(contentSourceId)){
         return co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex))
-          .catch(handleWithNormalMethod);
+          .catch(error => {
+            searchedSource.push(contentSourceId);
+            handleWithNormalMethod(error);
+          });
       }
       else{
         return co(getChapterFromContentSources2(contentSourceId));
@@ -367,19 +371,32 @@
         if(excludes){
           excludes.forEach(exclude => {
             const i = contentSources.indexOf(exclude);
+            if(i < 0) return;
             contentSources.splice(i, 1);
             if(!noInfluenceWeight)
               self.sources[exclude].weight += EXECLUDE_WEIGHT;
           });
         }
+        if(searchedSource){
+          searchedSource.forEach(exclude => {
+            const i = contentSources.indexOf(exclude);
+            if(i < 0) return;
+            contentSources.splice(i, 1);
+          });
+        }
         if(includeSource){
           const i = contentSources.indexOf(includeSource);
-          contentSources.splice(i, 1);
+          if(i >= 0) contentSources.splice(i, 1);
           // 放到结尾处
           contentSources.push(includeSource);
           if(!noInfluenceWeight)
             self.sources[includeSource].weight += INCLUDE_WEIGHT;
         }
+
+        // 将主源放到结尾处
+        const i = contentSources.indexOf(bookSourceId);
+        if(i >= 0) contentSources.splice(i, 1);
+        contentSources.push(bookSourceId);
 
         while(contentSources.length > 0 && remainCount > 0){
           let sourceB = contentSources.pop();
@@ -455,6 +472,7 @@
         remainCount--;
         if(remainCount > 0){
           debugger;
+          searchedSource.push(contentSourceId);
           return handleWithNormalMethod();
         }
         else{

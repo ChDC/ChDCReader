@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"> -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <meta charset="UTF-8">
+
+
+    <!-- CSS -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../lib/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/mocha/mocha.css">
+    <link rel="stylesheet" href="add.css">
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="../cordova.js"></script>
+    <title>ChDCReader</title>
+  </head>
+
+
+  <body>
+
+    <h1>Add Book Source</h1>
+
+    <div id="config">
+
+      <div id="basicConfig">
+        <h2>Basic Config</h2>
+        <ul>
+          <li><label>ID: <input type="text" class="id"></label></li>
+          <li><label>Name: <input type="text" class="name"></label></li>
+          <li><label>Host: <input type="text" class="host"></label></li>
+          <li><label>Type: <select name="" class="type">
+            <option value="comics">Comics</option>
+            <option value="novel">Novel</option>
+            </select></label></li>
+          <li><label>Main Source Weight: <input type="number" class="mainSourceWeight" value="100"></label></li>
+          <li><label>Content Source Weight: <input type="number" class="contentSourceWeight" value="10"></label></li>
+        </ul>
+      </div>
+
+      <div id="searchConfig">
+        <h2>Search Config</h2>
+        <div class="request">
+          <h3>Request</h3>
+          <ul>
+            <li><label>URL: <input type="text" class="url"></label></li>
+            <li><label>Timeout: <input type="number" class="timeout"></label></li>
+          </ul>
+          <label>Data Type:<select class="datatype">
+            <option value="html">HTML</option>
+            <option value="json">JSON</option>
+          </select></label>
+       </div>
+        <div class="response">
+          <h3>Response</h3>
+          <label>List Element: <input type="text" class="list-selector"></label>
+          <h4>Book info</h4>
+          <table border="1" class="bookinfo">
+            <tbody>
+              <tr>
+                <th></th>
+                <th style="width:400px;">element</th>
+                <th>attribute</th>
+                <th>remove</th>
+                <th>extract</th>
+              </tr>
+              <tr class="id">
+                <th>id</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="name">
+                <th>name</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="author">
+                <th>author</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="coverImg">
+                <th>coverImg</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="introduce">
+                <th>introduce</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="detailConfig">
+        <h2>Book Info Config</h2>
+        <div class="request">
+          <h3>Request</h3>
+          <ul>
+            <li><label>URL: <input type="text" class="url"></label></li>
+            <li><label>Timeout: <input type="number" class="timeout"></label></li>
+          </ul>
+          <label>Data Type:<select class="datatype">
+            <option value="html">HTML</option>
+            <option value="json">JSON</option>
+          </select></label></div>
+        <div class="response">
+          <h3>Response</h3>
+          <h4>Book info</h4>
+          <table border="1" class="bookinfo">
+            <tbody>
+              <tr>
+                <th></th>
+                <th style="width:400px;">element</th>
+                <th>attribute</th>
+                <th>remove</th>
+                <th>extract</th>
+              </tr>
+              <tr class="name">
+                <th>name</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="author">
+                <th>author</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="coverImg">
+                <th>coverImg</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="introduce">
+                <th>introduce</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="lastestChapter">
+                <th>lastestChapter</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="catalogConfig">
+        <h2>Catalog Config</h2>
+        <div class="request">
+          <h3>Request</h3>
+          <ul>
+            <li><label>URL: <input type="text" class="url"></label></li>
+            <li><label>Timeout: <input type="number" class="timeout"></label></li>
+          </ul>
+          <label>Data Type:<select class="datatype">
+            <option value="html">HTML</option>
+            <option value="json">JSON</option>
+          </select></label>
+        </div>
+        <div class="response">
+          <h3>Response</h3>
+          <ul>
+            <li><label>Volume Element: <input type="text" class="volume-selector"></label><label><input type="checkbox" class="reverseVolume">Reverse Sort</label></li>
+            <li><label>Volume Name: <input type="text" class="volume-name"></label></li>
+            <li><label>List Element: <input type="text" class="list-selector"></label><label><input type="checkbox" class="reverseCatalog">Reverse Sort</label></li>
+          </ul>
+          <h4>Chapter info</h4>
+          <table border="1" class="chapterinfo">
+            <tbody>
+              <tr>
+                <th></th>
+                <th style="width:400px;">element</th>
+                <th>attribute</th>
+                <th>remove</th>
+                <th>extract</th>
+              </tr>
+              <tr class="title">
+                <th>title</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="link">
+                <th>link</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <div id="chapterConfig">
+        <h2>Chapter Config</h2>
+        <div class="request">
+          <h3>Request</h3>
+          <ul>
+            <li><label>URL: <input type="text" class="url"></label></li>
+            <li><label>Timeout: <input type="number" class="timeout"></label></li>
+          </ul>
+          <label>Data Type:<select class="datatype">
+            <option value="html">HTML</option>
+            <option value="json">JSON</option>
+          </select></label>
+        </div>
+        <div class="response">
+          <h3>Response</h3>
+          <table border="1" class="chapterinfo">
+            <tbody>
+              <tr>
+                <th></th>
+                <th style="width:400px;">element</th>
+                <th>attribute</th>
+                <th>remove</th>
+                <th>extract</th>
+              </tr>
+              <tr class="title">
+                <th>title</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+              <tr class="contentHTML">
+                <th>contentHTML</th>
+                <td><input type="text" class="element"></td>
+                <td><input type="text" class="attribute"></td>
+                <td><input type="text" class="remove"></td>
+                <td><input type="text" class="extract"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <div>
+        <label for="booksourceOutput">Output:</label>
+        <textarea id="booksourceOutput" name="" id="" cols="30" rows="10"></textarea>
+      </div>
+    </div>
+    <div>
+      <table border="1" id="testBooks">
+        <tbody>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Introduce</th>
+            <th>Chapter Title</th>
+            <th>Chapter Link</th>
+            <th>Chapter Content</th>
+          </tr>
+          <tr class="book">
+            <td><input type="text" class="id"></td>
+            <td><input type="text" class="name"></td>
+            <td><input type="text" class="author"></td>
+            <td><input type="text" class="introduce"></td>
+            <td><input type="text" class="chapter-title"></td>
+            <td><input type="text" class="chapter-link"></td>
+            <td><input type="text" class="chapter-content"></td>
+          </tr>
+          <tr class="book">
+            <td><input type="text" class="id"></td>
+            <td><input type="text" class="name"></td>
+            <td><input type="text" class="author"></td>
+            <td><input type="text" class="introduce"></td>
+            <td><input type="text" class="chapter-title"></td>
+            <td><input type="text" class="chapter-link"></td>
+            <td><input type="text" class="chapter-content"></td>
+          </tr>
+          <tr class="book">
+            <td><input type="text" class="id"></td>
+            <td><input type="text" class="name"></td>
+            <td><input type="text" class="author"></td>
+            <td><input type="text" class="introduce"></td>
+            <td><input type="text" class="chapter-title"></td>
+            <td><input type="text" class="chapter-link"></td>
+            <td><input type="text" class="chapter-content"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <label for="booksOutput">Output:</label>
+        <textarea id="booksOutput" name="" id="" cols="30" rows="10"></textarea>
+      </div>
+    </div>
+
+    <div id="floatPanel">
+      <div>
+        <button id="saveData">Save Data</button>
+        <button id="makeBookSource">Make BookSource</button>
+        <button id="makeBooks">Make Books</button>
+      </div>
+      <div>
+        <button id="testBookSource">Test All</button>
+        <button id="testSearchBook">Test Search Book</button>
+        <button id="testGetBookInfo">Test Get Book Info</button>
+        <button id="testCatalog">Test Catalog</button>
+        <button id="testChapter">Test Chapter</button>
+
+      </div>
+      <div id="mocha"></div>
+    </div>
+        <script type="text/plain">
+      debugger;
+    </script>
+    <script data-main="app" src="../lib/require.js"></script>
+
+  </body>
+
+</html>

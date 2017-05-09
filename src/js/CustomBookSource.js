@@ -10,7 +10,51 @@
   "use strict"
 
   // 定义一个用于存放自定义获取信息的钩子的集合
-  let customBookSource = {
+  let CBS = {
+    "common": {
+      // 用于存放一些公用的方法
+
+      getEncryptedData(html){
+        // 获取加密数据
+        let evalCode = html.match(/\beval(\(.*return p;?}\(.*?\)\))/i);
+        if(!evalCode) return null;
+        let data = utils.eval(evalCode[1]);
+        data = data.match(/{.*}/);
+        if(!data) return null;
+        data = JSON.parse(data[0].replace(/'/g, '"'));
+        return data;
+
+      },
+
+      getImages(html, key, host){
+        let data = CBS.common.getEncryptedData(html);
+        data = data[key].map(e => `${host}${e}`);
+        if(data.length <= 0) return null;
+        return data.map(e => `<img src="${e}">`).join('\n');
+      },
+
+      getComicsChapter(bsid, dict={}, getImgs){
+
+        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+
+        let link = this.getChapterLink(bsid, dict);
+        const bsm = this.__sources[bsid];
+
+        return utils.get(link)
+          .then(html => {
+            let content = getImgs(html);
+
+            const c = new Chapter();
+            c.content = content;
+            if(!c.content) return Promise.reject(206);
+
+            c.cid = dict.cid;
+            c.title = dict.title;
+            if(!c.cid && link) c.link = link;
+            return c;
+          });
+      }
+    },
 
     "comico": {
       // 把网站中的繁体中文转换为简体中文
@@ -247,143 +291,92 @@
       },
     },
 
-    "chuiyao": {
+    // "chuiyao": {
 
-      // 章节内容数据在 script 标签中
-      getChapter(bsid, dict={}, filterBookId=true){
+    //   // 章节内容数据在 script 标签中
+    //   getChapter(bsid, dict={}, filterBookId=true){
 
-        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+    //     utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
 
-        let link = this.getChapterLink(bsid, dict);
-        const bsm = this.__sources[bsid];
+    //     let link = this.getChapterLink(bsid, dict);
+    //     const bsm = this.__sources[bsid];
 
-        return utils.get(link)
-          .then(html => {
-            let content = getImgs(html);
+    //     return utils.get(link)
+    //       .then(html => {
+    //         let content = getImgs(html);
 
-            const c = new Chapter();
-            c.content = content;
-            if(!c.content) return Promise.reject(206);
+    //         const c = new Chapter();
+    //         c.content = content;
+    //         if(!c.content) return Promise.reject(206);
 
-            c.cid = dict.cid;
-            c.title = dict.title;
-            if(!c.cid && link) c.link = link;
-            return c;
-          });
+    //         c.cid = dict.cid;
+    //         c.title = dict.title;
+    //         if(!c.cid && link) c.link = link;
+    //         return c;
+    //       });
 
-        function getImgs(html) {
-          let data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
-          if(!data)
-            return null;
-          data = atob(data[1]);
-          if(!data) return null;
-          data = data.split("$qingtiandy$");
-          if(filterBookId)
-            data = data.filter(e => e.includes(dict.bookid));
-          if(data.length <= 0)
-            return null;
-          return data.map(e => `<img src="${e}">`).join('\n');
-        }
-      }
-    },
+    //     function getImgs(html) {
+    //       let data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
+    //       if(!data)
+    //         return null;
+    //       data = atob(data[1]);
+    //       if(!data) return null;
+    //       data = data.split("$qingtiandy$");
+    //       if(filterBookId)
+    //         data = data.filter(e => e.includes(dict.bookid));
+    //       if(data.length <= 0)
+    //         return null;
+    //       return data.map(e => `<img src="${e}">`).join('\n');
+    //     }
+    //   }
+    // },
 
-    "dangniao": {
+    // "dangniao": {
 
-      // 和 吹妖 一样
-      getChapter(bsid, dict={}){
-        return customBookSource["chuiyao"].getChapter.apply(this, ["dangniao", dict, false]);
-      }
-    },
+    //   // 和 吹妖 一样
+    //   getChapter(bsid, dict={}){
+    //     return CBS["chuiyao"].getChapter.apply(this, ["dangniao", dict, false]);
+    //   }
+    // },
 
     "omanhua": {
+
       beforeSearchBook(){
         let keyword = arguments[1];
-        let letter = translate.getFirstPY(keyword);
+        let letter = keyword ? translate.getFirstPY(keyword) : "A";
         arguments[1] = {keyword: keyword, litter: letter};
         return Promise.resolve(arguments);
       },
 
       getChapter(bsid, dict={}){
-
-        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
-
-        let link = this.getChapterLink(bsid, dict);
-        const bsm = this.__sources[bsid];
-
-        return utils.get(link)
-          .then(html => {
-            let content = getImgs(html);
-
-            const c = new Chapter();
-            c.content = content;
-            if(!c.content) return Promise.reject(206);
-
-            c.cid = dict.cid;
-            c.title = dict.title;
-            if(!c.cid && link) c.link = link;
-            return c;
-          });
-
-        function getImgs(html) {
-          let evalCode = html.match(/var uzmh = uzmh \|\| {};eval(\(.*return p;}\(.*?\)\))/i);
-          if(!evalCode) return null;
-          let data = utils.eval(evalCode[1]);
-          data = data.match(/({.*})\|\|{}/);
+        return CBS.common.getComicsChapter.bind(this)(bsid, dict,
+         html => {
+          if(html.match('为维护版权方权益或违反国家法律法规本站不提供阅读'))
+            return null;
+          let data = CBS.common.getEncryptedData(html);
           if(!data) return null;
-          data = JSON.parse(data[1]);
 
           data = data.files.map(e => `http://pic.fxdm.cc${data.path}${e}`);
           if(data.length <= 0) return null;
           return data.map(e => `<img src="${e}">`).join('\n');
-        }
+         });
       }
     },
 
     "2manhua": {
       getChapter(bsid, dict={}){
-        utils.log(`BookSourceManager: Load Chpater content from ${bsid}`);
+        return CBS.common.getComicsChapter.bind(this)(bsid, dict,
+         html => CBS.common.getImages(html, "fs", "http://tupianku.333dm.com"));
+      }
+    },
 
-        let link = this.getChapterLink(bsid, dict);
-        const bsm = this.__sources[bsid];
-
-        return utils.get(link)
-          .then(html => {
-            let content = getImgs(html);
-
-            const c = new Chapter();
-            c.content = content;
-            if(!c.content) return Promise.reject(206);
-
-            c.cid = dict.cid;
-            c.title = dict.title;
-            if(!c.cid && link) c.link = link;
-            return c;
-          });
-
-        // 获取章节内容的专用函数
-        function getImgs(html) {
-          // let host = { // 取自 http://www.2manhua.com/templates/default/scripts/configs.js?v=1.0.3
-          //     'auto': ['tupianku.333dm.com'],
-          //     'telecom': ['pic.333dm.com'],
-          //     'unicom': ['images.333dm.com'],
-          //     'spare': ['pic.333dm.com']
-          // };
-
-          // 获取加密数据
-          let evalCode = html.match(/"text\/javascript">eval(\(.*return p}\(.*?\)\))/i);
-          if(!evalCode) return null;
-          let data = utils.eval(evalCode[1]);
-          data = data.match(/{.*}/);
-          if(!data) return null;
-          data = JSON.parse(data[0].replace(/'/g, '"'));
-
-          data = data.fs.map(e => `http://tupianku.333dm.com${e}`);
-          if(data.length <= 0) return null;
-          return data.map(e => `<img src="${e}">`).join('\n');
-        }
+    "57mh": {
+      getChapter(bsid, dict={}){
+        return CBS.common.getComicsChapter.bind(this)(bsid, dict,
+         html => CBS.common.getImages(html, "fs", "http://tupianku.333dm.com"));
       }
     }
   };
 
-  return customBookSource;
+  return CBS;
 }));
