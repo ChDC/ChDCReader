@@ -56,6 +56,7 @@
       equal(true, !!Chapter.equalTitle("102弹 有难同当", "第102弹 有难同当"));
       equal(true, !!Chapter.equalTitle("102弹", "第102弹 有难同当", true));
       equal(true, !!Chapter.equalTitle("第504章节 好的【abc】", "第五百零三章节    好的【abc】", true));
+      equal(true, !!Chapter.equalTitle("第050话", "50话", true));
     });
   });
 });

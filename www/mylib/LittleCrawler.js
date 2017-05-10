@@ -26,7 +26,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (!ajax) this.ajax = a;else if (LittleCrawler.type(ajax) == "object") this.ajax = Object.assign(a, ajax);else this.ajax = ajax;
 
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
+      this.insecurityTagList = ['body', 'head', 'title', 'style', 'link', 'meta', 'iframe'];
       this.singleTagList = ['meta', 'link'];
 
       this.fixurlAttributeList = ['href', "lc-src"];
@@ -59,7 +59,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var method = (request.method || "GET").toLowerCase();
         var type = (request.type || "HTML").toLowerCase();
         var headers = request.headers || {};
-
+        var params = request.params || {};
+        for (var k in params) {
+          params[k] = LittleCrawler.format(params[k], dict);
+        }
         var ajax = void 0;
         switch (LittleCrawler.type(this.ajax)) {
           case "function":
@@ -76,7 +79,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
         }
 
-        return ajax(method, url, request.params, undefined, headers, { timeout: request.timeout }).then(function (data) {
+        return ajax(method, url, params, undefined, headers, { timeout: request.timeout }).then(function (data) {
           return _this2.parse(data, type, response, url, dict);
         });
       }
@@ -411,6 +414,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return LittleCrawler.replaceTag(h, tag, "lc-" + tag);
         }, html);
 
+        html = html.replace(/<script\b([^>]*)(type="[^"]*")?/gi, '<script$1 type="text/plain"');
+
         html = this.insecurityAttributeList.reduce(function (h, attr) {
           return LittleCrawler.replaceAttribute(h, attr, "lc-" + attr);
         }, html);
@@ -423,6 +428,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         html = this.insecurityTagList.reduce(function (h, tag) {
           return LittleCrawler.replaceTag(h, "lc-" + tag, tag);
         }, html);
+
+        html = html.replace(/<script\b([^>]*)type="text\/plain"/gi, '<script$1');
 
         html = this.insecurityAttributeList.reduce(function (h, attr) {
           return LittleCrawler.replaceAttribute(h, "lc-" + attr, attr);
@@ -501,7 +508,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     return new Promise(function (resolve, reject) {
       if (!url) return reject(new Error("url is null"));
-      url = LittleCrawler.__urlJoin(url, params);
+
+      method = method.toLowerCase();
+
+      var sendData = null;
+      switch (method) {
+        case "get":
+          url = LittleCrawler.__urlJoin(url, params);
+          break;
+        case "post":
+          sendData = Object.keys(params).map(function (k) {
+            return k + "=" + params[k];
+          }).join("&");;
+          break;
+      }
+
       console.log("Get: " + url);
       url = encodeURI(url);
       retry = retry || 0;
@@ -549,7 +570,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         reject(new Error("AjaxError: Request Error"));
       };
 
-      request.send(null);
+      request.send(sendData);
     });
   }, LittleCrawler.getDataFromObject = function (json, key) {
     function operatorFilter(element, parent, args) {

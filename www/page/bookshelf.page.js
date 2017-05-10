@@ -41,7 +41,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         });
 
         this.container = $('.container');
-        this.scrollTop = app.settings.settings.scrollTop.bookshelf || 0;
       }
     }, {
       key: "onPause",

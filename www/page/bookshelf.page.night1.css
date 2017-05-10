@@ -27,3 +27,7 @@ body, .dropdown-menu, .modal-content{
     color: #f1f1cf;
 }
 
+
+#modalFinishedBooks button.close{
+    color: white;
+}

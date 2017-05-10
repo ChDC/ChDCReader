@@ -15,3 +15,7 @@ body, .modal-content{
     color: #fff;
     background-color: #EE0000;
 }
+
+#clearSearchLog{
+    color: white;
+}

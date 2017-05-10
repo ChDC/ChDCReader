@@ -1,7 +1,8 @@
+
 "use strict";
 
 requirejs.config({
-  "baseUrl": "js",
+  "baseUrl": "../js",
   "shim": {
     "bootstrap": { "deps": ['jquery'] },
     "co": { deps: [], exports: 'co' },
@@ -28,8 +29,14 @@ requirejs.config({
     "PageManager": "../mylib/PageManager",
     "LittleCrawler": "../mylib/LittleCrawler",
     "translate": "../mylib/translate",
-    "fileSystem": "../mylib/fileSystem"
+    "fileSystem": "../mylib/fileSystem",
+
+    "testbook": "../test/testbook"
   }
 });
 
 requirejs(['polyfill', 'bootstrap']);
+
+requirejs(['../sourceManager/add'], function (add) {
+  add.onLoad();
+});

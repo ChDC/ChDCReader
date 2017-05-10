@@ -95,7 +95,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", "ReadingRecord", "uifactor
             }).then(function (page) {
               page.addEventListener('myclose', _this3.readbookpageclose.bind(_this3));
             });
-          }, "#book-chapters"));
+          }, "#book-chapters", function (chapter, nc) {
+            if (chapter.isVIP()) nc.addClass("vip-chapter");
+          }));
         }).catch(function (error) {
           return uiutils.showError(app.error.getMessage(error));
         });

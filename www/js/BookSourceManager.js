@@ -12,7 +12,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
   }));else window["BookSourceManager"] = factory(co, utils, LittleCrawler, Book, BookSource, Chapter);
-})(['co', "utils", "LittleCrawler", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, Book, BookSource, Chapter) {
+})(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict";
 
   var BookSourceManager = function () {
@@ -32,16 +32,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function loadConfig(configFileOrConfig) {
         var _this = this;
 
+        var loadSources = function loadSources(data) {
+          _this.__sources = {};
+          data.valid.forEach(function (key) {
+            return _this.__sources[key] = data.sources[key];
+          });
+        };
         if (configFileOrConfig && typeof configFileOrConfig == 'string') {
           return utils.getJSON(configFileOrConfig).then(function (data) {
-            _this.__sources = {};
-            data.valid.forEach(function (key) {
-              return _this.__sources[key] = data.sources[key];
-            });
+            loadSources(data);
             return _this.__sources;
           });
         } else if (configFileOrConfig) {
-          this.__sources = configFileOrConfig;
+          loadSources(configFileOrConfig);
         }
         return this.__sources;
       }
@@ -51,7 +54,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _this2 = this;
 
         if (!this.__customBookSource) return;
-        var customFunctionList = ["getBook", "searchBook", "getBookInfo", "getChapter", "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
+        var customFunctionList = ["getBook", "searchBook", "getBookInfo", "getChapterContent", "getBookCatalog", "getBookCatalogLink", "getLastestChapter"];
 
         customFunctionList.forEach(function (cf) {
           var oldFunction = _this2[cf];
@@ -59,6 +62,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           _this2[cf] = function (bsid) {
             var _this3 = this,
                 _arguments = arguments;
+
+            utils.log("BookSourceManager: Call " + cf + " from " + bsid);
 
             var beforeFunctions = ["before" + cf, "before" + cf[0].toUpperCase() + cf.slice(1)];
             var argsPromise = Promise.resolve(arguments);
@@ -148,7 +153,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "getBook",
       value: function getBook(bsid, bookName, bookAuthor) {
-        utils.log("BookSourceManager: Get book \"" + bookName + "\" from " + bsid);
 
         if (!bsid || !bookName || !(bsid in this.__sources)) return Promise.reject(401);
 
@@ -169,8 +173,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             filterSameResult = _ref$filterSameResult === undefined ? true : _ref$filterSameResult,
             _ref$bookType = _ref.bookType,
             bookType = _ref$bookType === undefined ? "" : _ref$bookType;
-
-        utils.log("BookSourceManager: Search Book in all booksource \"" + keyword + "\"");
 
         var result = {};
         var errorList = [];
@@ -259,7 +261,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "__createBook",
-      value: function __createBook(bs, m) {
+      value: function __createBook(bs, m, language) {
+
+        m = translate.toSC(language, m, ['name', 'author', 'catagory', 'introduce', "lastestChapter"]);
 
         m.cover = m.coverImg;
 
@@ -272,23 +276,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         book.sources[bs.id] = bss;
 
         book.mainSourceId = bs.id;
+
         return book;
       }
     }, {
       key: "searchBook",
       value: function searchBook(bsid, keyword) {
 
-        utils.log("BookSourceManager: Search Book \"" + keyword + "\" from " + bsid);
-
         var self = this;
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
 
+        keyword = translate.fromSC(bs.language, keyword, ['keyword']);
+
         var dict = void 0;
-        if (utils.type(keyword) == "object") {
+        if ((typeof keyword === "undefined" ? "undefined" : _typeof(keyword)) == "object") {
           dict = keyword;
           keyword = dict.keyword;
-        } else dict = { keyword: keyword };
+        } else dict = { keyword: keyword ? keyword : "" };
 
         return this.__lc.get(bs.search, dict).then(getBooks);
 
@@ -306,7 +311,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               m.author = m.author || "";
               if (!checkBook(m)) continue;
-              books.push(self.__createBook(bs, m));
+              books.push(self.__createBook(bs, m, bs.language));
             }
           } catch (err) {
             _didIteratorError5 = true;
@@ -363,8 +368,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function getBookInfo(bsid, dict) {
         var _this5 = this;
 
-        utils.log("BookSourceManager: Get Book Info from " + bsid);
-
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
 
@@ -372,27 +375,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           m.bookid = dict.bookid;
           m.catalogLink = dict.catalogLink;
           m.detailLink = dict.detailLink;
-          var book = _this5.__createBook(bs, m);
+          var book = _this5.__createBook(bs, m, bs.language);
           return book;
         });
       }
     }, {
       key: "getLastestChapter",
       value: function getLastestChapter(bsid, dict) {
-        utils.log("BookSourceManager: Get Lastest Chapter from " + bsid + "\"");
 
-        var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
+        var bs = this.__sources[bsid];
+        if (!bs) return Promise.reject("Illegal booksource!");
 
-        return this.__lc.get(bsm.detail, dict).then(function (data) {
-          return data.lastestChapter.replace(/^最新更新\s+/, '');
+        return this.__lc.get(bs.detail, dict).then(function (_ref2) {
+          var lastestChapter = _ref2.lastestChapter;
+
+          lastestChapter = translate.toSC(bs.language, lastestChapter);
+          return lastestChapter.replace(/^最新更新\s+/, '');
         });
       }
     }, {
       key: "getBookCatalogLink",
       value: function getBookCatalogLink(bsid, dict) {
-
-        utils.log("BookSourceManager: Get Book Catalog Link from " + bsid + "\"");
 
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
@@ -405,47 +408,42 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "getBookCatalog",
       value: function getBookCatalog(bsid, dict) {
 
-        utils.log("BookSourceManager: Refresh Catalog from " + bsid);
+        var bs = this.__sources[bsid];
+        if (!bs) return Promise.reject("Illegal booksource!");
 
-        var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
-
-        return this.__lc.get(bsm.catalog, dict).then(function (data) {
-          if (bsm.catalog.hasVolume) data = data.map(function (v) {
+        return this.__lc.get(bs.catalog, dict).then(function (data) {
+          if (bs.catalog.hasVolume) data = data.map(function (v) {
             return v.chapters.map(function (c) {
               return c.volume = v.name, c;
             });
           }).reduce(function (s, e) {
             return s.concat(e);
           }, []);
+          data = data.map(function (c) {
+            return translate.toSC(bs.language, c, ['title']);
+          });
           return data.map(function (c) {
             return LittleCrawler.cloneObjectValues(new Chapter(), c);
           });
         });
       }
     }, {
-      key: "getChapter",
-      value: function getChapter(bsid) {
+      key: "getChapterContent",
+      value: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
         if (!dict.link && !dict.cid) return Promise.reject(206);
 
-        var bsm = this.__sources[bsid];
-        if (!bsm) return Promise.reject("Illegal booksource!");
+        var bs = this.__sources[bsid];
+        if (!bs) return Promise.reject("Illegal booksource!");
 
-        return this.__lc.get(bsm.chapter, dict).then(function (data) {
-          var c = new Chapter();
-          if (!data.contentHTML.match(/<\/?\w+.*?>/i)) c.content = LittleCrawler.text2html(data.contentHTML);else c.content = LittleCrawler.clearHtml(data.contentHTML);
-          if (!c.content) return Promise.reject(206);
+        return this.__lc.get(bs.chapter, dict).then(function (_ref3) {
+          var content = _ref3.contentHTML;
 
-          c.title = data.title ? data.title : dict.title;
-          c.cid = data.cid ? data.cid : dict.cid;
-          if (!c.cid && dict.link) c.link = dict.link;
-
-          return c;
+          if (!content.match(/<\/?\w+.*?>/i)) content = LittleCrawler.text2html(content);else content = LittleCrawler.clearHtml(content);
+          content = translate.toSC(bs.language, content);
+          return content;
         });
       }
     }, {
@@ -458,7 +456,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "getOfficialURLs",
       value: function getOfficialURLs(bsid, dict, key) {
-        utils.log("BookSourceManager: Get Book Detail Link from " + bsid + "\"");
 
         var bs = this.__sources[bsid];
         if (!bs) throw new Error("Illegal booksource!");
@@ -477,7 +474,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "getBookDetailLink",
       value: function getBookDetailLink(bsid, dict) {
-        utils.log("BookSourceManager: Get Book Detail Link from " + bsid + "\"");
 
         var bs = this.__sources[bsid];
         if (!bs) throw new Error("Illegal booksource!");
@@ -489,14 +485,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function getChapterLink(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        utils.log("BookSourceManager: Get Chpater link from " + bsid);
 
         if (!dict.link && !dict.cid) throw new Error(206);
 
-        var bsm = this.__sources[bsid];
-        if (!bsm) throw new Error("Illegal booksource!");
+        var bs = this.__sources[bsid];
+        if (!bs) throw new Error("Illegal booksource!");
 
-        return this.__lc.getLink(bsm.chapter.request, dict);
+        return this.__lc.getLink(bs.chapter.request, dict);
       }
     }, {
       key: "getSourcesKeysByMainSourceWeight",

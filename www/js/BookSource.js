@@ -165,8 +165,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }).catch(function (error) {
           if (error != 207) console.error(error);
 
-          return _this5.bookSourceManager.getChapter(_this5.id, Object.assign({}, _this5, chapter)).then(function (chapter) {
-            return _this5.__cacheChapter(chapter);
+          return _this5.bookSourceManager.getChapterContent(_this5.id, Object.assign({}, _this5, chapter)).then(function (content) {
+            if (!content) return Promise.reject(206);
+            var c = new Chapter();
+            Object.assign(c, chapter);
+            c.content = content;
+            _this5.__cacheChapter(c);
+            return c;
           });
         });
       }

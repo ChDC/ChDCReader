@@ -34,6 +34,12 @@
     width: 100%;
 }
 
+.vip-chapter:after{
+    content: "vip";
+    font-size: 80%;
+    margin-left: 10px;
+    color: red;
+}
 
 /*********** Color ***************/
 .btn-link{

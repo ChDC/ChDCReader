@@ -15,15 +15,49 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
     function MyPage() {
       _classCallCheck(this, MyPage);
 
-      return _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).call(this));
+
+      _this.scrollTop = 0;
+      _this.container = $('.container');
+
+      _this.loadedRemember = false;
+      _this.remember = {
+        bookType: "",
+        ifFilterResult: false,
+        searchLog: [],
+        bookSourceId: ""
+      };
+      return _this;
     }
 
     _createClass(MyPage, [{
       key: "onLoad",
       value: function onLoad(_ref) {
+        var _this2 = this;
+
         var params = _ref.params;
 
         this.loadView();
+        if (!this.loadedRemember) utils.loadData("search.json").then(function (data) {
+          if (data) _this2.remember = data;
+          _this2.loadRemember();
+        });else this.loadRemember();
+      }
+    }, {
+      key: "onPause",
+      value: function onPause() {
+        this.scrollTop = this.container.scrollTop();
+      }
+    }, {
+      key: "onResume",
+      value: function onResume() {
+        this.container.scrollTop(this.scrollTop);
+      }
+    }, {
+      key: "saveRememberData",
+      value: function saveRememberData() {
+        utils.saveData("search.json", this.remember);
+        this.loadedRemember = true;
       }
     }, {
       key: "loadBooks",
@@ -97,24 +131,32 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
     }, {
       key: "search",
       value: function search() {
-        var _this2 = this;
+        var _this3 = this;
 
+        $("#result").show();
+        $("#searchLogPanel").hide();
         app.showLoading();
-        var keyword = $("#keyword").val();
+        var keyword = $("#keyword").val().trim();
         var bookSourceId = $("#bookSource").val();
         var bookType = $("#bookType").val();
-        var isFilterResult = $("#chkFilterResult")[0].checked;
+        var ifFilterResult = $("#chkFilterResult")[0].checked;
+
+        this.remember.bookType = bookType;
+        this.remember.ifFilterResult = ifFilterResult;
+        this.remember.bookSourceId = bookSourceId;
+        if (!this.remember.searchLog.includes(keyword)) this.remember.searchLog.unshift(keyword);
+        this.saveRememberData();
 
         $('#result').empty();
-        if (!keyword || !bookSourceId) {
+        if (!keyword) {
           uiutils.showError("请输入要搜索的关键字");
           return;
         }
 
-        if (bookSourceId == "#all#") {
-          app.bookSourceManager.searchBookInAllBookSource(keyword, { filterSameResult: isFilterResult, bookType: bookType }).then(function (books) {
+        if (!bookSourceId) {
+          app.bookSourceManager.searchBookInAllBookSource(keyword, { filterSameResult: ifFilterResult, bookType: bookType }).then(function (books) {
             app.hideLoading();
-            _this2.loadBooks("#result", books);
+            _this3.loadBooks("#result", books);
           }).catch(function (error) {
             app.hideLoading();
             uiutils.showError(app.error.getMessage(error));
@@ -124,21 +166,40 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
 
         app.bookSourceManager.searchBook(bookSourceId, keyword).then(function (books) {
           app.hideLoading();
-          _this2.loadBooks("#result", books);
+          _this3.loadBooks("#result", books);
         }).catch(function (error) {
           app.hideLoading();
           uiutils.showError(app.error.getMessage(error));
         });
       }
     }, {
+      key: "loadRemember",
+      value: function loadRemember() {
+        var _this4 = this;
+
+        $("#bookSource").val(this.remember.bookSourceId);
+        $("#bookType").val(this.remember.bookType);
+        $("#chkFilterResult")[0].checked = this.remember.ifFilterResult;
+
+        var tsl = $(".template .searchLogItem");
+        $("#searchLog").empty();
+        this.remember.searchLog.forEach(function (sl) {
+          var nsl = tsl.clone();
+          nsl.find('.title').text(sl);
+          nsl.click(function (e) {
+            $("#keyword").val(sl);
+            _this4.search();
+          });
+          $("#searchLog").append(nsl);
+        });
+      }
+    }, {
       key: "loadView",
       value: function loadView() {
-        var _this3 = this;
+        var _this5 = this;
 
         var bookSource = $("#bookSource");
         var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
-
-        bookSource.append('<option value ="#all#">[全网搜索]</option>');
 
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
@@ -168,16 +229,26 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
         }
 
         $("#btnClose").click(function (e) {
-          return _this3.close();
+          return _this5.close();
         });
         $("#btnSearch").click(function (e) {
-          return _this3.search();
+          return _this5.search();
         });
         $("#keyword").on('keydown', function (event) {
-          return !(event.keyCode == 13 && _this3.search());
-        });
-        $("#keyword").on('focus', function (event) {
+          return !(event.keyCode == 13 && _this5.search());
+        }).on('focus', function (event) {
           return event.currentTarget.select();
+        }).on('input', function (event) {
+          if (!$("#keyword").val()) {
+            $("#result").hide();
+            $("#searchLogPanel").show();
+            _this5.loadRemember();
+          }
+        });
+        $("#clearSearchLog").click(function (e) {
+          _this5.remember.searchLog = [];
+          _this5.saveRememberData();
+          _this5.loadRemember();
         });
       }
     }]);
