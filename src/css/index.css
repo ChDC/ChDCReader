@@ -119,6 +119,10 @@ ul {
     background-color: #EE0000;
 }
 
+.noshadow{
+    box-shadow: none;
+}
+
 .titlebar .left-button{
     float: left;
 }

@@ -102,7 +102,7 @@
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
+      this.insecurityTagList = ['body', 'head', 'title', 'style', 'link', 'meta', 'iframe'];
       this.singleTagList = ['meta', 'link']; // 用于转换单标签
 
       this.fixurlAttributeList = ['href', "lc-src"]; // 需要修复 url 的属性
@@ -134,6 +134,9 @@
       let method = (request.method || "GET").toLowerCase();
       let type = (request.type || "HTML").toLowerCase();
       let headers = request.headers || {};
+      let params = request.params || {};
+      for(let k in params)
+        params[k] = LittleCrawler.format(params[k], dict);
 
       // 获取 ajax 操作对象
       let ajax;
@@ -163,7 +166,7 @@
       }
 
       // 发出请求并解析响应
-      return ajax(method, url, request.params, undefined, headers,
+      return ajax(method, url, params, undefined, headers,
                   {timeout: request.timeout})
         .then(data => this.parse(data, type, response, url, dict));
     }
@@ -509,6 +512,9 @@
 
       html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
 
+      // 将 script 标签的 type 修改
+      html = html.replace(/<script\b([^>]*)(type="[^"]*")?/gi, '<script$1 type="text/plain"');
+
       // 图片的 src 属性转换成 lc-src 属性
       html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, attr, `lc-${attr}`), html);
       return html;
@@ -518,6 +524,8 @@
     __reverseHTML(html){
       if(!html) return html;
       html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, `lc-${tag}`, tag), html);
+
+      html = html.replace(/<script\b([^>]*)type="text\/plain"/gi, '<script$1');
 
       // 图片的 src 属性转换成 lc-src 属性
       html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, `lc-${attr}`, attr), html);
@@ -598,7 +606,19 @@
 
     return new Promise((resolve, reject) => {
       if(!url) return reject(new Error("url is null"));
-      url = LittleCrawler.__urlJoin(url, params);
+
+      method = method.toLowerCase();
+
+      let sendData = null;
+      switch(method){
+        case "get":
+          url = LittleCrawler.__urlJoin(url, params);
+          break;
+        case "post":
+          sendData = Object.keys(params).map(k => `${k}=${params[k]}`).join("&");;
+          break;
+      }
+
       console.log(`Get: ${url}`);
       url = encodeURI(url);
       retry = retry || 0;
@@ -653,7 +673,7 @@
         reject(new Error("AjaxError: Request Error"));
       }
 
-      request.send(null);
+      request.send(sendData);
     });
   },
 

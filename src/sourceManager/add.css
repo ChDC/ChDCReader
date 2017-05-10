@@ -1,0 +1,38 @@
+body{
+    padding: 20px;
+}
+
+#testPanel{
+    position: relative;
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+#mocha{
+    margin: 10px;
+}
+
+#mocha-report li.suite h1{
+    display: none;
+}
+
+/*#mocha-stats{
+    position: absolute;
+}*/
+
+tr input{
+    width: 100%;
+}
+
+/*input[type=text] {
+    width: 300px;
+}*/
+
+#config h2 {
+    display: inline;
+}
+
+textarea {
+    display: block;
+}

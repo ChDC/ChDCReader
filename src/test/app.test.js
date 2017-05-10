@@ -1,28 +1,28 @@
 "use strict"
 
 require(["../js/config"], function(){
-    requirejs(["mocha"], function(mocha){
+  requirejs(["mocha"], function(mocha){
 
-        mocha.setup('bdd');
-        mocha.timeout(10000);
+    mocha.setup('bdd');
+    mocha.timeout(10000);
 
-        //---- 配置要测试的模块 ---
-        let testList = [
-            "mocha",
-            "browser",
-            "Chapter",
-            "BookSourceManager",
-            "utils",
-            "translate",
-            "LittleCrawler",
-        ];
+    //---- 配置要测试的模块 ---
+    let testList = [
+      "mocha",
+      "browser",
+      "Chapter",
+      "BookSourceManager",
+      "utils",
+      "translate",
+      "LittleCrawler",
+    ];
 
-        //---- 配置结束 ----
+    //---- 配置结束 ----
 
-        require(testList.map(e => `../test/${e}.test`), function(){
-            mocha.run();
-        })
-    });
+    require(testList.map(e => `../test/${e}.test`), function(){
+      mocha.run();
+    })
+  });
 });
 
 

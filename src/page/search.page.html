@@ -4,8 +4,8 @@
 </div>
 
 <div class="container">
-  <div class="titlebar row">
-    <input class="col-xs-6" id="keyword" type="text" placeholder="输入书名或作者名" value="一念永恒" />
+  <div class="titlebar row noshadow" >
+    <input class="col-xs-6" id="keyword" type="text" placeholder="输入书名或作者名" />
     <select class="col-xs-4" id="bookType">
       <option value="">所有</option>
       <option value="novel">小说</option>
@@ -16,7 +16,17 @@
   </div>
   <div class="titlebar row">
     <div class="col-xs-4"><label id="lblFilterResult"><input type="checkbox" id="chkFilterResult" name="">筛选结果</label></div>
-    <select class="col-xs-6" id="bookSource"></select>
+    <select class="col-xs-6" id="bookSource">
+      <option value ="">[全网搜索]</option>
+    </select>
+  </div>
+  <div id="searchLogPanel">
+    <h4>搜索记录：</h4>
+    <button id="clearSearchLog" class="close"><span>&times;</span></button>
+    <ul id="searchLog">
+
+    </ul>
+
   </div>
   <ul id="result">
   </ul>
@@ -44,5 +54,9 @@
 
       <span class="book-booksource">Test</span>
     </div>
+  </li>
+
+  <li class="searchLogItem">
+    <span class="title"></span>
   </li>
 </div>

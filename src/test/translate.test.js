@@ -17,13 +17,13 @@
     let tc = ["ReLIFE 重返17歲", "依照日期", "依照種類", "依照排名", "漫畫新手村","report167. 不純的願動機"];
 
     it('转换为简体中文', () => {
-      equal(undefined, translate.toSimpleChinese());
-      sc.forEach((e,i) => equal(e, translate.toSimpleChinese(tc[i])));
+      equal(undefined, translate.tc2sc());
+      sc.forEach((e,i) => equal(e, translate.tc2sc(tc[i])));
     });
 
     it('转换为繁体中文', () => {
-      equal(undefined, translate.toTraditionChinese());
-      tc.forEach((e,i) => equal(e, translate.toTraditionChinese(sc[i])));
+      equal(undefined, translate.sc2tc());
+      tc.forEach((e,i) => equal(e, translate.sc2tc(sc[i])));
     });
   });
 

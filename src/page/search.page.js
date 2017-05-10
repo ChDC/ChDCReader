@@ -3,8 +3,44 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
 
   class MyPage extends Page{
 
+    constructor(){
+      super();
+      this.scrollTop = 0;
+      this.container = $('.container');
+
+      this.loadedRemember = false;
+      this.remember = {
+        bookType: "",
+        ifFilterResult: false, // 是否过滤结果
+        searchLog: [], // 搜索记录
+        bookSourceId: ""
+      };
+    }
+
     onLoad({params}){
       this.loadView();
+      if(!this.loadedRemember)
+        utils.loadData("search.json")
+          .then(data => {
+            if(data)
+              this.remember = data;
+            this.loadRemember();
+          });
+      else
+        this.loadRemember();
+    }
+
+    onPause(){
+      this.scrollTop = this.container.scrollTop();
+    }
+
+    onResume(){
+      this.container.scrollTop(this.scrollTop);
+    }
+
+    saveRememberData(){
+      utils.saveData("search.json", this.remember);
+      this.loadedRemember = true;
     }
 
     // 加载结果列表
@@ -52,22 +88,32 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
     }
 
     search(){
+      $("#result").show();
+      $("#searchLogPanel").hide();
       app.showLoading();
-      const keyword = $("#keyword").val();
+      const keyword = $("#keyword").val().trim();
       const bookSourceId = $("#bookSource").val();
       const bookType = $("#bookType").val();
-      const isFilterResult = $("#chkFilterResult")[0].checked
+      const ifFilterResult = $("#chkFilterResult")[0].checked
+
+      // 记住数据
+      this.remember.bookType = bookType;
+      this.remember.ifFilterResult = ifFilterResult;
+      this.remember.bookSourceId = bookSourceId;
+      if(!this.remember.searchLog.includes(keyword))
+        this.remember.searchLog.unshift(keyword);
+      this.saveRememberData();
 
       $('#result').empty();
-      if(!keyword || !bookSourceId){
+      if(!keyword){
         uiutils.showError("请输入要搜索的关键字");
         return;
       }
 
-      if(bookSourceId == "#all#"){
+      if(!bookSourceId){
         // 全网搜索
         app.bookSourceManager.searchBookInAllBookSource(keyword,
-              {filterSameResult: isFilterResult, bookType: bookType})
+              {filterSameResult: ifFilterResult, bookType: bookType})
           .then(books => {
             app.hideLoading();
             this.loadBooks("#result", books);
@@ -91,27 +137,53 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
         });
     }
 
+    loadRemember(){
+      // $("#keyword").val(this.remember.searchLog[0] || "");
+      $("#bookSource").val(this.remember.bookSourceId);
+      $("#bookType").val(this.remember.bookType);
+      $("#chkFilterResult")[0].checked = this.remember.ifFilterResult;
+
+      let tsl = $(".template .searchLogItem")
+      $("#searchLog").empty();
+      this.remember.searchLog.forEach(sl => {
+        let nsl = tsl.clone();
+        nsl.find('.title').text(sl);
+        nsl.click(e => {
+          $("#keyword").val(sl);
+          this.search();
+        });
+        $("#searchLog").append(nsl);
+      });
+    }
+
     loadView(){
       // 添加选项
       const bookSource = $("#bookSource");
       const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
 
-      // 添加特殊搜索
-      bookSource.append('<option value ="#all#">[全网搜索]</option>');
-
       // 添加书源搜索
-      for(const bskey of keys)
-      {
+      for(const bskey of keys){
         const bsName = app.bookSourceManager.getBookSource(bskey).name;
         const newOption = `<option value ="${bskey}">${bsName}</option>`;
         bookSource.append(newOption);
       }
 
-
       $("#btnClose").click(e => this.close());
       $("#btnSearch").click(e => this.search());
-      $("#keyword").on('keydown', event => !(event.keyCode==13 && this.search()));
-      $("#keyword").on('focus', event => event.currentTarget.select());
+      $("#keyword").on('keydown', event => !(event.keyCode==13 && this.search()))
+        .on('focus', event => event.currentTarget.select())
+        .on('input', event => {
+          if(!$("#keyword").val()){
+            $("#result").hide();
+            $("#searchLogPanel").show();
+            this.loadRemember();
+          }
+        });
+      $("#clearSearchLog").click(e=>{
+        this.remember.searchLog = [];
+        this.saveRememberData();
+        this.loadRemember();
+      });
     }
   }
 
