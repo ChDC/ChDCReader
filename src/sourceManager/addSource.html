@@ -19,14 +19,32 @@
     <title>ChDCReader</title>
   </head>
 
-
   <body>
 
     <h1>Add Book Source</h1>
 
-    <div id="config">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#basicConfig" data-toggle="tab">Basic</a></li>
+      <li role="presentation"><a href="#searchConfig" role="tab" data-toggle="tab">Search</a></li>
+      <li role="presentation"><a href="#detailConfig" data-toggle="tab">Detail</a></li>
+      <li role="presentation"><a href="#catalogConfig" data-toggle="tab">Catalog</a></li>
+      <li role="presentation"><a href="#chapterConfig" data-toggle="tab">Chapter</a></li>
+      <li role="presentation"><a href="#outputPanel" data-toggle="tab">Output</a></li>
+      <li role="presentation"><a href="#testBooksPanel" data-toggle="tab">Books</a></li>
+      <div class="btn-group" role="group">
+        <button id="saveData" class="btn btn-default">Save Data</button>
+        <button id="testBookSource" class="btn btn-primary">Test All</button>
+      </div>
+    </ul>
 
-      <div id="basicConfig">
+    <div id="testPanel">
+      <div id="mocha"></div>
+    </div>
+
+    <div id="config" class="tab-content">
+
+      <div role="tabpanel" class="tab-pane active" id="basicConfig">
         <h2>Basic Config</h2>
         <ul>
           <li><label>ID: <input type="text" class="id"></label></li>
@@ -38,11 +56,13 @@
             </select></label></li>
           <li><label>Main Source Weight: <input type="number" class="mainSourceWeight" value="100"></label></li>
           <li><label>Content Source Weight: <input type="number" class="contentSourceWeight" value="10"></label></li>
+          <li><label><input type="checkbox" class="tc">Traditional Chinese</label></li>
         </ul>
       </div>
 
-      <div id="searchConfig">
+      <div role="tabpanel" class="tab-pane" id="searchConfig">
         <h2>Search Config</h2>
+        <button id="testSearchBook" class="btn btn-success">Test</button>
         <div class="request">
           <h3>Request</h3>
           <ul>
@@ -57,6 +77,7 @@
         <div class="response">
           <h3>Response</h3>
           <label>List Element: <input type="text" class="list-selector"></label>
+          <label><input type="checkbox" class="reverse">Reverse Sort</label>
           <h4>Book info</h4>
           <table border="1" class="bookinfo">
             <tbody>
@@ -107,8 +128,9 @@
         </div>
       </div>
 
-      <div id="detailConfig">
+      <div role="tabpanel" class="tab-pane" id="detailConfig">
         <h2>Book Info Config</h2>
+        <button id="testGetBookInfo" class="btn btn-success">Test</button>
         <div class="request">
           <h3>Request</h3>
           <ul>
@@ -171,8 +193,9 @@
         </div>
       </div>
 
-      <div id="catalogConfig">
+      <div role="tabpanel" class="tab-pane" id="catalogConfig">
         <h2>Catalog Config</h2>
+        <button id="testCatalog" class="btn btn-success">Test</button>
         <div class="request">
           <h3>Request</h3>
           <ul>
@@ -221,8 +244,9 @@
       </div>
 
 
-      <div id="chapterConfig">
+      <div role="tabpanel" class="tab-pane" id="chapterConfig">
         <h2>Chapter Config</h2>
+        <button id="testChapter" class="btn btn-success">Test</button>
         <div class="request">
           <h3>Request</h3>
           <ul>
@@ -265,77 +289,64 @@
       </div>
 
 
-      <div>
+      <div role="tabpanel" class="tab-pane" id="outputPanel">
         <label for="booksourceOutput">Output:</label>
-        <textarea id="booksourceOutput" name="" id="" cols="30" rows="10"></textarea>
+        <button id="makeBookSource" class="btn btn-success">Make BookSource</button>
+        <textarea id="booksourceOutput" name="" id="" cols="100" rows="20"></textarea>
       </div>
-    </div>
-    <div>
-      <table border="1" id="testBooks">
-        <tbody>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Author</th>
-            <th>Introduce</th>
-            <th>Chapter Title</th>
-            <th>Chapter Link</th>
-            <th>Chapter Content</th>
-          </tr>
-          <tr class="book">
-            <td><input type="text" class="id"></td>
-            <td><input type="text" class="name"></td>
-            <td><input type="text" class="author"></td>
-            <td><input type="text" class="introduce"></td>
-            <td><input type="text" class="chapter-title"></td>
-            <td><input type="text" class="chapter-link"></td>
-            <td><input type="text" class="chapter-content"></td>
-          </tr>
-          <tr class="book">
-            <td><input type="text" class="id"></td>
-            <td><input type="text" class="name"></td>
-            <td><input type="text" class="author"></td>
-            <td><input type="text" class="introduce"></td>
-            <td><input type="text" class="chapter-title"></td>
-            <td><input type="text" class="chapter-link"></td>
-            <td><input type="text" class="chapter-content"></td>
-          </tr>
-          <tr class="book">
-            <td><input type="text" class="id"></td>
-            <td><input type="text" class="name"></td>
-            <td><input type="text" class="author"></td>
-            <td><input type="text" class="introduce"></td>
-            <td><input type="text" class="chapter-title"></td>
-            <td><input type="text" class="chapter-link"></td>
-            <td><input type="text" class="chapter-content"></td>
-          </tr>
-        </tbody>
-      </table>
-      <div>
-        <label for="booksOutput">Output:</label>
-        <textarea id="booksOutput" name="" id="" cols="30" rows="10"></textarea>
+
+      <div role="tabpanel" class="tab-pane" id="testBooksPanel">
+        <table border="1" id="testBooks">
+          <tbody>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Author</th>
+              <th>Introduce</th>
+              <th>Chapter Title</th>
+              <th>Chapter Link</th>
+              <th>Chapter Content</th>
+            </tr>
+            <tr class="book">
+              <td><input type="text" class="id"></td>
+              <td><input type="text" class="name"></td>
+              <td><input type="text" class="author"></td>
+              <td><input type="text" class="introduce"></td>
+              <td><input type="text" class="chapter-title"></td>
+              <td><input type="text" class="chapter-link"></td>
+              <td><input type="text" class="chapter-content"></td>
+            </tr>
+            <tr class="book">
+              <td><input type="text" class="id"></td>
+              <td><input type="text" class="name"></td>
+              <td><input type="text" class="author"></td>
+              <td><input type="text" class="introduce"></td>
+              <td><input type="text" class="chapter-title"></td>
+              <td><input type="text" class="chapter-link"></td>
+              <td><input type="text" class="chapter-content"></td>
+            </tr>
+            <tr class="book">
+              <td><input type="text" class="id"></td>
+              <td><input type="text" class="name"></td>
+              <td><input type="text" class="author"></td>
+              <td><input type="text" class="introduce"></td>
+              <td><input type="text" class="chapter-title"></td>
+              <td><input type="text" class="chapter-link"></td>
+              <td><input type="text" class="chapter-content"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          <label for="booksOutput">Output:</label>
+          <button id="makeBooks" class="btn btn-success">Make Books</button>
+          <textarea id="booksOutput" cols="100" rows="10"></textarea>
+          <div id="bookinfo">
+          </div>
+        </div>
       </div>
     </div>
 
-    <div id="floatPanel">
-      <div>
-        <button id="saveData">Save Data</button>
-        <button id="makeBookSource">Make BookSource</button>
-        <button id="makeBooks">Make Books</button>
-      </div>
-      <div>
-        <button id="testBookSource">Test All</button>
-        <button id="testSearchBook">Test Search Book</button>
-        <button id="testGetBookInfo">Test Get Book Info</button>
-        <button id="testCatalog">Test Catalog</button>
-        <button id="testChapter">Test Chapter</button>
 
-      </div>
-      <div id="mocha"></div>
-    </div>
-        <script type="text/plain">
-      debugger;
-    </script>
     <script data-main="app" src="../lib/require.js"></script>
 
   </body>

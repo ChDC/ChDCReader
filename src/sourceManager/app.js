@@ -31,11 +31,11 @@ requirejs.config({
     "translate": "../mylib/translate",
     "fileSystem": "../mylib/fileSystem",
 
-    "testbook": "../sourceManager/testbook",
+    "testbook": "../test/testbook",
   }
 });
 
-requirejs(['polyfill']);
+requirejs(['polyfill', 'bootstrap']);
 
 requirejs(['../sourceManager/add'], function(add){
   add.onLoad();

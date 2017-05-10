@@ -1,4 +1,56 @@
 {
+   "yyls": [
+     {
+       "bookid": "3159",
+       "name": "魔法禁书目录",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://8comic.se/3124",
+           "title": "第050话"
+         }
+       ]
+     },
+     {
+       "bookid": "65314",
+       "name": "进击的巨人",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://8comic.se/74974",
+           "title": "58话"
+         }
+       ]
+     }
+   ],
+   "77mh": [
+     {
+       "bookid": "120956",
+       "name": "魔法禁书目录",
+       "author": "镰池和马",
+       "introduce": "",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://www.77mh.com/201306/249218.html",
+           "title": "50话日文"
+         }
+       ]
+     },
+     {
+       "bookid": "82405",
+       "name": "妖精的尾巴",
+       "author": "真岛浩",
+       "introduce": "",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://www.77mh.com/201608/339379.html",
+           "title": "497"
+         }
+       ]
+     }
+   ],
    "57mh": [
      {
        "bookid": "397",

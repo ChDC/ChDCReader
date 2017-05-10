@@ -5,8 +5,8 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["BookSourceManager_test"] = factory(chai, utils, BookSourceManager);
-}(["mocha", "chai", "utils", "BookSourceManager", "Chapter"], function(mocha, chai, utils, BookSourceManager, Chapter){
+    window["testbook"] = factory(chai, utils, Chapter);
+}(["chai", "utils", "Chapter"], function(chai, utils, Chapter){
 
   let assert = chai.assert;
   let equal = assert.equal;
@@ -64,6 +64,7 @@
       }));
     },
 
+    // 获取书籍信息测试回调
     testGetBookInfoCaller(bsid, bsm, books){
       return Promise.all(books.map(book => {
         return bsm.getBookInfo(bsid, book)
@@ -73,43 +74,49 @@
       }));
     },
 
+    // 获取最新章节测试回调
     testGetLastestChapterCaller(bsid, bsm, books){
       return Promise.all(books.map(book => {
         return bsm.getLastestChapter(bsid, book)
           .then(lc => {
-            equal(true, lc.length > 0);
+            equal(true, !!lc, `${book.name}: LastestChapter is null`);
           })
       }));
     },
 
+    // 获取书籍目录测试回调
     testGetBookCatalogCaller(bsid, bsm, books){
       return Promise.all(books.map(book => {
         return bsm.getBookCatalog(bsid, book)
           .then(catalog => {
-            assert.isArray(catalog);
-            equal(true, catalog.length > 0, `${book.name}`);
+            assert.isArray(catalog, `${book.name}: catalog is not array`);
+            equal(true, catalog.length > 0, `${book.name}: catalog is empty`);
             book.chapters.forEach(chapter => {
-              equal(true, catalog.findIndex(e =>
-                Chapter.equalTitle(e, chapter) && e.link == chapter.link && e.cid == chapter.cid) >= 0, `${book.name} ${chapter.title}`);
+              let c = catalog.find(e =>
+                Chapter.equalTitle(e, chapter));
+              if(!c) throw new Error(`${book.name}: can't find the chapter ${chapter.title} in catalog`);
+              equal(chapter.link, c.link, `${book.name}: ${chapter.title} link should be ${c.link}`);
+              equal(chapter.cid, c.cid, `${book.name}: ${chapter.title}`);
             });
           })
       }));
     },
 
-    testGetChapterCaller(bsid, bsm, books){
+    // 获取获取章节内容测试回调
+    testGetChapterContentCaller(bsid, bsm, books){
       return Promise.all(books.map(book =>
         Promise.all(book.chapters.map(chapter =>
-          bsm.getChapter(bsid, Object.assign({}, book, chapter))
+          bsm.getChapterContent(bsid, Object.assign({}, book, chapter))
             .then(c => {
-              equal(chapter.title, c.title);
-              equal(chapter.link, c.link);
-              equal(true, c.content.length > 0 && c.content.indexOf(chapter.content) >= 0);
-              assert.notInclude(c.content, "<br");
+              equal(true, !!c, `${book.name}: the content of ${chapter.title} is empty`);
+              equal(true, c.indexOf(chapter.content) >= 0, `${book.name}: ${chapter.title} doesn't contains ${chapter.content}`);
+              assert.notInclude(c, "<br");
             })
         ))
       ))
     },
 
+    // 测试书籍主方法
     testBook(bsid, bsm, books, item){
 
       let items = {
@@ -135,9 +142,9 @@
         },
         chapter: {
           title: '测试获取章节',
-          caller: () => this.testGetChapterCaller(bsid, bsm, books)
+          caller: () => this.testGetChapterContentCaller(bsid, bsm, books)
         }
-      }
+      };
 
       describe(`BookSource Test: ${bsid}`, () => {
         if(!item)

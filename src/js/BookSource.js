@@ -149,9 +149,15 @@
           if(error != 207)
             console.error(error);
           // 从缓存中获取失败的话，再从网上获取章节，然后缓存到本地
-          return this.bookSourceManager.getChapter(this.id, Object.assign({}, this, chapter))
-            .then(chapter => // 缓存该章节
-              this.__cacheChapter(chapter));
+          return this.bookSourceManager.getChapterContent(this.id, Object.assign({}, this, chapter))
+            .then(content => {// 缓存该章节
+              if(!content) return Promise.reject(206);
+              const c = new Chapter();
+              Object.assign(c, chapter);
+              c.content = content;
+              this.__cacheChapter(c)
+              return c;
+            });
         });
     }
 

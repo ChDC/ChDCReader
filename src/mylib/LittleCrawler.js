@@ -134,6 +134,9 @@
       let method = (request.method || "GET").toLowerCase();
       let type = (request.type || "HTML").toLowerCase();
       let headers = request.headers || {};
+      let params = request.params || {};
+      for(let k in params)
+        params[k] = LittleCrawler.format(params[k], dict);
 
       // 获取 ajax 操作对象
       let ajax;
@@ -163,7 +166,7 @@
       }
 
       // 发出请求并解析响应
-      return ajax(method, url, request.params, undefined, headers,
+      return ajax(method, url, params, undefined, headers,
                   {timeout: request.timeout})
         .then(data => this.parse(data, type, response, url, dict));
     }
@@ -603,7 +606,19 @@
 
     return new Promise((resolve, reject) => {
       if(!url) return reject(new Error("url is null"));
-      url = LittleCrawler.__urlJoin(url, params);
+
+      method = method.toLowerCase();
+
+      let sendData = null;
+      switch(method){
+        case "get":
+          url = LittleCrawler.__urlJoin(url, params);
+          break;
+        case "post":
+          sendData = Object.keys(params).map(k => `${k}=${params[k]}`).join("&");;
+          break;
+      }
+
       console.log(`Get: ${url}`);
       url = encodeURI(url);
       retry = retry || 0;
@@ -658,7 +673,7 @@
         reject(new Error("AjaxError: Request Error"));
       }
 
-      request.send(null);
+      request.send(sendData);
     });
   },
 

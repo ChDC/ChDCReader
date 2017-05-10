@@ -7,8 +7,8 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
     onLoad(){
       this.loadView();
 
-      this.bookSource;
-      this.books;
+      // this.bookSource;
+      // this.books;
     }
 
     loadData(){
@@ -53,10 +53,10 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       let objString = `
       {
         "type": "string",
-        "element": "${element.find(".element").val()}",
-        "attribute": "${element.find(".attribute").val()}",
-        "remove": "${element.find(".remove").val()}",
-        "extract": "${element.find(".extract").val()}"
+        "element": "${element.find(".element").val().trim()}",
+        "attribute": "${element.find(".attribute").val().trim()}",
+        "remove": "${element.find(".remove").val().trim()}",
+        "extract": "${element.find(".extract").val().trim()}"
       }
       `;
       let obj = JSON.parse(objString);
@@ -71,16 +71,16 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
     }
 
     createCatalogConfig(){
-      let hasVolume = !!$('#catalogConfig .response .volume-selector').val();
+      let hasVolume = !!$('#catalogConfig .response .volume-selector').val().trim();
       if(hasVolume){
         return `
-          "element": "${$('#catalogConfig .response .volume-selector').val()}",
+          "element": "${$('#catalogConfig .response .volume-selector').val().trim()}",
           ${$('#catalogConfig .response .reverseVolume')[0].checked ? '"reverse": true, ' : ""}
           "children": {
             "name": ${this.createStringConfig($('#catalogConfig .response .volume-name'))},
             "chapters": {
               "type": "array",
-              "element": "${$('#catalogConfig .response .list-selector').val()}",
+              "element": "${$('#catalogConfig .response .list-selector').val().trim()}",
               ${$('#catalogConfig .response .reverseCatalog')[0].checked ? '"reverse": true, ' : ""}
               "children": {
                 "title": ${this.createStringConfig($('#catalogConfig .response .title'))},
@@ -92,7 +92,7 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       }
       else
         return `
-          "element": "${$('#catalogConfig .response .list-selector').val()}",
+          "element": "${$('#catalogConfig .response .list-selector').val().trim()}",
           ${$('#catalogConfig .response .reverseCatalog')[0].checked ? '"reverse": true, ' : ""}
           "children": {
             "title": ${this.createStringConfig($('#catalogConfig .response .title'))},
@@ -102,27 +102,29 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
     }
 
     makeBookSource(){
-      this.bookSource = `
+      let bookSource = `
     {
-      "id": "${$('#basicConfig .id').val()}",
-      "type": "${$('#basicConfig .type').val()}",
-      "name": "${$('#basicConfig .name').val()}",
-      "contentSourceWeight": ${$('#basicConfig .contentSourceWeight').val()},
-      "mainSourceWeight": ${$('#basicConfig .mainSourceWeight').val()},
+      "id": "${$('#basicConfig .id').val().trim()}",
+      "type": "${$('#basicConfig .type').val().trim()}",
+      "name": "${$('#basicConfig .name').val().trim()}",
+      "contentSourceWeight": ${$('#basicConfig .contentSourceWeight').val().trim()},
+      "mainSourceWeight": ${$('#basicConfig .mainSourceWeight').val().trim()},
+      ${$('#basicConfig .tc')[0].checked ? '"language": "tc",' : ""}
       "officialurls": {
-        "host": "${$('#basicConfig .host').val()}",
+        "host": "${$('#basicConfig .host').val().trim()}",
         "bookdetail": "",
         "bookchapter": "",
         "booksearch": ""
       },
       "search": {
         "request": {
-          "type": "${$('#searchConfig .request .datatype').val()}",
-          "url": "${$('#searchConfig .request .url').val()}"${$('#searchConfig .request .timeout').val() ? ",\n          " : ""}${$('#searchConfig .request .timeout').val() ? `"timeout": ${$('#searchConfig .request .timeout').val()}` : ""}
+          "type": "${$('#searchConfig .request .datatype').val().trim()}",
+          "url": "${$('#searchConfig .request .url').val().trim()}"${$('#searchConfig .request .timeout').val().trim() ? ",\n          " : ""}${$('#searchConfig .request .timeout').val().trim() ? `"timeout": ${$('#searchConfig .request .timeout').val().trim()}` : ""}
         },
         "response": {
           "type": "array",
-          "element": "${$('#searchConfig .response .list-selector').val()}",
+          "element": "${$('#searchConfig .response .list-selector').val().trim()}",
+          ${$('#searchConfig .response .reverse')[0].checked ? '"reverse": true, ' : ""}
           "children": {
             "name": ${this.createStringConfig($('#searchConfig .response .bookinfo .name'))},
             "author": ${this.createStringConfig($('#searchConfig .response .bookinfo .author'))},
@@ -139,8 +141,8 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       },
       "detail": {
         "request": {
-          "type": "${$('#detailConfig .request .datatype').val()}",
-          "url": "${$('#detailConfig .request .url').val()}"${$('#detailConfig .request .timeout').val() ? ",\n          " : ""}${$('#detailConfig .request .timeout').val() ? `"timeout": ${$('#detailConfig .request .timeout').val()}` : ""}
+          "type": "${$('#detailConfig .request .datatype').val().trim()}",
+          "url": "${$('#detailConfig .request .url').val().trim()}"${$('#detailConfig .request .timeout').val().trim() ? ",\n          " : ""}${$('#detailConfig .request .timeout').val().trim() ? `"timeout": ${$('#detailConfig .request .timeout').val().trim()}` : ""}
         },
         "response": {
           "name": ${this.createStringConfig($('#detailConfig .response .bookinfo .name'))},
@@ -157,10 +159,10 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       },
       "catalog": {
         "request": {
-          "type": "${$('#catalogConfig .request .datatype').val()}",
-          "url": "${$('#catalogConfig .request .url').val()}"${$('#catalogConfig .request .timeout').val() ? ",\n          " : ""}${$('#catalogConfig .request .timeout').val() ? `"timeout": ${$('#catalogConfig .request .timeout').val()}` : ""}
+          "type": "${$('#catalogConfig .request .datatype').val().trim()}",
+          "url": "${$('#catalogConfig .request .url').val().trim()}"${$('#catalogConfig .request .timeout').val().trim() ? ",\n          " : ""}${$('#catalogConfig .request .timeout').val().trim() ? `"timeout": ${$('#catalogConfig .request .timeout').val().trim()}` : ""}
         },
-        ${!!$('#catalogConfig .response .volume-selector').val() ? '"hasVolume": true,' : ""}
+        ${!!$('#catalogConfig .response .volume-selector').val().trim() ? '"hasVolume": true,' : ""}
         "response":{
           "type": "array",
           ${this.createCatalogConfig()}
@@ -168,8 +170,8 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       },
       "chapter": {
         "request": {
-          "type": "${$('#chapterConfig .request .datatype').val()}",
-          "url": "${$('#chapterConfig .request .url').val()}"${$('#chapterConfig .request .timeout').val() ? ",\n          " : ""}${$('#chapterConfig .request .timeout').val() ? `"timeout": ${$('#chapterConfig .request .timeout').val()}` : ""}
+          "type": "${$('#chapterConfig .request .datatype').val().trim()}",
+          "url": "${$('#chapterConfig .request .url').val().trim()}"${$('#chapterConfig .request .timeout').val().trim() ? ",\n          " : ""}${$('#chapterConfig .request .timeout').val().trim() ? `"timeout": ${$('#chapterConfig .request .timeout').val().trim()}` : ""}
         },
         "response": {
           "contentHTML": ${this.createStringConfig($('#chapterConfig .response .chapterinfo .contentHTML'))},
@@ -178,44 +180,59 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       }
     }
       `;
+      bookSource = JSON.parse(bookSource)
 
-      $("#booksourceOutput").val(this.bookSource);
+      $("#booksourceOutput").val(JSON.stringify(bookSource));
+      return bookSource;
     }
 
     testBookSource(item){
       $("#mocha").empty();
-      let books = JSON.parse($("#booksOutput").val()).filter(b => !!b.name);
-      let booksource = JSON.parse($("#booksourceOutput").val());
+
+      let books = this.makeBooks().filter(b => !!b.bookid);
+      let booksource = this.makeBookSource();
       let config = {sources: {}, valid: [booksource.id]};
       config.sources[booksource.id] = booksource;
 
       let bsm = new BookSourceManager(config, customBookSource);
+
+      $("#bookinfo").empty();
+      books.forEach(book => {
+        let list = $('<ul>');
+        list.append($("<li>").wrapInner($("<a>").attr("target", "_blank").attr('href', bsm.getBookDetailLink(booksource.id, book)).text(book.name)));
+        $("#bookinfo").append(list);
+      });
+
       mocha.setup('bdd');
       mocha.timeout(10000);
 
-      mocha.suite.suites = [];
+      mocha.suite.suites = []; // clear suites
       testbook.testBook(booksource.id, bsm, books, item);
       mocha.run();
     }
 
     makeBooks(){
-      this.books = Array.from($('#testBooks .book'))
+      let books = Array.from($('#testBooks .book'))
         .map(be => {
           let book = {};
           be = $(be);
-          book.bookid = be.find(".id").val();
-          book.name = be.find(".name").val();
-          book.author = be.find(".author").val();
-          book.introduce = be.find(".introduce").val();
-          book.name = be.find(".name").val();
+          book.bookid = be.find(".id").val().trim();
+          book.name = be.find(".name").val().trim();
+          book.author = be.find(".author").val().trim();
+          book.introduce = be.find(".introduce").val().trim();
+          book.name = be.find(".name").val().trim();
           book.chapters = [{
-            content: be.find(".chapter-content").val(),
-            link: be.find(".chapter-link").val(),
-            title: be.find(".chapter-title").val(),
+            content: be.find(".chapter-content").val().trim(),
+            link: be.find(".chapter-link").val().trim(),
+            title: be.find(".chapter-title").val().trim(),
           }];
+          for(let k in book)
+            if(!book[k]) delete book[k];
           return book;
         });
-      $("#booksOutput").val(JSON.stringify(this.books));
+      $("#booksOutput").val(JSON.stringify(books));
+
+      return books;
     }
 
     loadView(){
@@ -225,10 +242,21 @@ define(["jquery", "utils", "uiutils", "mocha", "testbook", "BookSourceManager", 
       $("#makeBooks").click(e => this.makeBooks());
 
       $("#testBookSource").click(e => this.testBookSource());
-      $("#testSearchBook").click(e => this.testBookSource('search'));
+      $("#testSearchBook").click(e => this.testBookSource('getbook'));
       $("#testGetBookInfo").click(e => this.testBookSource('bookinfo'));
       $("#testCatalog").click(e => this.testBookSource('catalog'));
       $("#testChapter").click(e => this.testBookSource('chapter'));
+      window.addEventListener("keydown", e=>{
+        if(e.keyCode==0x53 && e.ctrlKey){
+          e.preventDefault();
+          this.saveData();
+        }
+        else if(e.keyCode==0x44 && e.ctrlKey){
+          e.preventDefault();
+          $(".tab-pane.active > button[id^=test]").click();
+        }
+      }, false);
+
     }
 
   }

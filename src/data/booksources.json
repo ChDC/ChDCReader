@@ -1,9 +1,175 @@
 {
   "valid": ["qidian", "qqbook", "qqac",  "u17", "comico", "sfnovel",
     "biquge.tw", "daizhuzai", "biqulou",  "dingdian",
-    "omanhua", "2manhua",
-    "57mh"],
+    "omanhua", "2manhua", "57mh", "77mh", "yyls"],
   "sources": {
+    "yyls": {
+      "id": "yyls",
+      "type": "comics",
+      "name": "YYLS漫画",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 10,
+      "language": "tc",
+      "officialurls": {
+        "host": "http://8comic.se/",
+        "bookdetail": "http://8comic.se/{bookid}/",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "type": "html",
+          "url": "http://8comic.se/搜尋結果/?w={keyword}"
+        },
+        "response": {
+          "type": "array",
+          "element": "#dp-widget-posts-2 > ul > li",
+          "reverse": true,
+          "children": {
+            "name": "a",
+            "author": "",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "",
+            "introduce": "",
+            "bookid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "^http://8comic.se/(\\d+)/"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": {
+          "type": "html",
+          "url": "http://8comic.se/{bookid}/"
+        },
+        "response": {
+          "name": "#main > div > div.entry-header.cf > div > h1",
+          "author": "",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(1) > img",
+          "introduce": "#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(2) > p",
+          "lastestChapter": "#details > div.entry-content.rich-content > table tr:last-of-type > td:last-of-type > a"
+        }
+      },
+      "catalog": {
+        "request": {
+          "type": "html",
+          "url": "http://8comic.se/{bookid}/"
+        },
+        "response": {
+          "type": "array",
+          "element": "#details > div.entry-content.rich-content > table tr > td[width]",
+          "children": {
+            "title": "a",
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "type": "html",
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "",
+          "title": ""
+        }
+      }
+    },
+    "77mh": {
+      "id": "77mh",
+      "type": "comics",
+      "name": "新新漫画",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 10,
+      "officialurls": {
+        "host": "http://www.77mh.com",
+        "bookdetail": "http://www.77mh.com/colist_{bookid}.html",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "type": "html",
+          "url": "http://so.77mh.com/k.php?k={keyword}"
+        },
+        "response": {
+          "type": "array",
+          "element": "#main > div.main_left > div > div.ar_list_co > ul > dl",
+          "children": {
+            "name": "dd > h1 > a",
+            "author": "dd > i.author > a:nth-child(2)",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "dt > a > img",
+            "introduce": "dd > i.info",
+            "bookid": {
+              "type": "string",
+              "element": "dd > h1 > a",
+              "attribute": "href",
+              "extract": "^http://www.77mh.com/colist_(\\d+).html"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": {
+          "type": "html",
+          "url": "http://www.77mh.com/colist_{bookid}.html"
+        },
+        "response": {
+          "name": "#main > div.main_left > div > div.ar_list_coc > dl > dd > ul > li:nth-child(1) > h1",
+          "author": "#main > div.main_left > div > div.ar_list_coc > dl > dd > ul > li:nth-child(2) > a",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#main > div.main_left > div > div.ar_list_coc > dl > dt > img",
+          "introduce": "#det",
+          "lastestChapter": ".ar_list_coc > ul.ar_rlos_bor.ar_list_col >  li:nth-child(2)"
+        }
+      },
+      "catalog": {
+        "request": {
+          "type": "html",
+          "url": "http://www.77mh.com/colist_{bookid}.html"
+        },
+        "response": {
+          "type": "array",
+          "element": ".ar_list_coc > ul.ar_rlos_bor.ar_list_col >  li",
+          "reverse": true,
+          "children": {
+            "title": "a",
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "type": "html",
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "",
+          "title": ""
+        }
+      }
+    },
     "omanhua": {
       "id": "omanhua",
       "type": "comics",
@@ -11,8 +177,8 @@
       "contentSourceWeight": 101,
       "mainSourceWeight": -10,
       "officialurls": {
-        "host": "http://www.57mh.com",
-        "bookdetail": "",
+        "host": "http://www.omanhua.com",
+        "bookdetail": "http://www.omanhua.com/comic/{bookid}",
         "bookchapter": "",
         "booksearch": ""
       },
@@ -95,7 +261,7 @@
       "mainSourceWeight": 0,
       "officialurls": {
         "host": "http://www.2manhua.com/",
-        "bookdetail": "",
+        "bookdetail": "http://www.2manhua.com/comic/{bookid}",
         "bookchapter": "",
         "booksearch": ""
       },
@@ -186,7 +352,7 @@
       "mainSourceWeight": -10,
       "officialurls": {
         "host": "http://www.57mh.com",
-        "bookdetail": "",
+        "bookdetail": "http://www.57mh.com/{bookid}",
         "bookchapter": "",
         "booksearch": ""
       },
@@ -582,6 +748,7 @@
       "id": "comico",
       "type": "comics",
       "name": "Comico",
+      "language": "tc",
       "contentSourceWeight": 10,
       "mainSourceWeight": 19,
       "officialurls": {
