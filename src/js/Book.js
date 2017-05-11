@@ -319,7 +319,7 @@
         return co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex))
           .catch(error => {
             searchedSource.push(contentSourceId);
-            handleWithNormalMethod(error);
+            return handleWithNormalMethod(error);
           });
       }
       else{
@@ -349,10 +349,8 @@
       function submitResult(){
         if(result.length <= 0){
           // 返回错误数最多的错误
-          let re = utils.arrayCount(errorCodeList);
-          if(re.length > 0)
-            return Promise.reject(re[0][0]);
-          return Promise.reject(201);
+          let re = utils.findMostError(errorCodeList);
+          return Promise.reject(re ? re : 201);
         }
         else{
           if(count > 1)

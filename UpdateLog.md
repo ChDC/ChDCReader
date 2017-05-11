@@ -1,5 +1,15 @@
 ## 更新说明
 
+### 2017-05-11
+
+添加一下发现源：
+
+* [新新漫画](http://www.77mh.com)
+* [57漫画网](http://www.57mh.com)
+* [YYLS漫画](http://8comic.se/)
+* [爱漫画网](http://www.2manhua.com/)
+* [哦漫画](http://www.omanhua.com/comic/)
+
 ### 2017-05-10
 
 添加以下漫画源：
@@ -14,8 +24,6 @@
 * 删除漫画源：
   * [吹妖动漫](http://www.chuiyao.com/)
   * [当鸟漫画](http://www.dangniao.com)
-* 添加漫画源：
-  * ​
 
 ### 2017-05-07
 

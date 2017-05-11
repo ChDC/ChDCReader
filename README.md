@@ -99,7 +99,29 @@
 * 拖动书架中书籍右边的两个点可以对书籍进行排序
 * 当当前章节的质量不好时，点击“劣质章节”可以从其他书源加载该章节
 
-## TODO
+## 开发相关
+
+### 修改过的插件
+
+* cordova-plugin-inappbrowser
+
+  `InAppBrowser.java`  786 行：
+
+  ```java
+                  // String overrideUserAgent = preferences.getString("OverrideUserAgent", null);
+                  String appendUserAgent = preferences.getString("AppendUserAgent", null);
+
+                  //if (overrideUserAgent != null) {
+                  //    settings.setUserAgentString(overrideUserAgent);
+                  //}
+                  if (appendUserAgent != null) {
+                      settings.setUserAgentString(settings.getUserAgentString() + appendUserAgent);
+                  }
+  ```
+
+  ​
+
+###  TODO
 
 * 缓存封面
 * 百度搜索
