@@ -41,7 +41,7 @@
   let bsm = new BookSourceManager(undefined, customBookSource);
   return Promise.all([bsm.loadConfig("data/booksources.json"),
     utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
-      config = data;
+      let config = data;
         for(let bsid of bsids)
         // for(let bsid of ["2manhua"])
           testbook.testBook(bsid, bsm, config[bsid]);
