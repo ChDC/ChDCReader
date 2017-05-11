@@ -411,23 +411,57 @@
       }
     },
 
-    // 给数组计数
-    arrayCount(array){
-      if(!array) return array;
+    // 在一个错误数组中找出数量最多的那个错误
+    findMostError(errorList){
+
+      if(!errorList) return errorList;
+
+      let el = errorList.map(e => typeof e == 'string' || typeof e == 'number' ? new Error(e) : e);
       const counter = {};
-      array.forEach(m => {
-        if(!(m in counter))
-          counter[m] = 1;
+      el.forEach(m => {
+        let k = m.message;
+        if(!(k in counter))
+          counter[k] = 1;
         else
-          counter[m] += 1;
+          counter[k] += 1;
       });
-      const result = [];
-      for(let k in counter){
-        result.push([k, counter[k]])
-      }
-      result.sort((e1,e2) => e2[1] - e1[1]);
-      return result;
+
+      let maxKey;
+      for(let k in counter)
+        if(!maxKey || counter[k] > counter[maxKey])
+          maxKey = k;
+
+      return errorList.find(e => {
+        switch(typeof e){
+          case "string":
+            return e == maxKey;
+          case "number":
+            return e.toString() == maxKey;
+          case "object":
+            return e.message == maxKey;
+          default:
+            return e == maxKey;
+        }
+      });
     },
+
+    // 给数组计数
+    // arrayCount(array){
+    //   if(!array) return array;
+    //   const counter = new Map();
+    //   array.forEach(m => {
+    //     if(!counter.has(m))
+    //       counter.set(m, 1);
+    //     else
+    //       counter.set(m, counter.get(m) + 1);
+    //   });
+    //   const result = [];
+    //   for(let k in counter){
+    //     result.push([k, counter[k]])
+    //   }
+    //   result.sort((e1,e2) => e2[1] - e1[1]);
+    //   return result;
+    // },
 
     // 添加事件监听机制
     addEventSupport(obj){

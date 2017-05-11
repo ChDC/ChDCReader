@@ -150,10 +150,8 @@
         }
 
         if(finalResult.length === 0 && errorList.length > 0)
-        {
-          let re = utils.arrayCount(errorList);
-          throw(re[0][0]);
-        }
+          throw(utils.findMostError(errorList));
+
 
         // 合并结果
         return finalResult;

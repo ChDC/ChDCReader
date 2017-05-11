@@ -27,9 +27,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
       for(let key of Object.keys(this.exploresources)){
         let es = this.exploresources[key];
         let ese = $('.template > .list-item').clone();
-        ese.find("img.booksource-logo").attr('src', es.logo ? es.logo : `img/logo/${key}.png`);
-        ese.find(".booksource-name").text(app.bookSourceManager.getBookSource(key).name);
-        ese.find(".booksource-type").text(app.bookSourceManager.getBookSourceTypeName(key));
+        ese.find("img.booksource-logo")
+          .attr('src', es.logo ? es.logo : `img/logo/${key}.png`)
+          .attr('alt', app.bookSourceManager.getBookSource(key).name);
+        // ese.find(".booksource-type").text(app.bookSourceManager.getBookSourceTypeName(key));
         ese.click(e => this.showExplorPage(key, es));
         list.append(ese);
       }
