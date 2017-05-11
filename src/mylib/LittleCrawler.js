@@ -102,8 +102,9 @@
 
       // 为了防止浏览器自动获取资源而进行的属性转换列表
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['body', 'head', 'title', 'style', 'link', 'meta', 'iframe'];
-      this.singleTagList = ['meta', 'link']; // 用于转换单标签
+      this.insecurityTagList = ['body', 'head', 'title',  'link', 'meta', 'iframe']; //'style',
+      this.abnormalSingleTagList = ['meta']; // 用于转换单标签
+      this.normalSingleTagList = ['link']; // 用于转换单标签
 
       this.fixurlAttributeList = ['href', "lc-src"]; // 需要修复 url 的属性
 
@@ -507,13 +508,20 @@
     __transformHTML(html){
       if(!html) return html;
       // 将 meta link img 等无结束标签变成单结束标签
-      html = this.singleTagList.reduce((h, tag) =>
+      let singleTagList = [...this.abnormalSingleTagList, ...this.normalSingleTagList];
+      html = singleTagList.reduce((h, tag) =>
         h.replace(new RegExp(`(<${tag}\\b(?: [^>]*?)?)/?>`, "gi"), `$1></${tag}>`), html);
+
+      // 将 script 标签的 type 修改
+      html = html.replace(/<script\b([^>]*)/gi, (p0, p1) =>
+        `<script type="text/plain"${p1 ? p1.replace(/\btype\b/gi, 'lc-type') : ""}`);
+
+      // 将 style 标签文本化
+      html = html.replace(/<style\b(.*?)<\/style>/gi, '<script type="text/style"$1</script>');
 
       html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, tag, `lc-${tag}`), html);
 
-      // 将 script 标签的 type 修改
-      html = html.replace(/<script\b([^>]*)(type="[^"]*")?/gi, '<script$1 type="text/plain"');
+
 
       // 图片的 src 属性转换成 lc-src 属性
       html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, attr, `lc-${attr}`), html);
@@ -523,12 +531,24 @@
     // 将之前的转换逆转回来
     __reverseHTML(html){
       if(!html) return html;
-      html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, `lc-${tag}`, tag), html);
-
-      html = html.replace(/<script\b([^>]*)type="text\/plain"/gi, '<script$1');
 
       // 图片的 src 属性转换成 lc-src 属性
       html = this.insecurityAttributeList.reduce((h, attr) => LittleCrawler.replaceAttribute(h, `lc-${attr}`, attr), html);
+
+      html = this.insecurityTagList.reduce((h, tag) => LittleCrawler.replaceTag(h, `lc-${tag}`, tag), html);
+
+      // 将 script 标签的转换回来
+      html = html.replace(/<script type="text\/plain"([^>]*)/gi, (p0, p1) =>
+        `<script${p1 ? p1.replace(/\blc-type\b/gi, 'type') : ""}`);
+
+      // 将文本化的 style 标签转换回来
+      html = html.replace(/<script\b([^>]*) type="text\/style"(.*?)<\/script>/gi, '<style$1$2</style>');
+
+      html = this.abnormalSingleTagList.reduce((h, tag) =>
+        h.replace(new RegExp(`<${tag}\\b([^>]*)><\\/${tag}>`, "gi"), `<${tag}$1>`), html);
+
+      html = this.normalSingleTagList.reduce((h, tag) =>
+        h.replace(new RegExp(`<${tag}\\b([^>]*)><\\/${tag}>`, "gi"), `<${tag}$1/>`), html);
       return html;
     }
 

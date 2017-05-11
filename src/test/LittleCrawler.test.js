@@ -289,11 +289,14 @@
       assert.equal(null, lc.__transformHTML());
 
       let html = `
-        <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="lib/bootstrap-3.3.7/css/bootstrap.min.css" />
+        <link rel="icon" sizes="any" mask href="//www.baidu.com/img/baidu.svg"/>
+        <meta http-equiv="refresh" content="0; url=/baidu.html?from=noscript">
         <meta charset="UTF-8">
-        <style></style>
+        <style id="abc"></style>
         <style>abc</style>
         <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="cordova.js">abcdef</script>
         <title>ChDCReader</title>
         <iframe src="cordova"></iframe>
         <img src="test.png">
@@ -303,6 +306,15 @@
       let fh = lc.__transformHTML(html);
       assert.include(fh, '<img lc-src="test.png" />');
       assert.notInclude(fh, '<img src="test.png" />');
+      equal(html, lc.__reverseHTML(fh));
+
+      // return LittleCrawler.ajax("get", "http://www.baidu.com")
+      //   .then(html => {
+      //     let fh = lc.__transformHTML(html);
+      //     let rhtml = lc.__reverseHTML(fh);
+      //     debugger;
+      //     equal(html, rhtml);
+      //   });
     });
 
     it('clearHtml', () => {

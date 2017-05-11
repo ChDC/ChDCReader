@@ -180,18 +180,6 @@
          "chapters" : [
             {
                "content" : "<img",
-               "link": "http://www.omanhua.com/comic/4436/257896/",
-               "title" : "总167·约法三章"
-            }
-         ],
-         "bookid": "4436",
-         "name" : "狐妖小红娘"
-      },
-      {
-         "author" : "",
-         "chapters" : [
-            {
-               "content" : "<img",
                "link": "http://www.omanhua.com/comic/17514/255145/",
                "title" : "163.回到过去"
             }
@@ -225,45 +213,6 @@
       }
    ],
    "2manhua": [
-      {
-         "author" : "夏天岛",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "http://www.2manhua.com/comic/5883/0281.html",
-               "title" : "总167·约法三章"
-            }
-         ],
-         "bookid": "5883",
-         "introduce" : "迷糊萝莉小狐妖",
-         "name" : "狐妖小红娘"
-      },
-      {
-         "author" : "九月光合",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "http://www.2manhua.com/comic/28238/075.html",
-               "title" : "75.小寒寒"
-            }
-         ],
-         "bookid": "28238",
-         "introduce" : "王一只是一个不起眼的屌丝",
-         "name" : "我是废柴"
-      },
-      {
-         "author" : "深圳518动漫",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "http://www.2manhua.com/comic/23638/0102.html",
-               "title" : "第102弹 有难同当"
-            }
-         ],
-         "bookid": "23638",
-         "introduce" : "就是什么职业都可以插一脚的人",
-         "name" : "通职者"
-      },
       {
          "author" : "许辰",
          "chapters" : [

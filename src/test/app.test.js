@@ -9,9 +9,9 @@ require(["../js/config"], function(){
     //---- 配置要测试的模块 ---
     let testList = [
       "mocha",
+      "BookSourceManager",
       "browser",
       "Chapter",
-      "BookSourceManager",
       "utils",
       "translate",
       "LittleCrawler",

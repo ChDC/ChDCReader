@@ -43,7 +43,7 @@
     utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
       config = data;
         for(let bsid of bsids)
-        // for(let bsid of ["yyls"])
+        // for(let bsid of ["2manhua"])
           testbook.testBook(bsid, bsm, config[bsid]);
     })]);
 

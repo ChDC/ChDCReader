@@ -21,7 +21,7 @@
         return utils.eval(evalCode[1]);
       },
 
-      getImages(html, key, host){
+      getImages(html, key, host, filter){
         let data = CBS.common.getEncryptedData(html);
 
         let matcher = data.match(/{.*}/);
@@ -31,6 +31,11 @@
         if(key) data = data[key];
         data = data.map(e => `${host}${e}`);
         if(data.length <= 0) return null;
+        if(filter){
+          let filteredData = data.filter(filter);
+          if(filteredData.length > 3)
+            data = filteredData;
+        }
         return data.map(e => `<img src="${e}">`).join('\n');
       },
     },
@@ -230,6 +235,9 @@
               return null;
             let data = CBS.common.getEncryptedData(html);
             if(!data) return null;
+            let matcher = data.match(/({.*})\|\|/);
+            if(!matcher) return null;
+            data = JSON.parse(matcher[1].replace(/'/g, '"'));
 
             data = data.files.map(e => `http://pic.fxdm.cc${data.path}${e}`);
             if(data.length <= 0) return null;
@@ -242,7 +250,7 @@
       getChapterContent(bsid, dict={}){
         let link = this.getChapterLink(bsid, dict);
         return utils.get(link)
-          .then(html => CBS.common.getImages(html, "fs", "http://tupianku.333dm.com"));
+          .then(html => CBS.common.getImages(html, "fs", "http://tupianku.333dm.com", (img => img && img.match(/\/\d+\.\w+$/i))));
       }
     },
 
