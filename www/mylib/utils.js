@@ -18,6 +18,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
     type: LittleCrawler.type,
 
+    eval: function _eval(code) {
+      var evalCode = "\n        'use strict'\n        var window = {}, document = {}, self = {}, global = {}, location = {};\n        " + code;
+      return eval(evalCode);
+    },
     log: function log(content, detailContent) {
       var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.log(msg);
@@ -312,20 +316,34 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         return Promise.resolve(key in s);
       }
     },
-    arrayCount: function arrayCount(array) {
-      if (!array) return array;
+    findMostError: function findMostError(errorList) {
+
+      if (!errorList) return errorList;
+
+      var el = errorList.map(function (e) {
+        return typeof e == 'string' || typeof e == 'number' ? new Error(e) : e;
+      });
       var counter = {};
-      array.forEach(function (m) {
-        if (!(m in counter)) counter[m] = 1;else counter[m] += 1;
+      el.forEach(function (m) {
+        var k = m.message;
+        if (!(k in counter)) counter[k] = 1;else counter[k] += 1;
       });
-      var result = [];
+
+      var maxKey = void 0;
       for (var k in counter) {
-        result.push([k, counter[k]]);
-      }
-      result.sort(function (e1, e2) {
-        return e2[1] - e1[1];
+        if (!maxKey || counter[k] > counter[maxKey]) maxKey = k;
+      }return errorList.find(function (e) {
+        switch (typeof e === "undefined" ? "undefined" : _typeof(e)) {
+          case "string":
+            return e == maxKey;
+          case "number":
+            return e.toString() == maxKey;
+          case "object":
+            return e.message == maxKey;
+          default:
+            return e == maxKey;
+        }
       });
-      return result;
     },
     addEventSupport: function addEventSupport(obj) {
       obj.__events = {};

@@ -168,7 +168,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         $('#modalCatalog').on('shown.bs.modal', function (e) {
           var targetChapter = $('#current-catalog-chapter');
           if (targetChapter && targetChapter.length > 0) {
-            for (var _e = targetChapter.parent(); _e.attr('id') != "listCatalog"; _e = _e.parent()) {
+            if (targetChapter.parent().attr('id') == "listCatalog") targetChapter[0].scrollIntoView();else for (var _e = targetChapter.parent(); _e.attr('id') != "listCatalog"; _e = _e.parent()) {
               if (_e.hasClass("collapse")) _e.collapse('show').on("shown.bs.collapse", function (e) {
                 targetChapter[0].scrollIntoView();
               });

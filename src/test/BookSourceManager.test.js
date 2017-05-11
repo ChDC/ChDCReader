@@ -38,7 +38,7 @@
 
   // let trashBsids = ["733dm", "dangniao", "chuiyao", "biquge", "biqugezw", "chuangshi",];
 
-  bsm = new BookSourceManager(undefined, customBookSource);
+  let bsm = new BookSourceManager(undefined, customBookSource);
   return Promise.all([bsm.loadConfig("data/booksources.json"),
     utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
       config = data;

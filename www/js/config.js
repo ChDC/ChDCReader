@@ -32,4 +32,4 @@ requirejs.config({
   }
 });
 
-requirejs(['polyfill']);
+requirejs(['polyfill', 'bootstrap']);

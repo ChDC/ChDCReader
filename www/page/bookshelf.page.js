@@ -33,17 +33,19 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.bookShelf = app.bookShelf;
         this.bookTemplateElement;
         this.bookShelfElement;
+        this.modalFinishedBooks;
+        this.finishedBookShelfElement;
         this.bookShelf.addEventListener("addedBook", function (e) {
           _this2.addBook(e.bookShelfItem);
           _this2.refreshBooksOrder(_this2.bookShelf);
         });
 
         this.container = $('.container');
-        this.scrollTop = app.settings.settings.scrollTop.bookshelf || 0;
       }
     }, {
       key: "onPause",
       value: function onPause() {
+        this.modalFinishedBooks.modal('hide');
         app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
         app.settings.save();
       }
@@ -81,14 +83,18 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       key: "refreshBooksOrder",
       value: function refreshBooksOrder(bookShelf) {
         var books = bookShelf.books;
-        var newOrders = [];
-        var children = this.bookShelfElement.children();
-        Array.from(children).forEach(function (e) {
-          var i = books.indexOf($(e).data("bookshelfitem"));
-          newOrders[i] = e;
+
+        [this.bookShelfElement, this.finishedBookShelfElement].forEach(function (bookShelfElement) {
+          var newOrders = [];
+          Array.from(bookShelfElement.children()).forEach(function (e) {
+            var i = books.indexOf($(e).data("bookshelfitem"));
+            if (i < 0) e.remove();else newOrders.push(e);
+          });
+          newOrders.sort(function (e1, e2) {
+            return books.indexOf($(e1).data("bookshelfitem")) - books.indexOf($(e2).data("bookshelfitem"));
+          });
+          bookShelfElement.append(newOrders);
         });
-        children.detach();
-        this.bookShelfElement.append(newOrders);
       }
     }, {
       key: "addBook",
@@ -119,26 +125,26 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         nb.find('.btnRemoveBook').click(function (e) {
           return _this5.removeBook(book);
         });
-        nb.find('.btnLockLocation').click(function (e) {
-          _this5.bookShelf.toggleLockBook(bookshelfitem);
-          $(e.currentTarget).find('a').text(_this5.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
-          _this5.bookShelf.save();
-        });
-        nb.find('.btnLockLocation > a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
-        this.bookShelfElement.append(nb);
+
+
+        if (readingRecord.isFinished) this.addBookElementToFinishedBookShelf(nb, true);else this.addBookElementToBookShelf(nb, true);
       }
     }, {
       key: "refreshAllReadingRecord",
       value: function refreshAllReadingRecord() {
         var _this6 = this;
 
-        Array.from(this.bookShelfElement.children()).forEach(function (e) {
-          return _this6.refreshReadingRecord($(e));
+        [this.bookShelfElement, this.finishedBookShelfElement].forEach(function (bookShelf) {
+          Array.from(bookShelf.children()).forEach(function (e) {
+            return _this6.refreshReadingRecord($(e));
+          });
         });
       }
     }, {
       key: "refreshReadingRecord",
       value: function refreshReadingRecord(bookElement) {
+        var _this7 = this;
+
         var bookshelfitem = bookElement.data("bookshelfitem");
         if (!bookshelfitem) throw new Error("empty illegal bookshelfitem");
 
@@ -155,19 +161,42 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           if (isNewChapter) lce.addClass('unread-chapter');else lce.removeClass('unread-chapter');
 
           if (readingRecord.isFinished && isNewChapter) {
+            _this7.addBookElementToBookShelf(bookElement);
+
             book.getChapterIndex(lastestChapter).then(function (index) {
               return index < 0;
             }).then(function (forceRefresh) {
               book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { forceRefresh: forceRefresh });
             });
+          } else if (readingRecord.isFinished) {
+            _this7.addBookElementToFinishedBookShelf(bookElement);
           }
         });
+      }
+    }, {
+      key: "addBookElementToFinishedBookShelf",
+      value: function addBookElementToFinishedBookShelf(bookElement) {
+        var append = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        bookElement.detach();
+        bookElement.removeClass("card");
+        if (append) this.finishedBookShelfElement.append(bookElement);else this.finishedBookShelfElement.prepend(bookElement);
+      }
+    }, {
+      key: "addBookElementToBookShelf",
+      value: function addBookElementToBookShelf(bookElement) {
+        var append = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        bookElement.detach();
+        bookElement.addClass("card");
+        if (append) this.bookShelfElement.append(bookElement);else this.bookShelfElement.prepend(bookElement);
       }
     }, {
       key: "loadBooks",
       value: function loadBooks(bookShelf) {
         var books = bookShelf.books;
         this.bookShelfElement.empty();
+        this.finishedBookShelfElement.empty();
         books.forEach(this.addBook.bind(this));
         this.refreshAllReadingRecord();
       }
@@ -185,16 +214,18 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this7 = this;
+        var _this8 = this;
 
+        this.modalFinishedBooks = $("#modalFinishedBooks");
         this.bookTemplateElement = $(".template .book");
         this.bookShelfElement = $("#bookshelf");
+        this.finishedBookShelfElement = $("#finishedBookshelf");
         sortablejs.create(this.bookShelfElement[0], {
           handle: ".btnBookMenu",
           animation: 150,
 
           onUpdate: function onUpdate(event) {
-            _this7.sortBooksByElementOrder();
+            _this8.sortBooksByElementOrder();
           }
         });
         $("#btnCheckUpdate").click(function (e) {

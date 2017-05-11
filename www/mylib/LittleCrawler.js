@@ -6,6 +6,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ;(function (factory) {
@@ -26,8 +28,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (!ajax) this.ajax = a;else if (LittleCrawler.type(ajax) == "object") this.ajax = Object.assign(a, ajax);else this.ajax = ajax;
 
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['body', 'head', 'title', 'script', 'style', 'link', 'meta', 'iframe'];
-      this.singleTagList = ['meta', 'link'];
+      this.insecurityTagList = ['body', 'head', 'title', 'link', 'meta', 'iframe'];
+      this.abnormalSingleTagList = ['meta'];
+      this.normalSingleTagList = ['link'];
 
       this.fixurlAttributeList = ['href', "lc-src"];
       this.specialKey2AttributeList = [[/link$/i, "href"], [/img$|image$/i, "lc-src"], [/html$/i, function (element) {
@@ -59,7 +62,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var method = (request.method || "GET").toLowerCase();
         var type = (request.type || "HTML").toLowerCase();
         var headers = request.headers || {};
-
+        var params = request.params || {};
+        for (var k in params) {
+          params[k] = LittleCrawler.format(params[k], dict);
+        }
         var ajax = void 0;
         switch (LittleCrawler.type(this.ajax)) {
           case "function":
@@ -76,7 +82,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
         }
 
-        return ajax(method, url, request.params, undefined, headers, { timeout: request.timeout }).then(function (data) {
+        return ajax(method, url, params, undefined, headers, { timeout: request.timeout }).then(function (data) {
           return _this2.parse(data, type, response, url, dict);
         });
       }
@@ -403,9 +409,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function __transformHTML(html) {
         if (!html) return html;
 
-        html = this.singleTagList.reduce(function (h, tag) {
+        var singleTagList = [].concat(_toConsumableArray(this.abnormalSingleTagList), _toConsumableArray(this.normalSingleTagList));
+        html = singleTagList.reduce(function (h, tag) {
           return h.replace(new RegExp("(<" + tag + "\\b(?: [^>]*?)?)/?>", "gi"), "$1></" + tag + ">");
         }, html);
+
+        html = html.replace(/<script\b([^>]*)/gi, function (p0, p1) {
+          return "<script type=\"text/plain\"" + (p1 ? p1.replace(/\btype\b/gi, 'lc-type') : "");
+        });
+
+        html = html.replace(/<style\b(.*?)<\/style>/gi, '<script type="text/style"$1</script>');
 
         html = this.insecurityTagList.reduce(function (h, tag) {
           return LittleCrawler.replaceTag(h, tag, "lc-" + tag);
@@ -420,12 +433,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "__reverseHTML",
       value: function __reverseHTML(html) {
         if (!html) return html;
+
+        html = this.insecurityAttributeList.reduce(function (h, attr) {
+          return LittleCrawler.replaceAttribute(h, "lc-" + attr, attr);
+        }, html);
+
         html = this.insecurityTagList.reduce(function (h, tag) {
           return LittleCrawler.replaceTag(h, "lc-" + tag, tag);
         }, html);
 
-        html = this.insecurityAttributeList.reduce(function (h, attr) {
-          return LittleCrawler.replaceAttribute(h, "lc-" + attr, attr);
+        html = html.replace(/<script type="text\/plain"([^>]*)/gi, function (p0, p1) {
+          return "<script" + (p1 ? p1.replace(/\blc-type\b/gi, 'type') : "");
+        });
+
+        html = html.replace(/<script\b([^>]*) type="text\/style"(.*?)<\/script>/gi, '<style$1$2</style>');
+
+        html = this.abnormalSingleTagList.reduce(function (h, tag) {
+          return h.replace(new RegExp("<" + tag + "\\b([^>]*)><\\/" + tag + ">", "gi"), "<" + tag + "$1>");
+        }, html);
+
+        html = this.normalSingleTagList.reduce(function (h, tag) {
+          return h.replace(new RegExp("<" + tag + "\\b([^>]*)><\\/" + tag + ">", "gi"), "<" + tag + "$1/>");
         }, html);
         return html;
       }
@@ -501,7 +529,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     return new Promise(function (resolve, reject) {
       if (!url) return reject(new Error("url is null"));
-      url = LittleCrawler.__urlJoin(url, params);
+
+      method = method.toLowerCase();
+
+      var sendData = null;
+      switch (method) {
+        case "get":
+          url = LittleCrawler.__urlJoin(url, params);
+          break;
+        case "post":
+          sendData = Object.keys(params).map(function (k) {
+            return k + "=" + params[k];
+          }).join("&");;
+          break;
+      }
+
       console.log("Get: " + url);
       url = encodeURI(url);
       retry = retry || 0;
@@ -549,7 +591,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         reject(new Error("AjaxError: Request Error"));
       };
 
-      request.send(null);
+      request.send(sendData);
     });
   }, LittleCrawler.getDataFromObject = function (json, key) {
     function operatorFilter(element, parent, args) {

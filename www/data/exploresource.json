@@ -1,6 +1,37 @@
 {
-  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac"],
+  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac",
+    "omanhua", "2manhua", "57mh", "77mh", "yyls"],
   "sources": {
+    "omanhua": {
+      "url": "http://m.omanhua.com/",
+      "readbook": {
+        "matcher": "^http://m.omanhua.com/comic/(\\d+)/\\d+/"
+      }
+    },
+    "2manhua": {
+      "url": "http://m.2manhua.com",
+      "readbook": {
+        "matcher": "^http://m.2manhua.com/comic/(\\d+)/\\d+.html"
+      }
+    },
+    "57mh": {
+      "url": "http://m.57mh.com",
+      "readbook": {
+        "matcher": "^http://m.57mh.com/(\\d+)/\\d+.html"
+      }
+    },
+    "77mh": {
+      "url": "http://m.77mh.com/",
+      "bookdetail": {
+        "matcher": "^http://m.77mh.com/colist_(\\d+).html"
+      }
+    },
+    "yyls": {
+      "url": "http://8comic.se/",
+      "bookdetail": {
+        "matcher": "^http://8comic.se/(\\d+)/"
+      }
+    },
     "sfnovel": {
       "url": "http://m.sfacg.com/",
       "bookdetail": {
@@ -44,12 +75,6 @@
       "url": "http://ubook.qq.com",
       "readbook": {
         "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
-      }
-    },
-    "17k": {
-      "url": "http://m.qidian.com/",
-      "readbook": {
-        "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+.*"
       }
     }
   }

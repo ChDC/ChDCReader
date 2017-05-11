@@ -13,6 +13,18 @@
 
   describe('utils.js 测试', function () {
 
+    it("eval", function () {
+
+      utils.eval("window.abc=123;");
+      equal(undefined, window.abc);
+
+      utils.eval("self.abc=123;");
+      equal(undefined, self.abc);
+
+      utils.eval("location.abc=123;");
+      equal(undefined, location.abc);
+    });
+
     it("get", function () {
       var p1 = utils.get().catch(function (error) {
         assert.equal("url is null", error.message);

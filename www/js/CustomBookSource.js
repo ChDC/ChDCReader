@@ -9,87 +9,57 @@
 })(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict";
 
-  var customBookSource = {
+  var CBS = {
+    "common": {
+      getEncryptedData: function getEncryptedData(html) {
+        var evalCode = html.match(/\beval(\(.*return p;?}\(.*?\)\))/i);
+        if (!evalCode) return null;
+        return utils.eval(evalCode[1]);
+      },
+      getImages: function getImages(html, key, host, filter) {
+        var data = CBS.common.getEncryptedData(html);
 
-    "comico": {
-      beforeSearchBook: function beforeSearchBook() {
-        return Promise.resolve(Array.from(arguments).map(function (e) {
-          return utils.type(e) == "string" ? translate.toTraditionChinese(e) : e;
-        }));
-      },
-      afterSearchBook: function afterSearchBook(books) {
-        return books.map(function (book) {
-          var needTranslateAttributes = ['name', 'author', 'catagory', 'introduce'];
-          needTranslateAttributes.forEach(function (e) {
-            book[e] = translate.toSimpleChinese(book[e]);
-          });
-          var bss = book.sources[book.mainSourceId];
-          bss.lastestChapter = translate.toSimpleChinese(bss.lastestChapter);
-          return book;
+        var matcher = data.match(/{.*}/);
+        if (!matcher) return null;
+        data = JSON.parse(matcher[0].replace(/'/g, '"'));
+
+        if (key) data = data[key];
+        data = data.map(function (e) {
+          return "" + host + e;
         });
-      },
-      afterGetBookInfo: function afterGetBookInfo(book) {
-        var needTranslateAttributes = ['name', 'author', 'catagory', 'introduce', 'lastestChapter'];
-        needTranslateAttributes.forEach(function (e) {
-          book[e] = translate.toSimpleChinese(book[e]);
-        });
-        return book;
-      },
-      afterGetChapter: function afterGetChapter(chapter) {
-        chapter.title = translate.toSimpleChinese(chapter.title);
-        return chapter;
-      },
-      afterGetBookCatalog: function afterGetBookCatalog(catalog) {
-        return catalog.map(function (chapter) {
-          chapter.title = translate.toSimpleChinese(chapter.title);
-          return chapter;
-        });
-      },
-      afterGetLastestChapter: function afterGetLastestChapter(lc) {
-        return translate.toSimpleChinese(lc);
+        if (data.length <= 0) return null;
+        if (filter) {
+          var filteredData = data.filter(filter);
+          if (filteredData.length > 3) data = filteredData;
+        }
+        return data.map(function (e) {
+          return "<img src=\"" + e + "\">";
+        }).join('\n');
       }
     },
 
     "qqac": {
-      getChapter: function getChapter(bsid) {
+      getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
         var link = this.getChapterLink(bsid, dict);
-        var bsm = this.__sources[bsid];
-
         return utils.get(link).then(function (html) {
           if (!html) return null;
           html = String(html).replace(/<\!--.*?--\>/g, "").replace(/(^[ \t\r\n]+|[ \t\r\n]+$)/g, "").substring(1);
           var data = JSON.parse(atob(html));
-          var content = data.picture.map(function (e) {
+          return data.picture.map(function (e) {
             return "<img src=\"" + e.url + "\">";
           }).join('\n');
-
-          var c = new Chapter();
-          c.content = content;
-          if (!c.content) return Promise.reject(206);
-
-          c.cid = dict.cid;
-          c.title = dict.title;
-          if (!c.cid && link) c.link = link;
-          return c;
         });
       }
     },
 
     "u17": {
-      getChapter: function getChapter(bsid) {
+      getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
         var link = this.getChapterLink(bsid, dict);
-        var bsm = this.__sources[bsid];
-
         return utils.get(link).then(function (html) {
           if (!html) return null;
           var regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
@@ -104,34 +74,21 @@
             return atob(json[e].src);
           });
 
-          var content = imgs.map(function (img) {
+          return imgs.map(function (img) {
             return "<img src=\"" + img + "\">";
           }).join('\n');
-
-          var c = new Chapter();
-          c.content = content;
-          if (!c.content) return Promise.reject(206);
-
-          c.cid = dict.cid;
-          c.title = dict.title;
-          if (!c.cid && dict.link) c.link = dict.link;
-          return c;
         });
       }
     },
 
     "chuangshi": {
-      getChapter: function getChapter(bsid) {
+      getChapterContent: function getChapterContent(bsid) {
         var _this = this;
 
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
         var link = this.getChapterLink(bsid, dict);
-        var bsm = this.__sources[bsid];
-
         return LittleCrawler.cordovaAjax("get", link, {}, 'json', {
           "Referer": "http://chuangshi.qq.com/",
           "X-Requested-With": "XMLHttpRequest"
@@ -139,16 +96,7 @@
           var content = decryptByBaseCode(json.Content, 30);
           var bsm = _this.__sources[bsid];
           var data = _this.__lc.parse(content, "html", bsm.chapter.response, link, {});
-          content = LittleCrawler.clearHtml(data.contentHTML);
-
-          var c = new Chapter();
-          c.content = content;
-          if (!c.content) return Promise.reject(206);
-
-          c.cid = dict.cid;
-          c.title = dict.title;
-          if (!c.cid && link) c.link = link;
-          return c;
+          return LittleCrawler.clearHtml(data.contentHTML);
         });
 
         function decryptByBaseCode(text, base) {
@@ -172,16 +120,14 @@
         });
         return catalog;
       },
-      afterGetChapter: function afterGetChapter(chapter) {
-        if (chapter.content) chapter.content = chapter.content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
-        return chapter;
+      afterGetChapterContent: function afterGetChapterContent(content) {
+        if (content) content = content.replace(/^\s*(.*?)<p/i, "<p>$1</p><p");
+        return content;
       }
     },
 
     "qqbook": {
       getBookCatalog: function getBookCatalog(bsid, dict) {
-
-        utils.log("BookSourceManager: Get Book Catalog Link from " + bsid + "\"");
 
         var bs = this.__sources[bsid];
         if (!bs) return Promise.reject("Illegal booksource!");
@@ -237,7 +183,7 @@
     },
 
     "daizhuzai": {
-      beforeGetChapter: function beforeGetChapter() {
+      beforeGetChapterContent: function beforeGetChapterContent() {
         var args = arguments;
         var link = args[1].link;
         if (link.match(/novelsearch/)) return Promise.resolve(args);
@@ -249,176 +195,172 @@
       }
     },
 
-    "chuiyao": {
-      getChapter: function getChapter(bsid) {
-        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        var filterBookId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
-        var link = this.getChapterLink(bsid, dict);
-        var bsm = this.__sources[bsid];
-
-        return utils.get(link).then(function (html) {
-          var content = getImgs(html);
-
-          var c = new Chapter();
-          c.content = content;
-          if (!c.content) return Promise.reject(206);
-
-          c.cid = dict.cid;
-          c.title = dict.title;
-          if (!c.cid && link) c.link = link;
-          return c;
-        });
-
-        function getImgs(html) {
-          var data = html.match(/var qTcms_S_m_murl_e = "(.*?)"/i);
-          if (!data) return null;
-          data = atob(data[1]);
-          data = data.split("$qingtiandy$");
-          if (filterBookId) data = data.filter(function (e) {
-            return e.includes(dict.bookid);
-          });
-          return data.map(function (e) {
-            return "<img src=\"" + e + "\">";
-          }).join('\n');
-        }
-      }
-    },
-
-    "dangniao": {
-      getChapter: function getChapter(bsid) {
-        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-        return customBookSource["chuiyao"].getChapter.apply(this, ["dangniao", dict, false]);
-      }
-    },
-
     "omanhua": {
       beforeSearchBook: function beforeSearchBook() {
         var keyword = arguments[1];
-        var letter = translate.getFirstPY(keyword);
+        var letter = keyword ? translate.getFirstPY(keyword) : "A";
         arguments[1] = { keyword: keyword, litter: letter };
         return Promise.resolve(arguments);
       },
-      getChapter: function getChapter(bsid) {
+      getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
-
         var link = this.getChapterLink(bsid, dict);
-        var bsm = this.__sources[bsid];
-
         return utils.get(link).then(function (html) {
-          var content = getImgs(html);
-
-          var c = new Chapter();
-          c.content = content;
-          if (!c.content) return Promise.reject(206);
-
-          c.cid = dict.cid;
-          c.title = dict.title;
-          if (!c.cid && link) c.link = link;
-          return c;
-        });
-
-        function getImgs(html) {
-          var data = html.match(/return p;}\((.*?)\)\)\s*<\/script>/i);
+          if (html.match('为维护版权方权益或违反国家法律法规本站不提供阅读')) return null;
+          var data = CBS.common.getEncryptedData(html);
           if (!data) return null;
-          var obj = eval("[" + data[1] + "]");
-          data = parse.apply(null, obj);
-          data = data.match(/({.*})\|\|{}/);
-          if (!data) return null;
-          data = JSON.parse(data[1]);
+          var matcher = data.match(/({.*})\|\|/);
+          if (!matcher) return null;
+          data = JSON.parse(matcher[1].replace(/'/g, '"'));
 
           data = data.files.map(function (e) {
             return "http://pic.fxdm.cc" + data.path + e;
           });
+          if (data.length <= 0) return null;
           return data.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
-        }
-
-        function parse(p, a, c, k, _e, d) {
-          _e = function e(c) {
-            return (c < a ? "" : _e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36));
-          };if (!''.replace(/^/, String)) {
-            while (c--) {
-              d[_e(c)] = k[c] || _e(c);
-            }k = [function (e) {
-              return d[e];
-            }];_e = function _e() {
-              return '\\w+';
-            };c = 1;
-          };while (c--) {
-            if (k[c]) p = p.replace(new RegExp('\\b' + _e(c) + '\\b', 'g'), k[c]);
-          }return p;
-        }
+        });
       }
     },
 
     "2manhua": {
-      getChapter: function getChapter(bsid) {
+      getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        utils.log("BookSourceManager: Load Chpater content from " + bsid);
+        var link = this.getChapterLink(bsid, dict);
+        return utils.get(link).then(function (html) {
+          return CBS.common.getImages(html, "fs", "http://tupianku.333dm.com", function (img) {
+            return img && img.match(/\/\d+\.\w+$/i);
+          });
+        });
+      }
+    },
+
+    "57mh": {
+      getChapterContent: function getChapterContent(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var link = this.getChapterLink(bsid, dict);
-        var bsm = this.__sources[bsid];
-
         return utils.get(link).then(function (html) {
-          var content = getImgs(html);
-
-          var c = new Chapter();
-          c.content = content;
-          if (!c.content) return Promise.reject(206);
-
-          c.cid = dict.cid;
-          c.title = dict.title;
-          if (!c.cid && link) c.link = link;
-          return c;
+          return CBS.common.getImages(html, "fs", "http://tupianku.333dm.com");
         });
+      }
+    },
 
-        function getImgs(html) {
-          var data = html.match(/return p}\((.*?)\)\)/i);
-          if (!data) return null;
-          var obj = eval("[" + data[1] + "]");
-          data = parse.apply(null, obj);
-          data = data.match(/{.*}/);
-          if (!data) return null;
-          data = JSON.parse(data[0].replace(/'/g, '"'));
+    "77mh": {
+      getChapterContent: function getChapterContent(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-          data = data.fs.map(function (e) {
-            return "http://tupianku.333dm.com" + e;
+        var link = this.getChapterLink(bsid, dict);
+        return utils.get(link).then(function (html) {
+          var link = html.match(/http:\/\/css.177mh.com\/coojs\/.*?\.js/i)[0];
+          return utils.get(link);
+        }).then(function (html) {
+          var data = CBS.common.getEncryptedData(html);
+          var msg = data.match(/'(.*?)'/);
+          if (!msg) return null;
+          var imgs = msg[1].split('|');
+          var img_s = Number.parseInt(data.match(/img_s=(\w+);/)[1]);
+          if (img_s == 46) img_s = 150;
+
+          var img_qianzso = new Array();
+          img_qianzso[1] = "http://oo62.177mh.com/h1/";
+          img_qianzso[2] = "http://o76.177mh.com/e2/";
+          img_qianzso[3] = "http://o59.177mh.com/h3/";
+          img_qianzso[4] = "http://o59.177mh.com/h4/";
+          img_qianzso[5] = "http://o59.177mh.com/h5/";
+          img_qianzso[6] = "http://o16.177mh.com/h6/";
+          img_qianzso[7] = "http://o16.177mh.com/h7/";
+          img_qianzso[8] = "http://o16.177mh.com/h8/";
+          img_qianzso[9] = "http://o16.177mh.com/h9/";
+          img_qianzso[10] = "http://o16.177mh.com/h10/";
+          img_qianzso[11] = "http://o59.177mh.com/h11/";
+          img_qianzso[12] = "http://oo62.177mh.com/h12/";
+          img_qianzso[13] = "http://o16.177mh.com/h13/";
+          img_qianzso[14] = "http://o16.177mh.com/h14/";
+          img_qianzso[15] = "http://o59.177mh.com/h15/";
+          img_qianzso[16] = "http://o59.177mh.com/h16/";
+          img_qianzso[17] = "http://o16.177mh.com/h17/";
+          img_qianzso[18] = "http://oo62.177mh.com/h18/";
+          img_qianzso[19] = "http://o16.177mh.com/h19/";
+          img_qianzso[20] = "http://oo62.177mh.com/h20/";
+          img_qianzso[21] = "http://oo62.177mh.com/h21/";
+          img_qianzso[22] = "http://o16.177mh.com/h22/";
+          img_qianzso[23] = "http://o16.177mh.com/h23/";
+          img_qianzso[24] = "http://o16.177mh.com/h24/";
+          img_qianzso[25] = "http://o16.177mh.com/h25/";
+          img_qianzso[26] = "http://o16.177mh.com/h26/";
+          img_qianzso[27] = "http://o16.177mh.com/h27/";
+          img_qianzso[28] = "http://oo62.177mh.com/h28/";
+          img_qianzso[29] = "http://o59.177mh.com/h29/";
+          img_qianzso[30] = "http://oo62.177mh.com/h30/";
+          img_qianzso[31] = "http://oo62.177mh.com/h31/";
+          img_qianzso[32] = "http://oo62.177mh.com/h32/";
+          img_qianzso[33] = "http://oo62.177mh.com/h33/";
+          img_qianzso[34] = "http://oo62.177mh.com/h34/";
+          img_qianzso[35] = "http://o59.177mh.com/h35/";
+          img_qianzso[36] = "http://o59.177mh.com/h36/";
+          img_qianzso[37] = "http://o59.177mh.com/h37/";
+          img_qianzso[38] = "http://o70.177mh.com/h38/";
+          img_qianzso[39] = "http://o70.177mh.com/h39/";
+          img_qianzso[40] = "http://o70.177mh.com/h40/";
+          img_qianzso[41] = "http://o70.177mh.com/h41/";
+          img_qianzso[42] = "http://o70.177mh.com/h42/";
+          img_qianzso[43] = "http://o70.177mh.com/h43/";
+          img_qianzso[44] = "http://o70.177mh.com/h44/";
+          img_qianzso[45] = "http://oo62.177mh.com/h45/";
+          img_qianzso[46] = "http://o59.177mh.com/h46/";
+          img_qianzso[47] = "http://o70.177mh.com/h47/";
+          img_qianzso[48] = "http://oo62.177mh.com/h48/";
+          img_qianzso[49] = "http://o16.177mh.com/h49/";
+          img_qianzso[50] = "http://o70.177mh.com/h50/";
+          img_qianzso[51] = "http://o16.177mh.com/h51/";
+          img_qianzso[52] = "http://o76.177mh.com/h52/";
+          img_qianzso[53] = "http://o76.177mh.com/h53/";
+          img_qianzso[54] = "http://ofdc.177mh.com/h54/";
+          img_qianzso[55] = "http://o76.177mh.com/h55/";
+          img_qianzso[56] = "http://o76.177mh.com/h56/";
+          img_qianzso[57] = "http://o76.177mh.com/h57/";
+          img_qianzso[58] = "http://o70.177mh.com/h58/";
+          img_qianzso[59] = "http://o16.177mh.com/h59/";
+          img_qianzso[60] = "http://o59.177mh.com/h60/";
+          img_qianzso[61] = "http://o59.177mh.com/h61/";
+          img_qianzso[150] = "http://o59.177mh.com/h46/";
+          var host = img_qianzso[img_s];
+          imgs = imgs.map(function (e) {
+            return "" + host + e;
           });
-          return data.map(function (e) {
+          if (imgs.length <= 0) return null;
+          return imgs.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
-        }
+        });
+      }
+    },
 
-        function parse(p, a, c, k, e, d) {
-          e = function e(c) {
-            return c.toString(36);
-          };if (!''.replace(/^/, String)) {
-            while (c--) {
-              d[e(c)] = k[c] || e(c);
-            }k = [function (e) {
-              return d[e];
-            }];e = function e() {
-              return '\\w+';
-            };c = 1;
-          };while (c--) {
-            if (k[c]) {
-              p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
-            }
-          }return p;
-        }
+    "yyls": {
+      getChapterContent: function getChapterContent(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var link = this.getChapterLink(bsid, dict);
+        return utils.get(link).then(function (html) {
+          var link = html.match(/id="caonima" .*?\bsrc\b="([^"]*)"/i)[1];
+          link = link.replace(/\/[^\/]*$/, "");
+          if (link[link.length - 1] != "/") link += "/";
+          var count = Number.parseInt(html.match(/openimg\('\d+','(\d+)','\d+',\d+\)/i)[1]);
+          var imgs = new Array(count).fill(0).map(function (e, i) {
+            return "" + link + (i + 1).toString().padLeft(3, "0") + ".jpg";
+          });
+          return imgs.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
+        });
       }
     }
+
   };
 
-  return customBookSource;
+  return CBS;
 });
