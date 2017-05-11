@@ -34,7 +34,7 @@
 
   var bsm = new BookSourceManager(undefined, customBookSource);
   return Promise.all([bsm.loadConfig("data/booksources.json"), utils.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
-    config = data;
+    var config = data;
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;

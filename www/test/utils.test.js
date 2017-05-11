@@ -143,13 +143,6 @@
       return Promise.all([p1, p2]);
     });
 
-    it('arrayCount', function () {
-      equal(null, utils.arrayCount());
-      assert.lengthOf(utils.arrayCount([]), 0);
-      equal(1, utils.arrayCount([2])[0][1]);
-      equal(3, utils.arrayCount([1, 2, 4, 3, 4, 4, 5])[0][1]);
-    });
-
     it('persistent', function () {
       var data = [undefined, null, "test", {
         def: "test",

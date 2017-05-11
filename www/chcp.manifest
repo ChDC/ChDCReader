@@ -485,7 +485,7 @@
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "17bbd186b9f9f90acfbfb30efa5eb2fe"
+    "hash": "e3a09e0f0cfbb5f998f9e29c9ca41bd1"
   },
   {
     "file": "test/browser.test.js",
@@ -521,6 +521,6 @@
   },
   {
     "file": "test/utils.test.js",
-    "hash": "06206cd7eb9c9f21f410b9abccde99f9"
+    "hash": "74b0e3d30ef7f65dfd41db7d8a5221d5"
   }
 ]
