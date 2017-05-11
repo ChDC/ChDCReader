@@ -591,9 +591,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 submitResult = function submitResult() {
                   if (result.length <= 0) {
-                    var re = utils.arrayCount(errorCodeList);
-                    if (re.length > 0) return Promise.reject(re[0][0]);
-                    return Promise.reject(201);
+                    var re = utils.findMostError(errorCodeList);
+                    return Promise.reject(re ? re : 201);
                   } else {
                     if (count > 1) return Promise.resolve(result);else {
                       return Promise.resolve(result[0]);
@@ -638,7 +637,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 return _context4.abrupt("return", co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex)).catch(function (error) {
                   searchedSource.push(contentSourceId);
-                  handleWithNormalMethod(error);
+                  return handleWithNormalMethod(error);
                 }));
 
               case 20:

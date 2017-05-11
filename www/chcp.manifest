@@ -13,7 +13,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "264983ab7831a4ba887c5ec0144ad751"
+    "hash": "2193da3d2b761ded4204e4884ea7901e"
   },
   {
     "file": "data/removedBooksources.json",
@@ -21,7 +21,7 @@
   },
   {
     "file": "data/UpdateLog.html",
-    "hash": "b07285a2a11fe3670233026314ef788b"
+    "hash": "c5b87e327c434d1d812e9619314e9966"
   },
   {
     "file": "img/book_cover.png",
@@ -32,12 +32,48 @@
     "hash": "aef3c727d3d44e0655f61894bd346d0c"
   },
   {
+    "file": "img/logo/2manhua.png",
+    "hash": "219bbfb04f1c7608777a31df2826ed96"
+  },
+  {
+    "file": "img/logo/2manhua.png.crdownload",
+    "hash": "3a4a4468f3d13b1415082f418559ad8d"
+  },
+  {
+    "file": "img/logo/57mh.png",
+    "hash": "3b80b31a1537cc68b5efbb716b4fabd8"
+  },
+  {
+    "file": "img/logo/77mh.gif",
+    "hash": "cc04b6b9e9e63f0b1d95dd206a71397f"
+  },
+  {
+    "file": "img/logo/77mh.png",
+    "hash": "dd3c817034db0ce3fa1c2bf6254a2466"
+  },
+  {
     "file": "img/logo/chuangshi.png",
     "hash": "e0e2b0551332ca70d17878977283055e"
   },
   {
     "file": "img/logo/comico.png",
     "hash": "9e574e0f6fed11eccac57a80cf1af0a0"
+  },
+  {
+    "file": "img/logo/omanhua.gif",
+    "hash": "ca826db49282a6882b46dce74250a779"
+  },
+  {
+    "file": "img/logo/omanhua.gif.crdownload",
+    "hash": "ca826db49282a6882b46dce74250a779"
+  },
+  {
+    "file": "img/logo/omanhua.png",
+    "hash": "4c6f221de14292883c0a2f75be4401a9"
+  },
+  {
+    "file": "img/logo/ps2AD4.tmp",
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   {
     "file": "img/logo/qidian.png",
@@ -64,6 +100,10 @@
     "hash": "e2422ee7222a2e39c6edf2d5f42570fb"
   },
   {
+    "file": "img/logo/yyls.png",
+    "hash": "22bdd9f3b11f96606adcdc6ff26c0f6e"
+  },
+  {
     "file": "img/readbg1.jpg",
     "hash": "9c3e73db5b3ef008c2f61056c4b325b7"
   },
@@ -81,7 +121,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "0e61a898e96f28f0129ccfffa2c241d0"
+    "hash": "545a676e8870d00827ec5f44780cbd72"
   },
   {
     "file": "js/BookShelf.js",
@@ -93,7 +133,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "4b389d52b71be984a0caf77541d80751"
+    "hash": "af2123980946ff3922a65ff5499924ad"
   },
   {
     "file": "js/Chapter.js",
@@ -105,7 +145,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "3ee85861b99faa91ceeb61f41260a4a1"
+    "hash": "1e5bcddb83941bcb244cdb4a3d18aa61"
   },
   {
     "file": "js/executeOnUpdated.js",
@@ -297,7 +337,7 @@
   },
   {
     "file": "mylib/LittleCrawler.js",
-    "hash": "bceb2cf5381b450a6d9ae4eb219f70db"
+    "hash": "fa8ccef68e3a67299bf62ffc13bfb4fb"
   },
   {
     "file": "mylib/Page.js",
@@ -317,7 +357,7 @@
   },
   {
     "file": "mylib/utils.js",
-    "hash": "7590a49cdeb234617f5417d67b0c450c"
+    "hash": "70e5ba5c2242c659f615a3fe582a273e"
   },
   {
     "file": "page/bookdetail.page.css",
@@ -361,7 +401,7 @@
   },
   {
     "file": "page/explorebook.page.js",
-    "hash": "1266a72e29e8df732a2b8d8f4d020434"
+    "hash": "53570481e86959b1a56527a954b76131"
   },
   {
     "file": "page/explorebook.page.night1.css",
@@ -425,7 +465,7 @@
   },
   {
     "file": "test/app.test.js",
-    "hash": "591a8d363051a6091e3ff2f04b2982b2"
+    "hash": "3e380571d9296966c14522f8838eeeeb"
   },
   {
     "file": "test/Book.test.js",
@@ -441,7 +481,7 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "8f56079c14e8dd2d1380743d53fcc567"
+    "hash": "8a2884e48a0fd3026065ad161d4ee9d7"
   },
   {
     "file": "test/BookSourceManager.test.js",
@@ -465,7 +505,7 @@
   },
   {
     "file": "test/LittleCrawler.test.js",
-    "hash": "c548af8609a86f4ab8ebec6c751fdd02"
+    "hash": "1ca4dfef0a2990c096102f26e05f9d2b"
   },
   {
     "file": "test/mocha.test.js",

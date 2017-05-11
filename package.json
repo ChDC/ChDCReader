@@ -1,17 +1,40 @@
 {
-  "devDependencies": {
-    "babel-cli": "^6.0.0"
-  },
-  "scripts": {
-    "compile": "babel --no-comments --presets es2015 --ignore src/lib/ -Dd www src",
-    "watch": "babel --no-comments --presets es2015 --ignore src/lib/ -wDd www src",
-    "update": "tools\\UpdateResources",
-    "build": "cordova build android --buildConfig \"E:\\AppData\\Sign\\cordova.json\"",
-    "buildrelease": "cordova build android --release --buildConfig \"E:\\AppData\\Sign\\cordova.json\""
-
-  },
-  "dependencies": {
-    "babel-polyfill": "^6.23.0",
-    "sortablejs": "^1.5.1"
-  }
+    "devDependencies": {
+        "babel-cli": "^6.0.0"
+    },
+    "scripts": {
+        "compile": "babel --no-comments --presets es2015 --ignore src/lib/ -Dd www src",
+        "watch": "babel --no-comments --presets es2015 --ignore src/lib/ -wDd www src",
+        "update": "tools\\UpdateResources",
+        "build": "cordova build android --buildConfig \"E:\\AppData\\Sign\\cordova.json\"",
+        "buildrelease": "cordova build android --release --buildConfig \"E:\\AppData\\Sign\\cordova.json\""
+    },
+    "dependencies": {
+        "babel-polyfill": "^6.23.0",
+        "sortablejs": "^1.5.1",
+        "cordova-browser": "~4.1.0",
+        "cordova-android": "~6.1.2",
+        "cordova-plugin-device": "~1.1.4",
+        "cordova-plugin-file": "~4.3.1",
+        "cordova-plugin-http": "~1.2.0",
+        "cordova-plugin-inappbrowser": "~1.7.0",
+        "cordova-plugin-network-information": "~1.3.1",
+        "cordova-plugin-statusbar": "~2.2.2",
+        "cordova-plugin-whitelist": "1"
+    },
+    "cordova": {
+        "platforms": [
+            "android",
+            "browser"
+        ],
+        "plugins": {
+            "cordova-plugin-device": {},
+            "cordova-plugin-file": {},
+            "cordova-plugin-http": {},
+            "cordova-plugin-inappbrowser": {},
+            "cordova-plugin-network-information": {},
+            "cordova-plugin-statusbar": {},
+            "cordova-plugin-whitelist": {}
+        }
+    }
 }

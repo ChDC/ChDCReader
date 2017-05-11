@@ -6,6 +6,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ;(function (factory) {
@@ -26,8 +28,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (!ajax) this.ajax = a;else if (LittleCrawler.type(ajax) == "object") this.ajax = Object.assign(a, ajax);else this.ajax = ajax;
 
       this.insecurityAttributeList = ['src'];
-      this.insecurityTagList = ['body', 'head', 'title', 'style', 'link', 'meta', 'iframe'];
-      this.singleTagList = ['meta', 'link'];
+      this.insecurityTagList = ['body', 'head', 'title', 'link', 'meta', 'iframe'];
+      this.abnormalSingleTagList = ['meta'];
+      this.normalSingleTagList = ['link'];
 
       this.fixurlAttributeList = ['href', "lc-src"];
       this.specialKey2AttributeList = [[/link$/i, "href"], [/img$|image$/i, "lc-src"], [/html$/i, function (element) {
@@ -406,15 +409,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function __transformHTML(html) {
         if (!html) return html;
 
-        html = this.singleTagList.reduce(function (h, tag) {
+        var singleTagList = [].concat(_toConsumableArray(this.abnormalSingleTagList), _toConsumableArray(this.normalSingleTagList));
+        html = singleTagList.reduce(function (h, tag) {
           return h.replace(new RegExp("(<" + tag + "\\b(?: [^>]*?)?)/?>", "gi"), "$1></" + tag + ">");
         }, html);
+
+        html = html.replace(/<script\b([^>]*)/gi, function (p0, p1) {
+          return "<script type=\"text/plain\"" + (p1 ? p1.replace(/\btype\b/gi, 'lc-type') : "");
+        });
+
+        html = html.replace(/<style\b(.*?)<\/style>/gi, '<script type="text/style"$1</script>');
 
         html = this.insecurityTagList.reduce(function (h, tag) {
           return LittleCrawler.replaceTag(h, tag, "lc-" + tag);
         }, html);
-
-        html = html.replace(/<script\b([^>]*)(type="[^"]*")?/gi, '<script$1 type="text/plain"');
 
         html = this.insecurityAttributeList.reduce(function (h, attr) {
           return LittleCrawler.replaceAttribute(h, attr, "lc-" + attr);
@@ -425,14 +433,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "__reverseHTML",
       value: function __reverseHTML(html) {
         if (!html) return html;
+
+        html = this.insecurityAttributeList.reduce(function (h, attr) {
+          return LittleCrawler.replaceAttribute(h, "lc-" + attr, attr);
+        }, html);
+
         html = this.insecurityTagList.reduce(function (h, tag) {
           return LittleCrawler.replaceTag(h, "lc-" + tag, tag);
         }, html);
 
-        html = html.replace(/<script\b([^>]*)type="text\/plain"/gi, '<script$1');
+        html = html.replace(/<script type="text\/plain"([^>]*)/gi, function (p0, p1) {
+          return "<script" + (p1 ? p1.replace(/\blc-type\b/gi, 'type') : "");
+        });
 
-        html = this.insecurityAttributeList.reduce(function (h, attr) {
-          return LittleCrawler.replaceAttribute(h, "lc-" + attr, attr);
+        html = html.replace(/<script\b([^>]*) type="text\/style"(.*?)<\/script>/gi, '<style$1$2</style>');
+
+        html = this.abnormalSingleTagList.reduce(function (h, tag) {
+          return h.replace(new RegExp("<" + tag + "\\b([^>]*)><\\/" + tag + ">", "gi"), "<" + tag + "$1>");
+        }, html);
+
+        html = this.normalSingleTagList.reduce(function (h, tag) {
+          return h.replace(new RegExp("<" + tag + "\\b([^>]*)><\\/" + tag + ">", "gi"), "<" + tag + "$1/>");
         }, html);
         return html;
       }

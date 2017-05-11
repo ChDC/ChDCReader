@@ -249,10 +249,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           }
 
-          if (finalResult.length === 0 && errorList.length > 0) {
-            var re = utils.arrayCount(errorList);
-            throw re[0][0];
-          }
+          if (finalResult.length === 0 && errorList.length > 0) throw utils.findMostError(errorList);
 
           return finalResult;
         }

@@ -16,7 +16,7 @@
         if (!evalCode) return null;
         return utils.eval(evalCode[1]);
       },
-      getImages: function getImages(html, key, host) {
+      getImages: function getImages(html, key, host, filter) {
         var data = CBS.common.getEncryptedData(html);
 
         var matcher = data.match(/{.*}/);
@@ -28,6 +28,10 @@
           return "" + host + e;
         });
         if (data.length <= 0) return null;
+        if (filter) {
+          var filteredData = data.filter(filter);
+          if (filteredData.length > 3) data = filteredData;
+        }
         return data.map(function (e) {
           return "<img src=\"" + e + "\">";
         }).join('\n');
@@ -206,6 +210,9 @@
           if (html.match('为维护版权方权益或违反国家法律法规本站不提供阅读')) return null;
           var data = CBS.common.getEncryptedData(html);
           if (!data) return null;
+          var matcher = data.match(/({.*})\|\|/);
+          if (!matcher) return null;
+          data = JSON.parse(matcher[1].replace(/'/g, '"'));
 
           data = data.files.map(function (e) {
             return "http://pic.fxdm.cc" + data.path + e;
@@ -224,7 +231,9 @@
 
         var link = this.getChapterLink(bsid, dict);
         return utils.get(link).then(function (html) {
-          return CBS.common.getImages(html, "fs", "http://tupianku.333dm.com");
+          return CBS.common.getImages(html, "fs", "http://tupianku.333dm.com", function (img) {
+            return img && img.match(/\/\d+\.\w+$/i);
+          });
         });
       }
     },

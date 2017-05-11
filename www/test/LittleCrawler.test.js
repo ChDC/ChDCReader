@@ -284,11 +284,12 @@
       assert.equal("", lc.__transformHTML(""));
       assert.equal(null, lc.__transformHTML());
 
-      var html = "\n        <link rel=\"stylesheet\" href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\">\n        <meta charset=\"UTF-8\">\n        <style></style>\n        <style>abc</style>\n        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img src=\"test.png\">\n        <img src=\"test.png\" />\n      ";
+      var html = "\n        <link rel=\"stylesheet\" href=\"lib/bootstrap-3.3.7/css/bootstrap.min.css\" />\n        <link rel=\"icon\" sizes=\"any\" mask href=\"//www.baidu.com/img/baidu.svg\"/>\n        <meta http-equiv=\"refresh\" content=\"0; url=/baidu.html?from=noscript\">\n        <meta charset=\"UTF-8\">\n        <style id=\"abc\"></style>\n        <style>abc</style>\n        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n        <script type=\"text/javascript\" src=\"cordova.js\">abcdef</script>\n        <title>ChDCReader</title>\n        <iframe src=\"cordova\"></iframe>\n        <img src=\"test.png\">\n        <img src=\"test.png\" />\n      ";
 
       var fh = lc.__transformHTML(html);
       assert.include(fh, '<img lc-src="test.png" />');
       assert.notInclude(fh, '<img src="test.png" />');
+      equal(html, lc.__reverseHTML(fh));
     });
 
     it('clearHtml', function () {
