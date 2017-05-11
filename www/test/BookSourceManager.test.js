@@ -32,7 +32,11 @@
 
   var bsids = ["omanhua", "2manhua", "57mh", "77mh", "yyls", "qqbook", "sfnovel", "qqac", "u17", "comico", "biquge.tw", "biqulou", "daizhuzai", "dingdian", "qidian"];
 
+<<<<<<< HEAD
   bsm = new BookSourceManager(undefined, customBookSource);
+=======
+  var bsm = new BookSourceManager(undefined, customBookSource);
+>>>>>>> dev
   return Promise.all([bsm.loadConfig("data/booksources.json"), utils.getJSON("test/BookSourceManager.test.data.json").then(function (data) {
     config = data;
     var _iteratorNormalCompletion = true;
