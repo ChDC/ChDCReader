@@ -382,19 +382,18 @@
             contentSources.splice(i, 1);
           });
         }
+
         if(includeSource){
-          const i = contentSources.indexOf(includeSource);
-          if(i >= 0) contentSources.splice(i, 1);
-          // 放到结尾处
-          contentSources.push(includeSource);
           if(!noInfluenceWeight)
             self.sources[includeSource].weight += INCLUDE_WEIGHT;
         }
+        else
+          includeSource = bookSourceId;
 
-        // 将主源放到结尾处
-        const i = contentSources.indexOf(bookSourceId);
+        const i = contentSources.indexOf(includeSource);
         if(i >= 0) contentSources.splice(i, 1);
-        contentSources.push(bookSourceId);
+        // 放到结尾处
+        contentSources.push(includeSource);
 
         while(contentSources.length > 0 && remainCount > 0){
           let sourceB = contentSources.pop();
