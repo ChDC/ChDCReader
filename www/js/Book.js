@@ -466,7 +466,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 };
 
                 getChapterFromContentSources2 = function getChapterFromContentSources2(includeSource) {
-                  var contentSources, _i, i, sourceB, _result, opts, _result2, chapterBB, indexB, bs, chapterB;
+                  var contentSources, i, sourceB, _result, opts, _result2, chapterBB, indexB, bs, chapterB;
 
                   return regeneratorRuntime.wrap(function getChapterFromContentSources2$(_context2) {
                     while (1) {
@@ -489,19 +489,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                               contentSources.splice(i, 1);
                             });
                           }
+
                           if (includeSource) {
-                            _i = contentSources.indexOf(includeSource);
-
-                            if (_i >= 0) contentSources.splice(_i, 1);
-
-                            contentSources.push(includeSource);
                             if (!noInfluenceWeight) self.sources[includeSource].weight += INCLUDE_WEIGHT;
-                          }
+                          } else includeSource = bookSourceId;
 
-                          i = contentSources.indexOf(bookSourceId);
+                          i = contentSources.indexOf(includeSource);
 
                           if (i >= 0) contentSources.splice(i, 1);
-                          contentSources.push(bookSourceId);
+
+                          contentSources.push(includeSource);
 
                         case 7:
                           if (!(contentSources.length > 0 && remainCount > 0)) {

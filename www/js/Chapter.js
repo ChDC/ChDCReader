@@ -36,37 +36,46 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   Chapter.equalTitle = function (ca, cb) {
     var loose = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var threshold = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
 
-    if (ca == cb) return 4;
+    var weight = 8;
+
+    if (ca == cb) return weight;
     if (!ca || !cb) return 0;
 
     var cs = [ca, cb].map(function (c) {
       return typeof c != "string" ? c.title : c;
     });
-    if (cs[0] == cs[1]) return 4;
+    if (cs[0] == cs[1]) return weight;
+    if (threshold >= weight) return 0;
 
     cs = cs.map(function (s) {
       return Chapter.stripString(s, loose);
     });
-    if (cs[0] == cs[1]) return 3;
+    if (cs[0] == cs[1]) return --weight;
+    if (threshold >= weight) return 0;
 
     cs = cs.map(utils.lowerCaseNumbers);
-    if (cs[0] == cs[1]) return 2;
+    if (cs[0] == cs[1]) return --weight;
+    if (threshold >= weight) return 0;
 
     cs = cs.map(function (e) {
       return e.replace(/[第总]?0*(\d+)[弹话章节卷集]?/gi, '$1');
     });
-    if (cs[0] == cs[1]) return 1;
+    if (cs[0] == cs[1]) return --weight;
+    if (threshold >= weight) return 0;
 
     if (!loose) return 0;
 
-    if (cs[0].includes(cs[1]) || cs[1].includes(cs[0])) return -1;
+    if (cs[0].includes(cs[1]) || cs[1].includes(cs[0])) return --weight;
+    if (threshold >= weight) return 0;
 
     cs = cs.map(function (c) {
       return c.replace(/\d/g, '');
     });
-    if (cs[0].includes(cs[1]) || cs[1].includes(cs[0])) return -2;
+    if (cs[0].includes(cs[1]) || cs[1].includes(cs[0])) return --weight;
+    if (threshold >= weight) return 0;
 
     return 0;
   };
