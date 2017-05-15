@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["BookSourceManager_test"] = factory(chai, utils, BookSourceManager, customBookSource);
+    window["BookSourceManager_test"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["chai", "utils", "BookSourceManager", "CustomBookSource", "Chapter", "../test/testbook"], function(chai, utils, BookSourceManager, customBookSource, Chapter, testbook){
 
   let assert = chai.assert;

@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["executeOnUpdated"] = factory(co, utils);
+    window["executeOnUpdated"] = factory.apply(undefined, deps.map(e => window[e]));
 }(['co', "utils"], function(co, utils) {
   "use strict"
 

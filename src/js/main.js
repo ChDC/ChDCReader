@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["main"] = factory(utils, uiutils, Book, BookSourceManager, PageManager, BookShelf, customBookSource);
+    window["main"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShelf", "CustomBookSource", "bootstrap"],
   function(utils, uiutils, Book, BookSourceManager, PageManager, BookShelf, customBookSource) {
 
