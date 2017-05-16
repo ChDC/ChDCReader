@@ -111,13 +111,14 @@
       "remove": ["#ad"]
     },
     "comico": {
-      "url": "http://www.comico.com.tw",
+      "url": "http://www.comico.com.tw/spweb/index.nhn",
       "interceptor": [
         {
           "match": "^http://www.comico.com.tw/.*?titleNo=(\\d+)",
           "goto": "bookdetail"
         }
-      ]
+      ],
+      "remove": ["#wrap > a", "#header > ul", "#footer > div"]
     },
     "chuangshi": {
       "url": "http://ubook.qq.com",

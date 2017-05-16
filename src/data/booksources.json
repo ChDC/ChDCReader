@@ -864,21 +864,25 @@
         }
       },
       "detail": {
-        "request": "http://www.comico.com.tw/articleList.nhn?titleNo={bookid}",
+        "request": {
+          "url": "http://api.comico.com.tw/article/get.nhn?count=1&titleNo={bookid}&startedNo=0",
+          "type": "json"
+        },
         "response": {
-          "author": "dd.name > span:nth-child(1)",
-          "catagory": "#container > div > div.chapban > div > dl > dd.name > span:nth-child(3)",
+          "author": "data.dtl.pid",
+          "catagory": "data.dtl.tg.genreName",
           "complete": {
             "type": "boolean",
-            "element": "#container > div > div.contwrap > div.chaphd > p > strong",
-            "true": "週",
             "default": false
           },
-          "coverImg": "#container > div > div.chapban > span.bg_img > img",
-          "introduce": "#container > div > div.chapban > div > dl > dd.dsc",
-          "lastestChapter": "#container > div > div.contwrap > ul > li:nth-child(1) > a > span.tit",
-          "lastestChapterLink": "#container > div > div.contwrap > ul > li:nth-child(1) > a",
-          "name": "#container > div > div.chapban > div > h2"
+          "coverPart": "data.dtl.thm_vl",
+          "coverImg": {
+            "type": "format",
+            "value": "http://images.comico.tw{coverPart}"
+          },
+          "introduce": "data.dtl.syp",
+          "lastestChapter": "data.its.0.itl",
+          "name": "data.tit"
         }
       },
       "catalog": {
