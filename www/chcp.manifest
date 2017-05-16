@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "3306c579567f45bf834842151b566db0"
+    "hash": "c7767f6d5951d656f35233c4a57498d5"
   },
   {
     "file": "data/errorCode.json",
@@ -13,7 +13,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "1c796b642e752e79802f24868a3f9594"
+    "hash": "e1ad389658aa689d1692effc6869068e"
   },
   {
     "file": "data/removedBooksources.json",
