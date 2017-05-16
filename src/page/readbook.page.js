@@ -328,18 +328,18 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.chapterList.loadList();
     }
 
-    toggleFullScreen(full){
+    toggleFullScreen(full, force=false){
       if(full == undefined)
         full = !this.isFullScreen;
 
-      if(full && !this.isFullScreen){
+      if(full && (!this.isFullScreen || force)){
         this.chapterContainer[0].style.top = "0";
         this.chapterContainer[0].style.bottom = "0";
         $("#mainViewHeader, #mainViewFooter").hide();
-        if(typeof StatusBar != "undefined") StatusBar.hide();
+        if(typeof StatusBar != "undefined" && window.innerHeight < window.innerWidth) StatusBar.hide();
         this.isFullScreen = true;
       }
-      else if(!full && this.isFullScreen){
+      else if(!full && (this.isFullScreen || force)){
         this.chapterContainer.removeAttr("style");
         $("#mainViewHeader, #mainViewFooter").show();
         if(typeof StatusBar != "undefined") StatusBar.show();
