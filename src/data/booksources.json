@@ -1,8 +1,94 @@
 {
   "valid": ["qidian", "qqbook", "qqac",  "u17", "comico", "sfnovel",
     "biquge.tw", "daizhuzai", "biqulou",  "dingdian",
-    "omanhua", "2manhua", "57mh", "77mh", "yyls"],
+    "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai"],
   "sources": {
+    "manhuatai": {
+      "id": "manhuatai",
+      "type": "comics",
+      "name": "漫画台",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 10,
+      "officialurls": {
+        "host": "http://www.manhuatai.com",
+        "bookdetail": "http://m.manhuatai.com/{bookid}/",
+        "bookchapter": "",
+        "booksearch": ""
+      },
+      "search": {
+        "request": {
+          "type": "json",
+          "url": "http://www.manhuatai.com/getjson.shtml?q={keyword}"
+        },
+        "response": {
+          "type": "array",
+          "element": "",
+          "children": {
+            "name": "cartoon_name",
+            "author": "",
+            "catagory": "",
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "",
+            "introduce": "",
+            "bookid": "cartoon_id"
+          }
+        }
+      },
+      "detail": {
+        "request": {
+          "type": "html",
+          "url": "http://www.manhuatai.com/{bookid}/"
+        },
+        "response": {
+          "name": {
+            "type": "string",
+            "element": "body > div.wrapper > div.mainctx > div > div.l > div > div.mhjsbody.clearfix > div > ul > li:nth-child(1)",
+            "remove": "名称："
+          },
+          "author": "",
+          "catagory": "",
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "body > div.wrapper > div.mainctx > div > div.l > div > div.mhjsbody.clearfix > img",
+          "introduce": "body > div.wrapper > div.mainctx > div > div.l > div > div.mhjsbody.clearfix > div > div > div.wz.clearfix.t1 > div",
+          "lastestChapter": "body > div.wrapper > div.mainctx > div > div.l > div > div.mhjsbody.clearfix > div > ul > li:nth-child(2) > a"
+        }
+      },
+      "catalog": {
+        "request": {
+          "type": "html",
+          "url": "http://www.manhuatai.com/{bookid}/"
+        },
+        "response": {
+          "type": "array",
+          "element": ".mhlistbody > ul > li",
+          "reverse": true,
+          "children": {
+            "title": {
+              "type": "string",
+              "element": "a",
+              "attribute": "title"
+            },
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "type": "html",
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": "",
+          "title": ""
+        }
+      }
+    },
     "yyls": {
       "id": "yyls",
       "type": "comics",

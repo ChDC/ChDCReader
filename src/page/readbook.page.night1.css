@@ -1,6 +1,6 @@
 /*********** Color ***************/
 
-.mainView, .toolbar.top, .toolbar.bottom, .modal-content, #listCatalog, .chapter-item, .chapter-volume-item{
+#mainView, .toolbar.top, .toolbar.bottom, .modal-content, #listCatalog, .chapter-item, .chapter-volume-item{
     background-image: none;
     background-color: #252526;
     color: #f1f1cf;
@@ -25,10 +25,10 @@
     background-color: #ccc;
 }
 
-.mainViewHeader{
+#mainViewHeader{
     color: gray;
 }
 
-.mainViewFooter{
+#mainViewFooter{
     color: #eee;
 }

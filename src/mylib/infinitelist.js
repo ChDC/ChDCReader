@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["Infinitelist"] = factory(co, utils);
+    window["Infinitelist"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["co", "utils"], function(co, utils) {
 
   "use strict"
@@ -164,12 +164,16 @@
         event.scrollTop = cst;
         let direction = offset >= 0 ? 1 : -1;
 
-        if(offset > 0)
+        if(offset > 0){
           // 向下滚动
           __onScroll(event, direction);
-        else if(offset < 0)
+          this.fireEvent("scrollDown", {scrollTop: cst});
+        }
+        else if(offset < 0){
           // 向上滚动
           __onScroll(event, direction);
+          this.fireEvent("scrollUp", {scrollTop: cst});
+        }
         __lastScrollTop = cst;
       }
 

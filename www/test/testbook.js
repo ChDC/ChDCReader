@@ -5,7 +5,9 @@
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["testbook"] = factory(chai, utils, Chapter);
+  }));else window["testbook"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(["chai", "utils", "Chapter"], function (chai, utils, Chapter) {
 
   var assert = chai.assert;

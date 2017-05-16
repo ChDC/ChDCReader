@@ -5,7 +5,9 @@
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["main"] = factory(utils, uiutils, Book, BookSourceManager, PageManager, BookShelf, customBookSource);
+  }));else window["main"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(["utils", "uiutils", "Book", "BookSourceManager", "PageManager", "BookShelf", "CustomBookSource", "bootstrap"], function (utils, uiutils, Book, BookSourceManager, PageManager, BookShelf, customBookSource) {
 
   "use strict";

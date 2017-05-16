@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["customBookSource"] = factory(co, utils, LittleCrawler, translate, Book, BookSource, Chapter);
+    window["customBookSource"] = factory.apply(undefined, deps.map(e => window[e]));
 }(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function(co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict"
 
@@ -21,23 +21,23 @@
         return utils.eval(evalCode[1]);
       },
 
-      getImages(html, key, host, filter){
-        let data = CBS.common.getEncryptedData(html);
+      // getImages(html, key, host, filter){
+      //   let data = CBS.common.getEncryptedData(html);
 
-        let matcher = data.match(/{.*}/);
-        if(!matcher) return null;
-        data = JSON.parse(matcher[0].replace(/'/g, '"'));
+      //   let matcher = data.match(/{.*}/);
+      //   if(!matcher) return null;
+      //   data = JSON.parse(matcher[0].replace(/'/g, '"'));
 
-        if(key) data = data[key];
-        data = data.map(e => `${host}${e}`);
-        if(data.length <= 0) return null;
-        if(filter){
-          let filteredData = data.filter(filter);
-          if(filteredData.length > 3)
-            data = filteredData;
-        }
-        return data.map(e => `<img src="${e}">`).join('\n');
-      },
+      //   if(key) data = data[key];
+      //   data = data.map(e => `${host}${e}`);
+      //   if(data.length <= 0) return null;
+      //   if(filter){
+      //     let filteredData = data.filter(filter);
+      //     if(filteredData.length > 3)
+      //       data = filteredData;
+      //   }
+      //   return data.map(e => `<img src="${e}">`).join('\n');
+      // },
     },
 
     "qqac": {
@@ -250,7 +250,22 @@
       getChapterContent(bsid, dict={}){
         let link = this.getChapterLink(bsid, dict);
         return utils.get(link)
-          .then(html => CBS.common.getImages(html, "fs", "http://tupianku.333dm.com", (img => img && img.match(/\/\d+\.\w+$/i))));
+          .then(html => {
+            let data = CBS.common.getEncryptedData(html);
+
+            let matcher = data.match(/{.*}/);
+            if(!matcher) return null;
+            data = JSON.parse(matcher[0].replace(/'/g, '"'));
+            data = data.fs;
+            if(data.length <= 0) return null;
+
+            // 按URL长度筛选广告
+            let box = utils.getBoxPlot(data.map(e => e.length));
+            data = data.filter(e => e.length >= box.Q0 && e.length <= box.Q4);
+
+            data = data.map(e => `http://tupianku.333dm.com${e}`);
+            return data.map(e => `<img src="${e}">`).join('\n');
+          });
       }
     },
 
@@ -258,7 +273,18 @@
       getChapterContent(bsid, dict={}){
         let link = this.getChapterLink(bsid, dict);
         return utils.get(link)
-          .then(html => CBS.common.getImages(html, "fs", "http://tupianku.333dm.com"));
+          .then(html => {
+            let data = CBS.common.getEncryptedData(html);
+
+            let matcher = data.match(/{.*}/);
+            if(!matcher) return null;
+            data = JSON.parse(matcher[0].replace(/'/g, '"'));
+
+            data = data.fs;
+            data = data.map(e => `http://tupianku.333dm.com${e}`);
+            if(data.length <= 0) return null;
+            return data.map(e => `<img src="${e}">`).join('\n');
+          });
       }
     },
 
@@ -369,6 +395,30 @@
       }
     },
 
+    "manhuatai": {
+      getChapterContent(bsid, dict={}){
+        let link = this.getChapterLink(bsid, dict);
+        return utils.get(link)
+          .then(html => {
+            let mh_info = html.match(/<script>var mh_info=(.*?);<\/script>/i)[1];
+            mh_info = utils.eval(`(${mh_info})`);
+
+            mh_info.imgpath = mh_info.imgpath.replace(/./g, function(a) {
+                return String.fromCharCode(a.charCodeAt(0) - mh_info.pageid % 10)
+            });
+
+            let startIndex = Number.parseInt(mh_info.startimg);
+            let imgUrlHeader = "mhpic." + mh_info.domain;
+            if(imgUrlHeader.indexOf("mhpic") == -1) imgUrlHeader += ":82";
+            let b = mh_info.comic_size || "";
+
+            // http://mhpic.jjmh.com/comic/Q%2F%E5%85%A8%E8%81%8C%E9%AB%98%E6%89%8B%2F58%E8%AF%9D%2F2.jpg
+            let imgs = new Array(mh_info.totalimg).fill(0).map((e, i) =>
+              `http://${imgUrlHeader}/comic/${mh_info.imgpath}${startIndex + i + ".jpg" + b}`);
+            return imgs.map(e => `<img src="${e}">`).join('\n');
+          });
+      }
+    }
   };
 
   return CBS;

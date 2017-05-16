@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["PageManager"] = factory(jquery);
+    window["PageManager"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["jquery"], function($){
 
   class PageManager{

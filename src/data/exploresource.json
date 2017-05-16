@@ -1,81 +1,141 @@
 {
-  "valid": ["qidian", "qqbook", "sfnovel", "u17", "comico", "qqac",
-    "omanhua", "2manhua", "57mh", "77mh", "yyls"],
+  "valid": ["qidian", "qqac", "qqbook", "sfnovel", "u17", "comico",
+    "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai"],
   "sources": {
+    "manhuatai": {
+      "url": "http://m.manhuatai.com/",
+      "interceptor": [
+        {
+          "match": "^http://m.manhuatai.com/(\\w+)/\\d+\\w*\\.html",
+          "goto": "readbook"
+        }
+      ],
+      "remove": [".topBannerBox", ".footer"]
+    },
     "omanhua": {
       "url": "http://m.omanhua.com/",
-      "readbook": {
-        "matcher": "^http://m.omanhua.com/comic/(\\d+)/\\d+/"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.omanhua.com/comic/(\\d+)/\\d+/",
+          "goto": "readbook"
+        }
+      ]
     },
     "2manhua": {
       "url": "http://m.2manhua.com",
-      "readbook": {
-        "matcher": "^http://m.2manhua.com/comic/(\\d+)/\\d+.html"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.2manhua.com/comic/(\\d+)/\\d+.html",
+          "goto": "readbook"
+        }
+      ]
     },
     "57mh": {
       "url": "http://m.57mh.com",
-      "readbook": {
-        "matcher": "^http://m.57mh.com/(\\d+)/\\d+.html"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.57mh.com/(\\d+)/\\d+.html",
+          "goto": "readbook"
+        }
+      ],
+      "remove": [".module-mobile-cmt-barrage"]
     },
     "77mh": {
       "url": "http://m.77mh.com/",
-      "bookdetail": {
-        "matcher": "^http://m.77mh.com/colist_(\\d+).html"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.77mh.com/colist_(\\d+).html",
+          "goto": "bookdetail"
+        }
+      ]
     },
     "yyls": {
       "url": "http://8comic.se/",
-      "bookdetail": {
-        "matcher": "^http://8comic.se/(\\d+)/"
-      }
+      "interceptor": [
+        {
+          "match": "^http://8comic.se/(\\d+)/",
+          "goto": "bookdetail"
+        }
+      ],
+      "remove": [".sitemaji_banner"]
     },
     "sfnovel": {
       "url": "http://m.sfacg.com/",
-      "bookdetail": {
-        "matcher": "^http://m.sfacg.com/b/(\\d+)"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.sfacg.com/b/(\\d+",
+          "goto": "bookdetail"
+        }
+      ],
+      "remove": ["#bottomNav"]
     },
     "qqac": {
       "url": "http://m.ac.qq.com/",
-      "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
-      "readbook": {
-        "matcher": "^http://m.ac.qq.com/chapter/index/id/(\\d+)/(cid|seqno)/\\d+"
-      }
+      "interceptor": [
+        {
+          "match": "block.html",
+          "goto": {
+            "type": "url",
+            "target": "http://m.ac.qq.com/"
+          }
+        },
+        {
+          "match": "^http://m.ac.qq.com/chapter/index/id/(\\d+)/(cid|seqno)/\\d+",
+          "execute": "window.stop()",
+          "goto": {
+            "type": "page",
+            "target": "readbook"
+          }
+        }
+      ],
+      "remove": [".app-guiding"]
     },
     "qidian": {
       "url": "http://m.qidian.com/",
-      "insertCSS": "#asideTrigger, .home-pure-ad, #footerApp, .footer-backtop, .header-operate, .guide-footer, .guide-nav-a.jsLogin, .mybook-game-ad {display:none;}",
-      "readbook": {
-        "matcher": "^http://m.qidian.com/book/(\\d+)/\\d+"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.qidian.com/book/(\\d+)/\\d+",
+          "goto": "readbook"
+        }
+      ],
+      "remove": ["#asideTrigger", ".home-pure-ad", "#footerApp", ".footer-backtop", ".header-operate", ".guide-footer", ".guide-nav-a.jsLogin", ".mybook-game-ad"]
     },
     "u17": {
       "url": "http://m.u17.com",
-      "insertCSS": "#ad {display: none;}",
-      "bookdetail": {
-        "matcher": "^http://m.u17.com/c/(\\d+).html"
-      }
+      "interceptor": [
+        {
+          "match": "^http://m.u17.com/c/(\\d+).html",
+          "goto": "bookdetail"
+        }
+      ],
+      "remove": ["#ad"]
     },
     "comico": {
       "url": "http://www.comico.com.tw",
-      "bookdetail": {
-        "matcher": "^http://www.comico.com.tw/.*?titleNo=(\\d+)"
-      }
+      "interceptor": [
+        {
+          "match": "^http://www.comico.com.tw/.*?titleNo=(\\d+)",
+          "goto": "bookdetail"
+        }
+      ]
     },
     "chuangshi": {
       "url": "http://ubook.qq.com",
-      "readbook": {
-        "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
-      }
+      "interceptor": [
+        {
+          "match": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*",
+          "goto": "readbook"
+        }
+      ]
     },
     "qqbook": {
       "url": "http://ubook.qq.com",
-      "readbook": {
-        "matcher": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*"
-      }
+      "interceptor": [
+        {
+          "match": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*",
+          "goto": "readbook"
+        }
+      ]
     }
   }
 }

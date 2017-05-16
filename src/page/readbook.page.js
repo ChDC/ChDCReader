@@ -15,6 +15,8 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.isNewBook = true; // 标记是否是未加入书架的新书
       this.buildCatalogView = uifactory.buildCatalogView.bind(this);
       this.lastReadingScrollTop = 0;
+      this.chapterContainer;
+      this.isFullScreen = false;
     }
 
     onClose(){
@@ -45,6 +47,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
     }
 
     onLoad({params}){
+      this.chapterContainer = $("#chapterContainer");
       let bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
       if(bookAndReadRecordInBookShelf){
         // 如果书架中有这本书就读取书架的记录
@@ -69,6 +72,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
     }
 
     onPause(){
+      if(typeof StatusBar != "undefined") StatusBar.show();
       this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
       app.bookShelf.save();
     }
@@ -305,7 +309,42 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         }
       };
 
+      let lastScroll;
+      const threshold = 100;
+      this.chapterList.onScrollDown = e => {
+        if(lastScroll == undefined || e.scrollTop - lastScroll > threshold){
+          this.toggleFullScreen(true);
+          lastScroll = e.scrollTop;
+        }
+      };
+
+      this.chapterList.onScrollUp = e => {
+        if(lastScroll == undefined || lastScroll - e.scrollTop > threshold){
+          this.toggleFullScreen(false);
+          lastScroll = e.scrollTop;
+        }
+      };
+
       this.chapterList.loadList();
+    }
+
+    toggleFullScreen(full){
+      if(full == undefined)
+        full = !this.isFullScreen;
+
+      if(full && !this.isFullScreen){
+        this.chapterContainer[0].style.top = "0";
+        this.chapterContainer[0].style.bottom = "0";
+        $("#mainViewHeader, #mainViewFooter").hide();
+        if(typeof StatusBar != "undefined") StatusBar.hide();
+        this.isFullScreen = true;
+      }
+      else if(!full && this.isFullScreen){
+        this.chapterContainer.removeAttr("style");
+        $("#mainViewHeader, #mainViewFooter").show();
+        if(typeof StatusBar != "undefined") StatusBar.show();
+        this.isFullScreen = false;
+      }
     }
 
     // 构造读完页面

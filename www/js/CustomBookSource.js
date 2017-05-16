@@ -5,7 +5,9 @@
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["customBookSource"] = factory(co, utils, LittleCrawler, translate, Book, BookSource, Chapter);
+  }));else window["customBookSource"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict";
 
@@ -15,26 +17,6 @@
         var evalCode = html.match(/\beval(\(.*return p;?}\(.*?\)\))/i);
         if (!evalCode) return null;
         return utils.eval(evalCode[1]);
-      },
-      getImages: function getImages(html, key, host, filter) {
-        var data = CBS.common.getEncryptedData(html);
-
-        var matcher = data.match(/{.*}/);
-        if (!matcher) return null;
-        data = JSON.parse(matcher[0].replace(/'/g, '"'));
-
-        if (key) data = data[key];
-        data = data.map(function (e) {
-          return "" + host + e;
-        });
-        if (data.length <= 0) return null;
-        if (filter) {
-          var filteredData = data.filter(filter);
-          if (filteredData.length > 3) data = filteredData;
-        }
-        return data.map(function (e) {
-          return "<img src=\"" + e + "\">";
-        }).join('\n');
       }
     },
 
@@ -231,9 +213,27 @@
 
         var link = this.getChapterLink(bsid, dict);
         return utils.get(link).then(function (html) {
-          return CBS.common.getImages(html, "fs", "http://tupianku.333dm.com", function (img) {
-            return img && img.match(/\/\d+\.\w+$/i);
+          var data = CBS.common.getEncryptedData(html);
+
+          var matcher = data.match(/{.*}/);
+          if (!matcher) return null;
+          data = JSON.parse(matcher[0].replace(/'/g, '"'));
+          data = data.fs;
+          if (data.length <= 0) return null;
+
+          var box = utils.getBoxPlot(data.map(function (e) {
+            return e.length;
+          }));
+          data = data.filter(function (e) {
+            return e.length >= box.Q0 && e.length <= box.Q4;
           });
+
+          data = data.map(function (e) {
+            return "http://tupianku.333dm.com" + e;
+          });
+          return data.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
         });
       }
     },
@@ -244,7 +244,20 @@
 
         var link = this.getChapterLink(bsid, dict);
         return utils.get(link).then(function (html) {
-          return CBS.common.getImages(html, "fs", "http://tupianku.333dm.com");
+          var data = CBS.common.getEncryptedData(html);
+
+          var matcher = data.match(/{.*}/);
+          if (!matcher) return null;
+          data = JSON.parse(matcher[0].replace(/'/g, '"'));
+
+          data = data.fs;
+          data = data.map(function (e) {
+            return "http://tupianku.333dm.com" + e;
+          });
+          if (data.length <= 0) return null;
+          return data.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
         });
       }
     },
@@ -358,8 +371,35 @@
           }).join('\n');
         });
       }
-    }
+    },
 
+    "manhuatai": {
+      getChapterContent: function getChapterContent(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var link = this.getChapterLink(bsid, dict);
+        return utils.get(link).then(function (html) {
+          var mh_info = html.match(/<script>var mh_info=(.*?);<\/script>/i)[1];
+          mh_info = utils.eval("(" + mh_info + ")");
+
+          mh_info.imgpath = mh_info.imgpath.replace(/./g, function (a) {
+            return String.fromCharCode(a.charCodeAt(0) - mh_info.pageid % 10);
+          });
+
+          var startIndex = Number.parseInt(mh_info.startimg);
+          var imgUrlHeader = "mhpic." + mh_info.domain;
+          if (imgUrlHeader.indexOf("mhpic") == -1) imgUrlHeader += ":82";
+          var b = mh_info.comic_size || "";
+
+          var imgs = new Array(mh_info.totalimg).fill(0).map(function (e, i) {
+            return "http://" + imgUrlHeader + "/comic/" + mh_info.imgpath + (startIndex + i + ".jpg" + b);
+          });
+          return imgs.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
+        });
+      }
+    }
   };
 
   return CBS;

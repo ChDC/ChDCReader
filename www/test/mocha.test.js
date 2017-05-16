@@ -5,7 +5,9 @@
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["mocha._test"] = factory(chai);
+  }));else window["mocha._test"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(["chai"], function (chai) {
 
   var assert = chai.assert;

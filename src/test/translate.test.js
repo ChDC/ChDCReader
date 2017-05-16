@@ -5,7 +5,7 @@
   else if (typeof module != "undefined" && typeof module.exports != "undefined")
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
-    window["translate_test"] = factory(chai, utils, translate);
+    window["translate_test"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["chai", "utils", "translate"], function(chai, utils, translate){
 
   let assert = chai.assert;
