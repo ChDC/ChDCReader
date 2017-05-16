@@ -9,7 +9,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["utils"] = factory(fileSystem, LittleCrawler);
+  }));else window["utils"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(["fileSystem", "LittleCrawler"], function (fileSystem, LittleCrawler) {
   "use strict";
 
@@ -529,6 +531,27 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       if (y > rect.top && y < rect.bottom && x > rect.left && x < rect.right) return true;
       return false;
+    },
+    getBoxPlot: function getBoxPlot(data) {
+      var Q1 = void 0,
+          Q2 = void 0,
+          Q3 = void 0;
+      data = Object.assign([], data);
+      data = data.sort(function (e1, e2) {
+        return e1 - e2;
+      });
+      var len = data.length;
+
+      Q1 = data[Math.ceil(len * 0.25) - 1];
+      Q2 = data[Math.ceil(len * 0.5) - 1];
+      Q3 = data[Math.ceil(len * 0.75) - 1];
+      return {
+        Q1: Q1,
+        Q2: Q2,
+        Q3: Q3,
+        Q0: Q1 - 1.5 * (Q3 - Q1),
+        Q4: Q3 + 1.5 * (Q3 - Q1)
+      };
     }
   };
 });

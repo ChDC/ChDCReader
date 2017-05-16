@@ -5,7 +5,9 @@
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["fileSystem"] = factory(co);
+  }));else window["fileSystem"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(["co"], function (co) {
   "use strict";
 

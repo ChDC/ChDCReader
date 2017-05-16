@@ -164,12 +164,16 @@
         event.scrollTop = cst;
         let direction = offset >= 0 ? 1 : -1;
 
-        if(offset > 0)
+        if(offset > 0){
           // 向下滚动
           __onScroll(event, direction);
-        else if(offset < 0)
+          this.fireEvent("scrollDown", {scrollTop: cst});
+        }
+        else if(offset < 0){
           // 向上滚动
           __onScroll(event, direction);
+          this.fireEvent("scrollUp", {scrollTop: cst});
+        }
         __lastScrollTop = cst;
       }
 

@@ -9,7 +9,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["BookShelf"] = factory(co, utils, Book, Chapter, ReadingRecord);
+  }));else window["BookShelf"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(['co', "utils", 'Book', "Chapter", "ReadingRecord"], function (co, utils, Book, Chapter, ReadingRecord) {
   "use strict";
 

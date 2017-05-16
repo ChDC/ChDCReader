@@ -32,17 +32,11 @@
   });
 
   // 小说书源测试
-  let bsids = [  "omanhua", "2manhua", "57mh", "77mh", "yyls",
-    "qqbook", "sfnovel", "qqac", "u17", "comico", "biquge.tw",
-    "biqulou",  "daizhuzai" , "dingdian", "qidian"];
-
-  // let trashBsids = ["733dm", "dangniao", "chuiyao", "biquge", "biqugezw", "chuangshi",];
-
   let bsm = new BookSourceManager(undefined, customBookSource);
   return Promise.all([bsm.loadConfig("data/booksources.json"),
     utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
       let config = data;
-        for(let bsid of bsids)
+        for(let bsid of bsm.getSourcesKeysByMainSourceWeight())
         // for(let bsid of ["2manhua"])
           testbook.testBook(bsid, bsm, config[bsid]);
     })]);

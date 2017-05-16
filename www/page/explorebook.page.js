@@ -15,7 +15,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function ($, ap
     function MyPage() {
       _classCallCheck(this, MyPage);
 
-      return _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (MyPage.__proto__ || Object.getPrototypeOf(MyPage)).call(this));
+
+      _this.scrollTop = 0;
+      _this.container = $('.container');
+      return _this;
     }
 
     _createClass(MyPage, [{
@@ -24,6 +28,16 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function ($, ap
         var params = _ref.params;
 
         this.loadView();
+      }
+    }, {
+      key: "onPause",
+      value: function onPause() {
+        this.scrollTop = this.container.scrollTop();
+      }
+    }, {
+      key: "onResume",
+      value: function onResume() {
+        this.container.scrollTop(this.scrollTop);
       }
     }, {
       key: "loadData",
@@ -116,50 +130,114 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function ($, ap
       key: "showExplorPage",
       value: function showExplorPage(bsid, es) {
         var ref = window.open(es.url, "_blank", "location=no,clearcache=yes,clearsessioncache=yes,zoom=no");
-
+        this.configBrowser(bsid, ref, es);
+      }
+    }, {
+      key: "configBrowser",
+      value: function configBrowser(bsid, ref, es) {
         ref.addEventListener("loadstart", function (e) {
           var url = e.url;
+          var executeScriptOnLoadStart = "";
+          var insertCSS = es.insertCSS ? es.insertCSS + "\n" : "";
 
-          if (es.executeScriptOnLoadStart) ref.executeScript({ code: es.executeScriptOnLoadStart });
+          if (es.remove) insertCSS += es.remove.join(", ") + "{display: none;}";
 
-          var _arr = ["readbook", "bookdetail"];
+          if (insertCSS) executeScriptOnLoadStart += "\n            document.addEventListener(\"DOMContentLoaded\", function(){\n              var newStyle = document.createElement(\"style\");\n              newStyle.innerHTML = '" + insertCSS + "';\n              document.head.appendChild(newStyle);\n              " + getRemoveCode(es.remove) + "\n            });\n          ";
 
-          var _loop2 = function _loop2() {
-            var pageName = _arr[_i];
-            if (!(pageName in es)) return "continue";
-            var config = es[pageName];
-            var matcher = url.match(config.matcher);
-            if (!matcher) return "continue";
+          executeScriptOnLoadStart += es.executeScriptOnLoadStart || "";
 
-            var action = function action() {
-              ref.hide();
-              app.showLoading();
-              var bookid = matcher[1];
-              app.bookSourceManager.getBookInfo(bsid, { bookid: bookid }).then(function (book) {
-                app.hideLoading();
-                app.page.showPage(pageName, { book: book }).then(function (page) {
-                  page.addEventListener('myclose', function () {
-                    ref.show();
-                    ref.executeScript({ code: "history.back()" });
-                  });
-                });
-              });
-            };
-            if (config.executeScript) ref.executeScript({ code: config.executeScript }, action);else action();
-          };
+          if (executeScriptOnLoadStart) ref.executeScript({ code: executeScriptOnLoadStart });
 
-          for (var _i = 0; _i < _arr.length; _i++) {
-            var _ret2 = _loop2();
+          if (es.interceptor) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
-            if (_ret2 === "continue") continue;
+            try {
+              var _loop2 = function _loop2() {
+                var config = _step3.value;
+
+                var matcher = url.match(config.match);
+                if (!matcher) return "continue";
+
+                ref.executeScript({ code: "window.stop();" });
+                var action = void 0,
+                    target = void 0;
+                if (utils.type(config.goto) == "string") {
+                  if (config.goto.match(/^https?:\/\//i) || config.goto.match(/^\//i)) action = urlAction;else action = pageAction;
+                  target = config.goto;
+                } else {
+                  action = config.goto.type == "page" ? pageAction : urlAction;
+                  target = config.goto.target;
+                }
+                if (config.execute) ref.executeScript({ code: config.execute }, function () {
+                  return action(matcher, target);
+                });else action(matcher, target);
+                return "break";
+              };
+
+              _loop3: for (var _iterator3 = es.interceptor[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var _ret2 = _loop2();
+
+                switch (_ret2) {
+                  case "continue":
+                    continue;
+
+                  case "break":
+                    break _loop3;}
+              }
+            } catch (err) {
+              _didIteratorError3 = true;
+              _iteratorError3 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                  _iterator3.return();
+                }
+              } finally {
+                if (_didIteratorError3) {
+                  throw _iteratorError3;
+                }
+              }
+            }
           }
         });
 
         ref.addEventListener('loadstop', function (e) {
-          var url = e.url;
-          if (es.insertCSS) ref.insertCSS({ code: es.insertCSS });
-          if (es.executeScriptOnLoadStop) ref.executeScript({ code: es.executeScriptOnLoadStop });
+          var insertCSS = es.insertCSS ? es.insertCSS + "\n" : "";
+          var executeScriptOnLoadStop = es.executeScriptOnLoadStop ? es.executeScriptOnLoadStop + "\n" : "";
+          if (es.remove) insertCSS += es.remove.join(", ") + "{display: none;}";
+
+          if (insertCSS) ref.insertCSS({ code: insertCSS });
+
+          executeScriptOnLoadStop += getRemoveCode(es.remove);
+
+          if (executeScriptOnLoadStop) ref.executeScript({ code: executeScriptOnLoadStop });
         });
+
+        function pageAction(matcher, pageName) {
+          ref.hide();
+          app.showLoading();
+          var bookid = matcher[1];
+          app.bookSourceManager.getBookInfo(bsid, { bookid: bookid }).then(function (book) {
+            app.hideLoading();
+            app.page.showPage(pageName, { book: book }).then(function (page) {
+              page.addEventListener('myclose', function () {
+                ref.show();
+              });
+            });
+          });
+        }
+
+        function urlAction(matcher, target) {
+          debugger;
+          ref.executeScript({ code: "debugger;window.location.href = \"" + target + "\";" });
+        };
+
+        function getRemoveCode(remove) {
+          if (!remove) return "";
+          return "\n          var arr = " + JSON.stringify(remove) + ";\n          for(var i = 0; i < arr.length; i++){\n            var es = document.querySelectorAll(arr[i]);\n            for(var j = 0; j < es.length; j++)\n              es[j].style.display = \"none\";\n          }\n        ";
+        }
       }
     }]);
 

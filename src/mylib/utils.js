@@ -607,6 +607,25 @@
       if(y > rect.top && y < rect.bottom && x > rect.left && x < rect.right)
         return true;
       return false;
+    },
+
+    // 获取箱图
+    getBoxPlot(data){
+      let Q1, Q2, Q3;
+      data = Object.assign([], data);
+      data = data.sort((e1, e2) => e1 - e2);
+      let len = data.length;
+
+      Q1 = data[Math.ceil(len * 0.25) - 1];
+      Q2 = data[Math.ceil(len * 0.5) - 1];
+      Q3 = data[Math.ceil(len * 0.75) - 1];
+      return {
+        Q1: Q1,
+        Q2: Q2,
+        Q3: Q3,
+        Q0: Q1 - 1.5 * (Q3 - Q1),
+        Q4: Q3 + 1.5 * (Q3 - Q1),
+      }
     }
   };
 

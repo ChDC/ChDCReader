@@ -25,6 +25,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       _this.isNewBook = true;
       _this.buildCatalogView = uifactory.buildCatalogView.bind(_this);
       _this.lastReadingScrollTop = 0;
+      _this.chapterContainer;
+      _this.isFullScreen = false;
       return _this;
     }
 
@@ -59,6 +61,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         var params = _ref.params;
 
+        this.chapterContainer = $("#chapterContainer");
         var bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
         if (bookAndReadRecordInBookShelf) {
           this.book = bookAndReadRecordInBookShelf.book;
@@ -80,6 +83,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "onPause",
       value: function onPause() {
+        if (typeof StatusBar != "undefined") StatusBar.show();
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
         app.bookShelf.save();
       }
@@ -364,7 +368,41 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           }
         };
 
+        var lastScroll = void 0;
+        var threshold = 100;
+        this.chapterList.onScrollDown = function (e) {
+          if (lastScroll == undefined || e.scrollTop - lastScroll > threshold) {
+            _this7.toggleFullScreen(true);
+            lastScroll = e.scrollTop;
+          }
+        };
+
+        this.chapterList.onScrollUp = function (e) {
+          if (lastScroll == undefined || lastScroll - e.scrollTop > threshold) {
+            _this7.toggleFullScreen(false);
+            lastScroll = e.scrollTop;
+          }
+        };
+
         this.chapterList.loadList();
+      }
+    }, {
+      key: "toggleFullScreen",
+      value: function toggleFullScreen(full) {
+        if (full == undefined) full = !this.isFullScreen;
+
+        if (full && !this.isFullScreen) {
+          this.chapterContainer[0].style.top = "0";
+          this.chapterContainer[0].style.bottom = "0";
+          $("#mainViewHeader, #mainViewFooter").hide();
+          if (typeof StatusBar != "undefined") StatusBar.hide();
+          this.isFullScreen = true;
+        } else if (!full && this.isFullScreen) {
+          this.chapterContainer.removeAttr("style");
+          $("#mainViewHeader, #mainViewFooter").show();
+          if (typeof StatusBar != "undefined") StatusBar.show();
+          this.isFullScreen = false;
+        }
       }
     }, {
       key: "buildLastPage",

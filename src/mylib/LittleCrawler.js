@@ -272,7 +272,7 @@
 
         case "array": {
           // array
-          if(!response.element || !response.children)
+          if(!("element" in response) || !("children" in response))
             return undefined;
           result = [];
           let list = this.__getAllElements(data, response.element);
@@ -293,13 +293,13 @@
         break;
         case "object": {
           // object
-          if(!response.children)
+          if(!("children" in response))
             return undefined;
           result = __privateHandleObject(response.children);
         }
         break;
         case "string": {
-          if(!response.element)
+          if(!("element" in response))
             return undefined;
 
           let e = this.__getElement(data, response.element);
@@ -383,7 +383,7 @@
         break;
         case "boolean": {
           // boolean
-          if(!response.element)
+          if(!("element" in response))
             return response.default;
           let e = this.__getElement(data, response.element);
           if(e == undefined) return response.default;
@@ -493,7 +493,7 @@
 
     // 获取所有匹配值
     __getAllElements(element, selector){
-      if(!element || !selector) return undefined;
+      if(!element || !selector) return element;
 
       if("querySelectorAll" in element){
         // 将特殊属性和特殊标签转化

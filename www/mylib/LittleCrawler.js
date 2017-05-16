@@ -188,7 +188,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           case "array":
             {
-              if (!response.element || !response.children) return undefined;
+              if (!("element" in response) || !("children" in response)) return undefined;
               result = [];
               var list = this.__getAllElements(data, response.element);
               result = list.map(function (m) {
@@ -204,13 +204,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
           case "object":
             {
-              if (!response.children) return undefined;
+              if (!("children" in response)) return undefined;
               result = __privateHandleObject(response.children);
             }
             break;
           case "string":
             {
-              if (!response.element) return undefined;
+              if (!("element" in response)) return undefined;
 
               var e = this.__getElement(data, response.element);
               if (e == undefined) return undefined;
@@ -278,7 +278,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
           case "boolean":
             {
-              if (!response.element) return response.default;
+              if (!("element" in response)) return response.default;
               var _e = this.__getElement(data, response.element);
               if (_e == undefined) return response.default;
               var v = this.__getValue(_e, keyName, globalDict, dict);
@@ -396,7 +396,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getAllElements",
       value: function __getAllElements(element, selector) {
-        if (!element || !selector) return undefined;
+        if (!element || !selector) return element;
 
         if ("querySelectorAll" in element) {
           return Array.from(element.querySelectorAll(this.__transformSelector(selector)));

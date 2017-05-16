@@ -13,6 +13,24 @@
 
   describe('utils.js 测试', () => {
 
+    it("getBoxPlot", () => {
+      let data = [1,2,3,4,5,6,7,8,9,10,31]
+      let r = utils.getBoxPlot(data);
+      equal(-6, r.Q0);
+      equal(3, r.Q1);;
+      equal(6, r.Q2);
+      equal(9, r.Q3);
+      equal(18, r.Q4);
+
+      data = [58,58,58,58,58,58,59,60,63];
+      r = utils.getBoxPlot(data);
+      equal(56.5, r.Q0);
+      equal(58, r.Q1);;
+      equal(58, r.Q2);
+      equal(59, r.Q3);
+      equal(60.5, r.Q4);
+    });
+
     it("eval", () => {
 
       utils.eval("window.abc=123;");

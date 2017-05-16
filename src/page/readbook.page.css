@@ -8,7 +8,7 @@
     width: 100%
 }
 
-.mainView{
+#mainView{
     padding: 0;
     position: absolute;
     height: 100%;
@@ -17,16 +17,16 @@
     word-wrap: break-word;
 }
 
-.mainViewHeader{
+#mainViewHeader{
     height: 25px;
     font-size: 0.8em;
 }
 
-.mainViewHeader span, .mainViewFooter span{
+#mainViewHeader span, #mainViewFooter span{
     margin: 5px;
 }
 
-.mainViewFooter{
+#mainViewFooter{
     height: 25px;
     font-size: 0.8em;
     position: absolute;
@@ -43,6 +43,7 @@
     width: 100%;
     overflow: auto;
     word-wrap: break-word;
+    z-index: 10;
 }
 
 
@@ -196,7 +197,7 @@ h2{
 }*/
 
 
-.mainView{
+#mainView{
     background-image: url(img/readbg1.jpg);
 }
 
@@ -212,11 +213,11 @@ h2{
     background-color: #fa3;
 }
 
-.mainViewHeader, .mainViewFooter{
+#mainViewHeader, #mainViewFooter{
     color: gray;
 }
 
-/*.mainViewFooter{
+/*#mainViewFooter{
     color: #eee;
 }*/
 

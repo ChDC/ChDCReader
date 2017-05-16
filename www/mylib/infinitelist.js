@@ -9,7 +9,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
     return require(e);
-  }));else window["Infinitelist"] = factory(co, utils);
+  }));else window["Infinitelist"] = factory.apply(undefined, deps.map(function (e) {
+    return window[e];
+  }));
 })(["co", "utils"], function (co, utils) {
 
   "use strict";
@@ -151,7 +153,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           event.scrollTop = cst;
           var direction = offset >= 0 ? 1 : -1;
 
-          if (offset > 0) __onScroll(event, direction);else if (offset < 0) __onScroll(event, direction);
+          if (offset > 0) {
+            __onScroll(event, direction);
+            _this4.fireEvent("scrollDown", { scrollTop: cst });
+          } else if (offset < 0) {
+            __onScroll(event, direction);
+            _this4.fireEvent("scrollUp", { scrollTop: cst });
+          }
           __lastScrollTop = cst;
         };
 

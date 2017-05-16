@@ -9,7 +9,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     if (typeof define === "function" && define.amd) define(deps, factory);else if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = factory.apply(undefined, deps.map(function (e) {
         return require(e);
-    }));else window["Page"] = factory(utils);
+    }));else window["Page"] = factory.apply(undefined, deps.map(function (e) {
+        return window[e];
+    }));
 })(['utils'], function (utils) {
     var Page = function () {
         function Page() {
