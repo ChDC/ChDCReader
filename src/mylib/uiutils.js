@@ -114,7 +114,7 @@
 
 
     // 点击重新加载图片的事件
-    imgonerror(e){
+    imgOnErrorEvent(e){
       let img = e.currentTarget;
 
       img.alt = "加载失败，点击重新加载";
@@ -123,7 +123,7 @@
       function imgClick(e){
         e.stopPropagation();
         let img = e.currentTarget;
-        img.src = img.src;// `${img.src.replace(/\?[^\/]*$/i, '')}?${new Date().getTime()}`;
+        img.src = img.src; // `${img.src.replace(/\?[^\/]*$/i, '')}?${new Date().getTime()}`;
         img.onload = (e) => {
           img.onclick = null;
           img.classList.remove("img-errorloaded");

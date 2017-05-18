@@ -43,26 +43,17 @@
 </div>
 
 <div class="template">
-  <li class="media book card">
-    <div class="media-left">
-      <img class="book-cover media-left" src="img/book_cover.png" alt="">
+  <li class="book">
+    <div class="card book-info">
+      <img class="book-cover" src="img/book_cover.png" alt="">
+      <p class="book-name">书籍标题</p>
     </div>
-    <div class="media-body">
-      <div class="btn-group float-right">
-        <button type="button" class="btn btn-link btnBookMenu" data-toggle="dropdown"><i class="glyphicon glyphicon-option-vertical"></i></button>
-        <ul class="dropdown-menu dropdown-menu-right " role="menu">
-          <!-- <li class="btnLockLocation"><a>锁定位置</a></li> -->
-          <li class="btnDetail"><a>书籍详情</a></li>
-          <li class="btnRemoveBook"><a>删除本书</a></li>
-          <!-- <li class="divider"></li> -->
-        </ul>
-      </div>
-      <div class="book-info">
-        <h4 class="book-name">书籍标题</h4>
-        <p class="book-lastestchapter">最新章节</p>
-        <p class="book-readingchapter">读到</p>
-      </div>
-    </div>
+    <div class="btnBookMenu" data-toggle="dropdown"></div>
+    <ul class="dropdown-menu dropdown-menu-right book-menu">
+      <li class="btnDetail"><a>书籍详情</a></li>
+      <li class="btnRemoveBook"><a>删除本书</a></li>
+    </ul>
+
   </li>
 
 </div>

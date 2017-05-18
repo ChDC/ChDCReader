@@ -107,6 +107,14 @@
 
 ## 开发相关
 
+### 项目中用到的插件
+
+* cordova-hot-code-push-plugin
+* cordova-plugin-file
+* cordova-plugin-http
+* cordova-plugin-inappbrowser
+* cordova-plugin-statusbar
+
 ### 修改过的插件
 
 * cordova-plugin-inappbrowser

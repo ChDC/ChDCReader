@@ -94,7 +94,7 @@
       };
     },
 
-    imgonerror: function imgonerror(e) {
+    imgOnErrorEvent: function imgOnErrorEvent(e) {
       var img = e.currentTarget;
 
       img.alt = "加载失败，点击重新加载";

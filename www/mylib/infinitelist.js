@@ -196,7 +196,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return e.getBoundingClientRect().top + e.offsetHeight > CURRENT_ELEMENT_CHANGED_THRESHOLD * wh;
           });
 
-        if (currentElement != this.__currentElement) this.setCurrentElement(currentElement);
+        if (currentElement && currentElement != this.__currentElement) this.setCurrentElement(currentElement);
       }
     }, {
       key: "setCurrentElement",
@@ -285,7 +285,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__addElement",
       value: regeneratorRuntime.mark(function __addElement(direction) {
-        var result, isFirstElement, _result, newElement, done, cs, be, imgs;
+        var result, isFirstElement, _result, newElement, done, cs, be;
 
         return regeneratorRuntime.wrap(function __addElement$(_context) {
           while (1) {
@@ -357,34 +357,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   this.fireEvent("noNewElementToLoad", { boundaryElement: be });
                 }
 
-                if (!newElement) {
-                  _context.next = 31;
-                  break;
-                }
-
-                imgs = newElement.querySelectorAll('img');
-                _context.next = 31;
-                return Promise.all(Array.from(imgs).map(function (img) {
-                  return new Promise(function (resolve, reject) {
-
-                    function onloadOrError(e) {
-                      img.removeEventListener('load', onloadOrError);
-                      img.removeEventListener('error', onloadOrError);
-                      resolve();
-                    }
-                    img.addEventListener('load', onloadOrError);
-                    img.addEventListener('error', onloadOrError);
-                  });
-                }));
-
-              case 31:
-
-                if (isFirstElement) this.fireEvent("firstNewElementFinished", { newElement: newElement, direction: direction });
-                if (newElement) this.fireEvent("newElementFinished", { newElement: newElement, direction: direction });
+                if (newElement) this.fireEvent("newElementFinished", { newElement: newElement, direction: direction, isFirstElement: isFirstElement });
 
                 return _context.abrupt("return", Promise.resolve(newElement));
 
-              case 34:
+              case 29:
               case "end":
                 return _context.stop();
             }

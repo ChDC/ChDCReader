@@ -372,7 +372,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: regeneratorRuntime.mark(function __getChapterFromContentSources(chapterA, index) {
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-        var _marked, _options$bookSourceId, bookSourceId, _options$count, count, excludes, contentSourceId, contentSourceChapterIndex, onlyCacheNoLoad, _options$noInfluenceW, noInfluenceWeight, _options$searchedSour, searchedSource, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, handleWithNormalMethod, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
+        var _marked, _options$bookSourceId, bookSourceId, _options$count, count, excludes, contentSourceId, contentSourceChapterIndex, onlyCacheNoLoad, _options$noInfluenceW, noInfluenceWeight, _options$searchedSour, searchedSource, result, errorCodeList, remainCount, FOUND_WEIGHT, NOTFOUND_WEIGHT, EXECLUDE_WEIGHT, INCLUDE_WEIGHT, self, addChapterToResult, submitResult, getChapterFromContentSources2, getChapterFromSelectBookSourceAndSelectSourceChapterIndex;
 
         return regeneratorRuntime.wrap(function __getChapterFromContentSources$(_context4) {
           while (1) {
@@ -422,7 +422,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             break;
                           }
 
-                          throw new Error(204);
+                          throw 204;
 
                         case 19:
                           _context3.next = 21;
@@ -446,7 +446,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                           debugger;
                           searchedSource.push(contentSourceId);
-                          return _context3.abrupt("return", handleWithNormalMethod());
+                          return _context3.abrupt("return", co(getChapterFromContentSources2()));
 
                         case 33:
                           return _context3.abrupt("return", submitResult());
@@ -457,14 +457,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                       }
                     }
                   }, _marked[1], this, [[3, 9]]);
-                };
-
-                handleWithNormalMethod = function handleWithNormalMethod(error) {
-                  if (error != 204 && typeof error == "string" && !error.includes('AjaxError')) {
-                    debugger;
-                    errorCodeList.push(error);
-                  }
-                  return co(getChapterFromContentSources2());
                 };
 
                 getChapterFromContentSources2 = function getChapterFromContentSources2(includeSource) {
@@ -630,19 +622,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (excludes && excludes.includes(contentSourceId)) contentSourceId = null;
 
                 if (!(contentSourceId && typeof contentSourceChapterIndex == 'number' && !searchedSource.includes(contentSourceId))) {
-                  _context4.next = 20;
+                  _context4.next = 19;
                   break;
                 }
 
                 return _context4.abrupt("return", co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex)).catch(function (error) {
-                  searchedSource.push(contentSourceId);
-                  return handleWithNormalMethod(error);
+                  return co(getChapterFromContentSources2(contentSourceId));
                 }));
 
-              case 20:
+              case 19:
                 return _context4.abrupt("return", co(getChapterFromContentSources2(contentSourceId)));
 
-              case 21:
+              case 20:
               case "end":
                 return _context4.stop();
             }

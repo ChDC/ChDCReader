@@ -250,7 +250,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
           listCatalog.append(this.buildCatalogView(catalog,
             (e) => {
               let chapter = $(e.currentTarget).data("chapter");
-              this.readingRecord.setReadingRecord(chapter.title, chapter.index, {});
+              this.readingRecord.setReadingRecord(chapter.title, chapter.index, {contentSourceId: this.readingRecord.options.contentSourceId});
               this.refreshChapterList();
             }, "#listCatalog",
             (chapter, nc) => {
@@ -295,12 +295,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         }
         else{
           // 已经读完了
-          this.readingRecord.setFinished(true)
+          this.readingRecord.setFinished(true);
         }
         $(".labelChapterTitle").text(readingRecord.chapterTitle);
         app.hideLoading();
       };
-      this.chapterList.onFirstNewElementFinished = ({newElement, direction}) => {
+      this.chapterList.onNewElementFinished = ({newElement, direction, isFirstElement}) => {
+        if(!isFirstElement) return;
+        // 只处理第一个元素
         app.hideLoading();
         if(this.lastReadingScrollTop){
           const cs = $('#chapterContainer').scrollTop();
@@ -412,12 +414,21 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
       let content = $(`<div>${chapter.content}</div>`);
       content.find('p').addClass('chapter-p');
+
+      // 设置图片的格式
+      function onload(e){
+        $(e.target)
+          .css('min-height', "")
+          .off('load', onload);
+      }
       content.find('img').addClass('content-img')
-        .on('error', uiutils.imgonerror);
+        .on('error', uiutils.imgOnErrorEvent)
+        .css('min-height', this.chapterContainer.width() * 2 + "px")
+        .on('load', onload);
 
       nc.find(".chapter-content").html(content);
-
       nc.data("readingRecord", new ReadingRecord({chapterTitle: chapter.title, chapterIndex: index, options: options}));
+
       return nc[0];
     }
 
