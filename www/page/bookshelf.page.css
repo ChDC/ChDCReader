@@ -8,16 +8,33 @@
     padding: 10px 0;
 }
 
-.book-cover{
-    width: 60px;
-    height:80px;
-    margin: 10px 0;
+.btnBookMenu{
+    display: none;
 }
 
-#bookshelf .book, #finishedBookshelf .book{
+.book-name {
+    width: auto;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 10px 0 0 0;
+}
+
+.book{
+    overflow: visible;
+    width: 33%;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+}
+
+.book-cover{
+    width: 100%;
+}
+
+.book > .card{
     padding: 10px 10px;
-    border-style: solid;
-    border-width: 0 0 1px 0;
 }
 
 .titlebar-menu{
@@ -33,15 +50,11 @@
     font-weight: bold;
 }
 
-.type-comics:after{
+/*.type-comics:after{
     content: "comics";
     font-size: 50%;
     margin-left: 10px;
-}
-
-.book, .book .media-body{
-    overflow: visible;
-}
+}*/
 
 /*********** Color ***************/
 
@@ -51,8 +64,4 @@
 
 #bookshelf .book, #finishedBookshelf .book{
     border-color: #aaa;
-}
-
-.unread-chapter{
-    color: red;
 }

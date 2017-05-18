@@ -23,21 +23,20 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <plugin name="cordova-plugin-whitelist" spec="1" />
-    <plugin name="cordova-plugin-file" spec="~4.3.1" />
-    <plugin name="cordova-plugin-network-information" spec="~1.3.1" />
-    <plugin name="cordova-plugin-device" spec="~1.1.4" />
-
     <preference name="OverrideUserAgent" value="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.4 Safari/537.36" />
-    <preference name="InAppBrowserStorageEnabled" value="false"/>
-
+    <preference name="InAppBrowserStorageEnabled" value="false" />
     <chcp>
         <config-file url="https://raw.githubusercontent.com/ChDC/ChDCReader/dev/www/chcp.json" />
         <auto-install enabled="false" />
         <auto-download enabled="false" />
     </chcp>
-    <plugin name="cordova-plugin-statusbar" spec="~2.2.2" />
-    <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0" />
+    <engine name="windows" spec="^5.0.0" />
     <plugin name="cordova-plugin-console" spec="~1.0.6" />
+    <plugin name="cordova-plugin-device" spec="~1.1.4" />
+    <plugin name="cordova-plugin-file" spec="~4.3.1" />
     <plugin name="cordova-plugin-http" spec="~1.2.0" />
+    <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0" />
+    <plugin name="cordova-plugin-network-information" spec="~1.3.1" />
+    <plugin name="cordova-plugin-statusbar" spec="~2.2.2" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
 </widget>

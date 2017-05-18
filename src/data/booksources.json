@@ -640,7 +640,7 @@
       "id": "qqac",
       "type": "comics",
       "name": "腾讯动漫",
-      "contentSourceWeight": 101,
+      "contentSourceWeight": 50,
       "mainSourceWeight": 19,
       "officialurls": {
         "host": "http://ac.qq.com/",
@@ -733,7 +733,7 @@
       "id": "u17",
       "type": "comics",
       "name": "有妖气",
-      "contentSourceWeight": 100,
+      "contentSourceWeight": 50,
       "mainSourceWeight": 19,
       "officialurls": {
         "host": "http://www.u17.com",

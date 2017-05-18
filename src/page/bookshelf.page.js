@@ -36,6 +36,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
           });
       else{
+        this.refreshBooksOwner();
         this.refreshAllReadingRecord();
         this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
       }
@@ -88,22 +89,32 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       nb.find(".book-name").text(book.name)
         .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
 
-      nb.find('.book-cover, .book-info')
-        .click(() => app.page.showPage("readbook", {book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord}));
+      nb.find(".book-info")
+        .on("touchstart", e => { // 此处不能注册 mousedown 事件，会有弹不出菜单的 BUG
+          if(e.touches.length != 1) return;
+          e.stopImmediatePropagation();
+          $(e.target)
+            .data("longpress-timestart", new Date().getTime())
+            .data("longpress-x", e.touches[0].clientX)
+            .data("longpress-y", e.touches[0].clientY);
+        })
+        .on("touchend", e => {
+          if(e.changedTouches.length != 1) return;
+          let target = $(e.target);
+          let t1 = target.data("longpress-timestart");
+          let x = target.data("longpress-x"), y = target.data("longpress-y");
+          let touch = e.changedTouches[0];
+          if(touch.clientX == x && touch.clientY == y && t1 && new Date().getTime() - t1 > 500){
+            // long press
+            nb.find('.btnBookMenu').dropdown('toggle');
+          }
+        })
+        .on("click", e => {
+          app.page.showPage("readbook", {book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord})
+        });
 
-      nb.find('.btnBookMenu').click(event => {
-        $(event.currentTarget).dropdown();
-        return false;
-      }).dropdown();
-
-      nb.find('.btnDetail').click(e => app.page.showPage("bookdetail", {book: bookshelfitem.book}));
-      nb.find('.btnRemoveBook').click((e) => this.removeBook(book));
-      // nb.find('.btnLockLocation').click((e) => {
-      //   this.bookShelf.toggleLockBook(bookshelfitem);
-      //   $(e.currentTarget).find('a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
-      //   this.bookShelf.save();
-      // });
-      // nb.find('.btnLockLocation > a').text(this.bookShelf.isLockedBook(bookshelfitem) ? "解锁位置" : "锁定位置");
+      nb.find(".btnDetail").click(e => app.page.showPage("bookdetail", {book: book}));
+      nb.find(".btnRemoveBook").click(e => this.removeBook(book));
 
       if(readingRecord.isFinished)
         this.addBookElementToFinishedBookShelf(nb, true);
@@ -113,10 +124,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
     // 刷新所有的阅读记录
     refreshAllReadingRecord(){
-      [this.bookShelfElement, this.finishedBookShelfElement].forEach(bookShelf => {
-        Array.from(bookShelf.children())
-          .forEach(e => this.refreshReadingRecord($(e)));
-      });
+      // 只刷新读完的书的最新章节
+      Array.from(this.finishedBookShelfElement.children())
+        .forEach(e => this.refreshReadingRecord($(e)));
     }
 
     // 刷新阅读记录
@@ -125,19 +135,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       if(!bookshelfitem) throw new Error("empty illegal bookshelfitem");
 
       const readingRecord = bookshelfitem.readingRecord;
+
       const book = bookshelfitem.book;
-      bookElement.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
 
       // 刷新最新章节
       book.getLastestChapter()
         .then(([lastestChapter]) => {
           let isNewChapter = lastestChapter && !readingRecord.equalChapterTitle(lastestChapter);
-          let lce = bookElement.find(".book-lastestchapter")
-            .text("最新：" + (lastestChapter? lastestChapter : "无"));
-          if(isNewChapter)
-            lce.addClass('unread-chapter');
-          else
-            lce.removeClass('unread-chapter');
 
           if(readingRecord.isFinished && isNewChapter){
             // 将书籍移动到主书架列表顶部
@@ -151,18 +155,15 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
                 book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {forceRefresh: forceRefresh});
               });
           }
-          else if(readingRecord.isFinished){
-            // 如果在主书架就移动到读完书架
-            this.addBookElementToFinishedBookShelf(bookElement);
-          }
         });
     }
 
     // 移动书籍
     addBookElementToFinishedBookShelf(bookElement, append=false){
+      bookElement = $(bookElement);
       // 移动到读完书架
       bookElement.detach();
-      bookElement.removeClass("card");
+      // bookElement.removeClass("card");
       if(append)
         this.finishedBookShelfElement.append(bookElement);
       else
@@ -170,13 +171,22 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }
 
     addBookElementToBookShelf(bookElement, append=false){
+      bookElement = $(bookElement);
       // 移动到主书架
       bookElement.detach();
-      bookElement.addClass("card");
+      // bookElement.addClass("card");
       if(append)
         this.bookShelfElement.append(bookElement);
       else
         this.bookShelfElement.prepend(bookElement);
+    }
+
+    // 刷新每本书所在的书架
+    refreshBooksOwner(){
+      Array.from(this.bookShelfElement.children()).forEach(bookElement =>
+        $(bookElement).data("bookshelfitem").readingRecord.isFinished && this.addBookElementToFinishedBookShelf(bookElement));
+      Array.from(this.finishedBookShelfElement.children()).forEach(bookElement =>
+        !$(bookElement).data("bookshelfitem").readingRecord.isFinished && this.addBookElementToBookShelf(bookElement));
     }
 
     // 加载书架列表
@@ -185,6 +195,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       this.bookShelfElement.empty();
       this.finishedBookShelfElement.empty();
       books.forEach(this.addBook.bind(this));
+      this.refreshBooksOwner();
       this.refreshAllReadingRecord();
     };
 
@@ -202,16 +213,17 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       this.bookTemplateElement = $(".template .book");
       this.bookShelfElement = $("#bookshelf");
       this.finishedBookShelfElement = $("#finishedBookshelf");
-      sortablejs.create(this.bookShelfElement[0],
-              {
-                handle: ".btnBookMenu",
-                animation: 150,
-                // Changed sorting within list
-                onUpdate: (event) => {
-                  // 更新并保存顺序
-                  this.sortBooksByElementOrder();
-                },
-              });
+
+      sortablejs.create(this.bookShelfElement[0], {
+        animation: 150,
+        handle: ".book-info",
+        draggable: ".book",
+        onUpdate: (event) => {
+          // 更新并保存顺序
+          this.sortBooksByElementOrder();
+        },
+      });
+
       $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
       $("#btnSearch").click(e => app.page.showPage("search"));
       $("#btnExplore").click(e => app.page.showPage("explorebook"));

@@ -59,6 +59,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           _this3.loadBooks(_this3.bookShelf);
           _this3.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
         });else {
+          this.refreshBooksOwner();
           this.refreshAllReadingRecord();
           this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
         }
@@ -110,22 +111,30 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         if (book.cover) nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
 
-        nb.find('.book-cover, .book-info').click(function () {
-          return app.page.showPage("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
+        nb.find(".book-info").on("touchstart", function (e) {
+          if (e.touches.length != 1) return;
+          e.stopImmediatePropagation();
+          $(e.target).data("longpress-timestart", new Date().getTime()).data("longpress-x", e.touches[0].clientX).data("longpress-y", e.touches[0].clientY);
+        }).on("touchend", function (e) {
+          if (e.changedTouches.length != 1) return;
+          var target = $(e.target);
+          var t1 = target.data("longpress-timestart");
+          var x = target.data("longpress-x"),
+              y = target.data("longpress-y");
+          var touch = e.changedTouches[0];
+          if (touch.clientX == x && touch.clientY == y && t1 && new Date().getTime() - t1 > 500) {
+            nb.find('.btnBookMenu').dropdown('toggle');
+          }
+        }).on("click", function (e) {
+          app.page.showPage("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
         });
 
-        nb.find('.btnBookMenu').click(function (event) {
-          $(event.currentTarget).dropdown();
-          return false;
-        }).dropdown();
-
-        nb.find('.btnDetail').click(function (e) {
-          return app.page.showPage("bookdetail", { book: bookshelfitem.book });
+        nb.find(".btnDetail").click(function (e) {
+          return app.page.showPage("bookdetail", { book: book });
         });
-        nb.find('.btnRemoveBook').click(function (e) {
+        nb.find(".btnRemoveBook").click(function (e) {
           return _this5.removeBook(book);
         });
-
 
         if (readingRecord.isFinished) this.addBookElementToFinishedBookShelf(nb, true);else this.addBookElementToBookShelf(nb, true);
       }
@@ -134,10 +143,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       value: function refreshAllReadingRecord() {
         var _this6 = this;
 
-        [this.bookShelfElement, this.finishedBookShelfElement].forEach(function (bookShelf) {
-          Array.from(bookShelf.children()).forEach(function (e) {
-            return _this6.refreshReadingRecord($(e));
-          });
+        Array.from(this.finishedBookShelfElement.children()).forEach(function (e) {
+          return _this6.refreshReadingRecord($(e));
         });
       }
     }, {
@@ -149,16 +156,14 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         if (!bookshelfitem) throw new Error("empty illegal bookshelfitem");
 
         var readingRecord = bookshelfitem.readingRecord;
+
         var book = bookshelfitem.book;
-        bookElement.find(".book-readingchapter").text(readingRecord.getReadingRecordStatus());
 
         book.getLastestChapter().then(function (_ref2) {
           var _ref3 = _slicedToArray(_ref2, 1),
               lastestChapter = _ref3[0];
 
           var isNewChapter = lastestChapter && !readingRecord.equalChapterTitle(lastestChapter);
-          var lce = bookElement.find(".book-lastestchapter").text("最新：" + (lastestChapter ? lastestChapter : "无"));
-          if (isNewChapter) lce.addClass('unread-chapter');else lce.removeClass('unread-chapter');
 
           if (readingRecord.isFinished && isNewChapter) {
             _this7.addBookElementToBookShelf(bookElement);
@@ -168,8 +173,6 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             }).then(function (forceRefresh) {
               book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { forceRefresh: forceRefresh });
             });
-          } else if (readingRecord.isFinished) {
-            _this7.addBookElementToFinishedBookShelf(bookElement);
           }
         });
       }
@@ -178,8 +181,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       value: function addBookElementToFinishedBookShelf(bookElement) {
         var append = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+        bookElement = $(bookElement);
+
         bookElement.detach();
-        bookElement.removeClass("card");
+
         if (append) this.finishedBookShelfElement.append(bookElement);else this.finishedBookShelfElement.prepend(bookElement);
       }
     }, {
@@ -187,9 +192,23 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       value: function addBookElementToBookShelf(bookElement) {
         var append = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+        bookElement = $(bookElement);
+
         bookElement.detach();
-        bookElement.addClass("card");
+
         if (append) this.bookShelfElement.append(bookElement);else this.bookShelfElement.prepend(bookElement);
+      }
+    }, {
+      key: "refreshBooksOwner",
+      value: function refreshBooksOwner() {
+        var _this8 = this;
+
+        Array.from(this.bookShelfElement.children()).forEach(function (bookElement) {
+          return $(bookElement).data("bookshelfitem").readingRecord.isFinished && _this8.addBookElementToFinishedBookShelf(bookElement);
+        });
+        Array.from(this.finishedBookShelfElement.children()).forEach(function (bookElement) {
+          return !$(bookElement).data("bookshelfitem").readingRecord.isFinished && _this8.addBookElementToBookShelf(bookElement);
+        });
       }
     }, {
       key: "loadBooks",
@@ -198,6 +217,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.bookShelfElement.empty();
         this.finishedBookShelfElement.empty();
         books.forEach(this.addBook.bind(this));
+        this.refreshBooksOwner();
         this.refreshAllReadingRecord();
       }
     }, {
@@ -214,20 +234,22 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     }, {
       key: "loadView",
       value: function loadView() {
-        var _this8 = this;
+        var _this9 = this;
 
         this.modalFinishedBooks = $("#modalFinishedBooks");
         this.bookTemplateElement = $(".template .book");
         this.bookShelfElement = $("#bookshelf");
         this.finishedBookShelfElement = $("#finishedBookshelf");
-        sortablejs.create(this.bookShelfElement[0], {
-          handle: ".btnBookMenu",
-          animation: 150,
 
+        sortablejs.create(this.bookShelfElement[0], {
+          animation: 150,
+          handle: ".book-info",
+          draggable: ".book",
           onUpdate: function onUpdate(event) {
-            _this8.sortBooksByElementOrder();
+            _this9.sortBooksByElementOrder();
           }
         });
+
         $("#btnCheckUpdate").click(function (e) {
           return app.chekcUpdate(true, true);
         });

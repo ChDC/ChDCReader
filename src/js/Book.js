@@ -318,8 +318,13 @@
       if(contentSourceId && typeof contentSourceChapterIndex == 'number' && !searchedSource.includes(contentSourceId)){
         return co(getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex))
           .catch(error => {
-            searchedSource.push(contentSourceId);
-            return handleWithNormalMethod(error);
+            return co(getChapterFromContentSources2(contentSourceId));
+            // if(error == 204)
+            //   return handleWithNormalMethod(error, contentSourceId);
+            // else{
+            //   searchedSource.push(contentSourceId);
+            //   return handleWithNormalMethod(error);
+            // };
           });
       }
       else{
@@ -428,15 +433,15 @@
         return submitResult();
       }
 
-      function handleWithNormalMethod(error){
-        // 失败则按正常方式获取
-        // 注意网络不通的问题
-        if(error != 204 && typeof(error) == "string" && !error.includes('AjaxError')){
-          debugger;
-          errorCodeList.push(error);
-        }
-        return co(getChapterFromContentSources2());
-      }
+      // function handleWithNormalMethod(error, contentSourceId){
+      //   // 失败则按正常方式获取
+      //   // 注意网络不通的问题
+      //   if(error != 204 && typeof(error) == "string" && !error.includes('AjaxError')){
+      //     debugger;
+      //     errorCodeList.push(error);
+      //   }
+      //   return co(getChapterFromContentSources2(contentSourceId));
+      // }
 
       // 从指定的源和索引中获取章节
       function* getChapterFromSelectBookSourceAndSelectSourceChapterIndex(contentSourceId, contentSourceChapterIndex){
@@ -458,7 +463,7 @@
 
         // 放宽对比范围
         if(!Chapter.equalTitle(chapterA, chapterB, true)){
-          throw new Error(204);
+          throw 204;
         }
 
         const bs = yield self.getBookSource(contentSourceId);
@@ -470,7 +475,7 @@
         if(remainCount > 0){
           debugger;
           searchedSource.push(contentSourceId);
-          return handleWithNormalMethod();
+          return co(getChapterFromContentSources2());
         }
         else{
           return submitResult();

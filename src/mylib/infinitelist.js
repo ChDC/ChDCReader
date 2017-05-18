@@ -25,7 +25,6 @@
       this.options = options;
 
       // 事件
-      // firstNewElementFinished // 当获取第一个列表元素完成的函数
       // newElementFinished // 获取列表元素完成的函数
       // NoNewElementToLoad // 当没有元素可以获取到的时候触发
       // error
@@ -215,7 +214,7 @@
         currentElement = elements.find(e =>
           e.getBoundingClientRect().top + e.offsetHeight > CURRENT_ELEMENT_CHANGED_THRESHOLD * wh);
 
-      if(currentElement != this.__currentElement)
+      if(currentElement && currentElement != this.__currentElement)
         this.setCurrentElement(currentElement);
     }
 
@@ -364,26 +363,8 @@
         this.fireEvent("noNewElementToLoad", {boundaryElement: be});
       }
 
-      // 将所有的图片的 onload 事件都设置好
-      if(newElement){
-        let imgs = newElement.querySelectorAll('img');
-        yield Promise.all(Array.from(imgs).map(img =>
-            new Promise((resolve, reject) => {
-
-              function onloadOrError(e){
-                img.removeEventListener('load', onloadOrError);
-                img.removeEventListener('error', onloadOrError);
-                resolve();
-              }
-              img.addEventListener('load', onloadOrError);
-              img.addEventListener('error', onloadOrError);
-          })));
-      }
-
-      if(isFirstElement)
-        this.fireEvent("firstNewElementFinished", {newElement: newElement, direction: direction});
       if(newElement)
-        this.fireEvent("newElementFinished", {newElement: newElement, direction: direction});
+        this.fireEvent("newElementFinished", {newElement: newElement, direction: direction, isFirstElement: isFirstElement});
 
       return Promise.resolve(newElement);
     }

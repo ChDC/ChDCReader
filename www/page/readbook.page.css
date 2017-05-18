@@ -86,7 +86,7 @@ img.offical-site{
 
 .elseBooks .book{
     clear: right;
-    float: left;
+    display: inline-block;
     width: 25%;
     padding: 5px 10px;
     text-align: center;
@@ -101,9 +101,7 @@ img.offical-site{
 }
 
 .elseBooks .book-cover{
-    height: 80px;
-    /*width: 100%;*/
-    /*height: 80px;*/
+    width: 100%;
     margin: 10px 0;
 
 }
@@ -184,6 +182,8 @@ img.offical-site{
 
 .img-errorloaded{
     border: 1px red solid;
+    text-align: center;
+    line-height: 100px;
 }
 
 h2{

@@ -309,7 +309,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           listCatalog.empty();
           listCatalog.append(_this6.buildCatalogView(catalog, function (e) {
             var chapter = $(e.currentTarget).data("chapter");
-            _this6.readingRecord.setReadingRecord(chapter.title, chapter.index, {});
+            _this6.readingRecord.setReadingRecord(chapter.title, chapter.index, { contentSourceId: _this6.readingRecord.options.contentSourceId });
             _this6.refreshChapterList();
           }, "#listCatalog", function (chapter, nc) {
             if (chapter.index == _this6.readingRecord.chapterIndex) nc.attr("id", "current-catalog-chapter");
@@ -356,9 +356,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           $(".labelChapterTitle").text(readingRecord.chapterTitle);
           app.hideLoading();
         };
-        this.chapterList.onFirstNewElementFinished = function (_ref4) {
+        this.chapterList.onNewElementFinished = function (_ref4) {
           var newElement = _ref4.newElement,
-              direction = _ref4.direction;
+              direction = _ref4.direction,
+              isFirstElement = _ref4.isFirstElement;
+
+          if (!isFirstElement) return;
 
           app.hideLoading();
           if (_this7.lastReadingScrollTop) {
@@ -483,11 +486,15 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         var content = $("<div>" + chapter.content + "</div>");
         content.find('p').addClass('chapter-p');
-        content.find('img').addClass('content-img').on('error', uiutils.imgonerror);
+
+        function onload(e) {
+          $(e.target).css('min-height', "").off('load', onload);
+        }
+        content.find('img').addClass('content-img').on('error', uiutils.imgOnErrorEvent).css('min-height', this.chapterContainer.width() * 2 + "px").on('load', onload);
 
         nc.find(".chapter-content").html(content);
-
         nc.data("readingRecord", new ReadingRecord({ chapterTitle: chapter.title, chapterIndex: index, options: options }));
+
         return nc[0];
       }
     }, {
