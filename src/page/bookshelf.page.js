@@ -216,7 +216,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
       sortablejs.create(this.bookShelfElement[0], {
         animation: 150,
-        handle: ".book-info",
+        handle: ".book-name",
         draggable: ".book",
         onUpdate: (event) => {
           // 更新并保存顺序
