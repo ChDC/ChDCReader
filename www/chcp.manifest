@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "c7767f6d5951d656f35233c4a57498d5"
+    "hash": "3b924754a586ffc8ea6d97c7f04e0de1"
   },
   {
     "file": "data/errorCode.json",
@@ -125,7 +125,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "eebda605908501c14eea875bb3f0326f"
+    "hash": "1942146d0bd0488542fdcb5241b4c312"
   },
   {
     "file": "js/BookShelf.js",
@@ -145,7 +145,7 @@
   },
   {
     "file": "js/config.js",
-    "hash": "530ced49a45c56a9a2ff9c882597ad8a"
+    "hash": "e1af5897da59c83d66e9dbbdb25b5087"
   },
   {
     "file": "js/CustomBookSource.js",
@@ -337,7 +337,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "0c1980e633c99658a4d483f301984a6e"
+    "hash": "7a076cbef4d2593d4ad7b2c598deb177"
   },
   {
     "file": "mylib/LittleCrawler.js",
@@ -357,7 +357,7 @@
   },
   {
     "file": "mylib/uiutils.js",
-    "hash": "514ccb1523512f5c21cc961ca43f37b0"
+    "hash": "2ed7e36f74b1e72e9fb2fbd44947aa97"
   },
   {
     "file": "mylib/utils.js",
@@ -381,15 +381,15 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "d632baa58a803582ff78e6c0b935628c"
+    "hash": "c7c42c2606864be37e5e7cd85dde5afc"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "69d6c20af08acfe2d57f0acfb1c45ee9"
+    "hash": "6e88b788c193ee9a42f993e7fedbcee3"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "9982aa510c55ff365272705c1b5c5803"
+    "hash": "382592db882e1b826d519bc3be3951cb"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -413,7 +413,7 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "2ca24cc42155cbcfc7c90ddcaefbf67d"
+    "hash": "be4e87cb0c6cd2958d28f1f71fc0333c"
   },
   {
     "file": "page/readbook.page.html",
@@ -421,7 +421,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "2f7bb7b8559ad3bdfa52d1bf1b958384"
+    "hash": "b27a4b7c1e1c2cedbbf7a78332c30b47"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -461,7 +461,7 @@
   },
   {
     "file": "sourceManager/app.js",
-    "hash": "1286725302a5ac9cfc6d23115b6e8c09"
+    "hash": "b2b6623c11b19c97012f61cbac7b17fe"
   },
   {
     "file": "test.html",
