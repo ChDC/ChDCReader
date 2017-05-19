@@ -89,7 +89,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       nb.find(".book-name").text(book.name)
         .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
 
-      nb.find(".book-info")
+      nb.find(".book-cover")
         .on("touchstart", e => { // 此处不能注册 mousedown 事件，会有弹不出菜单的 BUG
           if(e.touches.length != 1) return;
           e.stopImmediatePropagation();
@@ -104,7 +104,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           let t1 = target.data("longpress-timestart");
           let x = target.data("longpress-x"), y = target.data("longpress-y");
           let touch = e.changedTouches[0];
-          if(touch.clientX == x && touch.clientY == y && t1 && new Date().getTime() - t1 > 500){
+          if(Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50
+            && t1 && new Date().getTime() - t1 > 100){
             // long press
             nb.find('.btnBookMenu').dropdown('toggle');
           }
