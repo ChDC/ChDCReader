@@ -1,7 +1,7 @@
 [
   {
     "file": "css/index.css",
-    "hash": "3cae7eb2a718a53d77548fcd438e8318"
+    "hash": "e830ff33d15587fafb6ffaaa47c19b22"
   },
   {
     "file": "data/booksources.json",
@@ -21,7 +21,7 @@
   },
   {
     "file": "data/UpdateLog.html",
-    "hash": "35f1179da6e2b39c3886cd65e843f90c"
+    "hash": "5fcf0dc14e6abbe7fd54b984d14c2b10"
   },
   {
     "file": "img/book_cover.png",
@@ -365,11 +365,11 @@
   },
   {
     "file": "page/bookdetail.page.css",
-    "hash": "9663bf4cf17364e5e266ae4100027da8"
+    "hash": "58e710b58713382b72fad99fc4949354"
   },
   {
     "file": "page/bookdetail.page.html",
-    "hash": "dd7e9d7f6ec0f865e8109f7e25cd8adc"
+    "hash": "ac652e6f275220aef52f09d30cfe5da8"
   },
   {
     "file": "page/bookdetail.page.js",
@@ -385,11 +385,11 @@
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "6e88b788c193ee9a42f993e7fedbcee3"
+    "hash": "0a8e48fa3f199b17654b717291feb285"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "79ddefc14789604bf1c9e846efbcd368"
+    "hash": "7f739f5b2c7965ed09148e6a430d767d"
   },
   {
     "file": "page/bookshelf.page.night1.css",
@@ -401,7 +401,7 @@
   },
   {
     "file": "page/explorebook.page.html",
-    "hash": "2dcb7cc5e71c23310386d1fc7dd8f7cc"
+    "hash": "a5322394e2cc84e3220d6f8e72d63c03"
   },
   {
     "file": "page/explorebook.page.js",
@@ -413,15 +413,15 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "be4e87cb0c6cd2958d28f1f71fc0333c"
+    "hash": "d80b3db52154238c419d6c952b1d6388"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "78f8a8fa8a60e0c638483a6289431105"
+    "hash": "3006d11a3ac614583680167b57620f8b"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "b27a4b7c1e1c2cedbbf7a78332c30b47"
+    "hash": "beb02bef66580722707e7bc4daa6fef7"
   },
   {
     "file": "page/readbook.page.night1.css",
@@ -433,7 +433,7 @@
   },
   {
     "file": "page/search.page.html",
-    "hash": "bc1abe8a4e8134c185a9f8033f71b4b5"
+    "hash": "9a0fcb26d2267e947d46fd55f982a010"
   },
   {
     "file": "page/search.page.js",
