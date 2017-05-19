@@ -12,6 +12,12 @@
     padding: 10px 10px;
 }
 
+#book-chapters > li {
+    border-top: 1px solid #e1e1e1;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
 .book-chapters-div{
     padding: 20px;
 }

@@ -1,9 +1,13 @@
+body{
+    font-family: "微软雅黑", "黑体", "宋体";
+}
+
 h1, h2, h3, h4, h5, h6{
-    font-family: "黑体";
+    font-family: "微软雅黑", "黑体", "宋体";
 }
 
 p{
-    font-family: "微软雅黑", "宋体";
+    font-family: "微软雅黑", "黑体", "宋体";
 }
 
 .page-content-container{
@@ -13,16 +17,10 @@ p{
     overflow: auto;
 }
 
-ul {
+.list {
     list-style-type: none;
     padding: 0;
-    position: relative;
-}
-
-.list li {
-    border-top: 1px solid #e1e1e1;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    /*position: relative;*/
 }
 
 .message-box-container{
