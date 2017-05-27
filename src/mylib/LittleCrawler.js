@@ -302,7 +302,13 @@
           if(!("element" in response))
             return undefined;
 
-          let e = this.__getElement(data, response.element);
+          let e;
+          if("index" in response){
+            let es = this.__getAllElements(data, response.element);
+            e = LittleCrawler.index(es, response.index)
+          }
+          else
+            e = this.__getElement(data, response.element);
           if(e == undefined) return undefined;
 
           // 从 element 中获取属性值
@@ -960,6 +966,13 @@
     if(type != 'object')
       return type;
     return obj.constructor.name.toLowerCase();
+  }
+
+  LittleCrawler.index = function(array, index){
+    if(index >= 0)
+      return array[index];
+    else
+      return array[array.length + index];
   }
 
   // transform text to html

@@ -33,12 +33,13 @@
 
   // 小说书源测试
   let bsm = new BookSourceManager(undefined, customBookSource);
-  return Promise.all([bsm.loadConfig("data/booksources.json"),
-    utils.getJSON("test/BookSourceManager.test.data.json").then(data => {
+  return bsm.loadConfig("data/booksources.json")
+    .then(() => utils.getJSON("test/BookSourceManager.test.data.json"))
+    .then(data => {
       let config = data;
         for(let bsid of bsm.getSourcesKeysByMainSourceWeight())
         // for(let bsid of ["2manhua"])
           testbook.testBook(bsid, bsm, config[bsid]);
-    })]);
+    });
 
 }));

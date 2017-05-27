@@ -258,7 +258,7 @@
       return this.__lc.get(bs.detail, dict)
         .then(({lastestChapter}) => {
           lastestChapter = translate.toSC(bs.language, lastestChapter);
-          return lastestChapter.replace(/^最新更新\s+/, '');
+          return lastestChapter ? lastestChapter.replace(/^最新更新\s+/, '') : lastestChapter;
         });
     }
 

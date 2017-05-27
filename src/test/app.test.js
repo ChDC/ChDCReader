@@ -20,7 +20,10 @@ require(["../js/config"], function(){
     //---- 配置结束 ----
 
     require(testList.map(e => `../test/${e}.test`), function(){
-      mocha.run();
+      Promise.all(arguments)
+        .then(() => {
+          mocha.run();
+        });
     })
   });
 });
