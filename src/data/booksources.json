@@ -145,7 +145,11 @@
           },
           "coverImg": "#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(1) > img",
           "introduce": "#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(2) > p",
-          "lastestChapter": "#details > div.entry-content.rich-content > table tr:last-of-type > td:last-of-type > a"
+          "lastestChapter": {
+            "type": "string",
+            "element": "#details > div.entry-content.rich-content > table tr:last-of-type > td > a",
+            "index": -1
+          }
         }
       },
       "catalog": {
@@ -845,21 +849,33 @@
       },
       "search": {
         "request": {
-          "url": "http://www.comico.com.tw/api/genretitles.nhn?seq=1&typeMain=0&typeSub=0",
-          "type": "JSON",
+          "url": "http://www.comico.com.tw/search/index.nhn?searchWord={keyword}",
+          "type": "html",
           "timeout": 5
         },
         "response": {
           "type": "array",
-          "element": "lists",
+          "element": "#officialList > ul > li, #challengeList > ul > li",
           "children": {
-            "name": "name",
-            "author": "author",
+            "name": "div.list-article02__body > p.list-article02__label1",
+            "author": "div.list-article02__body > div > p.list-article02__label3 > span",
             "catagory": "",
-            "complete": "isFinish",
-            "coverImg": "imageUrl",
-            "introduce": "copy",
-            "bookid": "titleNo"
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": {
+              "type": "string",
+              "element": "div.list-article02__cover > div",
+              "attribute": "data-img-url"
+            },
+            "introduce": "div.list-article02__body > p.list-article02__label2",
+            "bookid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "^http://www.comico.com.tw/(\\d+)"
+            }
           }
         }
       },
@@ -887,26 +903,30 @@
       },
       "catalog": {
         "request": {
-          "url": "http://www.comico.com.tw/api/article_nav.nhn?titleNo={bookid}&articleNo=0",
+          "url": "http://www.comico.com.tw/api/getArticleList.nhn?titleNo={bookid}",
           "type": "json",
           "timeout": 5
         },
         "response":{
           "type": "array",
-          "element": "list",
+          "element": "result.list",
           "children": {
-            "title": "name",
-            "cid": "id"
+            "title": "subtitle",
+            "link": {
+              "type": "string",
+              "element": "articleDetailUrl",
+              "valid": "{freeFlg}=='Y'"
+            }
           }
         }
       },
       "chapter": {
         "request": {
-          "url": "http://www.comico.com.tw/detail.nhn?titleNo={bookid}&articleNo={cid}"
+          "url": "{link}"
         },
         "response": {
-          "contentHTML": "._view",
-          "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
+          "contentHTML": ".comic-image",
+          "title": "body > div.stage > div > header > div > div > h1 > p"
         }
       }
     },
@@ -1231,7 +1251,7 @@
             "name": "div.result-game-item-detail > h3 > a"
           }
         },
-        "request": "http://zhannei.baidu.com/cse/search?s=8353527289636145615&q={keyword}"
+        "request": "http://zhannei.baidu.com/cse/search?s=10048850760735184192&q={keyword}"
       },
       "detail": {
         "request": "{detailLink}",
