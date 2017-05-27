@@ -263,6 +263,23 @@
             let box = utils.getBoxPlot(data.map(e => e.length));
             data = data.filter(e => e.length >= box.Q0 && e.length <= box.Q4);
 
+            // 如果 URL 以数字结尾，则使用下面的过滤广告算法
+            if(data[0].match(/\/\d+\.\w{0,3}$/)){
+              // 按链接顺序过滤广告
+              // 最多三张广告
+              let sortedData = Object.assign([], data).sort();
+              let splitIndex = -1;
+              for(let i = 1; i < data.length; i++){
+                let ni = sortedData.indexOf(data[i-1]);
+                if(sortedData[ni+1] != data[i]){
+                  splitIndex = i;
+                  break;
+                }
+              }
+              if(splitIndex > 0)
+                data = data.splice(0, splitIndex);
+            }
+
             data = data.map(e => `http://tupianku.333dm.com${e}`);
             return data.map(e => `<img src="${e}">`).join('\n');
           });
@@ -271,20 +288,22 @@
 
     "57mh": {
       getChapterContent(bsid, dict={}){
-        let link = this.getChapterLink(bsid, dict);
-        return utils.get(link)
-          .then(html => {
-            let data = CBS.common.getEncryptedData(html);
+        return CBS["2manhua"].getChapterContent(bsid, dict);
 
-            let matcher = data.match(/{.*}/);
-            if(!matcher) return null;
-            data = JSON.parse(matcher[0].replace(/'/g, '"'));
+        // let link = this.getChapterLink(bsid, dict);
+        // return utils.get(link)
+        //   .then(html => {
+        //     let data = CBS.common.getEncryptedData(html);
 
-            data = data.fs;
-            data = data.map(e => `http://tupianku.333dm.com${e}`);
-            if(data.length <= 0) return null;
-            return data.map(e => `<img src="${e}">`).join('\n');
-          });
+        //     let matcher = data.match(/{.*}/);
+        //     if(!matcher) return null;
+        //     data = JSON.parse(matcher[0].replace(/'/g, '"'));
+
+        //     data = data.fs;
+        //     data = data.map(e => `http://tupianku.333dm.com${e}`);
+        //     if(data.length <= 0) return null;
+        //     return data.map(e => `<img src="${e}">`).join('\n');
+        //   });
       }
     },
 
