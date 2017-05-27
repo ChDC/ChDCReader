@@ -228,6 +228,19 @@
             return e.length >= box.Q0 && e.length <= box.Q4;
           });
 
+          if (data[0].match(/\/\d+\.\w{0,3}$/)) {
+            var sortedData = Object.assign([], data).sort();
+            var splitIndex = -1;
+            for (var i = 1; i < data.length; i++) {
+              var ni = sortedData.indexOf(data[i - 1]);
+              if (sortedData[ni + 1] != data[i]) {
+                splitIndex = i;
+                break;
+              }
+            }
+            if (splitIndex > 0) data = data.splice(0, splitIndex);
+          }
+
           data = data.map(function (e) {
             return "http://tupianku.333dm.com" + e;
           });
@@ -242,23 +255,7 @@
       getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        var link = this.getChapterLink(bsid, dict);
-        return utils.get(link).then(function (html) {
-          var data = CBS.common.getEncryptedData(html);
-
-          var matcher = data.match(/{.*}/);
-          if (!matcher) return null;
-          data = JSON.parse(matcher[0].replace(/'/g, '"'));
-
-          data = data.fs;
-          data = data.map(function (e) {
-            return "http://tupianku.333dm.com" + e;
-          });
-          if (data.length <= 0) return null;
-          return data.map(function (e) {
-            return "<img src=\"" + e + "\">";
-          }).join('\n');
-        });
+        return CBS["2manhua"].getChapterContent(bsid, dict);
       }
     },
 
