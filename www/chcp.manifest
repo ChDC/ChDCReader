@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "3b924754a586ffc8ea6d97c7f04e0de1"
+    "hash": "2c1507db07f29438e862ca5799085b67"
   },
   {
     "file": "data/errorCode.json",
@@ -137,7 +137,7 @@
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "0dee732876b70d6bb71bbb2489ff55b5"
+    "hash": "ecce09ca6258f0089a0664a81859419b"
   },
   {
     "file": "js/Chapter.js",
@@ -341,7 +341,7 @@
   },
   {
     "file": "mylib/LittleCrawler.js",
-    "hash": "11242fbe31031d0dd4140dc93220144f"
+    "hash": "8427844a367067ea6c9a868859943e71"
   },
   {
     "file": "mylib/Page.js",
@@ -469,7 +469,7 @@
   },
   {
     "file": "test/app.test.js",
-    "hash": "3e380571d9296966c14522f8838eeeeb"
+    "hash": "91293cdec2e76afb8e0791f90c6f8e1b"
   },
   {
     "file": "test/Book.test.js",
@@ -485,11 +485,11 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "9b2513a3a91d13714e5b8d461b078ce2"
+    "hash": "95cc407ed24999991317a90f64ca980f"
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "c7c7e217ec5533e0f67f6292b98ac2ff"
+    "hash": "559fc558727355483f7b77d44cb5ddcb"
   },
   {
     "file": "test/browser.test.js",
