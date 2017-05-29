@@ -228,6 +228,9 @@
     // handle the response
     __handleResponse(data, response, keyName, globalDict={}, dict={}){
 
+      if(response == "")
+        return this.__getValue(data, keyName, globalDict, dict);;
+
       if(!response) return undefined;
 
       switch(LittleCrawler.type(response)){
@@ -484,7 +487,10 @@
 
     // 获取 HTML 元素对象或者 JOSN 对象
     __getElement(element, selector){
-      if(!element || !selector) return undefined;
+      if(!element) return undefined;
+      if(selector == "")
+        return element;
+      if(!selector) return undefined;
 
       if("querySelector" in element){
         // html
@@ -499,7 +505,10 @@
 
     // 获取所有匹配值
     __getAllElements(element, selector){
-      if(!element || !selector) return element;
+      if(!element) return element;
+      if(selector == "")
+        return element;
+      if(!selector) return undefined;
 
       if("querySelectorAll" in element){
         // 将特殊属性和特殊标签转化

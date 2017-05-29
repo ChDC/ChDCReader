@@ -288,7 +288,7 @@
 
     "57mh": {
       getChapterContent(bsid, dict={}){
-        return CBS["2manhua"].getChapterContent(bsid, dict);
+        return CBS["2manhua"].getChapterContent.bind(this)(bsid, dict);
 
         // let link = this.getChapterLink(bsid, dict);
         // return utils.get(link)
@@ -436,6 +436,46 @@
               `http://${imgUrlHeader}/comic/${mh_info.imgpath}${startIndex + i + ".jpg" + b}`);
             return imgs.map(e => `<img src="${e}">`).join('\n');
           });
+      }
+    },
+
+    "99lib": {
+      getChapterContent(bsid, dict={}){
+        let link = this.getChapterLink(bsid, dict);
+        return utils.get(link)
+          .then(html => {
+            let result = this.__lc.parse(html, "html", {
+              type: "string",
+              element: "meta[name=client]",
+              attribute: "content"
+            });
+
+            let pSort = atob(result).split(/[A-Z]+%/);
+            let j = 0;
+            let childNode = [];
+
+            result = this.__lc.parse(html, "html", {
+              type: "array",
+              element: "#content > div",
+              children: ""
+            });
+
+            // remove ad
+            result = result.map(m =>
+              utils.DBCtoCDB(m)
+                .replace(/(www[•\.])?99lib[•\.]net|九.?九.?藏.?书.?网/gi, ""));
+
+            for (let i = 0; i < pSort.length; i++) {
+                if (pSort[i] < 5) {
+                    childNode[pSort[i]] = result[i];
+                    j++;
+                } else {
+                    childNode[pSort[i] - j] = result[i];
+                }
+            }
+            return LittleCrawler.text2html(childNode.join("\n"));
+          });
+
       }
     }
   };
