@@ -298,6 +298,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         function getBooks(data) {
 
+          data = data.filter(function (m) {
+            return m.name || m.author;
+          });
+
           var books = [];
 
           var _iteratorNormalCompletion5 = true;
