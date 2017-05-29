@@ -207,6 +207,8 @@
 
       function getBooks(data){
 
+        data = data.filter(m => m.name || m.author);
+
         const books = [];
 
         for(let m of data){
