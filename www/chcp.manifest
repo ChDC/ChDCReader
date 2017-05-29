@@ -13,7 +13,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "e1ad389658aa689d1692effc6869068e"
+    "hash": "8840b813312d44c0594c3831830a729d"
   },
   {
     "file": "data/removedBooksources.json",
@@ -405,7 +405,7 @@
   },
   {
     "file": "page/explorebook.page.js",
-    "hash": "9129ed7c5db7d2712268c5a232a3a11b"
+    "hash": "ba3635c5f447723c45ac5f4b8f8c35a9"
   },
   {
     "file": "page/explorebook.page.night1.css",
