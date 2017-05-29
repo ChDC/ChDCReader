@@ -626,6 +626,21 @@
         Q0: Q1 - 1.5 * (Q3 - Q1),
         Q4: Q3 + 1.5 * (Q3 - Q1),
       }
+    },
+
+    // 全角转换为半角
+    DBCtoCDB(str)
+    {
+      let whiteList = "，。！“”《》？（）‘’：；·~……";
+      return Array.from(str)
+        .map(e => {
+          let code = e.charCodeAt(0);
+          if (whiteList.indexOf(e) < 0 && code > 65248 && code < 65375)
+            return String.fromCharCode(code - 65248);
+          else
+            return e;
+        })
+        .join("");
     }
   };
 

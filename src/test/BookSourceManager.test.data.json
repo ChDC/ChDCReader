@@ -1,4 +1,32 @@
 {
+  "99lib": [
+    {
+      "bookid": "576",
+      "name": "三体",
+      "author": "刘慈欣",
+      "introduce": "以太阳为中心",
+      "chapters": [
+        {
+          "content": "叶文洁听到了",
+          "link": "http://99lib.net/book/576/18060.htm",
+          "title": "3.红岸之一"
+        }
+      ]
+    },
+    {
+      "bookid": "425",
+      "name": "球状闪电",
+      "author": "刘慈欣",
+      "introduce": "在某个离奇的雨夜",
+      "chapters": [
+        {
+          "content": "轻轻的叹息",
+          "link": "http://99lib.net/book/425/15097.htm",
+          "title": "异象之二"
+        }
+      ]
+    }
+  ],
   "manhuatai":[
     {
       "bookid": "quanzhigaoshou",
