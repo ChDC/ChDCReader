@@ -330,7 +330,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         var opts = Object.assign({}, this.readingRecord.getOptions(), options);
         if (this.chapterList) this.chapterList.close();
 
-        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)), { disableCheckPrevious: true });
+        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)), { disableCheckPrevious: false });
         this.chapterList.onError = function (e) {
           app.hideLoading();
           uiutils.showError(app.error.getMessage(e.error));

@@ -344,7 +344,7 @@
             }
          ],
          "bookid": "26697",
-         "introduce" : "这个名为’雷诺大陆‘的异世界离奇的与那风靡一时的网游历",
+         "introduce" : "离奇的异世界与那风靡一时的网游历史一模一样",
          "name" : "史上最强BOSS就是本大爷"
       }
    ],
@@ -397,8 +397,8 @@
          "chapters" : [
             {
                "content" : "<img",
-               "cid": "104",
-               "title" : "report104. 泡沫之花"
+               "link": "http://www.comico.com.tw/1/25/",
+               "title" : "report25. 公事与私交"
             }
          ],
          "bookid": "1",
@@ -824,7 +824,7 @@
                "title" : "第二十六章 窗烛（2）"
             }
          ],
-         "complete" : false,
+         "complete" : true,
          "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
          "introduce" : "温州女孩左再",
          "lastestChapter" : "",

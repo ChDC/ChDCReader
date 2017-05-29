@@ -11,7 +11,9 @@ require(["../js/config"], function () {
     require(testList.map(function (e) {
       return "../test/" + e + ".test";
     }), function () {
-      mocha.run();
+      Promise.all(arguments).then(function () {
+        mocha.run();
+      });
     });
   });
 });

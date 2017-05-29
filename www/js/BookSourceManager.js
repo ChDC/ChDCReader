@@ -389,7 +389,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var lastestChapter = _ref2.lastestChapter;
 
           lastestChapter = translate.toSC(bs.language, lastestChapter);
-          return lastestChapter.replace(/^最新更新\s+/, '');
+          return lastestChapter ? lastestChapter.replace(/^最新更新\s+/, '') : lastestChapter;
         });
       }
     }, {
