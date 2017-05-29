@@ -255,7 +255,7 @@
       getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        return CBS["2manhua"].getChapterContent(bsid, dict);
+        return CBS["2manhua"].getChapterContent.bind(this)(bsid, dict);
       }
     },
 
@@ -394,6 +394,47 @@
           return imgs.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');
+        });
+      }
+    },
+
+    "99lib": {
+      getChapterContent: function getChapterContent(bsid) {
+        var _this2 = this;
+
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var link = this.getChapterLink(bsid, dict);
+        return utils.get(link).then(function (html) {
+          var result = _this2.__lc.parse(html, "html", {
+            type: "string",
+            element: "meta[name=client]",
+            attribute: "content"
+          });
+
+          var pSort = atob(result).split(/[A-Z]+%/);
+          var j = 0;
+          var childNode = [];
+
+          result = _this2.__lc.parse(html, "html", {
+            type: "array",
+            element: "#content > div",
+            children: ""
+          });
+
+          result = result.map(function (m) {
+            return utils.DBCtoCDB(m).replace(/(www[•\.])?99lib[•\.]net|九.?九.?藏.?书.?网/gi, "");
+          });
+
+          for (var i = 0; i < pSort.length; i++) {
+            if (pSort[i] < 5) {
+              childNode[pSort[i]] = result[i];
+              j++;
+            } else {
+              childNode[pSort[i] - j] = result[i];
+            }
+          }
+          return LittleCrawler.text2html(childNode.join("\n"));
         });
       }
     }

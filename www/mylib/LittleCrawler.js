@@ -133,6 +133,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
 
+        if (response == "") return this.__getValue(data, keyName, globalDict, dict);;
+
         if (!response) return undefined;
 
         switch (LittleCrawler.type(response)) {
@@ -389,7 +391,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getElement",
       value: function __getElement(element, selector) {
-        if (!element || !selector) return undefined;
+        if (!element) return undefined;
+        if (selector == "") return element;
+        if (!selector) return undefined;
 
         if ("querySelector" in element) {
           return element.querySelector(this.__transformSelector(selector));
@@ -400,7 +404,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getAllElements",
       value: function __getAllElements(element, selector) {
-        if (!element || !selector) return element;
+        if (!element) return element;
+        if (selector == "") return element;
+        if (!selector) return undefined;
 
         if ("querySelectorAll" in element) {
           return Array.from(element.querySelectorAll(this.__transformSelector(selector)));
