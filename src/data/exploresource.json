@@ -63,7 +63,7 @@
       "url": "http://m.sfacg.com/",
       "interceptor": [
         {
-          "match": "^http://m.sfacg.com/b/(\\d+",
+          "match": "^http://m.sfacg.com/b/(\\d+)",
           "goto": "bookdetail"
         }
       ],
