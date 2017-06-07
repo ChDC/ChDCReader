@@ -204,7 +204,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
         // 从新的目录源中搜索之前的阅读记录
         if(this.readingRecord.chapterIndex){
-          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.getChapterIndex(), {bookSourceId: oldMainSource})
+          this.book.fuzzySearch(this.book.mainSourceId, this.readingRecord.chapterIndex, {bookSourceId: oldMainSource})
             .then(({chapter, index}) => {
               this.readingRecord.setReadingRecord(chapter.title, index, {});
               this.refreshChapterList();

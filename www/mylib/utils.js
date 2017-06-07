@@ -552,6 +552,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         Q0: Q1 - 1.5 * (Q3 - Q1),
         Q4: Q3 + 1.5 * (Q3 - Q1)
       };
+    },
+    DBCtoCDB: function DBCtoCDB(str) {
+      var whiteList = "，。！“”《》？（）‘’：；·~……";
+      return Array.from(str).map(function (e) {
+        var code = e.charCodeAt(0);
+        if (whiteList.indexOf(e) < 0 && code > 65248 && code < 65375) return String.fromCharCode(code - 65248);else return e;
+      }).join("");
     }
   };
 });

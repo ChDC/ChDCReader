@@ -70,7 +70,7 @@
     }
 
     equalChapterTitle(chapterTitle){
-      return Chapter.equalTitle(chapterTitle, this.chapterTitle);
+      return Chapter.equalTitle(chapterTitle, this.chapterTitle, true);
     }
 
     // 获取阅读记录的状态文本

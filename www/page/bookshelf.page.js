@@ -111,7 +111,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         if (book.cover) nb.find(".book-cover").attr("src", book.cover);
         nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
 
-        nb.find(".book-info").on("touchstart", function (e) {
+        nb.find(".book-cover").on("touchstart", function (e) {
           if (e.touches.length != 1) return;
           e.stopImmediatePropagation();
           $(e.target).data("longpress-timestart", new Date().getTime()).data("longpress-x", e.touches[0].clientX).data("longpress-y", e.touches[0].clientY);
@@ -122,7 +122,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           var x = target.data("longpress-x"),
               y = target.data("longpress-y");
           var touch = e.changedTouches[0];
-          if (touch.clientX == x && touch.clientY == y && t1 && new Date().getTime() - t1 > 500) {
+          if (Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50 && t1 && new Date().getTime() - t1 > 100) {
             nb.find('.btnBookMenu').dropdown('toggle');
           }
         }).on("click", function (e) {
@@ -243,7 +243,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
         sortablejs.create(this.bookShelfElement[0], {
           animation: 150,
-          handle: ".book-info",
+          handle: ".book-name",
           draggable: ".book",
           onUpdate: function onUpdate(event) {
             _this9.sortBooksByElementOrder();

@@ -30,7 +30,6 @@
         <auto-install enabled="false" />
         <auto-download enabled="false" />
     </chcp>
-    <engine name="windows" spec="^5.0.0" />
     <plugin name="cordova-plugin-console" spec="~1.0.6" />
     <plugin name="cordova-plugin-device" spec="~1.1.4" />
     <plugin name="cordova-plugin-file" spec="~4.3.1" />

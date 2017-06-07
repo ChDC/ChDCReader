@@ -133,6 +133,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
 
+        if (response == "") return this.__getValue(data, keyName, globalDict, dict);;
+
         if (!response) return undefined;
 
         switch (LittleCrawler.type(response)) {
@@ -212,7 +214,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             {
               if (!("element" in response)) return undefined;
 
-              var e = this.__getElement(data, response.element);
+              var e = void 0;
+              if ("index" in response) {
+                var es = this.__getAllElements(data, response.element);
+                e = LittleCrawler.index(es, response.index);
+              } else e = this.__getElement(data, response.element);
               if (e == undefined) return undefined;
 
               if (response.attribute) {
@@ -385,7 +391,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getElement",
       value: function __getElement(element, selector) {
-        if (!element || !selector) return undefined;
+        if (!element) return undefined;
+        if (selector == "") return element;
+        if (!selector) return undefined;
 
         if ("querySelector" in element) {
           return element.querySelector(this.__transformSelector(selector));
@@ -396,7 +404,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__getAllElements",
       value: function __getAllElements(element, selector) {
-        if (!element || !selector) return element;
+        if (!element) return element;
+        if (selector == "") return element;
+        if (!selector) return undefined;
 
         if ("querySelectorAll" in element) {
           return Array.from(element.querySelectorAll(this.__transformSelector(selector)));
@@ -779,6 +789,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
     if (type != 'object') return type;
     return obj.constructor.name.toLowerCase();
+  };
+
+  LittleCrawler.index = function (array, index) {
+    if (index >= 0) return array[index];else return array[array.length + index];
   };
 
   LittleCrawler.text2html = function (text) {

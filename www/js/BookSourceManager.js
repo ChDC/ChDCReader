@@ -298,6 +298,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         function getBooks(data) {
 
+          data = data.filter(function (m) {
+            return m.name || m.author;
+          });
+
           var books = [];
 
           var _iteratorNormalCompletion5 = true;
@@ -389,7 +393,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var lastestChapter = _ref2.lastestChapter;
 
           lastestChapter = translate.toSC(bs.language, lastestChapter);
-          return lastestChapter.replace(/^最新更新\s+/, '');
+          return lastestChapter ? lastestChapter.replace(/^最新更新\s+/, '') : lastestChapter;
         });
       }
     }, {

@@ -17,6 +17,12 @@
     word-wrap: break-word;
 }
 
+#listCatalog > li, #listBookSource > li {
+    border-top: 1px solid #e1e1e1;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
 #mainViewHeader{
     height: 25px;
     font-size: 0.8em;

@@ -1,8 +1,94 @@
 {
   "valid": ["qidian", "qqbook", "qqac",  "u17", "comico", "sfnovel",
     "biquge.tw", "daizhuzai", "biqulou",  "dingdian",
-    "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai"],
+    "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai", "99lib"],
   "sources": {
+    "99lib": {
+      "id": "99lib",
+      "type": "novel",
+      "name": "99藏书网",
+      "contentSourceWeight": 100,
+      "mainSourceWeight": 10,
+      "officialurls": {
+        "host": "http://99lib.net/index.php",
+        "bookdetail": null,
+        "bookchapter": null,
+        "booksearch": null
+      },
+      "search": {
+        "request": {
+          "type": "html",
+          "url": "http://99lib.net/book/search.php?type=%E7%AB%99%E5%86%85&q={keyword}"
+        },
+        "response": {
+          "type": "array",
+          "element": "#right > ul > li",
+          "children": {
+            "name": {
+              "type": "string",
+              "element": "h2 > a",
+              "attribute": "title"
+            },
+            "author": "h4:nth-child(3) > a",
+            "catagory": null,
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": "a > img",
+            "introduce": "div.intro",
+            "bookid": {
+              "type": "string",
+              "element": "h2 > a",
+              "attribute": "href",
+              "extract": "^http://99lib.net/book/(\\d+)/index.htm"
+            }
+          }
+        }
+      },
+      "detail": {
+        "request": {
+          "type": "html",
+          "url": "http://99lib.net/book/{bookid}/index.htm"
+        },
+        "response": {
+          "name": "#book_info > h2",
+          "author": "#book_info > h4:nth-child(4) > a",
+          "catagory": null,
+          "complete": {
+            "type": "boolean",
+            "default": false
+          },
+          "coverImg": "#book_info > img",
+          "introduce": "#book_info > div.intro",
+          "lastestChapter": "#dir > dd:last-child > a"
+        }
+      },
+      "catalog": {
+        "request": {
+          "type": "html",
+          "url": "http://99lib.net/book/{bookid}/index.htm"
+        },
+        "response": {
+          "type": "array",
+          "element": "#dir > dd",
+          "children": {
+            "title": "a",
+            "link": "a"
+          }
+        }
+      },
+      "chapter": {
+        "request": {
+          "type": "html",
+          "url": "{link}"
+        },
+        "response": {
+          "contentHTML": null,
+          "title": "#content > h2.h2"
+        }
+      }
+    },
     "manhuatai": {
       "id": "manhuatai",
       "type": "comics",
@@ -12,8 +98,8 @@
       "officialurls": {
         "host": "http://www.manhuatai.com",
         "bookdetail": "http://m.manhuatai.com/{bookid}/",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "request": {
@@ -25,14 +111,14 @@
           "element": "",
           "children": {
             "name": "cartoon_name",
-            "author": "",
-            "catagory": "",
+            "author": null,
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
             },
-            "coverImg": "",
-            "introduce": "",
+            "coverImg": null,
+            "introduce": null,
             "bookid": "cartoon_id"
           }
         }
@@ -48,8 +134,8 @@
             "element": "body > div.wrapper > div.mainctx > div > div.l > div > div.mhjsbody.clearfix > div > ul > li:nth-child(1)",
             "remove": "名称："
           },
-          "author": "",
-          "catagory": "",
+          "author": null,
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "default": false
@@ -84,8 +170,8 @@
           "url": "{link}"
         },
         "response": {
-          "contentHTML": "",
-          "title": ""
+          "contentHTML": null,
+          "title": null
         }
       }
     },
@@ -99,8 +185,8 @@
       "officialurls": {
         "host": "http://8comic.se/",
         "bookdetail": "http://8comic.se/{bookid}/",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "request": {
@@ -113,14 +199,14 @@
           "reverse": true,
           "children": {
             "name": "a",
-            "author": "",
-            "catagory": "",
+            "author": null,
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
             },
-            "coverImg": "",
-            "introduce": "",
+            "coverImg": null,
+            "introduce": null,
             "bookid": {
               "type": "string",
               "element": "a",
@@ -137,15 +223,19 @@
         },
         "response": {
           "name": "#main > div > div.entry-header.cf > div > h1",
-          "author": "",
-          "catagory": "",
+          "author": null,
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "default": false
           },
           "coverImg": "#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(1) > img",
           "introduce": "#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(2) > p",
-          "lastestChapter": "#details > div.entry-content.rich-content > table tr:last-of-type > td:last-of-type > a"
+          "lastestChapter": {
+            "type": "string",
+            "element": "#details > div.entry-content.rich-content > table tr:last-of-type > td > a",
+            "index": -1
+          }
         }
       },
       "catalog": {
@@ -168,8 +258,8 @@
           "url": "{link}"
         },
         "response": {
-          "contentHTML": "",
-          "title": ""
+          "contentHTML": null,
+          "title": null
         }
       }
     },
@@ -182,8 +272,8 @@
       "officialurls": {
         "host": "http://www.77mh.com",
         "bookdetail": "http://www.77mh.com/colist_{bookid}.html",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "request": {
@@ -196,7 +286,7 @@
           "children": {
             "name": "dd > h1 > a",
             "author": "dd > i.author > a:nth-child(2)",
-            "catagory": "",
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
@@ -220,7 +310,7 @@
         "response": {
           "name": "#main > div.main_left > div > div.ar_list_coc > dl > dd > ul > li:nth-child(1) > h1",
           "author": "#main > div.main_left > div > div.ar_list_coc > dl > dd > ul > li:nth-child(2) > a",
-          "catagory": "",
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "default": false
@@ -251,8 +341,8 @@
           "url": "{link}"
         },
         "response": {
-          "contentHTML": "",
-          "title": ""
+          "contentHTML": null,
+          "title": null
         }
       }
     },
@@ -265,8 +355,8 @@
       "officialurls": {
         "host": "http://www.omanhua.com",
         "bookdetail": "http://www.omanhua.com/comic/{bookid}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "request": {
@@ -277,14 +367,14 @@
           "element": "ul.cartoon_list > li",
           "children": {
             "name": "p.font_a_1 > a",
-            "author": "",
-            "catagory": "",
+            "author": null,
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
             },
             "coverImg": "a > img",
-            "introduce": "",
+            "introduce": null,
             "bookid": {
               "type": "string",
               "element": "p.font_a_1 > a",
@@ -297,8 +387,8 @@
       "detail": {
         "request": "http://www.omanhua.com/comic/{bookid}",
         "response": {
-          "author": "",
-          "catagory": "",
+          "author": null,
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "default": "false"
@@ -348,8 +438,8 @@
       "officialurls": {
         "host": "http://www.2manhua.com/",
         "bookdetail": "http://www.2manhua.com/comic/{bookid}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "request": {
@@ -362,7 +452,7 @@
           "children": {
             "name": "div.book-detail > dl > dt > a",
             "author": "div.book-detail > dl > dd:nth-child(4) > span > a",
-            "catagory": "",
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
@@ -382,7 +472,7 @@
         "request": "http://www.2manhua.com/comic/{bookid}",
         "response": {
           "author": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li:nth-child(2) > span:nth-child(2) > a",
-          "catagory": "",
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "element": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li.status > span > span:nth-child(2)",
@@ -403,7 +493,7 @@
           "type": "array",
           "element": "#chpater-list-1 > ul",
           "children": {
-            "name": "",
+            "name": null,
             "chapters": {
               "type": "array",
               "reverse": true,
@@ -439,8 +529,8 @@
       "officialurls": {
         "host": "http://www.57mh.com",
         "bookdetail": "http://www.57mh.com/{bookid}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "request": {
@@ -453,7 +543,7 @@
           "children": {
             "name": "div.book-detail > dl > dt > a",
             "author": "div.book-detail > dl > dd:nth-child(4) > span > a",
-            "catagory": "",
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
@@ -477,7 +567,7 @@
         "response": {
           "name": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > div.book-title > h1",
           "author": "body > div.w998.bc.cf > div.fl.w728 > div.book-cont.cf > div.book-detail.pr.fr > ul > li:nth-child(2) > span:nth-child(2) > a",
-          "catagory": "",
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "default": false
@@ -526,8 +616,8 @@
           "url": "{link}"
         },
         "response": {
-          "contentHTML": "",
-          "title": ""
+          "contentHTML": null,
+          "title": null
         }
       }
     },
@@ -557,7 +647,7 @@
               "element": "li:nth-child(2)",
               "extract": "综合信息：\\s*([^/]*)/"
             },
-            "catagory": "",
+            "catagory": null,
             "complete": {
               "type": "boolean",
               "default": false
@@ -657,7 +747,7 @@
           "element": "li",
           "children": {
             "name": ".comic-title",
-            "author": "",
+            "author": null,
             "catagory": ".comic-tag",
             "complete": {
               "type": "boolean",
@@ -680,7 +770,7 @@
       "detail": {
         "request": "http://ac.qq.com/Comic/comicInfo/id/{bookid}",
         "response": {
-          "author": "",
+          "author": null,
           "catagory": "#tags-show",
           "complete": {
             "type": "boolean",
@@ -738,7 +828,7 @@
       "officialurls": {
         "host": "http://www.u17.com",
         "bookdetail": "http://m.u17.com/c/{bookid}.html",
-        "bookchapter": "",
+        "bookchapter": null,
         "booksearch": "http://so.u17.com/"
       },
       "search": {
@@ -840,26 +930,38 @@
       "officialurls": {
         "host": "http://www.comico.com.tw/",
         "bookdetail": "http://www.comico.com.tw/spweb/list.nhn?titleNo={bookid}",
-        "bookchapter": "",
+        "bookchapter": null,
         "booksearch": "http://www.comico.com.tw"
       },
       "search": {
         "request": {
-          "url": "http://www.comico.com.tw/api/genretitles.nhn?seq=1&typeMain=0&typeSub=0",
-          "type": "JSON",
+          "url": "http://www.comico.com.tw/search/index.nhn?searchWord={keyword}",
+          "type": "html",
           "timeout": 5
         },
         "response": {
           "type": "array",
-          "element": "lists",
+          "element": "#officialList > ul > li, #challengeList > ul > li",
           "children": {
-            "name": "name",
-            "author": "author",
-            "catagory": "",
-            "complete": "isFinish",
-            "coverImg": "imageUrl",
-            "introduce": "copy",
-            "bookid": "titleNo"
+            "name": "div.list-article02__body > p.list-article02__label1",
+            "author": "div.list-article02__body > div > p.list-article02__label3 > span",
+            "catagory": null,
+            "complete": {
+              "type": "boolean",
+              "default": false
+            },
+            "coverImg": {
+              "type": "string",
+              "element": "div.list-article02__cover > div",
+              "attribute": "data-img-url"
+            },
+            "introduce": "div.list-article02__body > p.list-article02__label2",
+            "bookid": {
+              "type": "string",
+              "element": "a",
+              "attribute": "href",
+              "extract": "^http://www.comico.com.tw/(\\d+)"
+            }
           }
         }
       },
@@ -887,26 +989,30 @@
       },
       "catalog": {
         "request": {
-          "url": "http://www.comico.com.tw/api/article_nav.nhn?titleNo={bookid}&articleNo=0",
+          "url": "http://www.comico.com.tw/api/getArticleList.nhn?titleNo={bookid}",
           "type": "json",
           "timeout": 5
         },
         "response":{
           "type": "array",
-          "element": "list",
+          "element": "result.list",
           "children": {
-            "title": "name",
-            "cid": "id"
+            "title": "subtitle",
+            "link": {
+              "type": "string",
+              "element": "articleDetailUrl",
+              "valid": "{freeFlg}=='Y'"
+            }
           }
         }
       },
       "chapter": {
         "request": {
-          "url": "http://www.comico.com.tw/detail.nhn?titleNo={bookid}&articleNo={cid}"
+          "url": "{link}"
         },
         "response": {
-          "contentHTML": "._view",
-          "title": "#wrap > div.viewhead > div.viewheadin > div > button > span:nth-child(1)"
+          "contentHTML": ".comic-image",
+          "title": "body > div.stage > div > header > div > div > h1 > p"
         }
       }
     },
@@ -1018,7 +1124,7 @@
       "officialurls": {
         "host": "http://ubook.qq.com",
         "bookdetail": "http://ubook.qq.com/8/intro.html?bid={bookid}",
-        "bookchapter": "",
+        "bookchapter": null,
         "booksearch": "http://ubook.3g.qq.com/8/search"
       },
       "search": {
@@ -1119,8 +1225,8 @@
       "officialurls": {
         "host": "http://chuangshi.qq.com/",
         "bookdetail": "http://chuangshi.qq.com/bk/xh/{bookid}.html",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "response": {
@@ -1213,8 +1319,8 @@
       "officialurls": {
         "host": "http://www.biquge.com.tw/",
         "bookdetail": "{detailLink}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "response": {
@@ -1223,15 +1329,15 @@
           "children": {
             "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
             "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
-            "complete": "",
-            "coverImg": "",
+            "complete": null,
+            "coverImg": null,
             "introduce": "div.result-game-item-detail > p",
             "lastestChapter": "div.result-game-item-detail > div > p:nth-child(3) > span:nth-child(2)",
             "detailLink": "div.result-game-item-detail > h3 > a",
             "name": "div.result-game-item-detail > h3 > a"
           }
         },
-        "request": "http://zhannei.baidu.com/cse/search?s=8353527289636145615&q={keyword}"
+        "request": "http://zhannei.baidu.com/cse/search?s=10048850760735184192&q={keyword}"
       },
       "detail": {
         "request": "{detailLink}",
@@ -1241,8 +1347,8 @@
             "element": "#info > p:nth-child(2)",
             "remove": "作 *者[：:]"
           },
-          "catagory": "",
-          "complete": "",
+          "catagory": null,
+          "complete": null,
           "coverImg": "#fmimg > img",
           "introduce": "#intro",
           "lastestChapter": "#info > p:nth-child(5) > a",
@@ -1280,8 +1386,8 @@
       "officialurls": {
         "host": "http://www.booktxt.net",
         "bookdetail": "{detailLink}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "response": {
@@ -1290,8 +1396,8 @@
           "children": {
             "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
             "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
-            "complete": "",
-            "coverImg": "",
+            "complete": null,
+            "coverImg": null,
             "introduce": "div.result-game-item-detail > p",
             "lastestChapter": "div.result-game-item-detail > div > p:nth-child(4) > a",
             "detailLink": "div.result-game-item-detail > h3 > a",
@@ -1308,8 +1414,8 @@
             "element": "#info > p:nth-child(2)",
             "remove": "作 *者[：:]"
           },
-          "catagory": "",
-          "complete": "",
+          "catagory": null,
+          "complete": null,
           "coverImg": "#fmimg > img",
           "introduce": "#intro",
           "lastestChapter": "#list > dl > dd:nth-child(2) > a",
@@ -1352,8 +1458,8 @@
       "officialurls": {
         "host": "http://www.biqulou.net/",
         "bookdetail": "{detailLink}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "response": {
@@ -1362,8 +1468,8 @@
           "children": {
             "author": "div.result-game-item-detail > div > p:nth-child(1) > span:nth-child(2)",
             "catagory": "div.result-game-item-detail > div > p:nth-child(2) > span:nth-child(2)",
-            "complete": "",
-            "coverImg": "",
+            "complete": null,
+            "coverImg": null,
             "introduce": "div.result-game-item-detail > p",
             "lastestChapter": "div.result-game-item-detail > div > p:nth-child(4) > a",
             "detailLink": "div.result-game-item-detail > h3 > a",
@@ -1380,8 +1486,8 @@
             "element": "#info > p:nth-child(2)",
             "remove": "作 *者[：:]"
           },
-          "catagory": "",
-          "complete": "",
+          "catagory": null,
+          "complete": null,
           "coverImg": "#fmimg > img",
           "introduce": "#intro",
           "lastestChapter": "#info > p:nth-child(5) > a",
@@ -1419,8 +1525,8 @@
       "officialurls": {
         "host": "http://www.daizhuzai.com/",
         "bookdetail": "{detailLink}",
-        "bookchapter": "",
-        "booksearch": ""
+        "bookchapter": null,
+        "booksearch": null
       },
       "search": {
         "response": {
