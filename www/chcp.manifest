@@ -125,7 +125,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "1942146d0bd0488542fdcb5241b4c312"
+    "hash": "d8d8f9ff7c1e1ca7bd37a33127720507"
   },
   {
     "file": "js/BookShelf.js",
@@ -161,7 +161,7 @@
   },
   {
     "file": "js/ReadingRecord.js",
-    "hash": "3767715f5cb5e1543cacfe7cabb231c6"
+    "hash": "aa0d2ecfbebe9261b74ed9f70d6fde48"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -421,7 +421,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "beb02bef66580722707e7bc4daa6fef7"
+    "hash": "2505735a73ccfa9627995f7bd218c0d9"
   },
   {
     "file": "page/readbook.page.night1.css",

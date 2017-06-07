@@ -242,7 +242,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           $(".labelMainSource").text(app.bookSourceManager.getBookSource(_this5.book.mainSourceId).name);
 
           if (_this5.readingRecord.chapterIndex) {
-            _this5.book.fuzzySearch(_this5.book.mainSourceId, _this5.readingRecord.getChapterIndex(), { bookSourceId: oldMainSource }).then(function (_ref2) {
+            _this5.book.fuzzySearch(_this5.book.mainSourceId, _this5.readingRecord.chapterIndex, { bookSourceId: oldMainSource }).then(function (_ref2) {
               var chapter = _ref2.chapter,
                   index = _ref2.index;
 
