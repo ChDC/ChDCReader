@@ -213,7 +213,7 @@
       const self = this;
       return co(function*(){
         // 获取目录源的目录
-        const catalog = yield self.getCatalog({}); // NOTE: 此处默认不更新目录
+        const catalog = yield self.getCatalog({bookSourceId: options.bookSourceId}); // NOTE: 此处默认不更新目录
 
         // 获取源B 的目录
         const catalogB = yield self.getCatalog(opts);
