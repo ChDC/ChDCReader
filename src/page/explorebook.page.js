@@ -110,15 +110,15 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
 
       // loadstop
       ref.addEventListener('loadstop', function(e) {
-        // let insertCSS = es.insertCSS ? es.insertCSS + "\n" : "";
+        let insertCSS = es.insertCSS ? es.insertCSS + "\n" : "";
         let executeScriptOnLoadStop = es.executeScriptOnLoadStop ? es.executeScriptOnLoadStop + "\n" : "";
-        // if(es.remove)
-        //   insertCSS += `${es.remove.join(", ")}{display: none;}`;
+        if(es.remove)
+          insertCSS += `${es.remove.join(", ")}{display: none;}`;
 
-        // if(insertCSS)
-        //   ref.insertCSS({code: insertCSS});
+        if(insertCSS)
+          ref.insertCSS({code: insertCSS});
 
-        // executeScriptOnLoadStop += getRemoveCode(es.remove);
+        executeScriptOnLoadStop += getRemoveCode(es.remove);
 
         if(executeScriptOnLoadStop)
           ref.executeScript({ code: executeScriptOnLoadStop});
