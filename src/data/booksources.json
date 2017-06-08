@@ -771,7 +771,7 @@
         "request": "http://ac.qq.com/Comic/comicInfo/id/{bookid}",
         "response": {
           "author": null,
-          "catagory": "#tags-show",
+          "catagory": null,
           "complete": {
             "type": "boolean",
             "element": "div.works-cover > label",

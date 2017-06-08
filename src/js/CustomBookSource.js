@@ -247,6 +247,12 @@
     },
 
     "2manhua": {
+
+      // 将每个章节的卷中的书名去掉
+      afterGetBookCatalog(catalog, args){
+        return catalog.filter(c => !c.title || !c.title.includes("暂缺"));
+      },
+
       getChapterContent(bsid, dict={}){
         let link = this.getChapterLink(bsid, dict);
         return utils.get(link)
