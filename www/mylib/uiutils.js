@@ -100,15 +100,22 @@
       img.alt = "加载失败，点击重新加载";
       img.classList.add("img-errorloaded");
 
+      var firstClick = true;
+
       function imgClick(e) {
-        e.stopPropagation();
+        if (firstClick) {
+          e.stopPropagation();
+          firstClick = false;
+        }
         var img = e.currentTarget;
         img.src = img.src;
         img.onload = function (e) {
           img.onclick = null;
+          img.onload = null;
           img.classList.remove("img-errorloaded");
           img.alt = "";
         };
+
         return false;
       }
       img.onclick = imgClick;

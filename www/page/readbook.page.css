@@ -190,6 +190,11 @@ img.offical-site{
     border: 1px red solid;
     text-align: center;
     line-height: 100px;
+    background-image: url(img/reload.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 25%;
+    background-color: #7397AB;
 }
 
 h2{

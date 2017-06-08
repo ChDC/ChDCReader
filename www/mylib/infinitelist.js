@@ -66,7 +66,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         if (!this.options.disableCheckNext) return new Promise(function (resolve, reject) {
           _this.addEventListener("newElementAddedToDOM", function () {
-            resolve();
+            _this.nextElement();
           }, true);
         });
 
@@ -95,7 +95,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return Promise.resolve();
         }
 
-        if (!this.options.disableCheckPrevious) return Promise.reject();
+        if (!this.options.disableCheckPrevious) return new Promise(function (resolve, reject) {
+          _this2.addEventListener("newElementAddedToDOM", function () {
+            _this2.previousElement();
+          }, true);
+        });
+
         return co(this.__addElement(this.PREVIOUS)).then(function (newElement) {
           if (newElement) {
             _this2.__container.scrollTop = newElement.offsetTop;

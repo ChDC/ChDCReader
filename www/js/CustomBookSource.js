@@ -208,6 +208,11 @@
     },
 
     "2manhua": {
+      afterGetBookCatalog: function afterGetBookCatalog(catalog, args) {
+        return catalog.filter(function (c) {
+          return !c.title || !c.title.includes("暂缺");
+        });
+      },
       getChapterContent: function getChapterContent(bsid) {
         var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 

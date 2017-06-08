@@ -100,7 +100,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   return self.__assertBookSource();
 
                 case 2:
-                  if (!(!forceRefresh && new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
+                  if (!(self.catalog && !forceRefresh && new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
                     _context.next = 4;
                     break;
                   }
