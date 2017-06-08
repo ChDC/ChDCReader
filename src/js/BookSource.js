@@ -92,7 +92,7 @@
       let self = this;
       return co(function*(){
         yield self.__assertBookSource();
-        if(!forceRefresh && (new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
+        if(self.catalog && !forceRefresh && (new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
           return self.catalog;
 
         yield self.__assertBookSourceCatalogLink();

@@ -87,7 +87,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "equalChapterTitle",
       value: function equalChapterTitle(chapterTitle) {
-        return Chapter.equalTitle(chapterTitle, this.chapterTitle);
+        return Chapter.equalTitle(chapterTitle, this.chapterTitle, true);
       }
     }, {
       key: "getReadingRecordStatus",

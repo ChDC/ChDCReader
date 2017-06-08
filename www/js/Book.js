@@ -260,7 +260,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               switch (_context.prev = _context.next) {
                 case 0:
                   _context.next = 2;
-                  return self.getCatalog({});
+                  return self.getCatalog({ bookSourceId: options.bookSourceId });
 
                 case 2:
                   catalog = _context.sent;

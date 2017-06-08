@@ -75,6 +75,9 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       if(typeof StatusBar != "undefined") StatusBar.show();
       this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
       app.bookShelf.save();
+
+      this.scrollTop = this.chapterContainer.scrollTop();
+      this.addEventListener("resume", e => this.chapterContainer.scrollTop(this.scrollTop), true);
     }
 
     loadView(){
@@ -416,15 +419,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       content.find('p').addClass('chapter-p');
 
       // 设置图片的格式
-      function onload(e){
-        $(e.target)
-          .css('min-height', "")
-          .off('load', onload);
-      }
       content.find('img').addClass('content-img')
-        .on('error', uiutils.imgOnErrorEvent)
+        .one('error', uiutils.imgOnErrorEvent)
         .css('min-height', this.chapterContainer.width() * 2 + "px")
-        .on('load', onload);
+        .one('load', e => $(e.target).css('min-height', ""));
 
       nc.find(".chapter-content").html(content);
       nc.data("readingRecord", new ReadingRecord({chapterTitle: chapter.title, chapterIndex: index, options: options}));
@@ -437,13 +435,15 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       app.showLoading();
       this.chapterList.nextElement(false)
         .then(() => app.hideLoading())
+        .catch(e => app.hideLoading());
     }
 
     // 上一章节
     previousChapter(){
       app.showLoading();
       this.chapterList.previousElement(true)
-        .then(() => app.hideLoading());
+        .then(() => app.hideLoading())
+        .catch(e => app.hideLoading());
     }
   }
 

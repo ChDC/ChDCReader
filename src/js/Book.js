@@ -199,6 +199,7 @@
     }
 
     // 在指定的源 B 中搜索目录源的中某章节的相对应的章节
+    // options.loose 宽松匹配模式
     fuzzySearch(sourceB, index, options){
 
       let opts = Object.assign({}, options, {bookSourceId: sourceB});
@@ -218,26 +219,37 @@
         // 获取源B 的目录
         const catalogB = yield self.getCatalog(opts);
 
-        const matchs = [
-          [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
-          [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)]
-        ];
+        const matches = [utils.listMatch.bind(utils), utils.listMatchWithNeighbour.bind(utils)];
 
-        for(const match of matchs){
-          const [matchFunc, compareFunc] = match;
-          const indexB = matchFunc(catalog, catalogB, index, compareFunc);
-          if(indexB >= 0){
-            // 找到了
-            const chapterB = catalogB[indexB];
-            return Promise.resolve({chapter: chapterB, index: indexB});
-          }
-          else{
-            continue;
-          }
+        let indexB = Chapter.findEqualChapter(catalog, catalogB, index, matches, options.loose);
+        if(indexB >= 0){
+          // 找到了
+          const chapterB = catalogB[indexB];
+          return Promise.resolve({chapter: chapterB, index: indexB});
         }
+        else
+          return Promise.reject(201);
 
-        // 一个也没找到
-        return Promise.reject(201);
+        // const matches = [
+        //   [utils.listMatch.bind(utils), Chapter.equalTitle.bind(Chapter)],
+        //   [utils.listMatchWithNeighbour.bind(utils), Chapter.equalTitle.bind(Chapter)]
+        // ];
+
+        // for(const match of matches){
+        //   const [matchFunc, compareFunc] = match;
+        //   const indexB = matchFunc(catalog, catalogB, index, compareFunc);
+        //   if(indexB >= 0){
+        //     // 找到了
+        //     const chapterB = catalogB[indexB];
+        //     return Promise.resolve({chapter: chapterB, index: indexB});
+        //   }
+        //   else{
+        //     continue;
+        //   }
+        // }
+
+        // // 一个也没找到
+        // return Promise.reject(201);
       });
     }
 
@@ -367,6 +379,16 @@
       }
 
       function* getChapterFromContentSources2(includeSource){
+        yield getChapterFromAllContentSources(includeSource, options);
+        if(result.length <= 0){
+          // 宽松匹配模式
+          let opts = Object.assign({}, options, {loose: true});
+          yield getChapterFromAllContentSources(includeSource, opts);
+        }
+        return submitResult();
+      }
+
+      function* getChapterFromAllContentSources(includeSource, options){
 
         // 按权重从小到大排序的数组
         const contentSources = self.getSourcesKeysSortedByWeight().reverse();
@@ -430,7 +452,7 @@
               self.sources[sourceB].weight += NOTFOUND_WEIGHT;
           }
         }
-        return submitResult();
+        // return submitResult();
       }
 
       // function handleWithNormalMethod(error, contentSourceId){

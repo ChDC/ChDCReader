@@ -72,7 +72,8 @@
       if(!this.options.disableCheckNext)
         return new Promise((resolve, reject) => {
           this.addEventListener("newElementAddedToDOM", ()=>{
-            resolve();
+            this.nextElement();
+            // resolve();
           }, true);
         });
 
@@ -103,11 +104,21 @@
       }
 
       // 没有元素了
+
+      // 如果没有禁用了自动添加前一章，则等待加载完成
       if(!this.options.disableCheckPrevious)
-        return Promise.reject();
+        return new Promise((resolve, reject) => {
+          this.addEventListener("newElementAddedToDOM", ()=>{
+            this.previousElement();
+            // resolve();
+          }, true);
+        });
+        // return Promise.reject();
+
+      // 如果禁用了自动添加前一章，则添加一个元素
       return co(this.__addElement(this.PREVIOUS))
         .then(newElement => {
-          if(newElement){
+          if(newElement) {
             this.__container.scrollTop = newElement.offsetTop;
             this.__checkCurrentElementChange(this.PREVIOUS); // 强制刷新
           }

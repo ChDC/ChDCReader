@@ -85,7 +85,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
       nb.data("bookshelfitem", bookshelfitem);
 
-      if(book.cover) nb.find(".book-cover").attr("src", book.cover);
+      if(book.cover) {
+        let img = new Image();
+        img.src = book.cover;
+        img.onload = e => {
+          nb.find(".book-cover").attr("src", book.cover);
+        }
+      }
       nb.find(".book-name").text(book.name)
         .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
 
