@@ -1,31 +1,27 @@
 [
   {
     "file": "css/index.css",
-    "hash": "21d4fa43f65d52a096846a2352c7c818"
+    "hash": "e830ff33d15587fafb6ffaaa47c19b22"
   },
   {
     "file": "data/booksources.json",
-    "hash": "5970ef92fba524780c70536b9061a160"
-  },
-  {
-    "file": "data/booksources.test.json",
-    "hash": "25797cc7769cf0ea036b2b53cd425a26"
-  },
-  {
-    "file": "data/booksourcesTest.json",
-    "hash": "25797cc7769cf0ea036b2b53cd425a26"
+    "hash": "5989022df8a7dca42c1be97a44d24ab7"
   },
   {
     "file": "data/errorCode.json",
-    "hash": "eb7492d5e684220dfa4cbad314c75df4"
+    "hash": "417fb3aeddec29b8089bb53fa533d462"
   },
   {
     "file": "data/exploresource.json",
-    "hash": "264983ab7831a4ba887c5ec0144ad751"
+    "hash": "8840b813312d44c0594c3831830a729d"
   },
   {
-    "file": "data/Update.html",
-    "hash": "d649b8ed3b8e055134ea33c40fc9bc5a"
+    "file": "data/removedBooksources.json",
+    "hash": "4b200fa82289fab5cc0e8fd9ec0cedbd"
+  },
+  {
+    "file": "data/UpdateLog.html",
+    "hash": "5fcf0dc14e6abbe7fd54b984d14c2b10"
   },
   {
     "file": "img/book_cover.png",
@@ -36,6 +32,26 @@
     "hash": "aef3c727d3d44e0655f61894bd346d0c"
   },
   {
+    "file": "img/logo/2manhua.png",
+    "hash": "219bbfb04f1c7608777a31df2826ed96"
+  },
+  {
+    "file": "img/logo/2manhua.png.crdownload",
+    "hash": "3a4a4468f3d13b1415082f418559ad8d"
+  },
+  {
+    "file": "img/logo/57mh.png",
+    "hash": "3b80b31a1537cc68b5efbb716b4fabd8"
+  },
+  {
+    "file": "img/logo/77mh.gif",
+    "hash": "cc04b6b9e9e63f0b1d95dd206a71397f"
+  },
+  {
+    "file": "img/logo/77mh.png",
+    "hash": "dd3c817034db0ce3fa1c2bf6254a2466"
+  },
+  {
     "file": "img/logo/chuangshi.png",
     "hash": "e0e2b0551332ca70d17878977283055e"
   },
@@ -44,12 +60,28 @@
     "hash": "9e574e0f6fed11eccac57a80cf1af0a0"
   },
   {
-    "file": "img/logo/qidian.png",
-    "hash": "6e280189abc61077e9271a3d9af114f9"
+    "file": "img/logo/manhuatai.png",
+    "hash": "8215225b8626d90a2df33925d84ff169"
   },
   {
-    "file": "img/logo/qq.png",
-    "hash": "86933ad5cde0c76e4f48f730fe58629f"
+    "file": "img/logo/omanhua.gif",
+    "hash": "ca826db49282a6882b46dce74250a779"
+  },
+  {
+    "file": "img/logo/omanhua.gif.crdownload",
+    "hash": "ca826db49282a6882b46dce74250a779"
+  },
+  {
+    "file": "img/logo/omanhua.png",
+    "hash": "4c6f221de14292883c0a2f75be4401a9"
+  },
+  {
+    "file": "img/logo/ps2AD4.tmp",
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  {
+    "file": "img/logo/qidian.png",
+    "hash": "6e280189abc61077e9271a3d9af114f9"
   },
   {
     "file": "img/logo/qqac.png",
@@ -64,10 +96,6 @@
     "hash": "41495cf24f6d9c5d78cfdb7ddec53ea1"
   },
   {
-    "file": "img/logo/sfacg.png",
-    "hash": "320034ec92d2155fea2960a12663b4d7"
-  },
-  {
     "file": "img/logo/sfnovel.png",
     "hash": "7f46fe889b49e7499505b19ff30137ea"
   },
@@ -76,12 +104,20 @@
     "hash": "e2422ee7222a2e39c6edf2d5f42570fb"
   },
   {
+    "file": "img/logo/yyls.png",
+    "hash": "22bdd9f3b11f96606adcdc6ff26c0f6e"
+  },
+  {
     "file": "img/readbg1.jpg",
     "hash": "9c3e73db5b3ef008c2f61056c4b325b7"
   },
   {
     "file": "img/readbg2.jpg",
     "hash": "ece62008d6c620bedddfbbe4b94f5943"
+  },
+  {
+    "file": "img/reload.png",
+    "hash": "83ca2cd3a7a8dbe78b71b162d3fe364f"
   },
   {
     "file": "index.html",
@@ -93,43 +129,43 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "169ce7a5d94be6448daaacf666d0553c"
+    "hash": "058a4a7a44a7463da2586e40cfdf0c07"
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "8db281c71199557b4dcc6f93408e657d"
+    "hash": "a4e8af39940351f2e8e24f8cd61012b5"
   },
   {
     "file": "js/BookSource.js",
-    "hash": "aebb5a15fe88efe5d3e110960fcb7ed8"
+    "hash": "f71f976d689cc3f0cd723485d01c691d"
   },
   {
     "file": "js/BookSourceManager.js",
-    "hash": "38dc4dc3b29c8a3b9fcb1379a958d1da"
+    "hash": "bcaf41bc837e9b897c099f430cb526fd"
   },
   {
     "file": "js/Chapter.js",
-    "hash": "8fe7144d5ca840612f5e96ef3c08c1db"
+    "hash": "21d37104a8bf0ef6edb9a944e761c20f"
   },
   {
     "file": "js/config.js",
-    "hash": "ad7c5400167301d927f58009e2704d08"
+    "hash": "e1af5897da59c83d66e9dbbdb25b5087"
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "caa69c0ff30b6bedcd21c838599922f4"
+    "hash": "0bfed8c78dbbda100009d0101f1c63ea"
   },
   {
     "file": "js/executeOnUpdated.js",
-    "hash": "e79298546a14cf1bbd3733a588e69021"
+    "hash": "e524fada4e0f8bf2bd57a6b91788199d"
   },
   {
     "file": "js/main.js",
-    "hash": "68ce59e43510c5cf4c3b7842c0a151be"
+    "hash": "8664587af585f8b3ac31eef861969159"
   },
   {
     "file": "js/ReadingRecord.js",
-    "hash": "ae77e0e2e208fc71eb7970bb0dcd3061"
+    "hash": "aa0d2ecfbebe9261b74ed9f70d6fde48"
   },
   {
     "file": "lib/bootstrap-3.3.7/css/bootstrap-theme.min.css",
@@ -301,51 +337,47 @@
   },
   {
     "file": "mylib/fileSystem.js",
-    "hash": "478dcd1cb507f19ae2b9b5490834f66d"
+    "hash": "94cadd816afcaaeb850b90c42670b2c6"
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "fec1536130a15e5e9b012e6aa978f90f"
+    "hash": "a4270b3d36e1b33403cc6551a431926b"
+  },
+  {
+    "file": "mylib/LittleCrawler.js",
+    "hash": "2ca37b22f7d5d68d67337f1a1e14000b"
   },
   {
     "file": "mylib/Page.js",
-    "hash": "a399e166d89e481eb15f68b812028cda"
+    "hash": "eba41a4becf06993f0fe3c278ed0f798"
   },
   {
     "file": "mylib/PageManager.js",
-    "hash": "54882e6b1731311453f5314a1e2d2990"
-  },
-  {
-    "file": "mylib/Spider.js",
-    "hash": "3e4f1e5c564faedaa581863759e1ba0b"
-  },
-  {
-    "file": "mylib/Test.js",
-    "hash": "037c975cda6a8776dad0a1729be49d62"
+    "hash": "dd7df2927377e2f1a7e6dbacdbeb84de"
   },
   {
     "file": "mylib/translate.js",
-    "hash": "8d6b199cab27d4c5412dfb2449b49c17"
+    "hash": "5d5ae435ca735d1bfa28ed1d52d2b249"
   },
   {
     "file": "mylib/uiutils.js",
-    "hash": "ec491e540f0dc05ab5af7d0373283284"
+    "hash": "0845bfbd9d070210f61a0939791bc275"
   },
   {
     "file": "mylib/utils.js",
-    "hash": "28a12b29a1d8b181a7fa0dd32cc48dd0"
+    "hash": "e911de9b75a033f676c3600d4acdb7e3"
   },
   {
     "file": "page/bookdetail.page.css",
-    "hash": "3a8c7784c8fed826b3ea51e69829bbdf"
+    "hash": "58e710b58713382b72fad99fc4949354"
   },
   {
     "file": "page/bookdetail.page.html",
-    "hash": "dd7e9d7f6ec0f865e8109f7e25cd8adc"
+    "hash": "ac652e6f275220aef52f09d30cfe5da8"
   },
   {
     "file": "page/bookdetail.page.js",
-    "hash": "31d6138b92e0ba6d02506c9368942793"
+    "hash": "9f6a10ef644a8acd21197e0dff005c5f"
   },
   {
     "file": "page/bookdetail.page.night1.css",
@@ -353,19 +385,19 @@
   },
   {
     "file": "page/bookshelf.page.css",
-    "hash": "27bd578593cab7698a0ad46d58001c6b"
+    "hash": "c7c42c2606864be37e5e7cd85dde5afc"
   },
   {
     "file": "page/bookshelf.page.html",
-    "hash": "895742ffa1af477c1154f8d078fc104a"
+    "hash": "0a8e48fa3f199b17654b717291feb285"
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "6d0019c085349a458726260b930eb29e"
+    "hash": "a4b4ceec6710a02c8e4dee445a403dce"
   },
   {
     "file": "page/bookshelf.page.night1.css",
-    "hash": "a7b708d2d12c71c0396c4fede9652e61"
+    "hash": "56e610228044adca76f6ede34030ae94"
   },
   {
     "file": "page/explorebook.page.css",
@@ -373,11 +405,11 @@
   },
   {
     "file": "page/explorebook.page.html",
-    "hash": "2dcb7cc5e71c23310386d1fc7dd8f7cc"
+    "hash": "a5322394e2cc84e3220d6f8e72d63c03"
   },
   {
     "file": "page/explorebook.page.js",
-    "hash": "1266a72e29e8df732a2b8d8f4d020434"
+    "hash": "9129ed7c5db7d2712268c5a232a3a11b"
   },
   {
     "file": "page/explorebook.page.night1.css",
@@ -385,39 +417,55 @@
   },
   {
     "file": "page/readbook.page.css",
-    "hash": "58939fbf6c253f7441e88ff3f757d437"
+    "hash": "eb201bee36d292d172151c566e148090"
   },
   {
     "file": "page/readbook.page.html",
-    "hash": "faa9368a2285cbe5e33a98af88340dfa"
+    "hash": "3006d11a3ac614583680167b57620f8b"
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "e84515aab6283cd699d88af5287f586f"
+    "hash": "e8e8569b49077d4ff0d66f5f01fc354a"
   },
   {
     "file": "page/readbook.page.night1.css",
-    "hash": "f32516fd7700ccec16ae0430997bccf1"
+    "hash": "c9fb52bad31825f17f176f8b3f06ace0"
   },
   {
     "file": "page/search.page.css",
-    "hash": "15504952f6e2172d424c1e1286f2e738"
+    "hash": "ab39124a6b15dc210b85059c0e46a43b"
   },
   {
     "file": "page/search.page.html",
-    "hash": "1811c8695eea3609e85deb555144e51d"
+    "hash": "9a0fcb26d2267e947d46fd55f982a010"
   },
   {
     "file": "page/search.page.js",
-    "hash": "b3b801e7e5f6a862e2a310d8c979a9af"
+    "hash": "59df8aeff813a481ab5c5950f4dc5973"
   },
   {
     "file": "page/search.page.night1.css",
-    "hash": "1fd2dfb6a5534e8149f7495d59598ef9"
+    "hash": "c5280150fdaacb067e92312b1bfc79ec"
   },
   {
     "file": "page/uifactory.js",
     "hash": "02be2b62d5498fd633ee22183126853a"
+  },
+  {
+    "file": "sourceManager/add.css",
+    "hash": "fdf03e531696456d2b45a2d978a127e4"
+  },
+  {
+    "file": "sourceManager/add.js",
+    "hash": "8523fa80d3ef30cd5cc9508d91720dd3"
+  },
+  {
+    "file": "sourceManager/addSource.html",
+    "hash": "a062aa24a3901dd9340dd84ca2441493"
+  },
+  {
+    "file": "sourceManager/app.js",
+    "hash": "b2b6623c11b19c97012f61cbac7b17fe"
   },
   {
     "file": "test.html",
@@ -425,7 +473,7 @@
   },
   {
     "file": "test/app.test.js",
-    "hash": "466fa724ded3b6bab5d01bf73b0afb38"
+    "hash": "91293cdec2e76afb8e0791f90c6f8e1b"
   },
   {
     "file": "test/Book.test.js",
@@ -441,38 +489,46 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "b7f3975a88db6eef00aabed26fe876cf"
+    "hash": "dc90672b2f73900d7c62b0f36f80aa24"
   },
   {
     "file": "test/BookSourceManager.test.js",
-    "hash": "bddf2c9b8fad91531b90adead71d5d76"
+    "hash": "559fc558727355483f7b77d44cb5ddcb"
   },
   {
     "file": "test/browser.test.js",
-    "hash": "ba52e4510b1bbb236982c6761a53332b"
+    "hash": "0902c8cb7dfb4bf0a232a9c1aed47d81"
   },
   {
     "file": "test/Chapter.test.js",
-    "hash": "a67b5759d424be68f9f743217420de82"
+    "hash": "ae620a3c743165a87fd6edb84064ac5e"
   },
   {
-    "file": "test/main.test.js",
-    "hash": "124f01b0239d46ce219c32ff4a6d1754"
+    "file": "test/LittleCrawler.test.data.html",
+    "hash": "fbe004d3f764d955036974eba0c98c63"
+  },
+  {
+    "file": "test/LittleCrawler.test.data.json",
+    "hash": "eda5cd04ac84976ceabe807363a4c497"
+  },
+  {
+    "file": "test/LittleCrawler.test.js",
+    "hash": "8e4c3e94869b727fd9c45be21a2ea4bf"
   },
   {
     "file": "test/mocha.test.js",
-    "hash": "c3eb3bc5dc4599e5ca785b73b004aa50"
+    "hash": "43255091de0317ecfff1390acd80ac97"
   },
   {
-    "file": "test/Spider.test.js",
-    "hash": "64d4f58e452112ce05d867b05765e80a"
+    "file": "test/testbook.js",
+    "hash": "fc73bae22426b9f0a58fa4c20b07acf5"
   },
   {
     "file": "test/translate.test.js",
-    "hash": "e8fec25b01bc54f9b900aa0dc63d2a17"
+    "hash": "d6ce1e49456e0536bb5c4948cfff5d9c"
   },
   {
     "file": "test/utils.test.js",
-    "hash": "576dbd202c5e0d6b0a8df0c21da2230e"
+    "hash": "725488ef0a65394a5929165c3786b5bb"
   }
 ]
