@@ -108,7 +108,13 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
         nb.data("bookshelfitem", bookshelfitem);
 
-        if (book.cover) nb.find(".book-cover").attr("src", book.cover);
+        if (book.cover) {
+          var img = new Image();
+          img.src = book.cover;
+          img.onload = function (e) {
+            nb.find(".book-cover").attr("src", book.cover);
+          };
+        }
         nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
 
         nb.find(".book-cover").on("touchstart", function (e) {
