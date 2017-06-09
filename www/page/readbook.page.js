@@ -378,23 +378,32 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           }
         };
 
+        if (this.book.getType() == "comics") {
+          this.enableAutoFullScreenMode();
+        }
+
+        this.chapterList.loadList();
+      }
+    }, {
+      key: "enableAutoFullScreenMode",
+      value: function enableAutoFullScreenMode() {
+        var _this9 = this;
+
         var lastScroll = void 0;
         var threshold = 100;
         this.chapterList.onScrollDown = function (e) {
           if (lastScroll == undefined || e.scrollTop - lastScroll > threshold) {
-            _this8.toggleFullScreen(true);
+            _this9.toggleFullScreen(true);
             lastScroll = e.scrollTop;
           }
         };
 
         this.chapterList.onScrollUp = function (e) {
           if (lastScroll == undefined || lastScroll - e.scrollTop > threshold) {
-            _this8.toggleFullScreen(false);
+            _this9.toggleFullScreen(false);
             lastScroll = e.scrollTop;
           }
         };
-
-        this.chapterList.loadList();
       }
     }, {
       key: "toggleFullScreen",
@@ -419,7 +428,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "buildLastPage",
       value: function buildLastPage() {
-        var _this9 = this;
+        var _this10 = this;
 
         var nc = $('.template .readFinished').clone();
         if (!nc || nc.length <= 0) return null;
@@ -427,7 +436,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         nc.height($('#chapterContainer').height());
 
         nc.find(".offical-site").click(function (e) {
-          return window.open(_this9.book.getOfficialDetailLink(), '_system');
+          return window.open(_this10.book.getOfficialDetailLink(), '_system');
         });
         nc.find("img.offical-site").attr('src', "img/logo/" + this.book.mainSourceId + ".png");
 
@@ -438,7 +447,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
     }, {
       key: "loadElseBooks",
       value: function loadElseBooks(list) {
-        var _this10 = this;
+        var _this11 = this;
 
         function addBook(bookshelfitem) {
           var prepend = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -453,12 +462,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         }
 
         var unFinishedBooks = app.bookShelf.books.filter(function (e) {
-          return !e.readingRecord.isFinished && e.book != _this10.book;
+          return !e.readingRecord.isFinished && e.book != _this11.book;
         }).reverse();
         unFinishedBooks.forEach(addBook);
 
         var finishedBooks = app.bookShelf.books.filter(function (e) {
-          return e.readingRecord.isFinished && e.book != _this10.book;
+          return e.readingRecord.isFinished && e.book != _this11.book;
         });
         finishedBooks.forEach(function (e) {
           e.book.getLastestChapter().then(function (_ref5) {

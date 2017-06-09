@@ -117,6 +117,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
       }
     }, {
+      key: "getType",
+      value: function getType() {
+        return this.bookSourceManager.getBookSource(this.mainSourceId).type;
+      }
+    }, {
       key: "getCatalog",
       value: function getCatalog() {
         var _this3 = this;
