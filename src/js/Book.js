@@ -107,6 +107,10 @@
       })
     }
 
+    getType(){
+      return this.bookSourceManager.getBookSource(this.mainSourceId).type;
+    }
+
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
