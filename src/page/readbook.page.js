@@ -314,6 +314,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         }
       };
 
+      if(this.book.getType() == "comics"){
+        this.enableAutoFullScreenMode();
+      }
+
+      this.chapterList.loadList();
+    }
+
+    enableAutoFullScreenMode(){
       let lastScroll;
       const threshold = 100;
       this.chapterList.onScrollDown = e => {
@@ -329,8 +337,6 @@ define(["jquery", "main", "Page", "utils", "uiutils",
           lastScroll = e.scrollTop;
         }
       };
-
-      this.chapterList.loadList();
     }
 
     toggleFullScreen(full, force=false){
