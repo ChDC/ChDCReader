@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "5989022df8a7dca42c1be97a44d24ab7"
+    "hash": "045ede6e2a63c357f1d3e875ac058e66"
   },
   {
     "file": "data/errorCode.json",
@@ -13,7 +13,7 @@
   },
   {
     "file": "data/exploresource.json",
-    "hash": "8840b813312d44c0594c3831830a729d"
+    "hash": "d6909ca7107d035f4da2866dc91c5de5"
   },
   {
     "file": "data/removedBooksources.json",
@@ -21,7 +21,7 @@
   },
   {
     "file": "data/UpdateLog.html",
-    "hash": "5fcf0dc14e6abbe7fd54b984d14c2b10"
+    "hash": "b6cbacf38ed1d3898d7b35e59fe8f061"
   },
   {
     "file": "img/book_cover.png",
@@ -36,20 +36,16 @@
     "hash": "219bbfb04f1c7608777a31df2826ed96"
   },
   {
-    "file": "img/logo/2manhua.png.crdownload",
-    "hash": "3a4a4468f3d13b1415082f418559ad8d"
-  },
-  {
     "file": "img/logo/57mh.png",
     "hash": "3b80b31a1537cc68b5efbb716b4fabd8"
   },
   {
-    "file": "img/logo/77mh.gif",
-    "hash": "cc04b6b9e9e63f0b1d95dd206a71397f"
-  },
-  {
     "file": "img/logo/77mh.png",
     "hash": "dd3c817034db0ce3fa1c2bf6254a2466"
+  },
+  {
+    "file": "img/logo/buka.png",
+    "hash": "00064a513e066b4bbab92a77dd2f0b96"
   },
   {
     "file": "img/logo/chuangshi.png",
@@ -64,20 +60,8 @@
     "hash": "8215225b8626d90a2df33925d84ff169"
   },
   {
-    "file": "img/logo/omanhua.gif",
-    "hash": "ca826db49282a6882b46dce74250a779"
-  },
-  {
-    "file": "img/logo/omanhua.gif.crdownload",
-    "hash": "ca826db49282a6882b46dce74250a779"
-  },
-  {
     "file": "img/logo/omanhua.png",
     "hash": "4c6f221de14292883c0a2f75be4401a9"
-  },
-  {
-    "file": "img/logo/ps2AD4.tmp",
-    "hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   {
     "file": "img/logo/qidian.png",
@@ -86,10 +70,6 @@
   {
     "file": "img/logo/qqac.png",
     "hash": "0e8d129db454d925b4fce66dd41ba5de"
-  },
-  {
-    "file": "img/logo/qqbook.jpg",
-    "hash": "92925b8ff47555257869a453601df250"
   },
   {
     "file": "img/logo/qqbook.png",
@@ -153,7 +133,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "0bfed8c78dbbda100009d0101f1c63ea"
+    "hash": "0561b11f255b1708c3c3f19dc89bb614"
   },
   {
     "file": "js/executeOnUpdated.js",
@@ -345,7 +325,7 @@
   },
   {
     "file": "mylib/LittleCrawler.js",
-    "hash": "7b7ca5d9f691ecccbf472fc109a81bb0"
+    "hash": "9b879dd896fc15d111367056f7757764"
   },
   {
     "file": "mylib/Page.js",
@@ -489,7 +469,7 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "dc90672b2f73900d7c62b0f36f80aa24"
+    "hash": "7f6027a3f5fe81f59b1b0756f23fd089"
   },
   {
     "file": "test/BookSourceManager.test.js",
