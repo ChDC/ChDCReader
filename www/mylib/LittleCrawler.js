@@ -79,7 +79,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
           default:
             throw new Error("illegal ajax");
-            break;
         }
 
         return ajax(method, url, params, undefined, headers, { timeout: request.timeout }).then(function (data) {
@@ -133,7 +132,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var dict = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
 
-        if (response == "") return this.__getValue(data, keyName, globalDict, dict);;
+        if (response == "") return this.__getValue(data, keyName, globalDict, dict);
 
         if (!response) return undefined;
 

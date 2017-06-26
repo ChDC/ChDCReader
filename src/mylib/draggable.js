@@ -7,7 +7,7 @@
   else
     window["draggable"] = factory();
 }(function() {
-  "use strict"
+  "use strict";
 
   return {
      /**

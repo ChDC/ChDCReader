@@ -8,7 +8,7 @@
     window["Infinitelist"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["co", "utils"], function(co, utils) {
 
-  "use strict"
+  "use strict";
 
   class Infinitelist{
 
@@ -202,7 +202,7 @@
           __lastCheckScrollY = this.__container.scrollTop;
           this.checkBoundary(direction);
         }
-      }
+      };
 
       this.__scrollEventBindThis = __scrollEvent.bind(this);
       this.__container.addEventListener('scroll', this.__scrollEventBindThis);
