@@ -29,9 +29,9 @@
 
 * [comico](http://www.comico.com.tw/)
 * [腾讯动漫](http://ac.qq.com/)
+* [布卡漫画](http://www.buka.cn)
 * [有妖气](http://www.u17.com)
 * [吹妖动漫](http://www.chuiyao.com/)
-
 * [当鸟漫画](http://www.dangniao.com)
 * [爱漫画网](http://www.2manhua.com/)
 * [哦漫画](http://www.omanhua.com/comic/)

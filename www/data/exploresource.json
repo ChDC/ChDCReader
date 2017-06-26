@@ -1,7 +1,17 @@
 {
-  "valid": ["qidian", "qqac", "qqbook", "sfnovel", "u17", "comico",
+  "valid": ["qidian", "qqac", "buka", "qqbook", "sfnovel", "u17", "comico",
     "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai"],
   "sources": {
+    "buka": {
+      "url": "http://m.buka.cn",
+      "interceptor": [
+        {
+          "match": "^http://m.buka.cn/read/(\\d+)/\\d+",
+          "goto": "readbook"
+        }
+      ],
+      "remove": [".mangadir-galss-btns", ".head-logo-download-btn", ".head-download-icon"]
+    },
     "manhuatai": {
       "url": "http://m.manhuatai.com/",
       "interceptor": [

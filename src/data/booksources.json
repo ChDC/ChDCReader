@@ -1,8 +1,145 @@
 {
   "valid": ["qidian", "qqbook", "qqac",  "u17", "comico", "sfnovel",
     "biquge.tw", "daizhuzai", "biqulou",  "dingdian",
-    "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai", "99lib"],
+    "omanhua", "2manhua", "57mh", "77mh", "yyls", "manhuatai", "99lib", "buka"],
   "sources": {
+    "buka": {
+      "id" : "buka",
+      "type" : "comics",
+      "name" : "布卡漫画",
+      "contentSourceWeight" : 49,
+      "mainSourceWeight" : 19,
+      "officialurls" :
+      {
+          "host" : "http://www.buka.cn",
+          "bookdetail" : "http://m.buka.cn/m/{bookid}",
+          "bookchapter" : "",
+          "booksearch" : ""
+      },
+      "search" :
+      {
+          "request" :
+          {
+              "type" : "html",
+              "url" : "http://www.buka.cn/search?word={keyword}"
+          },
+          "response" :
+          {
+              "type" : "array",
+              "element" : "div.manga-list > ul > li",
+              "children" :
+              {
+                  "name" :
+                  {
+                      "type" : "string",
+                      "element" : "div > a",
+                      "attribute" : "title"
+                  },
+                  "author" : "div > p > a.manga-author",
+                  "catagory" : "",
+                  "complete" :
+                  {
+                      "type" : "boolean",
+                      "default" : false
+                  },
+                  "coverImg" : "a > img",
+                  "introduce" : "",
+                  "bookid" :
+                  {
+                      "type" : "string",
+                      "element" : "div > a",
+                      "attribute" : "href",
+                      "extract" : "^http://www.buka.cn/detail/(\\d+)"
+                  }
+              }
+          }
+      },
+      "detail" :
+      {
+          "request" :
+          {
+              "type" : "html",
+              "url" : "http://www.buka.cn/detail/{bookid}"
+          },
+          "response" :
+          {
+              "name" : "body > div.main > div.right.boxshadow > div.manga-title > div > h1",
+              "author" : "body > div.main > div.right.boxshadow > div.manga-desc > div.manga-author > a",
+              "catagory" : "",
+              "complete" :
+              {
+                  "type" : "boolean",
+                  "default" : false
+              },
+              "coverImg" : "body > div.main > div.left > div.manga-img.boxshadow > img",
+              "introduce" : "body > div.main > div.right.boxshadow > div.manga-desc > div.manga-desc-font",
+              "lastestChapter" : "#episodes > div.epsbox > a:nth-child(1)"
+          }
+      },
+      "catalog" :
+      {
+          "request" :
+          {
+              "type" : "html",
+              "url" : "http://www.buka.cn/detail/{bookid}"
+          },
+          "response" :
+          {
+              "type" : "array",
+              "element" : "#episodes > div.epsbox > a",
+              "reverse" : true,
+              "children" :
+              {
+                  "title" :
+                  {
+                      "type" : "string",
+                      "element" : "",
+                      "attribute" : "onclick",
+                      "extract" : "'.+?','(.+?)'"
+                  },
+                  "linkpart" :
+                  {
+                      "type" : "string",
+                      "element" : "",
+                      "attribute" : "onclick",
+                      "extract" : "'(.+?)'"
+                  },
+                  "link": {
+                      "type" : "format",
+                      "value": "http://www.buka.cn{linkpart}"
+                  }
+              }
+          }
+      },
+      "chapter" :
+      {
+          "request" :
+          {
+              "type" : "html",
+              "url" : "{link}"
+          },
+          "response" :
+          {
+              "imgs": {
+                "type": "array",
+                "element": "#manga-imgs > div.manga-c > img",
+                "children": {
+                  "linksrc": {
+                    "type": "string",
+                    "element": "",
+                    "attribute": "src"
+                  },
+                  "link": {
+                    "type": "string",
+                    "element": "",
+                    "attribute": "data-original"
+                  }
+                }
+              }
+          }
+      }
+  },
+
     "99lib": {
       "id": "99lib",
       "type": "novel",
@@ -11,7 +148,7 @@
       "mainSourceWeight": 10,
       "officialurls": {
         "host": "http://99lib.net/index.php",
-        "bookdetail": null,
+        "bookdetail": "http://m.99lib.net/book/{bookid}/index.htm",
         "bookchapter": null,
         "booksearch": null
       },

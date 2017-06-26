@@ -483,7 +483,42 @@
           });
 
       }
-    }
+    },
+
+    "buka": {
+      // getBookCatalog(bsid, dict){
+
+      //   const bs = this.__sources[bsid];
+      //   if(!bs) return Promise.reject("Illegal booksource!");
+
+      //   return this.__lc.getLink
+      //   return this.__lc.get(bs.catalog, dict)
+      //     .then(data => {
+      //       if(bs.catalog.hasVolume)
+      //         data = data
+      //           .map(v => v.chapters.map(c => (c.volume = v.name, c)))
+      //           .reduce((s,e) => s.concat(e), []);
+      //       data = data.map(c => translate.toSC(bs.language, c, ['title']));
+      //       return data.map(c => LittleCrawler.cloneObjectValues(new Chapter(), c));
+      //     });
+      // }
+      //
+
+      getChapterContent(bsid, dict={}){
+        if(!dict.link && !dict.cid) return Promise.reject(206);
+
+        const bs = this.__sources[bsid];
+        if(!bs) return Promise.reject("Illegal booksource!");
+
+        return this.__lc.get(bs.chapter, dict)
+          .then(({imgs}) => {
+            imgs = imgs.map(e => e.link ? e.link : e.linksrc);
+            return imgs.map(e => `<img src="${e}">`).join('\n');
+          });
+      }
+    },
+
+
   };
 
   return CBS;

@@ -442,7 +442,30 @@
           return LittleCrawler.text2html(childNode.join("\n"));
         });
       }
+    },
+
+    "buka": {
+      getChapterContent: function getChapterContent(bsid) {
+        var dict = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (!dict.link && !dict.cid) return Promise.reject(206);
+
+        var bs = this.__sources[bsid];
+        if (!bs) return Promise.reject("Illegal booksource!");
+
+        return this.__lc.get(bs.chapter, dict).then(function (_ref) {
+          var imgs = _ref.imgs;
+
+          imgs = imgs.map(function (e) {
+            return e.link ? e.link : e.linksrc;
+          });
+          return imgs.map(function (e) {
+            return "<img src=\"" + e + "\">";
+          }).join('\n');
+        });
+      }
     }
+
   };
 
   return CBS;

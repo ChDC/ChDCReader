@@ -318,7 +318,7 @@
           if(response.attribute){
             let attr;
             if(this.insecurityAttributeList.includes(response.attribute))
-              attr = `lc-${attr}`;
+              attr = `lc-${response.attribute}`;
             else
               attr = response.attribute;
             result = e.getAttribute(attr);

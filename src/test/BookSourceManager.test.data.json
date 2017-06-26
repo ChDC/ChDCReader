@@ -1,4 +1,30 @@
 {
+  "buka": [
+      {
+          "bookid" : "104008",
+          "name" : "班长大人",
+          "author" : "陈岚/漫铠动漫",
+          "chapters" : [
+              {
+                  "content" : "<img",
+                  "link" : "http://www.buka.cn/view/104008/65600",
+                  "title" : "第64话"
+              }
+          ]
+      },
+      {
+          "bookid" : "100024",
+          "name" : "蜡笔小新",
+          "author" : "臼井义人",
+          "chapters" : [
+              {
+                  "content" : "<img",
+                  "link" : "http://www.buka.cn/view/100024/131115",
+                  "title" : "43 卷"
+              }
+          ]
+      }
+  ],
   "99lib": [
     {
       "bookid": "576",

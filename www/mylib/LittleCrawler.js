@@ -222,7 +222,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               if (response.attribute) {
                 var attr = void 0;
-                if (this.insecurityAttributeList.includes(response.attribute)) attr = "lc-" + attr;else attr = response.attribute;
+                if (this.insecurityAttributeList.includes(response.attribute)) attr = "lc-" + response.attribute;else attr = response.attribute;
                 result = e.getAttribute(attr);
                 if (this.fixurlAttributeList.indexOf(attr) >= 0) result = LittleCrawler.fixurl(result, globalDict.host);
                 if (attr == 'innerHTML') result = this.__reverseHTML(result);
