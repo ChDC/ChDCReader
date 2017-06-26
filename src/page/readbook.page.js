@@ -280,12 +280,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         $('#chapters')[0],
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)),
         this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)),
-        {disableCheckPrevious: false} // 禁止向前加载
+        {disableCheckPrevious: true} // 禁止向前加载
       );
       this.chapterList.onError = e => {
         app.hideLoading();
         uiutils.showError(app.error.getMessage(e.error));
       };
+
+      $(".labelContentSource").click(e => window.open(this.book.getOfficialDetailLink(this.readingRecord.options.contentSourceId), '_system'));
 
       this.chapterList.onCurrentElementChanged = ({new: newValue, old: oldValue}) => {
         newValue = $(newValue);
@@ -293,8 +295,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         if(readingRecord.chapterIndex >= 0){
           const contentSourceId = readingRecord.options.contentSourceId;
           Object.assign(this.readingRecord, readingRecord);
-          $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name)
-            .click(e => window.open(this.book.getOfficialDetailLink(contentSourceId), '_system'));
+          $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name);
         }
         else{
           // 已经读完了

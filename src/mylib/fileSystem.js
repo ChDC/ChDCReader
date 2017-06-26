@@ -7,7 +7,7 @@
   else
     window["fileSystem"] = factory.apply(undefined, deps.map(e => window[e]));
 }(["co"], function(co){
-  "use strict"
+  "use strict";
 
   return {
 
@@ -168,6 +168,6 @@
         });
     },
 
-  }
+  };
 
 }));

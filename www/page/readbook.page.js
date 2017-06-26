@@ -337,11 +337,15 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         var opts = Object.assign({}, this.readingRecord.getOptions(), options);
         if (this.chapterList) this.chapterList.close();
 
-        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)), { disableCheckPrevious: false });
+        this.chapterList = new Infinitelist($('#chapterContainer')[0], $('#chapters')[0], this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)), this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)), { disableCheckPrevious: true });
         this.chapterList.onError = function (e) {
           app.hideLoading();
           uiutils.showError(app.error.getMessage(e.error));
         };
+
+        $(".labelContentSource").click(function (e) {
+          return window.open(_this8.book.getOfficialDetailLink(_this8.readingRecord.options.contentSourceId), '_system');
+        });
 
         this.chapterList.onCurrentElementChanged = function (_ref3) {
           var newValue = _ref3.new,
@@ -350,13 +354,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           newValue = $(newValue);
           var readingRecord = newValue.data('readingRecord');
           if (readingRecord.chapterIndex >= 0) {
-            (function () {
-              var contentSourceId = readingRecord.options.contentSourceId;
-              Object.assign(_this8.readingRecord, readingRecord);
-              $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name).click(function (e) {
-                return window.open(_this8.book.getOfficialDetailLink(contentSourceId), '_system');
-              });
-            })();
+            var contentSourceId = readingRecord.options.contentSourceId;
+            Object.assign(_this8.readingRecord, readingRecord);
+            $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name);
           } else {
             _this8.readingRecord.setFinished(true);
           }

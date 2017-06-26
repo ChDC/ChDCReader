@@ -163,7 +163,7 @@
           break;
         default:
           throw new Error("illegal ajax");
-          break;
+          // break;
       }
 
       // 发出请求并解析响应
@@ -229,7 +229,7 @@
     __handleResponse(data, response, keyName, globalDict={}, dict={}){
 
       if(response == "")
-        return this.__getValue(data, keyName, globalDict, dict);;
+        return this.__getValue(data, keyName, globalDict, dict);
 
       if(!response) return undefined;
 
@@ -260,7 +260,7 @@
           result[key] = this.__handleResponse(data, response[key], key, globalDict, result);
         }
         return result;
-      }
+      };
 
       if(!response.type){
         // object 类型，直接解析成员
@@ -308,7 +308,7 @@
           let e;
           if("index" in response){
             let es = this.__getAllElements(data, response.element);
-            e = LittleCrawler.index(es, response.index)
+            e = LittleCrawler.index(es, response.index);
           }
           else
             e = this.__getElement(data, response.element);
