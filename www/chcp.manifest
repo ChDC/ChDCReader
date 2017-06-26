@@ -345,7 +345,7 @@
   },
   {
     "file": "mylib/LittleCrawler.js",
-    "hash": "2ca37b22f7d5d68d67337f1a1e14000b"
+    "hash": "7b7ca5d9f691ecccbf472fc109a81bb0"
   },
   {
     "file": "mylib/Page.js",
@@ -425,7 +425,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "6d4f8503ce8d7c812775080abf645a0d"
+    "hash": "22ce7715800a413bd719a4a2298004c2"
   },
   {
     "file": "page/readbook.page.night1.css",
