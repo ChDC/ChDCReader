@@ -284,12 +284,40 @@
     "hash": "e0c0d3d883e83f19efa64feb54d5f63d"
   },
   {
+    "file": "lib/md5.min.js",
+    "hash": "ea27c6f75517dc30bcc46b6795e82b66"
+  },
+  {
     "file": "lib/mocha/mocha.css",
     "hash": "dfdabe1fbeac4eb51512e39781627dec"
   },
   {
     "file": "lib/mocha/mocha.js",
     "hash": "436b9a320028afb039e5a303b27ea7f6"
+  },
+  {
+    "file": "lib/pako/pako_deflate.js",
+    "hash": "a126f7ebe0249be22a4c015cfef51350"
+  },
+  {
+    "file": "lib/pako/pako_deflate.min.js",
+    "hash": "8b20e6ee104d85fc0cc016fed98e2573"
+  },
+  {
+    "file": "lib/pako/pako_inflate.js",
+    "hash": "5cb831c4eab865bfff1c01dfc4a9d2ab"
+  },
+  {
+    "file": "lib/pako/pako_inflate.min.js",
+    "hash": "9643ea5e7e0827e4fad2c01672c0d058"
+  },
+  {
+    "file": "lib/pako/pako.js",
+    "hash": "f9afff5637c977335fc22f4bbfa5eb3c"
+  },
+  {
+    "file": "lib/pako/pako.min.js",
+    "hash": "77b07eb463dfbec40a51f97a91f7daa3"
   },
   {
     "file": "lib/polyfill.js",
@@ -310,6 +338,42 @@
   {
     "file": "lib/sortablejs-1.5.1/Sortable.min.js",
     "hash": "8b78d27b3de815cb5dcab5fb9d0afb91"
+  },
+  {
+    "file": "lib/zip/deflate.js",
+    "hash": "d4e3a2a82db29526b20ce9314ce835fe"
+  },
+  {
+    "file": "lib/zip/inflate.js",
+    "hash": "fd952b261e960d0d7c8498569bee75d6"
+  },
+  {
+    "file": "lib/zip/mime-types.js",
+    "hash": "0b905934d7271bd0d03624ad556df7a0"
+  },
+  {
+    "file": "lib/zip/pako/codecs.js",
+    "hash": "4abd21a23d6a5519b9b692f98d67e7c5"
+  },
+  {
+    "file": "lib/zip/z-worker.js",
+    "hash": "7d40d9ac5e628c8f4ab5e683b11e09ba"
+  },
+  {
+    "file": "lib/zip/zip-ext.js",
+    "hash": "b07cc9262575e942579e9948d5c86ba5"
+  },
+  {
+    "file": "lib/zip/zip-fs.js",
+    "hash": "cc38e0962c1e03da1c027183f931e691"
+  },
+  {
+    "file": "lib/zip/zip.js",
+    "hash": "3628e1a12984058c0b257af371629ded"
+  },
+  {
+    "file": "lib/zip/zlib-asm/codecs.js",
+    "hash": "a8189b89d35d7cf62ce530270a5efe21"
   },
   {
     "file": "mylib/draggable.js",
