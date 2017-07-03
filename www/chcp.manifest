@@ -25,7 +25,7 @@
   },
   {
     "file": "img/book_cover.png",
-    "hash": "f291c93b7934d69e8ba400d72908c0ca"
+    "hash": "e7335787579b3e3e315c5be7c11b649d"
   },
   {
     "file": "img/loading.gif",
@@ -113,11 +113,11 @@
   },
   {
     "file": "js/BookShelf.js",
-    "hash": "a4e8af39940351f2e8e24f8cd61012b5"
+    "hash": "8240d2303e1253f992b32a8208d697b0"
   },
   {
     "file": "js/BookSource.js",
-    "hash": "f71f976d689cc3f0cd723485d01c691d"
+    "hash": "9e29e7d2263f59bd6f48e2670ddb3e89"
   },
   {
     "file": "js/BookSourceManager.js",
@@ -437,7 +437,7 @@
   },
   {
     "file": "page/bookshelf.page.js",
-    "hash": "a4b4ceec6710a02c8e4dee445a403dce"
+    "hash": "c735108db4b9796720e51ebe71c80b1a"
   },
   {
     "file": "page/bookshelf.page.night1.css",
