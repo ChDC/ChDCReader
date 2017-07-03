@@ -20,40 +20,8 @@
       utils.addEventSupport(this); // 添加事件机制
     }
 
-    // 获取存储目录的文件路径
-    __getSaveCatalogLocation(bookName, bookAuthor, sourceId){
-      if(!sourceId)
-        return `catalog/${bookName}_${bookAuthor}/`;
-      return `catalog/${bookName}_${bookAuthor}/${sourceId}.json`;
-    }
-
     // 加载书籍
     load(bookSourceManager){
-
-      const self = this;
-
-      function loadCatalog(bk, bsk){
-
-        const b = self.books[bk].book;
-        const bs = b.sources[bsk];
-        // 更新目录文件
-        utils.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk))
-          .then(data => {
-            bs.catalog = utils.arrayCast(data, Chapter);
-          })
-          .catch(error => error); // 忽略错误
-      }
-
-      function loadCatalogs(){
-        const tasks = [];
-        for(const bk in self.books){
-          const b = self.books[bk].book;
-          for(const bsk in b.sources){
-            tasks.push(loadCatalog(bk, bsk));
-          }
-        }
-        return Promise.all(tasks);
-      }
 
       return utils.loadData(this.name+".json")
         .then(data => {
@@ -63,24 +31,12 @@
             b.book = Book.Cast(b.book, bookSourceManager);
             b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
           });
-          return loadCatalogs();
         })
         .then(() => this.fireEvent("loadedData"));
     }
 
     // 保存数据
     save(){
-      for(const bk in this.books){
-        const b = this.books[bk].book;
-        for(const bsk in b.sources){
-          const bs = b.sources[bsk];
-          if(bs.needSaveCatalog){
-            bs.needSaveCatalog = false;
-            // 更新目录文件
-            utils.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
-          }
-        }
-      }
       return utils.saveTextData(this.name+".json", utils.persistent(this))
         .then(() => this.fireEvent("savedData"));
     }
@@ -170,7 +126,7 @@
         return;
 
       // 清除目录
-      utils.removeData(this.__getSaveCatalogLocation(book.name, book.author));
+      utils.removeData(`catalog/${book.name}_${book.author}/`, true);
       utils.removeData(`chapter/${book.name}_${book.author}/`, true);
       this.books.splice(index, 1);
       this.sortBooks();

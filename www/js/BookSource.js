@@ -36,7 +36,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.__searched = false;
       this.__updatedCatalogTime = 0;
       this.__updatedLastestChapterTime = 0;
-      this.needSaveCatalog = false;
     }
 
     _createClass(BookSource, [{
@@ -87,7 +86,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _ref$refresh = _ref.refresh,
             refresh = _ref$refresh === undefined ? false : _ref$refresh;
 
-        if (!forceRefresh && !refresh && this.catalog) return Promise.resolve(this.catalog);
+        if (this.catalog && !forceRefresh && (!refresh || new Date().getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) return Promise.resolve(this.catalog);
 
         var self = this;
         return co(regeneratorRuntime.mark(function _callee() {
@@ -100,30 +99,39 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   return self.__assertBookSource();
 
                 case 2:
-                  if (!(self.catalog && !forceRefresh && new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)) {
-                    _context.next = 4;
+                  if (self.catalog) {
+                    _context.next = 5;
+                    break;
+                  }
+
+                  _context.next = 5;
+                  return self.__loadCatalogFromCache();
+
+                case 5:
+                  if (!(self.catalog && !forceRefresh && (!refresh || new Date().getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000))) {
+                    _context.next = 7;
                     break;
                   }
 
                   return _context.abrupt("return", self.catalog);
 
-                case 4:
-                  _context.next = 6;
+                case 7:
+                  _context.next = 9;
                   return self.__assertBookSourceCatalogLink();
 
-                case 6:
-                  _context.next = 8;
+                case 9:
+                  _context.next = 11;
                   return self.bookSourceManager.getBookCatalog(self.id, self);
 
-                case 8:
+                case 11:
                   catalog = _context.sent;
 
                   self.catalog = catalog;
                   self.__updatedCatalogTime = new Date().getTime();
-                  self.needSaveCatalog = true;
+                  self.__cacheCatalog();
                   return _context.abrupt("return", catalog);
 
-                case 13:
+                case 16:
                 case "end":
                   return _context.stop();
               }
@@ -176,6 +184,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return c;
           });
         });
+      }
+    }, {
+      key: "__getSaveCatalogLocation",
+      value: function __getSaveCatalogLocation() {
+        return "catalog/" + this.book.name + "_" + this.book.author + "/" + this.id + ".json";
+      }
+    }, {
+      key: "__loadCatalogFromCache",
+      value: function __loadCatalogFromCache() {
+        var _this6 = this;
+
+        return utils.loadData(this.__getSaveCatalogLocation(), true).then(function (data) {
+          _this6.catalog = utils.arrayCast(data, Chapter);
+        }).catch(function (error) {
+          return error;
+        });
+      }
+    }, {
+      key: "__cacheCatalog",
+      value: function __cacheCatalog() {
+        utils.saveData(this.__getSaveCatalogLocation(), this.catalog, true);
       }
     }, {
       key: "__getCacheChapterLocation",

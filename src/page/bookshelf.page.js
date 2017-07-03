@@ -90,7 +90,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         img.src = book.cover;
         img.onload = e => {
           nb.find(".book-cover").attr("src", book.cover);
-        }
+        };
       }
       nb.find(".book-name").text(book.name)
         .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
@@ -199,8 +199,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
     // 加载书架列表
     loadBooks(bookShelf){
       const books = bookShelf.books;
-      this.bookShelfElement.empty();
-      this.finishedBookShelfElement.empty();
+      // this.bookShelfElement.empty();
+      // this.finishedBookShelfElement.empty();
       books.forEach(this.addBook.bind(this));
       this.refreshBooksOwner();
       this.refreshAllReadingRecord();
