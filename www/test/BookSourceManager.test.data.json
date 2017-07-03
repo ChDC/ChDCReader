@@ -7,7 +7,7 @@
           "chapters" : [
               {
                   "content" : "<img",
-                  "link" : "http://www.buka.cn/view/104008/65600",
+                  "cid" : "65600",
                   "title" : "第64话"
               }
           ]
@@ -19,7 +19,7 @@
           "chapters" : [
               {
                   "content" : "<img",
-                  "link" : "http://www.buka.cn/view/100024/131115",
+                  "cid" : "131115",
                   "title" : "43 卷"
               }
           ]

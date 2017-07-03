@@ -549,7 +549,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         case "post":
           sendData = Object.keys(params).map(function (k) {
             return k + "=" + params[k];
-          }).join("&");;
+          }).join("&");
           break;
       }
 
@@ -566,12 +566,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         case "json":
           request.setRequestHeader("Content-Type", "application/json");
           break;
+        case "blob":
+          request.responseType = 'blob';
+          break;
+        case "arraybuffer":
+          request.responseType = "arraybuffer";
+          break;
       }
 
       request.onload = function () {
         switch (dataType) {
           case "json":
             resolve(JSON.parse(request.responseText));
+            break;
+          case "blob":
+            resolve(request.response);
+            break;
+          case "arraybuffer":
+            resolve(request.response);
             break;
           default:
             resolve(request.responseText);

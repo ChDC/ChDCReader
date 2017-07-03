@@ -5,7 +5,9 @@ requirejs.config({
   "shim": {
     "bootstrap": { "deps": ['jquery'] },
     "co": { deps: [], exports: 'co' },
-    "mocha": { deps: [], exports: "mocha" }
+    "mocha": { deps: [], exports: "mocha" },
+    "zip-ext": ["zip"],
+    "zip": { deps: [], exports: "zip" }
   },
   "paths": {
     "lib": "../lib",
@@ -20,6 +22,10 @@ requirejs.config({
     "mocha": "../lib/mocha/mocha",
     "chai": "../lib/chai",
     "cookie": "../lib/cookie",
+    "md5": "../lib/md5.min",
+    "zip": "../lib/zip/zip",
+    "zip-ext": "../lib/zip/zip-ext",
+    "pako": "../lib/pako/pako",
 
     "uifactory": "../page/uifactory",
     "utils": "../mylib/utils",

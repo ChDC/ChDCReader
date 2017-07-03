@@ -10,7 +10,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "ReadingRecord", "uifactory"], function ($, app, Page, utils, uiutils, Infinitelist, ReadingRecord, uifactory) {
+define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "ReadingRecord", "uifactory", "LittleCrawler"], function ($, app, Page, utils, uiutils, Infinitelist, ReadingRecord, uifactory, LittleCrawler) {
   var MyPage = function (_Page) {
     _inherits(MyPage, _Page);
 
@@ -502,15 +502,78 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         var content = $("<div>" + chapter.content + "</div>");
         content.find('p').addClass('chapter-p');
-
-        content.find('img').addClass('content-img').one('error', uiutils.imgOnErrorEvent).css('min-height', this.chapterContainer.width() * 2 + "px").one('load', function (e) {
-          return $(e.target).css('min-height', "");
-        });
+        this.loadImages(content);
 
         nc.find(".chapter-content").html(content);
         nc.data("readingRecord", new ReadingRecord({ chapterTitle: chapter.title, chapterIndex: index, options: options }));
 
         return nc[0];
+      }
+    }, {
+      key: "loadImages",
+      value: function loadImages(content) {
+        var _this12 = this;
+
+        var imgs = content.find('img').addClass('content-img').each(function (i, img) {
+          var id = utils.getGUID();
+
+          var loading = $('<p class="content-img-loading">').text(i + 1).css("line-height", _this12.chapterContainer.width() * 2 + "px").attr("id", id);
+
+          $(img).replaceWith(loading);
+          img.dataset.id = id;
+          loadImg(img);
+        });
+
+
+        function loadError(e) {
+          var img = e.currentTarget || e;
+          var id = img.dataset.id;
+          var btnReload = $('<div class="img-reload"><img src="img/reload.png"><p>加载失败，点击重新加载</p></div>').one("click", function (e) {
+            loadImg(img, true);
+            e.stopPropagation();
+            e.currentTarget.remove();
+          });
+          var ic = $(document.getElementById(id));
+          ic.append(btnReload);
+          btnReload.css("top", ic.height() / 2 - btnReload.height() / 2);
+        }
+
+        function loadImg(img) {
+          var reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+          if (img.dataset.skip) {
+            var src = void 0;
+            if (!reload) {
+              src = img.src;
+              img.dataset.src = src;
+              img.removeAttribute("src");
+            } else {
+              src = img.dataset.src;
+            }
+
+            LittleCrawler.ajax("GET", src, {}, "blob").then(function (blob) {
+              var skipBits = Number.parseInt(img.dataset.skip);
+              var url = URL.createObjectURL(blob.slice(skipBits));
+              $(img).one("load", loadFinishedImg);
+              img.src = url;
+            }).catch(function (e) {
+              loadError(img);
+            });
+          } else {
+            img.src = img.src;
+            var jImg = $(img);
+            if (!reload) jImg.one("load", loadFinishedImg);
+            jImg.one("error", loadError);
+          }
+        }
+
+        function loadFinishedImg(e) {
+          var img = e.currentTarget;
+          var id = img.dataset.id;
+          delete img.dataset.id;
+          delete img.dataset.skip;
+          $(document.getElementById(id)).replaceWith(img);
+        }
       }
     }, {
       key: "nextChapter",

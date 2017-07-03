@@ -8,7 +8,7 @@
   }));else window["customBookSource"] = factory.apply(undefined, deps.map(function (e) {
     return window[e];
   }));
-})(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function (co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
+})(['co', "utils", "md5", "pako", "zip", "LittleCrawler", "translate", "Book", "BookSource", "Chapter", "zip-ext"], function (co, utils, MD5, pako, zip, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict";
 
   var CBS = {
@@ -450,18 +450,46 @@
 
         if (!dict.link && !dict.cid) return Promise.reject(206);
 
-        var bs = this.__sources[bsid];
-        if (!bs) return Promise.reject("Illegal booksource!");
+        var mid = dict.bookid;
+        var cid = dict.cid;
+        var servers = ["http://index.bukamanhua.com:8000/req3.php", "http://indexbk.sosohaha.com/req3.php", "http://index.bukamanhua.com:8000/req2.php", "http://indexbk.sosohaha.com/req2.php"];
+        var server = servers[1];
+        var currentAppVersion = "33619988";
+        var md5 = MD5(mid + "," + cid + ",buka index error");
+        var url = server + "?mid=" + mid + "&cid=" + cid + "&c=" + md5 + "&s=ao&v=5&t=-1&restype=2&cv=" + currentAppVersion + "&tzro=8";
 
-        return this.__lc.get(bs.chapter, dict).then(function (_ref) {
-          var imgs = _ref.imgs;
+        return LittleCrawler.ajax("GET", url, {}, "arraybuffer").then(function (data) {
+          data = new Uint8Array(data);
+          var dataLength = Number.parseInt(new TextDecoder().decode(data.slice(4, 12)), 16);
 
-          imgs = imgs.map(function (e) {
-            return e.link ? e.link : e.linksrc;
+          var decoder = new Uint8Array(8);
+          decoder[0] = cid;
+          decoder[1] = cid >> 8;
+          decoder[2] = cid >> 16;
+          decoder[3] = cid >> 24;
+          decoder[4] = mid;
+          decoder[5] = mid >> 8;
+          decoder[6] = mid >> 16;
+          decoder[7] = mid >> 24;
+
+          var indexData = data.slice(12 + 4, 12 + dataLength);
+
+          for (var i = 0; i < indexData.byteLength; i++) {
+            indexData[i] = indexData[i] ^ decoder[i % 8];
+          }
+          var remainData = data.slice(12 + dataLength);
+          var headers = JSON.parse(pako.ungzip(remainData, { to: "string" }));
+
+          return utils.getDataFromZipFile(indexData).then(function (data) {
+            var json = JSON.parse(new TextDecoder().decode(data));
+
+            var imgs = Array.from(json.pics).map(function (e) {
+              return headers.resbk + "/" + mid + "/" + cid + "/" + e;
+            });
+            return imgs.map(function (e) {
+              return "<img data-skip=\"64\" src=\"" + e + "\">";
+            }).join('\n');
           });
-          return imgs.map(function (e) {
-            return "<img src=\"" + e + "\">";
-          }).join('\n');
         });
       }
     }

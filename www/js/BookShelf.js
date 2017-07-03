@@ -29,40 +29,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(BookShelf, [{
-      key: "__getSaveCatalogLocation",
-      value: function __getSaveCatalogLocation(bookName, bookAuthor, sourceId) {
-        if (!sourceId) return "catalog/" + bookName + "_" + bookAuthor + "/";
-        return "catalog/" + bookName + "_" + bookAuthor + "/" + sourceId + ".json";
-      }
-    }, {
       key: "load",
       value: function load(bookSourceManager) {
         var _this = this;
-
-        var self = this;
-
-        function loadCatalog(bk, bsk) {
-
-          var b = self.books[bk].book;
-          var bs = b.sources[bsk];
-
-          utils.loadData(self.__getSaveCatalogLocation(b.name, b.author, bsk)).then(function (data) {
-            bs.catalog = utils.arrayCast(data, Chapter);
-          }).catch(function (error) {
-            return error;
-          });
-        }
-
-        function loadCatalogs() {
-          var tasks = [];
-          for (var bk in self.books) {
-            var b = self.books[bk].book;
-            for (var bsk in b.sources) {
-              tasks.push(loadCatalog(bk, bsk));
-            }
-          }
-          return Promise.all(tasks);
-        }
 
         return utils.loadData(this.name + ".json").then(function (data) {
           var bookShelf = data;
@@ -71,7 +40,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             b.book = Book.Cast(b.book, bookSourceManager);
             b.readingRecord = utils.objectCast(b.readingRecord, ReadingRecord);
           });
-          return loadCatalogs();
         }).then(function () {
           return _this.fireEvent("loadedData");
         });
@@ -81,17 +49,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function save() {
         var _this2 = this;
 
-        for (var bk in this.books) {
-          var b = this.books[bk].book;
-          for (var bsk in b.sources) {
-            var bs = b.sources[bsk];
-            if (bs.needSaveCatalog) {
-              bs.needSaveCatalog = false;
-
-              utils.saveData(this.__getSaveCatalogLocation(b.name, b.author, bsk), bs.catalog);
-            }
-          }
-        }
         return utils.saveTextData(this.name + ".json", utils.persistent(this)).then(function () {
           return _this2.fireEvent("savedData");
         });
@@ -164,7 +121,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
         if (index < 0) return;
 
-        utils.removeData(this.__getSaveCatalogLocation(book.name, book.author));
+        utils.removeData("catalog/" + book.name + "_" + book.author + "/", true);
         utils.removeData("chapter/" + book.name + "_" + book.author + "/", true);
         this.books.splice(index, 1);
         this.sortBooks();

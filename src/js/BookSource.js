@@ -30,7 +30,6 @@
       this.__searched = false; // 本书是否已经被搜索到了
       this.__updatedCatalogTime = 0; // 上次更新目录时间
       this.__updatedLastestChapterTime = 0; // 上次更新最新章节时间
-      this.needSaveCatalog = false; // 目录是否需要存储到本地
     }
 
 
@@ -82,17 +81,28 @@
     //   return this.bookSourceManager.hasVolume(this.id);
     // }
 
+
     // 获取目录
     // options:
     // * forceRefresh 强制刷新
     getCatalog({forceRefresh=false, refresh=false}){
-      if(!forceRefresh && !refresh && this.catalog)
-        return Promise.resolve(this.catalog);
+      if(this.catalog && !forceRefresh &&
+          (!refresh || (new Date()).getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000 ))
+          return Promise.resolve(this.catalog);
+
+      // if(!forceRefresh && !refresh && this.catalog){
+      //     return Promise.resolve(this.catalog);
+      // }
 
       let self = this;
       return co(function*(){
         yield self.__assertBookSource();
-        if(self.catalog && !forceRefresh && (new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000)
+        if(!self.catalog){
+          yield self.__loadCatalogFromCache();
+        }
+
+        if(self.catalog && !forceRefresh &&
+          (!refresh || (new Date()).getTime() - self.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000 ))
           return self.catalog;
 
         yield self.__assertBookSourceCatalogLink();
@@ -100,7 +110,7 @@
         const catalog = yield self.bookSourceManager.getBookCatalog(self.id, self);
         self.catalog = catalog;
         self.__updatedCatalogTime = (new Date()).getTime();
-        self.needSaveCatalog = true;
+        self.__cacheCatalog();
         return catalog;
       });
     }
@@ -161,6 +171,32 @@
         });
     }
 
+    /********************* 缓存目录相关 ****************************/
+
+    // 获取存储目录的文件路径
+    __getSaveCatalogLocation(){
+      return `catalog/${this.book.name}_${this.book.author}/${this.id}.json`;
+    }
+
+    // 从缓存中加载目录
+    __loadCatalogFromCache(){
+      return utils.loadData(this.__getSaveCatalogLocation(), true)
+        .then(data => {
+          this.catalog = utils.arrayCast(data, Chapter);
+        })
+        .catch(error => error); // 忽略错误
+    }
+
+    // 缓存目录
+    __cacheCatalog(){
+      utils.saveData(this.__getSaveCatalogLocation(), this.catalog, true);
+    }
+
+    /********************* 缓存目录相关结束 ****************************/
+
+
+    /********************* 缓存章节相关 ****************************/
+
     // 获取章节的缓存位置
     // * cacheDir 缓存章节的目录
     __getCacheChapterLocation(id){
@@ -205,6 +241,8 @@
       return utils.saveData(dest, chapter, true).then(() => chapter); // 将 JSON 对象序列化到文件中
     }
 
+    /********************* 缓存章节相关结束 ****************************/
+
   }
 
   BookSource.settings = {
@@ -216,7 +254,6 @@
   BookSource.persistentInclude = ["id", "__disable", "weight", "__searched", "detailLink",
               "catalogLink", "bookid", // 不持久化目录 "catalog",
               "__updatedCatalogTime", "__updatedLastestChapterTime",
-              // "needSaveCatalog",
               "lastestChapter"];
 
   return BookSource;

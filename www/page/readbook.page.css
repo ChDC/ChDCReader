@@ -186,20 +186,38 @@ img.offical-site{
     box-shadow: 0 -3px 9px rgba(0,0,0,.5);
 }
 
-.img-errorloaded{
-    border: 1px red solid;
-    text-align: center;
-    line-height: 100px;
-    background-image: url(img/reload.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 25%;
-    background-color: #7397AB;
-}
-
 h2{
     text-align: center;
 }
+
+p.content-img-loading{
+    text-align: center;
+    background-color: #ccc;
+    color: #999;
+    font-size: 5em;
+    margin: 0;
+    border: 1px solid #fff;
+    position: relative;
+}
+
+.img-reload{
+    position: absolute;
+    z-index: 1;
+    line-height: 30px;
+    font-size: 30px;
+    /*margin:0 auto;*/
+    display:block;
+    background-color: #ddd;
+    padding: 10px;
+    width: 50%;
+    left: 25%;
+}
+
+.img-reload > img{
+    width: 30%;
+    margin-bottom: 10px;
+}
+
 
 /*********** Color ***************/
 /*.toolbar.top, .toolbar.bottom{

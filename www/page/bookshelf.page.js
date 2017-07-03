@@ -220,8 +220,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       key: "loadBooks",
       value: function loadBooks(bookShelf) {
         var books = bookShelf.books;
-        this.bookShelfElement.empty();
-        this.finishedBookShelfElement.empty();
+
         books.forEach(this.addBook.bind(this));
         this.refreshBooksOwner();
         this.refreshAllReadingRecord();
