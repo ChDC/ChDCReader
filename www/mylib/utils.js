@@ -12,8 +12,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   }));else window["utils"] = factory.apply(undefined, deps.map(function (e) {
     return window[e];
   }));
-})(["fileSystem", "LittleCrawler"], function (fileSystem, LittleCrawler) {
+})(["fileSystem", "LittleCrawler", "zip", "zip-ext"], function (fileSystem, LittleCrawler, zip) {
   "use strict";
+
+  zip.workerScriptsPath = "lib/zip/";
 
   return {
     DEBUG: true,
@@ -559,6 +561,25 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         var code = e.charCodeAt(0);
         if (whiteList.indexOf(e) < 0 && code > 65248 && code < 65375) return String.fromCharCode(code - 65248);else return e;
       }).join("");
+    },
+    getDataFromZipFile: function getDataFromZipFile(arrayBuffer) {
+      var entryIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+      return new Promise(function (resolve, reject) {
+        zip.createReader(new zip.ArrayBufferReader(arrayBuffer), function (zipReader) {
+          zipReader.getEntries(function (entries) {
+            entries[entryIndex].getData(new zip.ArrayBufferWriter(), function (data) {
+              zipReader.close();
+              resolve(data);
+            });
+          });
+        }, reject);
+      });
+    },
+    getGUID: function getGUID() {
+      var scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 32;
+
+      return new Date().getTime().toString(scale) + (Math.random() * 10000).toFixed().toString(scale);
     }
   };
 });
