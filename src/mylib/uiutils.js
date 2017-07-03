@@ -112,35 +112,5 @@
       };
     },
 
-
-    // 点击重新加载图片的事件
-    imgOnErrorEvent(e){
-      let img = e.currentTarget;
-
-      img.alt = "加载失败，点击重新加载";
-      img.classList.add("img-errorloaded");
-
-      let firstClick = true;
-
-      function imgClick(e){
-        // 第一次点击的时候禁止冒泡，只重新加载图片
-        // 第二次点击的时候，也就是说上次点击重新加载图片失败的时候就不禁止冒泡了
-        if(firstClick){
-          e.stopPropagation();
-          firstClick = false;
-        }
-        let img = e.currentTarget;
-        img.src = img.src; // `${img.src.replace(/\?[^\/]*$/i, '')}?${new Date().getTime()}`;
-        img.onload = e => {
-          img.onclick = null;
-          img.onload = null;
-          img.classList.remove("img-errorloaded");
-          img.alt = "";
-        };
-
-        return false;
-      }
-      img.onclick = imgClick;
-    }
   };
 }));

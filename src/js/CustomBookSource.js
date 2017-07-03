@@ -6,7 +6,8 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["customBookSource"] = factory.apply(undefined, deps.map(e => window[e]));
-}(['co', "utils", "LittleCrawler", "translate", "Book", "BookSource", "Chapter"], function(co, utils, LittleCrawler, translate, Book, BookSource, Chapter) {
+}(['co', "utils", "md5", "pako", "zip", "LittleCrawler", "translate", "Book", "BookSource", "Chapter", "zip-ext"],
+  function(co, utils, MD5, pako, zip, LittleCrawler, translate, Book, BookSource, Chapter) {
   "use strict"
 
   // 定义一个用于存放自定义获取信息的钩子的集合
@@ -507,13 +508,50 @@
       getChapterContent(bsid, dict={}){
         if(!dict.link && !dict.cid) return Promise.reject(206);
 
-        const bs = this.__sources[bsid];
-        if(!bs) return Promise.reject("Illegal booksource!");
+        let mid = dict.bookid;
+        let cid = dict.cid;
+        let servers = [
+          "http://index.bukamanhua.com:8000/req3.php",
+          "http://indexbk.sosohaha.com/req3.php",
+          "http://index.bukamanhua.com:8000/req2.php",
+          "http://indexbk.sosohaha.com/req2.php"
+        ];
+        let server = servers[1];
+        let currentAppVersion = "33619988";
+        let md5 = MD5(`${mid},${cid},buka index error`);
+        let url = `${server}?mid=${mid}&cid=${cid}&c=${md5}&s=ao&v=5&t=-1&restype=2&cv=${currentAppVersion}&tzro=8`;
 
-        return this.__lc.get(bs.chapter, dict)
-          .then(({imgs}) => {
-            imgs = imgs.map(e => e.link ? e.link : e.linksrc);
-            return imgs.map(e => `<img src="${e}">`).join('\n');
+        // url = "http://c-r7.sosobook.cn/pich/215522/65541/t4305372_0001.bmp.h.bup";
+        return LittleCrawler.ajax("GET", url, {}, "arraybuffer")
+          .then(data => {
+            data = new Uint8Array(data);
+            let dataLength = Number.parseInt(new TextDecoder().decode(data.slice(4, 12)), 16);
+
+            let decoder = new Uint8Array(8);
+            decoder[0] = cid;
+            decoder[1] = (cid >> 8);
+            decoder[2] = (cid >> 16);
+            decoder[3] = (cid >> 24);
+            decoder[4] = mid;
+            decoder[5] = (mid >> 8) ;
+            decoder[6] = (mid >> 16);
+            decoder[7] = (mid >> 24);
+
+            let indexData = data.slice(12 + 4, 12 + dataLength);
+
+            for(let i = 0; i < indexData.byteLength; i++){
+              indexData[i] = indexData[i] ^ decoder[i % 8];
+            }
+            let remainData = data.slice(12 + dataLength);
+            let headers = JSON.parse(pako.ungzip(remainData, {to: "string"}));
+
+            return utils.getDataFromZipFile(indexData)
+              .then(data => {
+                let json = JSON.parse(new TextDecoder().decode(data));
+
+                let imgs = Array.from(json.pics).map(e => `${headers.resbk}/${mid}/${cid}/${e}`);
+                return imgs.map(e => `<img data-skip="64" src="${e}">`).join('\n');
+              });
           });
       }
     },

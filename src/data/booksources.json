@@ -97,16 +97,17 @@
                       "attribute" : "onclick",
                       "extract" : "'.+?','(.+?)'"
                   },
-                  "linkpart" :
-                  {
-                      "type" : "string",
-                      "element" : "",
-                      "attribute" : "onclick",
-                      "extract" : "'(.+?)'"
+                  "vip": {
+                    "type": "string",
+                    "element": "span",
+                    "attribute": "class"
                   },
-                  "link": {
-                      "type" : "format",
-                      "value": "http://www.buka.cn{linkpart}"
+                  "cid": {
+                    "type": "string",
+                    "element": "",
+                    "attribute": "onclick",
+                    "extract": "/view/\\d+/(\\d+)'",
+                    "valid": "!{vip} || !({vip}.includes('price_tag_icon'))"
                   }
               }
           }

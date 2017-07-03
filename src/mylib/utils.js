@@ -6,8 +6,10 @@
     module.exports = factory.apply(undefined, deps.map(e => require(e)));
   else
     window["utils"] = factory.apply(undefined, deps.map(e => window[e]));
-}(["fileSystem", "LittleCrawler"], function(fileSystem, LittleCrawler){
+}(["fileSystem", "LittleCrawler", "zip", "zip-ext"], function(fileSystem, LittleCrawler, zip){
   "use strict"
+
+  zip.workerScriptsPath = "lib/zip/";
 
   return {
     /*
@@ -641,6 +643,25 @@
             return e;
         })
         .join("");
+    },
+
+    // 获取压缩文件中的数据
+    getDataFromZipFile(arrayBuffer, entryIndex = 0){
+      return new Promise((resolve, reject) => {
+        // zip.workerScriptsPath = "lib/zip/";
+        zip.createReader(new zip.ArrayBufferReader(arrayBuffer), zipReader => {
+          zipReader.getEntries(entries => {
+            entries[entryIndex].getData(new zip.ArrayBufferWriter(), data => {
+              zipReader.close();
+              resolve(data);
+            });
+          });
+        }, reject);
+      });
+    },
+
+    getGUID(scale=32){
+      return new Date().getTime().toString(scale) + (Math.random() * 10000).toFixed().toString(scale);
     }
   };
 

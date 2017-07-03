@@ -1,8 +1,8 @@
 "use strict"
 define(["jquery", "main", "Page", "utils", "uiutils",
-  'mylib/infinitelist', "ReadingRecord", "uifactory"],
+  'mylib/infinitelist', "ReadingRecord", "uifactory", "LittleCrawler"],
 
-  function($, app, Page, utils, uiutils, Infinitelist, ReadingRecord, uifactory){
+  function($, app, Page, utils, uiutils, Infinitelist, ReadingRecord, uifactory, LittleCrawler){
 
   class MyPage extends Page{
 
@@ -424,17 +424,92 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
       let content = $(`<div>${chapter.content}</div>`);
       content.find('p').addClass('chapter-p');
-
-      // 设置图片的格式
-      content.find('img').addClass('content-img')
-        .one('error', uiutils.imgOnErrorEvent)
-        .css('min-height', this.chapterContainer.width() * 2 + "px")
-        .one('load', e => $(e.target).css('min-height', ""));
+      this.loadImages(content);
 
       nc.find(".chapter-content").html(content);
       nc.data("readingRecord", new ReadingRecord({chapterTitle: chapter.title, chapterIndex: index, options: options}));
 
       return nc[0];
+    }
+
+    // 加载所有的图片
+    loadImages(content){
+      // 异步加载
+      // 先用灰色的数字占位，等加载完成之后再替换
+      let imgs = content.find('img')
+        .addClass('content-img')
+        .each((i, img) => {
+          let id = utils.getGUID();
+
+          let loading = $('<p class="content-img-loading">')
+            .text(i+1).css("line-height", this.chapterContainer.width() * 2 + "px")
+            .attr("id", id);
+
+          $(img).replaceWith(loading);
+          img.dataset.id = id;
+          loadImg(img);
+      });
+      // 设置图片的格式
+      // content.find('img').addClass('content-img')
+      //   .one('error', uiutils.imgOnErrorEvent)
+      //   .css('min-height', this.chapterContainer.width() * 2 + "px")
+      //   .one('load', e => $(e.target).css('min-height', ""));
+
+      function loadError(e){
+        let img = e.currentTarget || e;
+        let id = img.dataset.id;
+        let btnReload = $('<div class="img-reload"><img src="img/reload.png"><p>加载失败，点击重新加载</p></div>')
+          .one("click", e => {
+            loadImg(img, true);
+            e.stopPropagation();
+            e.currentTarget.remove();
+          });
+        let ic = $(document.getElementById(id));
+        ic.append(btnReload);
+        btnReload.css("top", ic.height() / 2 - btnReload.height() / 2 );
+      }
+
+      function loadImg(img, reload=false){
+        // 异步加载图片
+        if(img.dataset.skip){
+          let src;
+          if(!reload){
+            src = img.src;
+            img.dataset.src = src;
+            img.removeAttribute("src");
+          }
+          else{
+            src = img.dataset.src;
+          }
+
+          LittleCrawler.ajax("GET", src, {}, "blob")
+            .then(blob => {
+              let skipBits = Number.parseInt(img.dataset.skip);
+              let url = URL.createObjectURL(blob.slice(skipBits));
+              $(img).one("load", loadFinishedImg);
+              img.src = url;
+            })
+            .catch(e => {
+              // 加载失败
+              loadError(img);
+            });
+        }
+        else{
+          img.src = img.src;
+          let jImg = $(img);
+          if(!reload)
+            jImg.one("load", loadFinishedImg);
+          jImg.one("error", loadError);
+        }
+      }
+
+      function loadFinishedImg(e){
+        let img = e.currentTarget;
+        let id = img.dataset.id;
+        delete img.dataset.id;
+        delete img.dataset.skip;
+        $(document.getElementById(id)).replaceWith(img);
+      }
     }
 
     // 下一章节

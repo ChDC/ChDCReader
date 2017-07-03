@@ -650,7 +650,7 @@
           url = LittleCrawler.__urlJoin(url, params);
           break;
         case "post":
-          sendData = Object.keys(params).map(k => `${k}=${params[k]}`).join("&");;
+          sendData = Object.keys(params).map(k => `${k}=${params[k]}`).join("&");
           break;
       }
 
@@ -667,6 +667,12 @@
         case "json":
           request.setRequestHeader("Content-Type", "application/json");
           break;
+        case "blob":
+          request.responseType = 'blob';
+          break;
+        case "arraybuffer":
+          request.responseType = "arraybuffer";
+          break;
         // default undefined:
         //     request.setRequestHeader("Content-Type", "text/plain");
         //     break;
@@ -677,6 +683,12 @@
         switch(dataType){
           case "json":
             resolve(JSON.parse(request.responseText));
+            break;
+          case "blob":
+            resolve(request.response);
+            break;
+          case "arraybuffer":
+            resolve(request.response);
             break;
           default:
             resolve(request.responseText);
