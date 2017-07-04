@@ -61,7 +61,8 @@
 
     // 按主源权重从大到小排序的数组
     getSourcesKeysByMainSourceWeight(){
-      return this.bookSourceManager.getSourcesKeysByMainSourceWeight(this.mainSourceId);
+      let type = this.bookSourceManager.getBookSourceType(this.mainSourceId);
+      return this.bookSourceManager.getSourcesKeysByMainSourceWeight(type);
     }
 
     // 按内容源权重从大到小排序的数组
@@ -108,7 +109,7 @@
     }
 
     getType(){
-      return this.bookSourceManager.getBookSource(this.mainSourceId).type;
+      return this.bookSourceManager.getBookSourceType(this.mainSourceId);
     }
 
     // 获取目录

@@ -115,7 +115,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             nb.find(".book-cover").attr("src", book.cover);
           };
         }
-        nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSource(book.mainSourceId).type);
+        nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSourceType(book.mainSourceId));
 
         nb.find(".book-cover").on("touchstart", function (e) {
           if (e.touches.length != 1) return;
@@ -177,6 +177,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             book.getChapterIndex(lastestChapter).then(function (index) {
               return index < 0;
             }).then(function (forceRefresh) {
+              readingRecord.setNextChapter(book, forceRefresh);
+
               book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, { forceRefresh: forceRefresh });
             });
           }

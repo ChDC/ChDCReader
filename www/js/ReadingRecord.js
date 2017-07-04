@@ -72,6 +72,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.isFinished = false;
       }
     }, {
+      key: "setNextChapter",
+      value: function setNextChapter(book) {
+        var _this = this;
+
+        var forceRefresh = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        return book.getChapterIndex(this.chapterTitle, this.chapterIndex, { forceRefresh: forceRefresh }).then(function (index) {
+          if (index >= 0) return book.index(index + 1).then(function (chapter) {
+            _this.options.contentSourceChapterIndex += 1;
+            _this.setReadingRecord(chapter.title, index + 1, _this.options);
+          });else return Promise.reject();
+        });
+      }
+    }, {
       key: "setFinished",
       value: function setFinished(isFinished) {
         this.isFinished = isFinished;

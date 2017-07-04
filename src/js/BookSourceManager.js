@@ -367,8 +367,8 @@
     }
 
     // 按主源权重从大到小排序的数组
-    getSourcesKeysByMainSourceWeight(bsid){
-      let sources = bsid ? this.getBookSourcesBySameType(bsid) : this.__sources;
+    getSourcesKeysByMainSourceWeight(type){
+      let sources = type != undefined ? this.getBookSourcesByBookType(type) : this.__sources;
       let key = "mainSourceWeight";
       return Object.entries(sources).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
     }
@@ -378,6 +378,14 @@
       if(!bsid || !(bsid in this.__sources)) return null;
       let result = {};
       let type = this.__sources[bsid].type;
+      return this.getBookSourcesByBookType(type);
+    }
+
+    // 获取和指定的 booktype 的所有 sources
+    getBookSourcesByBookType(type){
+      if(!type)
+        return this.__sources;
+      let result = {};
       for(let key in this.__sources){
         if(this.__sources[key].type == type)
           result[key] = this.__sources[key];
@@ -406,6 +414,16 @@
       }
       catch(e){
         return "";
+      }
+    }
+
+    // 获取内容源的类型
+    getBookSourceType(bsid){
+      try{
+        return this.__sources[bsid].type;
+      }
+      catch(e){
+        return null;
       }
     }
 

@@ -58,6 +58,21 @@
       this.isFinished = false;
     }
 
+    // 设置阅读记录为下一章
+    setNextChapter(book, forceRefresh=false){
+      return book.getChapterIndex(this.chapterTitle, this.chapterIndex, {forceRefresh: forceRefresh})
+        .then(index => {
+          if(index >= 0)
+            return book.index(index + 1)
+              .then(chapter => {
+                this.options.contentSourceChapterIndex += 1;
+                this.setReadingRecord(chapter.title, index + 1, this.options);
+              });
+          else
+            return Promise.reject();
+        });
+    }
+
     setFinished(isFinished){
       this.isFinished = isFinished;
       if(isFinished){

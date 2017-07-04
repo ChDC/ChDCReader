@@ -498,8 +498,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "getSourcesKeysByMainSourceWeight",
-      value: function getSourcesKeysByMainSourceWeight(bsid) {
-        var sources = bsid ? this.getBookSourcesBySameType(bsid) : this.__sources;
+      value: function getSourcesKeysByMainSourceWeight(type) {
+        var sources = type != undefined ? this.getBookSourcesByBookType(type) : this.__sources;
         var key = "mainSourceWeight";
         return Object.entries(sources).sort(function (e1, e2) {
           return -e1[1][key] + e2[1][key];
@@ -513,6 +513,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (!bsid || !(bsid in this.__sources)) return null;
         var result = {};
         var type = this.__sources[bsid].type;
+        return this.getBookSourcesByBookType(type);
+      }
+    }, {
+      key: "getBookSourcesByBookType",
+      value: function getBookSourcesByBookType(type) {
+        if (!type) return this.__sources;
+        var result = {};
         for (var key in this.__sources) {
           if (this.__sources[key].type == type) result[key] = this.__sources[key];
         }
@@ -538,6 +545,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return typeName[this.__sources[bsid].type];
         } catch (e) {
           return "";
+        }
+      }
+    }, {
+      key: "getBookSourceType",
+      value: function getBookSourceType(bsid) {
+        try {
+          return this.__sources[bsid].type;
+        } catch (e) {
+          return null;
         }
       }
     }]);

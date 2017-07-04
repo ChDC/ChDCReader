@@ -96,7 +96,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }], [true, false, function (c) {
     var m = c.match(/\d+/);return m ? m[0] : c;
   }], [true, false, function (c) {
-    return c.replace(/\d+/, "");
+    var m = c.replace(/\d+/, "");return m ? m : c;
   }]];
 
   Chapter.findEqualChapter = function (catalog, catalogB, index, matches) {

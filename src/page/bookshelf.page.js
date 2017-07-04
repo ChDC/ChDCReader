@@ -93,7 +93,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         };
       }
       nb.find(".book-name").text(book.name)
-        .addClass(`type-${app.bookSourceManager.getBookSource(book.mainSourceId).type}`);
+        .addClass(`type-${app.bookSourceManager.getBookSourceType(book.mainSourceId)}`);
 
       nb.find(".book-cover")
         .on("touchstart", e => { // 此处不能注册 mousedown 事件，会有弹不出菜单的 BUG
@@ -158,6 +158,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
             book.getChapterIndex(lastestChapter)
               .then(index => index < 0)
               .then(forceRefresh => {
+                // 更新阅读记录
+                readingRecord.setNextChapter(book, forceRefresh);
+                // TODO: 更新目录之后，用当前阅读记录来判断是否真的有更新，只有再移动到主书架
                 // 缓存后面章节内容，使用强制更新模式
                 book.cacheChapter(readingRecord.chapterIndex + 1, app.settings.settings.cacheChapterCount, {forceRefresh: forceRefresh});
               });
@@ -204,7 +207,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       books.forEach(this.addBook.bind(this));
       this.refreshBooksOwner();
       this.refreshAllReadingRecord();
-    };
+    }
 
     // 重新给所有书籍排序
     sortBooksByElementOrder(){

@@ -90,7 +90,7 @@
     [false, true, utils.lowerCaseNumbers], // 将大写数字转换为小写数字
     [false, true, e => e.replace(/[第总]?0*(\d+)[弹话章节卷集]?/gi, '$1')], // 将 章节卷 删除
     [true, false, c => {let m = c.match(/\d+/); return m ? m[0] : c}], // 只比较章节号
-    [true, false, c => c.replace(/\d+/, "")], // 去掉章节号只比较章节标题
+    [true, false, c => {let m = c.replace(/\d+/, ""); return m ? m : c}], // 去掉章节号只比较章节标题
   ];
 
   // 在章节列表中查找相同的章节

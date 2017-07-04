@@ -27,6 +27,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       _this.lastReadingScrollTop = 0;
       _this.chapterContainer;
       _this.isFullScreen = false;
+      _this.screenOrientation = null;
       return _this;
     }
 
@@ -63,6 +64,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
 
         this.chapterContainer = $("#chapterContainer");
         var bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
+
         if (bookAndReadRecordInBookShelf) {
           this.book = bookAndReadRecordInBookShelf.book;
           this.readingRecord = bookAndReadRecordInBookShelf.readingRecord;
@@ -74,6 +76,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         this.lastReadingScrollTop = this.readingRecord.getPageScrollTop();
         this.book.checkBookSources();
         this.loadView();
+        this.screenOrientation = app.bookShelf.getBookSettings(this.book).screenOrientation;
 
         this.book.getChapterIndex(this.readingRecord.chapterTitle, this.readingRecord.chapterIndex).then(function (index) {
           if (index >= 0) _this3.readingRecord.chapterIndex = index;
@@ -81,11 +84,18 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         });
       }
     }, {
+      key: "onResume",
+      value: function onResume() {
+        this.rotateScreen(this.screenOrientation);
+      }
+    }, {
       key: "onPause",
       value: function onPause() {
         var _this4 = this;
 
         if (typeof StatusBar != "undefined") StatusBar.show();
+        app.ScreenOrientation.unlock();
+
         this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
         app.bookShelf.save();
 
@@ -93,6 +103,17 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         this.addEventListener("resume", function (e) {
           return _this4.chapterContainer.scrollTop(_this4.scrollTop);
         }, true);
+      }
+    }, {
+      key: "rotateScreen",
+      value: function rotateScreen(screenOrientation) {
+        if (!screenOrientation) {
+          $("#btnRotateScreen > button > i").removeClass().addClass("glyphicon glyphicon-retweet");
+          app.ScreenOrientation.unlock();
+        } else {
+          $("#btnRotateScreen > button > i").removeClass().addClass("glyphicon glyphicon-transfer");
+          app.ScreenOrientation.lock();
+        }
       }
     }, {
       key: "loadView",
@@ -167,7 +188,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           var list = $('#listCatalog');
           list.append(list.children().toArray().reverse());
         });
-
+        $("#btnRotateScreen").click(function () {
+          if (_this5.screenOrientation) _this5.screenOrientation = null;else _this5.screenOrientation = "landscape";
+          app.bookShelf.setBookSettingsValue(_this5.book, "screenOrientation", _this5.screenOrientation);
+          _this5.rotateScreen(_this5.screenOrientation);
+        });
         $("#btnChangeMainSource").click(function () {
           $("#modalBookSource").modal('show');
           _this5.loadBookSource();

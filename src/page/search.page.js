@@ -141,6 +141,8 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
       // $("#keyword").val(this.remember.searchLog[0] || "");
       $("#bookSource").val(this.remember.bookSourceId);
       $("#bookType").val(this.remember.bookType);
+      this.loadBookSources(this.remember.bookType);
+
       $("#chkFilterResult")[0].checked = this.remember.ifFilterResult;
 
       let tsl = $(".template .searchLogItem")
@@ -156,17 +158,23 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
       });
     }
 
-    loadView(){
+    loadBookSources(booktype){
       // 添加选项
       const bookSource = $("#bookSource");
-      const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
+      const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight(booktype);
 
+      bookSource.empty();
       // 添加书源搜索
       for(const bskey of keys){
         const bsName = app.bookSourceManager.getBookSource(bskey).name;
         const newOption = `<option value ="${bskey}">${bsName}</option>`;
         bookSource.append(newOption);
       }
+    }
+
+    loadView(){
+
+      this.loadBookSources();
 
       $("#btnClose").click(e => this.close());
       $("#btnSearch").click(e => this.search());
@@ -183,6 +191,13 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
         this.remember.searchLog = [];
         this.saveRememberData();
         this.loadRemember();
+      });
+
+      $("#bookType").on("change", e => {
+        let value = e.currentTarget.value;
+        if(value != undefined){
+          this.loadBookSources(value);
+        }
       });
     }
   }

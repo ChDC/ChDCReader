@@ -17,6 +17,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.lastReadingScrollTop = 0;
       this.chapterContainer;
       this.isFullScreen = false;
+      this.screenOrientation = null;
     }
 
     onClose(){
@@ -49,6 +50,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
     onLoad({params}){
       this.chapterContainer = $("#chapterContainer");
       let bookAndReadRecordInBookShelf = app.bookShelf.hasBook(params.book);
+
       if(bookAndReadRecordInBookShelf){
         // 如果书架中有这本书就读取书架的记录
         this.book = bookAndReadRecordInBookShelf.book;
@@ -62,22 +64,40 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.lastReadingScrollTop = this.readingRecord.getPageScrollTop();
       this.book.checkBookSources();
       this.loadView();
+      this.screenOrientation = app.bookShelf.getBookSettings(this.book).screenOrientation;
 
       this.book.getChapterIndex(this.readingRecord.chapterTitle, this.readingRecord.chapterIndex)
         .then(index => {
           if(index >= 0)
             this.readingRecord.chapterIndex = index;
           this.refreshChapterList();
-        })
+        });
+    }
+
+    onResume(){
+      this.rotateScreen(this.screenOrientation);
     }
 
     onPause(){
       if(typeof StatusBar != "undefined") StatusBar.show();
+      app.ScreenOrientation.unlock(); // 解除屏幕锁定
+
       this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
       app.bookShelf.save();
 
       this.scrollTop = this.chapterContainer.scrollTop();
       this.addEventListener("resume", e => this.chapterContainer.scrollTop(this.scrollTop), true);
+    }
+
+    rotateScreen(screenOrientation){
+      if(!screenOrientation){
+        $("#btnRotateScreen > button > i").removeClass().addClass("glyphicon glyphicon-retweet");
+        app.ScreenOrientation.unlock();
+      }
+      else{
+        $("#btnRotateScreen > button > i").removeClass().addClass("glyphicon glyphicon-transfer");
+        app.ScreenOrientation.lock();
+      }
     }
 
     loadView(){
@@ -124,7 +144,14 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         const list = $('#listCatalog');
         list.append(list.children().toArray().reverse());
       });
-
+      $("#btnRotateScreen").click(() => {
+        if(this.screenOrientation)
+          this.screenOrientation = null;
+        else
+          this.screenOrientation = "landscape";
+        app.bookShelf.setBookSettingsValue(this.book, "screenOrientation", this.screenOrientation);
+        this.rotateScreen(this.screenOrientation);
+      });
       $("#btnChangeMainSource").click(() => {
         $("#modalBookSource").modal('show');
         this.loadBookSource();
