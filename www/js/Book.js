@@ -70,7 +70,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "getSourcesKeysByMainSourceWeight",
       value: function getSourcesKeysByMainSourceWeight() {
-        return this.bookSourceManager.getSourcesKeysByMainSourceWeight(this.mainSourceId);
+        var type = this.bookSourceManager.getBookSourceType(this.mainSourceId);
+        return this.bookSourceManager.getSourcesKeysByMainSourceWeight(type);
       }
     }, {
       key: "getSourcesKeysSortedByWeight",
@@ -119,7 +120,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "getType",
       value: function getType() {
-        return this.bookSourceManager.getBookSource(this.mainSourceId).type;
+        return this.bookSourceManager.getBookSourceType(this.mainSourceId);
       }
     }, {
       key: "getCatalog",

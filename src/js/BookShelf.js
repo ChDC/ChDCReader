@@ -45,8 +45,26 @@
       return {
         book: book,
         readingRecord: readingRecord || new ReadingRecord(),
+        settings: {}
         // lockLocation: -1 // 是否锁定了位置
       };
+    }
+
+    // 获取 BookShelfItem 的设置
+    getBookSettings(book){
+      if(!book) return {};
+      let bookShelfItem = this.books.find(e => e.book == book);
+      if(!bookShelfItem) return {};
+      return bookShelfItem.settings || {};
+    }
+
+    setBookSettingsValue(book, key, value){
+      if(!book) return;
+      let bookShelfItem = this.books.find(e => e.book == book);
+      if(!bookShelfItem) return;
+      if(!bookShelfItem.settings)
+        bookShelfItem.settings = {};
+      bookShelfItem.settings[key] = value;
     }
 
     // 添加书籍到书架中

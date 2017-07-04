@@ -268,6 +268,30 @@
         app.settings.save();
         this.load();
       }
+    },
+
+    // 屏幕方向管理器
+    ScreenOrientation: {
+
+      unlock(){
+        try{
+          window.screen.orientation.unlock();
+          return true;
+        }
+        catch(e){
+          return false;
+        }
+      },
+
+      lock(orientation="landscape"){
+        try{
+          window.screen.orientation.lock("landscape");
+          return true;
+        }
+        catch(e){
+          return false;
+        }
+      }
     }
   };
 

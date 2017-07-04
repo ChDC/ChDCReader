@@ -58,8 +58,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function newBookShelfItem(book, readingRecord) {
         return {
           book: book,
-          readingRecord: readingRecord || new ReadingRecord()
+          readingRecord: readingRecord || new ReadingRecord(),
+          settings: {}
         };
+      }
+    }, {
+      key: "getBookSettings",
+      value: function getBookSettings(book) {
+        if (!book) return {};
+        var bookShelfItem = this.books.find(function (e) {
+          return e.book == book;
+        });
+        if (!bookShelfItem) return {};
+        return bookShelfItem.settings || {};
+      }
+    }, {
+      key: "setBookSettingsValue",
+      value: function setBookSettingsValue(book, key, value) {
+        if (!book) return;
+        var bookShelfItem = this.books.find(function (e) {
+          return e.book == book;
+        });
+        if (!bookShelfItem) return;
+        if (!bookShelfItem.settings) bookShelfItem.settings = {};
+        bookShelfItem.settings[key] = value;
       }
     }, {
       key: "addBook",

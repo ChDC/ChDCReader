@@ -179,6 +179,8 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
 
         $("#bookSource").val(this.remember.bookSourceId);
         $("#bookType").val(this.remember.bookType);
+        this.loadBookSources(this.remember.bookType);
+
         $("#chkFilterResult")[0].checked = this.remember.ifFilterResult;
 
         var tsl = $(".template .searchLogItem");
@@ -194,13 +196,12 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
         });
       }
     }, {
-      key: "loadView",
-      value: function loadView() {
-        var _this5 = this;
-
+      key: "loadBookSources",
+      value: function loadBookSources(booktype) {
         var bookSource = $("#bookSource");
-        var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight();
+        var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight(booktype);
 
+        bookSource.empty();
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -227,6 +228,13 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
             }
           }
         }
+      }
+    }, {
+      key: "loadView",
+      value: function loadView() {
+        var _this5 = this;
+
+        this.loadBookSources();
 
         $("#btnClose").click(function (e) {
           return _this5.close();
@@ -249,6 +257,13 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
           _this5.remember.searchLog = [];
           _this5.saveRememberData();
           _this5.loadRemember();
+        });
+
+        $("#bookType").on("change", function (e) {
+          var value = e.currentTarget.value;
+          if (value != undefined) {
+            _this5.loadBookSources(value);
+          }
         });
       }
     }]);
