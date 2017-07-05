@@ -22,21 +22,35 @@
   <ul id="bookshelf" class="list">
   </ul>
 
-  <div class="modal fade" id="modalFinishedBooks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal fade" id="modalFinishedBooks" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-          <h4 class="modal-title" id="myModalLabel">读完的书</h4>
+          <h4 class="modal-title">读完的书</h4>
         </div>
         <div class="modal-body">
           <ul id="finishedBookshelf" class="list">
 
           </ul>
         </div>
-<!--         <div class="modal-footer">
-          <button class="btn btn-default" data-dismiss="modal">关闭</button>
-        </div> -->
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal" id="modalBookMenu" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title">书名</h4>
+        </div>
+        <div class="modal-body">
+          <ul class="list list-group book-menu">
+            <li class="btnDetail list-group-item ">书籍详情</li>
+            <li class="btnRemoveBook list-group-item ">删除本书</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -48,11 +62,11 @@
       <img class="book-cover" src="img/book_cover.png" alt="">
       <p class="book-name">书籍标题</p>
     </div>
-    <div class="btnBookMenu" data-toggle="dropdown"></div>
+<!--     <div class="btnBookMenu" data-toggle="dropdown"></div>
     <ul class="list dropdown-menu dropdown-menu-right book-menu">
       <li class="btnDetail"><a>书籍详情</a></li>
       <li class="btnRemoveBook"><a>删除本书</a></li>
-    </ul>
+    </ul> -->
 
   </li>
 

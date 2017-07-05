@@ -117,29 +117,20 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         }
         nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSourceType(book.mainSourceId));
 
-        nb.find(".book-cover").on("touchstart", function (e) {
-          if (e.touches.length != 1) return;
-          e.stopImmediatePropagation();
-          $(e.target).data("longpress-timestart", new Date().getTime()).data("longpress-x", e.touches[0].clientX).data("longpress-y", e.touches[0].clientY);
-        }).on("touchend", function (e) {
-          if (e.changedTouches.length != 1) return;
-          var target = $(e.target);
-          var t1 = target.data("longpress-timestart");
-          var x = target.data("longpress-x"),
-              y = target.data("longpress-y");
-          var touch = e.changedTouches[0];
-          if (Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50 && t1 && new Date().getTime() - t1 > 100) {
-            nb.find('.btnBookMenu').dropdown('toggle');
-          }
+        uiutils.onLongPress(nb.find(".book-cover"), function (e) {
+          var bm = $("#modalBookMenu");
+          bm.modal("show");
+          bm.find(".modal-title").text(book.name);
+          bm.find(".btnDetail")[0].onclick = function (e) {
+            bm.modal("hide");
+            app.page.showPage("bookdetail", { book: book });
+          };
+          bm.find(".btnRemoveBook")[0].onclick = function (e) {
+            bm.modal("hide");
+            _this5.removeBook(book);
+          };
         }).on("click", function (e) {
           app.page.showPage("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
-        });
-
-        nb.find(".btnDetail").click(function (e) {
-          return app.page.showPage("bookdetail", { book: book });
-        });
-        nb.find(".btnRemoveBook").click(function (e) {
-          return _this5.removeBook(book);
         });
 
         if (readingRecord.isFinished) this.addBookElementToFinishedBookShelf(nb, true);else this.addBookElementToBookShelf(nb, true);
