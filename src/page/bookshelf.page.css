@@ -42,10 +42,6 @@
     width: 100%;
 }
 
-.modal-dialog{
-    height: 80%;
-}
-
 .error{
     font-weight: bold;
 }
@@ -55,6 +51,21 @@
     font-size: 50%;
     margin-left: 10px;
 }*/
+
+#modalBookMenu .modal-dialog{
+    height: 80%;
+}
+
+#modalBookMenu .modal-body{
+    padding: 0;
+}
+
+#modalBookMenu .modal-content{
+    position: absolute;
+    bottom: 0;
+    width: 80%;
+    margin: 0 10%;
+}
 
 /*********** Color ***************/
 

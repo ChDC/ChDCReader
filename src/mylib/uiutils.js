@@ -112,5 +112,38 @@
       };
     },
 
+    onLongPress(obj, handler){
+      $(obj)
+        .on("touchstart", e => { // 此处不能注册 mousedown 事件，会有弹不出菜单的 BUG
+          if(e.touches.length != 1) return;
+          e.stopImmediatePropagation();
+          // e.stopPropagation();
+          $(e.target)
+            .data("longpress-timestart", new Date().getTime())
+            .data("longpress-x", e.touches[0].clientX)
+            .data("longpress-y", e.touches[0].clientY);
+          // return false;
+        })
+        .on("touchend", e => {
+
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+
+          if(e.changedTouches.length != 1) return;
+          let target = $(e.target);
+          let t1 = target.data("longpress-timestart");
+          let x = target.data("longpress-x"), y = target.data("longpress-y");
+          let touch = e.changedTouches[0];
+          if(Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50
+            && t1 && new Date().getTime() - t1 > 100){
+            // long press
+            handler(e);
+            return false;
+          }
+
+        });
+      return obj;
+    }
+
   };
 }));

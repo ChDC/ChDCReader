@@ -11,16 +11,18 @@
     },
     "dependencies": {
         "babel-polyfill": "^6.23.0",
-        "sortablejs": "^1.5.1",
-        "cordova-browser": "~4.1.0",
         "cordova-android": "~6.1.2",
+        "cordova-browser": "~4.1.0",
         "cordova-plugin-device": "~1.1.4",
         "cordova-plugin-file": "~4.3.1",
         "cordova-plugin-http": "~1.2.0",
         "cordova-plugin-inappbrowser": "~1.7.0",
         "cordova-plugin-network-information": "~1.3.1",
+        "cordova-plugin-screen-orientation": "^2.0.1",
         "cordova-plugin-statusbar": "~2.2.2",
-        "cordova-plugin-whitelist": "1"
+        "cordova-plugin-whitelist": "1",
+        "es6-promise-plugin": "git+https://github.com/vstirbu/PromisesPlugin.git",
+        "sortablejs": "^1.5.1"
     },
     "cordova": {
         "platforms": [
@@ -34,7 +36,8 @@
             "cordova-plugin-inappbrowser": {},
             "cordova-plugin-network-information": {},
             "cordova-plugin-statusbar": {},
-            "cordova-plugin-whitelist": {}
+            "cordova-plugin-whitelist": {},
+            "cordova-plugin-screen-orientation": {}
         }
     }
 }
