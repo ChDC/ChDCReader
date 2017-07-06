@@ -178,13 +178,13 @@
 
         if(offset > 0){
           // 向下滚动
-          __onScroll(event, direction);
-          this.fireEvent("scrollDown", {scrollTop: cst});
+          if(__onScroll(event, direction))
+            this.fireEvent("scrollDown", {scrollTop: cst});
         }
         else if(offset < 0){
           // 向上滚动
-          __onScroll(event, direction);
-          this.fireEvent("scrollUp", {scrollTop: cst});
+          if(__onScroll(event, direction))
+            this.fireEvent("scrollUp", {scrollTop: cst});
         }
         __lastScrollTop = cst;
       }
@@ -204,6 +204,7 @@
           __lastCheckScrollY = this.__container.scrollTop;
           this.checkBoundary(direction);
         }
+        return !this.__isCheckingBoundary;
       };
 
       this.__scrollEventBindThis = __scrollEvent.bind(this);
@@ -249,7 +250,7 @@
       this.__isCheckingBoundary = true;
       // this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
 
-      return co(this.__checkBoundary(direction, true)) // 不清空过界的元素
+      return co(this.__checkBoundary(direction))
         .then(() => {
           // 解锁
           // this.__container.addEventListener('scroll', this.__scrollEventBindThis);
@@ -353,16 +354,19 @@
       let {value: newElement, done} = result;
 
       // 把元素添加到 DOM 上
-      if(direction >= 0 && newElement)
+      if(direction >= 0 && newElement){
         this.__elementList.appendChild(newElement);
+        this.clearOutBoundary(-direction);
+      }
       else if(direction < 0 && newElement) {
         const cs = this.__container.scrollTop;
         this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
         this.__container.scrollTop = cs + newElement.offsetHeight;
       }
 
-      if(newElement)
+      if(newElement){
         this.fireEvent("newElementAddedToDOM", {newElement: newElement, direction: direction});
+      }
 
       if(isFirstElement)
         this.setCurrentElement(newElement); // 设置当前元素为第一个元素
@@ -386,8 +390,6 @@
 
       while(!this.__isBoundarySatisfied(direction)){
         yield this.__addElement(direction);
-        if(ifClear)
-          this.clearOutBoundary(-direction);
       }
 
       return Promise.resolve();
