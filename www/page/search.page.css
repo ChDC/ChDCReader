@@ -33,16 +33,31 @@
 }
 
 #searchLogPanel{
-    padding: 15px;
+    padding: 10px;
 }
 #searchLogPanel > h4{
     display: inline;
 }
 
 #searchLog{
-    margin-top: 15px;
+    margin-top: 10px;
 }
 #searchLogPanel .searchLogItem{
+    color: green;
+    background-color: #FFB3A7;
+    border: 1px solid gray;
+    display: inline;
+    margin: 0 10px 10px 0;
+    padding: 5px;
+    float: left;
+}
+
+#searchFailedPanel{
+    display: none;
+    padding: 10px;
+}
+
+#searchFailed > li{
     color: green;
     background-color: #FFB3A7;
     border: 1px solid gray;
@@ -71,6 +86,10 @@
     right: 10px;
     top: 10px;
     font-size: 80%;
+}
+
+#searchFailedPanel, #result {
+    clear: both;
 }
 
 #result .media-body button{
