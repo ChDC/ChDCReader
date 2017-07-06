@@ -90,6 +90,8 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
     search(){
       $("#result").show();
       $("#searchLogPanel").hide();
+      $("#searchFailedPanel").hide();
+
       app.showLoading();
       const keyword = $("#keyword").val().trim();
       const bookSourceId = $("#bookSource").val();
@@ -114,9 +116,18 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
         // 全网搜索
         app.bookSourceManager.searchBookInAllBookSource(keyword,
               {filterSameResult: ifFilterResult, bookType: bookType})
-          .then(books => {
+          .then(({books, failBookSources}) => {
             app.hideLoading();
             this.loadBooks("#result", books);
+
+            if(failBookSources.length > 0){
+              $("#searchFailedPanel").show();
+              $("#searchFailed").empty().append(failBookSources.map(e =>
+                $(`<li>${app.bookSourceManager.getBookSource(e).name}</li>`).click(o => {
+                  $("#bookSource").val(e);
+                  this.search();
+                })));
+            }
           })
           .catch(error => {
             app.hideLoading();
@@ -164,6 +175,7 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
       const keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight(booktype);
 
       bookSource.empty();
+      bookSource.append('<option value ="">[全网搜索]</option>');
       // 添加书源搜索
       for(const bskey of keys){
         const bsName = app.bookSourceManager.getBookSource(bskey).name;

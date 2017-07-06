@@ -582,7 +582,7 @@
       "search": {
         "request": {
           "url": "http://www.2manhua.com/search/q_{keyword}",
-          "timeout": 5
+          "timeout": 10
         },
         "response": {
           "type": "array",

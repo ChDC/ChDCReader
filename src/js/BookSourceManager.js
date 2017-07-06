@@ -117,6 +117,8 @@
     searchBookInAllBookSource(keyword, {filterSameResult=true, bookType=""}={}){
 
       let result = {};
+      let successBS = [];
+      let failBS = [];
       const errorList = [];
       const allBsids = this.getSourcesKeysByMainSourceWeight();
       const bsids = !bookType ? allBsids : allBsids.filter(e => this.__sources[e].type == bookType);
@@ -125,8 +127,10 @@
         this.searchBook(bsid, keyword)
           .then(books => {
             result[bsid] = books;
+            successBS.push(bsid);
           })
           .catch(error => {
+            failBS.push(bsid);
             errorList.push(error);
           })
       );
@@ -154,7 +158,11 @@
 
 
         // 合并结果
-        return finalResult;
+        return {
+          books: finalResult,
+          successBookSources: successBS,
+          failBookSources: failBS
+        };
       }
 
       return Promise.all(tasks)

@@ -23,7 +23,7 @@
 
     it('全局搜索', () => {
       return bsm.searchBookInAllBookSource("三生三世十里桃花")
-            .then(books => {
+            .then(({books}) => {
               equal(true, books.length >= 0);
               equal("三生三世十里桃花", books.find(b => b.name == "三生三世十里桃花").name);
             })
