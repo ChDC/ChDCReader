@@ -262,8 +262,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (select & 2) for (var _i = 0; _i <= cii - 3; _i++) {
             var _element = ies[_i];
             if (!this.__isOutBoundary(_element, this.PREVIOUS)) break;
-
+            var elementHeight = _element.offsetHeight;
+            var cs = this.__container.scrollTop;
             _element.remove();
+            if (this.__container.scrollTop == cs) this.__container.scrollTop -= elementHeight;
           }
       }
     }, {
@@ -335,7 +337,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   cs = this.__container.scrollTop;
 
                   this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
-                  this.__container.scrollTop = cs + newElement.offsetHeight;
+                  if (this.__container.scrollTop == cs) this.__container.scrollTop = cs + newElement.offsetHeight;
                 }
 
                 if (newElement) {
