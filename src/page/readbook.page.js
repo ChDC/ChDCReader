@@ -133,9 +133,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
       });
       $("#btnBadChapter").click(e => {
-        this.refreshChapterList({
+        this.tmpOptions = {
           excludes: [this.readingRecord.options.contentSourceId]
-        });
+        };
+        this.refreshChapterList();
       });
       $("#btnRefresh").click(e => {
         this.refreshChapterList();
@@ -297,17 +298,16 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         });
     }
 
-    refreshChapterList(options){
+    refreshChapterList(){
       app.showLoading();
-      let opts = Object.assign({}, this.readingRecord.getOptions(), options);
+      // let opts = Object.assign({}, this.readingRecord.getOptions(), options);
       if(this.chapterList) this.chapterList.close();
 
       this.chapterList = new Infinitelist(
         $('#chapterContainer')[0],
         $('#chapters')[0],
-        this.book.buildChapterIterator(this.readingRecord.getChapterIndex(), 1, opts, this.buildChapter.bind(this)),
-        this.book.buildChapterIterator(this.readingRecord.getChapterIndex() - 1, -1, opts, this.buildChapter.bind(this)),
-        {disableCheckPrevious: true} // 禁止向前加载
+        this.buildChapter.bind(this),
+        {disableCheckPrevious: false} // 禁止向前加载
       );
       this.chapterList.onError = e => {
         app.hideLoading();
@@ -319,8 +319,9 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.chapterList.onCurrentElementChanged = ({new: newValue, old: oldValue}) => {
         newValue = $(newValue);
         const readingRecord = newValue.data('readingRecord');
-        if(readingRecord.chapterIndex >= 0){
+        if(!readingRecord.done){
           const contentSourceId = readingRecord.options.contentSourceId;
+          this.readingRecord.setFinished(false);
           Object.assign(this.readingRecord, readingRecord);
           $(".labelContentSource").text(app.bookSourceManager.getBookSource(contentSourceId).name);
         }
@@ -386,21 +387,6 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       }
     }
 
-    // 构造读完页面
-    buildLastPage(){
-      const nc = $('.template .readFinished').clone();
-      if(!nc || nc.length <=0)
-        return null;
-
-      nc.height($('#chapterContainer').height());
-
-      nc.find(".offical-site").click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
-      nc.find("img.offical-site").attr('src', `img/logo/${this.book.mainSourceId}.png`);
-
-      nc.data("readingRecord", new ReadingRecord({chapterTitle: "读完啦", chapterIndex: -1}));
-      this.loadElseBooks(nc.find(".elseBooks"));
-      return nc[0];
-    }
 
     loadElseBooks(list){
       function addBook(bookshelfitem, prepend=false){
@@ -432,15 +418,26 @@ define(["jquery", "main", "Page", "utils", "uiutils",
 
     }
 
-    buildChapter({chapter, index, options}={}, direction){
-      if(!chapter){
-        // 加载完成页面
-        if(direction > 0)
-          return this.buildLastPage();
-        else
-          return null;
-      }
 
+    // 构造读完页面
+    buildLastPage(chapterIndex, options){
+      const nc = $('.template .readFinished').clone();
+      if(!nc || nc.length <=0)
+        return null;
+
+      nc.height($('#chapterContainer').height());
+
+      nc.find(".offical-site").click(e => window.open(this.book.getOfficialDetailLink(), '_system'));
+      nc.find("img.offical-site").attr('src', `img/logo/${this.book.mainSourceId}.png`);
+
+      nc.data("readingRecord", {chapterTitle: "读完啦", chapterIndex: chapterIndex, options: options, done: true});
+      this.loadElseBooks(nc.find(".elseBooks"));
+      return {value: nc[0], done: true};
+    }
+
+    buildChapterElement({chapter, index, options}, direction){
+
+      // 更新阅读进度
       this.book.getCatalog()
         .then(catalog => $(".labelBookPercent").text(`${parseInt(index / catalog.length * 100)} %`));
 
@@ -454,9 +451,43 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.loadImages(content);
 
       nc.find(".chapter-content").html(content);
-      nc.data("readingRecord", new ReadingRecord({chapterTitle: chapter.title, chapterIndex: index, options: options}));
+      nc.data("readingRecord", {chapterTitle: chapter.title, chapterIndex: index, options: options});
 
-      return nc[0];
+      return {value: nc[0], done: false};
+    }
+
+    buildChapter(boundaryItem, direction){
+    // buildChapter({chapter, index, options}={}, direction){
+      if(!boundaryItem){
+        // 第一个元素
+        let opts = Object.assign({}, this.readingRecord.getOptions(), this.tmpOptions);
+        this.tmpOptions = null;
+        return this.book.getChapter(this.readingRecord.getChapterIndex(), opts)
+          .then(result => this.buildChapterElement(result, direction))
+          .catch(error => {
+            if(error == 203|| error == 202){
+              // finished = true;
+              return direction > 0 ? this.buildLastPage(this.readingRecord.getChapterIndex(), opts) : null;
+            }
+            throw error;
+          });
+      }
+      let {chapterIndex, options} = $(boundaryItem).data("readingRecord");
+      // if(chapterIndex <= 0)
+      //   return Promise.resolve({value: null, done: true});
+      return this.book.nextChapter(chapterIndex, options, direction)
+        .then(result => {
+          if(!result.chapter){
+            // 加载完成页面
+            if(direction > 0){
+              options.contentSourceChapterIndex += 1;
+              return this.buildLastPage(chapterIndex + 1, options);
+            }
+            else
+              return {value: null, done: true};
+          }
+          return this.buildChapterElement(result, direction);
+        });
     }
 
     // 加载所有的图片
