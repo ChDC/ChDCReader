@@ -309,10 +309,11 @@
           let element = ies[i];
           if(!this.__isOutBoundary(element, this.PREVIOUS))
             break;
-          // const elementHeight = element.offsetHeight;
-          // const cs = this.__container.scrollTop;
+          const elementHeight = element.offsetHeight;
+          const cs = this.__container.scrollTop;
           element.remove();
-          // this.__container.scrollTop = cs - elementHeight;
+          if(this.__container.scrollTop == cs)
+            this.__container.scrollTop -= elementHeight;
         }
     }
 
@@ -361,7 +362,8 @@
       else if(direction < 0 && newElement) {
         const cs = this.__container.scrollTop;
         this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
-        this.__container.scrollTop = cs + newElement.offsetHeight;
+        if(this.__container.scrollTop == cs)
+          this.__container.scrollTop = cs + newElement.offsetHeight;
       }
 
       if(newElement){
