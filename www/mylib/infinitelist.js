@@ -207,6 +207,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function setCurrentElement(newCurrentElement) {
         var oldValue = this.__currentElement;
         if (newCurrentElement == oldValue) return;
+        this.clearOutBoundary(-1);
 
         this.__currentElement = newCurrentElement;
         this.fireEvent("currentElementChanged", { new: newCurrentElement, old: oldValue });
@@ -253,18 +254,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var select = !direction ? 3 : direction > 0 ? 1 : 2;
 
-        if (select & 1) for (var i = ies.length - 1; i >= cii + 3; i--) {
+        if (select & 2) for (var i = 0; i <= cii - 3; i++) {
             var element = ies[i];
-            if (!this.__isOutBoundary(element, this.NEXT)) break;
-            element.remove();
-          }
-
-        if (select & 2) for (var _i = 0; _i <= cii - 3; _i++) {
-            var _element = ies[_i];
-            if (!this.__isOutBoundary(_element, this.PREVIOUS)) break;
-            var elementHeight = _element.offsetHeight;
+            if (!this.__isOutBoundary(element, this.PREVIOUS)) break;
+            var elementHeight = element.offsetHeight;
             var cs = this.__container.scrollTop;
-            _element.remove();
+            element.remove();
             if (this.__container.scrollTop == cs) this.__container.scrollTop -= elementHeight;
           }
       }
@@ -332,7 +327,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 if (direction >= 0 && newElement) {
                   this.__elementList.appendChild(newElement);
-                  this.clearOutBoundary(-direction);
                 } else if (direction < 0 && newElement) {
                   cs = this.__container.scrollTop;
 
