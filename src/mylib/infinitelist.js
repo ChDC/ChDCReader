@@ -12,16 +12,18 @@
 
   class Infinitelist{
 
+    // buildElement(boundaryElement, direction) 当为 null 时表示加载第一个元素
     // options
     // * disableCheckPrevious 是否检查前面的内容边界
     constructor(container, elementList,
-            nextElementGenerator, previousElementGenerator,
+            buildElement,
             options={}){
 
       this.__container = container; // 容器
       this.__elementList = elementList; // 元素列表
-      this.previousElementGenerator = previousElementGenerator; // 获取列表元素的函数
-      this.nextElementGenerator = nextElementGenerator; // 获取列表元素的函数
+      this.buildElement = buildElement;
+      // this.previousElementGenerator = previousElementGenerator; // 获取列表元素的函数
+      // this.nextElementGenerator = nextElementGenerator; // 获取列表元素的函数
       this.options = options;
 
       // 事件
@@ -247,7 +249,7 @@
       this.__isCheckingBoundary = true;
       // this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
 
-      return co(this.__checkBoundary(direction, false)) // 不清空过界的元素
+      return co(this.__checkBoundary(direction, true)) // 不清空过界的元素
         .then(() => {
           // 解锁
           // this.__container.addEventListener('scroll', this.__scrollEventBindThis);
@@ -293,18 +295,18 @@
 
       if(select & 1)
         // 清理后面的元素
-        for(let i = ies.length - 1; i >=0; i--){
+        for(let i = ies.length - 1; i >= cii + 3; i--){
           let element = ies[i];
-          if(!this.__isOutBoundary(element, this.NEXT) || i <= cii + 1)
+          if(!this.__isOutBoundary(element, this.NEXT))
             break;
           element.remove();
         }
 
       if(select & 2)
         // 清理前面的元素
-        for(let i = 0; i < ies.length; i++){
+        for(let i = 0; i <= cii - 3; i++){
           let element = ies[i];
-          if(!this.__isOutBoundary(element, this.PREVIOUS) || i >= cii - 1)
+          if(!this.__isOutBoundary(element, this.PREVIOUS))
             break;
           const elementHeight = element.offsetHeight;
           const cs = this.__container.scrollTop;
@@ -335,12 +337,11 @@
     // 在指定方向的末端添加新元素
     *__addElement(direction){
       let result;
-      let isFirstElement = !this.__getBoundaryElement(direction);
+      let boundaryElement = this.__getBoundaryElement(direction);
+      let isFirstElement = !boundaryElement;
       try{
-        if(direction >= 0 && this.nextElementGenerator)
-          result = yield this.nextElementGenerator.next();
-        else if(direction < 0 && this.previousElementGenerator)
-          result = yield this.previousElementGenerator.next();
+        if(this.buildElement)
+          result = yield this.buildElement(boundaryElement, direction);
         else
           return Promise.resolve(null);
       }

@@ -387,7 +387,7 @@
         yield getChapterFromAllContentSources(includeSource, options);
         if(result.length <= 0){
           // 宽松匹配模式
-          let opts = Object.assign({}, options, {loose: true});
+          let opts = Object.assign({}, options, {loose: false});
           yield getChapterFromAllContentSources(includeSource, opts);
         }
         return submitResult();
@@ -534,6 +534,39 @@
         });
     }
 
+    // 获取指定章节的下一章节
+    // chapterIndex 是从主要目录源中获取的章节索引
+    // nextCount 获取的章节数目
+    // direction 获取章节的方向，大于等于 0 则向下获取，小于 0 则向上获取
+    // options
+    // * noInfluenceWeight false 是否要改变内容源的权重
+    // * excludes 要排除的内容源
+    // * contentSourceId 希望使用的内容源
+    // * contentSourceChapterIndex 希望匹配的索引
+    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+    nextChapter(chapterIndex, options, direction=1){
+
+      options = Object.assign({}, options);
+      chapterIndex += (direction >= 0? 1 : -1);
+      if(options.contentSourceChapterIndex != undefined)
+        options.contentSourceChapterIndex += (direction >= 0? 1 : -1);
+
+      return this.getChapter(chapterIndex, options)
+        .then(result => {
+            if(options.forceRefresh)
+              options.forceRefresh = false;
+            Object.assign(result.options, options, result.options);
+            return result;
+          })
+        .catch(error => {
+          if(error == 203|| error == 202){
+            // finished = true;
+            return Promise.resolve({chapter: null, index: -1, options: null});
+          }
+          throw error;
+        });
+    }
+
     // 一次获取多个章节
     // chapterIndex 是从主要目录源中获取的章节索引
     // nextCount 获取的章节数目
@@ -546,32 +579,32 @@
     // * count 获取的数目
     // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
     // * map 对结果进行处理的函数
-    buildChapterIterator(chapterIndex, direction, options, map=e=>e){
-      options = Object.assign({}, options);
-      let self = this;
-      let finished = false;
-      return {
-        next(){
-          if(finished) return Promise.resolve({done: true});
-          return self.getChapter(chapterIndex, options)
-            .then(result => {
-                if(options.forceRefresh)
-                  options.forceRefresh = false;
-                Object.assign(options, result.options);
-                chapterIndex += (direction >= 0? 1 : -1);
-                options.contentSourceChapterIndex += (direction >= 0? 1 : -1);
-                return {value: map(result, direction), done: false};
-              })
-            .catch(error => {
-              if(error == 203|| error == 202){
-                finished = true;
-                return Promise.resolve({value: map(undefined, direction), done: true});
-              }
-              throw error;
-            });
-        }
-      };
-    }
+    // buildChapterIterator(chapterIndex, direction, options, map=e=>e){
+    //   options = Object.assign({}, options);
+    //   let self = this;
+    //   let finished = false;
+    //   return {
+    //     next(){
+    //       if(finished) return Promise.resolve({done: true});
+    //       return self.getChapter(chapterIndex, options)
+    //         .then(result => {
+    //             if(options.forceRefresh)
+    //               options.forceRefresh = false;
+    //             Object.assign(options, result.options);
+    //             chapterIndex += (direction >= 0? 1 : -1);
+    //             options.contentSourceChapterIndex += (direction >= 0? 1 : -1);
+    //             return {value: map(result, direction), done: false};
+    //           })
+    //         .catch(error => {
+    //           if(error == 203|| error == 202){
+    //             finished = true;
+    //             return Promise.resolve({value: map(undefined, direction), done: true});
+    //           }
+    //           throw error;
+    //         });
+    //     }
+    //   };
+    // }
 
     // chapterIndex 是从主要目录源中获取的章节索引
     // nextCount 缓存的章节数目
@@ -588,15 +621,15 @@
       options.noInfluenceWeight = true;
       options.onlyCacheNoLoad = true;
 
-      let citer = this.buildChapterIterator(chapterIndex, 1, options);
-
+      let self = this;
       return co(function*(){
+        let {index, options: opts} =  yield self.getChapter(chapterIndex, options);
+
         for(let i = 0; i < nextCount; i++){
-          yield citer.next();
+          ({index, options: opts} = yield self.nextChapter(index, opts));
         }
       });
 
-      // return co(this.getChapters(chapterIndex, nextCount, 1, options));
     }
 
     // 清除缓存章节
