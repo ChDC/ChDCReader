@@ -109,7 +109,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "506cc37377e627fbc226e64c45380970"
+    "hash": "708ce3e92e18c312a13413759be2ec16"
   },
   {
     "file": "js/BookShelf.js",
@@ -385,7 +385,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "a4270b3d36e1b33403cc6551a431926b"
+    "hash": "8ea2fff775ba2a322c705d3e0a5c9e54"
   },
   {
     "file": "mylib/LittleCrawler.js",
@@ -469,7 +469,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "1d876a4c422ecd6f305d8959f430dc8f"
+    "hash": "4673f874c6cc470eeb19647777eea8b8"
   },
   {
     "file": "page/readbook.page.night1.css",
