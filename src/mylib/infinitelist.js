@@ -309,10 +309,10 @@
           let element = ies[i];
           if(!this.__isOutBoundary(element, this.PREVIOUS))
             break;
-          const elementHeight = element.offsetHeight;
-          const cs = this.__container.scrollTop;
+          // const elementHeight = element.offsetHeight;
+          // const cs = this.__container.scrollTop;
           element.remove();
-          this.__container.scrollTop = cs - elementHeight;
+          // this.__container.scrollTop = cs - elementHeight;
         }
     }
 
