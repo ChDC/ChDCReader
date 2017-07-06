@@ -385,7 +385,7 @@
   },
   {
     "file": "mylib/infinitelist.js",
-    "hash": "8ea2fff775ba2a322c705d3e0a5c9e54"
+    "hash": "10ea6adab55b6ff4af95c1172c0a96e5"
   },
   {
     "file": "mylib/LittleCrawler.js",
@@ -469,7 +469,7 @@
   },
   {
     "file": "page/readbook.page.js",
-    "hash": "4673f874c6cc470eeb19647777eea8b8"
+    "hash": "731f62702ca057f4dc73a73303944e2d"
   },
   {
     "file": "page/readbook.page.night1.css",

@@ -159,11 +159,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var direction = offset >= 0 ? 1 : -1;
 
           if (offset > 0) {
-            __onScroll(event, direction);
-            _this4.fireEvent("scrollDown", { scrollTop: cst });
+            if (__onScroll(event, direction)) _this4.fireEvent("scrollDown", { scrollTop: cst });
           } else if (offset < 0) {
-            __onScroll(event, direction);
-            _this4.fireEvent("scrollUp", { scrollTop: cst });
+            if (__onScroll(event, direction)) _this4.fireEvent("scrollUp", { scrollTop: cst });
           }
           __lastScrollTop = cst;
         };
@@ -181,6 +179,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             __lastCheckScrollY = _this4.__container.scrollTop;
             _this4.checkBoundary(direction);
           }
+          return !_this4.__isCheckingBoundary;
         };
 
         this.__scrollEventBindThis = __scrollEvent.bind(this);
@@ -221,7 +220,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.__isCheckingBoundary = true;
 
 
-        return co(this.__checkBoundary(direction, true)).then(function () {
+        return co(this.__checkBoundary(direction)).then(function () {
           _this5.__isCheckingBoundary = false;
         }).catch(function (error) {
           _this5.__isCheckingBoundary = false;
@@ -331,14 +330,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               case 17:
                 _result = result, newElement = _result.value, done = _result.done;
 
-                if (direction >= 0 && newElement) this.__elementList.appendChild(newElement);else if (direction < 0 && newElement) {
+                if (direction >= 0 && newElement) {
+                  this.__elementList.appendChild(newElement);
+                  this.clearOutBoundary(-direction);
+                } else if (direction < 0 && newElement) {
                   cs = this.__container.scrollTop;
 
                   this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
                   this.__container.scrollTop = cs + newElement.offsetHeight;
                 }
 
-                if (newElement) this.fireEvent("newElementAddedToDOM", { newElement: newElement, direction: direction });
+                if (newElement) {
+                  this.fireEvent("newElementAddedToDOM", { newElement: newElement, direction: direction });
+                }
 
                 if (isFirstElement) this.setCurrentElement(newElement);
 
@@ -368,7 +372,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (this.__isBoundarySatisfied(direction)) {
-                  _context2.next = 6;
+                  _context2.next = 5;
                   break;
                 }
 
@@ -376,14 +380,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this.__addElement(direction);
 
               case 3:
-                if (ifClear) this.clearOutBoundary(-direction);
                 _context2.next = 0;
                 break;
 
-              case 6:
+              case 5:
                 return _context2.abrupt("return", Promise.resolve());
 
-              case 7:
+              case 6:
               case "end":
                 return _context2.stop();
             }
