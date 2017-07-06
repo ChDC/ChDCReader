@@ -262,10 +262,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (select & 2) for (var _i = 0; _i <= cii - 3; _i++) {
             var _element = ies[_i];
             if (!this.__isOutBoundary(_element, this.PREVIOUS)) break;
-            var elementHeight = _element.offsetHeight;
-            var cs = this.__container.scrollTop;
+
             _element.remove();
-            this.__container.scrollTop = cs - elementHeight;
           }
       }
     }, {
