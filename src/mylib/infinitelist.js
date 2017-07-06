@@ -237,6 +237,7 @@
       const oldValue = this.__currentElement;
       if(newCurrentElement == oldValue)
         return;
+      this.clearOutBoundary(-1);
 
       this.__currentElement = newCurrentElement;
       this.fireEvent("currentElementChanged", {new: newCurrentElement, old: oldValue});
@@ -294,14 +295,14 @@
 
       let select = !direction ? 3 : direction > 0 ? 1 : 2;
 
-      if(select & 1)
-        // 清理后面的元素
-        for(let i = ies.length - 1; i >= cii + 3; i--){
-          let element = ies[i];
-          if(!this.__isOutBoundary(element, this.NEXT))
-            break;
-          element.remove();
-        }
+      // if(select & 1)
+      //   // 清理后面的元素
+      //   for(let i = ies.length - 1; i >= cii + 3; i--){
+      //     let element = ies[i];
+      //     if(!this.__isOutBoundary(element, this.NEXT))
+      //       break;
+      //     element.remove();
+      //   }
 
       if(select & 2)
         // 清理前面的元素
@@ -357,7 +358,6 @@
       // 把元素添加到 DOM 上
       if(direction >= 0 && newElement){
         this.__elementList.appendChild(newElement);
-        this.clearOutBoundary(-direction);
       }
       else if(direction < 0 && newElement) {
         const cs = this.__container.scrollTop;
