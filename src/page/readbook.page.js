@@ -307,7 +307,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         $('#chapterContainer')[0],
         $('#chapters')[0],
         this.buildChapter.bind(this),
-        {disableCheckPrevious: false} // 禁止向前加载
+        {disableCheckPrevious: true} // 禁止向前加载
       );
       this.chapterList.onError = e => {
         app.hideLoading();
