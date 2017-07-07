@@ -53,18 +53,20 @@
 }*/
 
 #modalBookMenu .modal-dialog{
-    height: 80%;
+    position: absolute;
+    top: 40%;
+    /*height: 80%;*/
+    width: 80%;
+    left: 10%;
+    margin: 0;
 }
 
 #modalBookMenu .modal-body{
     padding: 0;
 }
 
-#modalBookMenu .modal-content{
-    position: absolute;
-    bottom: 0;
-    width: 80%;
-    margin: 0 10%;
+#modalBookMenu .list{
+    margin: 0;
 }
 
 /*********** Color ***************/
