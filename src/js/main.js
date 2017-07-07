@@ -209,7 +209,7 @@
 
       // uiutils.showMessage("资源更新成功！");
       // 显示更新说明
-      utils.get("data/UpdateLog.html").then(html => uiutils.showMessageDialog("资源更新说明", html));
+      utils.get("data/UpdateLog.html").then(html => uiutils.showMessageDialog("资源更新说明", html, null, null, {position: "top"}));
     },
 
     // 主题管理器
