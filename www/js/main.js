@@ -172,7 +172,7 @@
     },
     onUpdated: function onUpdated() {
       utils.get("data/UpdateLog.html").then(function (html) {
-        return uiutils.showMessageDialog("资源更新说明", html);
+        return uiutils.showMessageDialog("资源更新说明", html, null, null, { position: "top" });
       });
     },
 
