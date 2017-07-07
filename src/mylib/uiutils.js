@@ -48,7 +48,7 @@
                       {oktext="确定", canceltext="取消"}={}){
       const dialog = $(
         `<div class="modal fade" id="modalMessage">
-          <div class="modal-dialog">
+          <div class="modal-dialog" style="position: absolute; top: 40%; width: 80%; margin: 0 10%;">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">
