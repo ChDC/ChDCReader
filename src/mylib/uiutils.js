@@ -45,10 +45,10 @@
     },
 
     showMessageDialog(title, msg, okEvent, cancelEvent,
-                      {oktext="确定", canceltext="取消"}={}){
+                      {oktext="确定", canceltext="取消", position="middle"}={}){
       const dialog = $(
         `<div class="modal fade" id="modalMessage">
-          <div class="modal-dialog" style="position: absolute; top: 40%; width: 80%; margin: 0 10%;">
+          <div class="modal-dialog" ${position == "middle" ? 'style="position: absolute; top: 40%; width: 80%; margin: 0 10%;"': ""}>
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title">
