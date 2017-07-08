@@ -386,8 +386,8 @@
       function* getChapterFromContentSources2(includeSource){
         yield getChapterFromAllContentSources(includeSource, options);
         if(result.length <= 0){
-          // 宽松匹配模式
-          let opts = Object.assign({}, options, {loose: false});
+          // NOTE: 宽松匹配模式
+          let opts = Object.assign({}, options, {loose: true});
           yield getChapterFromAllContentSources(includeSource, opts);
         }
         return submitResult();

@@ -333,7 +333,7 @@
         },
         "response": {
           "type": "array",
-          "element": "#dp-widget-posts-2 > ul > li",
+          "element": "#content ul > li",
           "reverse": true,
           "children": {
             "name": "a",
