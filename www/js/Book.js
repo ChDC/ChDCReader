@@ -539,7 +539,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             break;
                           }
 
-                          opts = Object.assign({}, options, { loose: false });
+                          opts = Object.assign({}, options, { loose: true });
                           _context2.next = 6;
                           return getChapterFromAllContentSources(includeSource, opts);
 

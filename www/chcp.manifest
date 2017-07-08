@@ -5,7 +5,7 @@
   },
   {
     "file": "data/booksources.json",
-    "hash": "8111a05f9d342f87d59ec2b65d44133a"
+    "hash": "0d97f92e62f64817fc70704a9e7aae4b"
   },
   {
     "file": "data/errorCode.json",
@@ -109,7 +109,7 @@
   },
   {
     "file": "js/Book.js",
-    "hash": "708ce3e92e18c312a13413759be2ec16"
+    "hash": "329648b07352df51acd23776e2c3cb18"
   },
   {
     "file": "js/BookShelf.js",
@@ -125,7 +125,7 @@
   },
   {
     "file": "js/Chapter.js",
-    "hash": "79d36acc9846cf1d8db964f44b7a6f88"
+    "hash": "d295fe49363b22c8229e3fd417ac2bdc"
   },
   {
     "file": "js/config.js",
@@ -545,7 +545,7 @@
   },
   {
     "file": "test/Chapter.test.js",
-    "hash": "ae620a3c743165a87fd6edb84064ac5e"
+    "hash": "3c47531d8dbc79501809035c44396493"
   },
   {
     "file": "test/LittleCrawler.test.data.html",
