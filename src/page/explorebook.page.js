@@ -148,9 +148,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function($, app
       }
 
       function urlAction(matcher, target){
-        debugger;
         ref.executeScript({ code: `debugger;window.location.href = "${target}";`});
-      };
+      }
 
       function getRemoveCode(remove){
         if(!remove) return "";

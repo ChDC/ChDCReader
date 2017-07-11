@@ -27,7 +27,11 @@
       this.mainSourceId = undefined;  // 当前来源
     }
 
-    // 获取当前书籍指定的目录源信息
+    /**
+     * 获取当前书籍指定的目录源信息
+     * @param  {[type]} bookSourceId [description]
+     * @return {[type]}              [description]
+     */
     getBookSource(bookSourceId=this.mainSourceId){
 
       return new Promise((resolve, reject) => {
@@ -50,6 +54,11 @@
       });
     }
 
+    /**
+     * 获取数据源的官方链接
+     * @param  {[type]} bookSourceId [description]
+     * @return {[type]}              [description]
+     */
     getOfficialDetailLink(bookSourceId=this.mainSourceId){
       try{
         return this.bookSourceManager.getOfficialURLs(bookSourceId, this.sources[bookSourceId], "bookdetail");
@@ -59,20 +68,29 @@
       }
     }
 
-    // 按主源权重从大到小排序的数组
+    /**
+     * 按主源权重从大到小排序的数组
+     * @return {[type]} [description]
+     */
     getSourcesKeysByMainSourceWeight(){
       let type = this.bookSourceManager.getBookSourceType(this.mainSourceId);
       return this.bookSourceManager.getSourcesKeysByMainSourceWeight(type);
     }
 
-    // 按内容源权重从大到小排序的数组
+    /**
+     * 按内容源权重从大到小排序的数组
+     * @return {[type]} [description]
+     */
     getSourcesKeysSortedByWeight(){
       let object = this.sources;
       let key = "weight";
       return Object.entries(object).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
     }
 
-    // 检查源是否有缺失或多余
+    /**
+     * 检查源是否有缺失或多余
+     * @return {[type]} [description]
+     */
     checkBookSources(){
       const sources = this.bookSourceManager.getBookSourcesBySameType(this.mainSourceId);
 
@@ -91,7 +109,10 @@
       }
     }
 
-    // 设置主源
+    /**
+     * 设置主源
+     * @param {[type]} bookSourceId [description]
+     */
     setMainSourceId(bookSourceId){
 
       return new Promise((resolve, reject) => {
@@ -105,16 +126,27 @@
         else{
           reject(301);
         }
-      })
+      });
     }
 
+    /**
+     * 获取书籍类型
+     * @return {[type]} [description]
+     */
     getType(){
       return this.bookSourceManager.getBookSourceType(this.mainSourceId);
     }
 
-    // 获取目录
-    // options:
-    // * forceRefresh 强制刷新
+
+    /**
+     * 获取目录
+     * @param  {Boolean} options.forceRefresh  强制刷新，不在乎上次刷新时间
+     * @param  {Boolean} options.refresh       刷新，如果没有到刷新时间则不刷新
+     * @param  {[type]}  options.bookSourceId  [description]
+     * @param  {Boolean} options.groupByVolume 是否获取分组后的目录表
+     * @param  {[type]}  options.countPerGroup [description]
+     * @return {[type]}                        [description]
+     */
     getCatalog({forceRefresh=false, refresh=false, bookSourceId=this.mainSourceId, groupByVolume=false, countPerGroup=100}={}){
 
       return this.getBookSource(bookSourceId)
@@ -128,7 +160,13 @@
         });
     }
 
-    // 按卷或者数量对章节进行分组
+    /**
+     * 按卷或者数量对章节进行分组
+     * @param  {[type]} catalog               [description]
+     * @param  {[type]} options.bookSourceId  [description]
+     * @param  {[type]} options.countPerGroup [description]
+     * @return {[type]}                       [description]
+     */
     groupCatalogByVolume(catalog, {bookSourceId=this.mainSourceId, countPerGroup=100}={}){
 
       if(!catalog) return catalog;
@@ -163,8 +201,12 @@
       }
     }
 
-    // 使用详情页链接刷新书籍信息
-    // 前提：book.sources 中有详情链接
+    /**
+     * 使用详情页链接刷新书籍信息
+     * 前提：book.sources 中有详情链接
+     * @param  {[type]} bookSourceId [description]
+     * @return {[type]}              [description]
+     */
     refreshBookInfo(bookSourceId=this.mainSourceId){
 
       return this.getBookSource(bookSourceId)
@@ -179,7 +221,12 @@
 
     // *************************** 章节部分 ****************
 
-    // 获取指定源的指定索引的章节
+    /**
+     * 获取指定源的指定索引的章节
+     * @param  {[type]} chapterIndex [description]
+     * @param  {[type]} options      [description]
+     * @return {[type]}              [description]
+     */
     index(chapterIndex, options){
       if(typeof chapterIndex != "number"){
         return Promise.reject(205);
@@ -203,8 +250,13 @@
         });
     }
 
-    // 在指定的源 B 中搜索目录源的中某章节的相对应的章节
-    // options.loose 宽松匹配模式
+    /**
+     * 在指定的源 B 中搜索目录源的中某章节的相对应的章节
+     * @param  {[type]} sourceB [description]
+     * @param  {[type]} index   [description]
+     * @param  {[type]} options options.loose 宽松匹配模式
+     * @return {[type]}         [description]
+     */
     fuzzySearch(sourceB, index, options){
 
       let opts = Object.assign({}, options, {bookSourceId: sourceB});
@@ -258,16 +310,18 @@
       });
     }
 
-    // 从网上获取指定的章节
-    // chapterIndex 是从主要目录源中获取的章节索引
-    // options
-    // * noInfluenceWeight false 是否要改变内容源的权重
-    // * excludes 要排除的内容源
-    // * contentSourceId 希望使用的内容源
-    // * contentSourceChapterIndex 希望匹配的索引
-    // * onlyCacheNoLoad 只缓存章节，不加载章节
-    // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
-    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+    /**
+     * 从网上获取指定的章节
+     * @param  {[type]} chapterIndex 是从主要目录源中获取的章节索引
+     * @param  {[type]} options      选项
+     * * noInfluenceWeight false 是否要改变内容源的权重
+     * * excludes 要排除的内容源
+     * * contentSourceId 希望使用的内容源
+     * * contentSourceChapterIndex 希望匹配的索引
+     * * onlyCacheNoLoad 只缓存章节，不加载章节
+     * * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
+     * @return {[type]}              {章节对象，目录源章节索引，内容源，内容源章节索引}
+     */
     getChapter(chapterIndex, options){
 
       if(chapterIndex < 0){
@@ -290,15 +344,20 @@
 
     }
 
-    // 按一定的算法从所有的源中找到合适的章节内容
-    // options
-    // * noInfluenceWeight false 是否要改变内容源的权重
-    // * excludes 要排除的内容源
-    // * contentSourceId 希望使用的内容源
-    // * contentSourceChapterIndex 希望匹配的索引
-    // * count 获取的数目
-    // * onlyCacheNoLoad 只缓存章节，不加载章节
-    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+    /**
+     * 按一定的算法从所有的源中找到合适的章节内容
+     * @param  {[type]} chapterA [description]
+     * @param  {[type]} index    [description]
+     * @param  {Object} options
+     * * noInfluenceWeight false 是否要改变内容源的权重
+     * * excludes 要排除的内容源
+     * * contentSourceId 希望使用的内容源
+     * * contentSourceChapterIndex 希望匹配的索引
+     * * count 获取的数目
+     * * onlyCacheNoLoad 只缓存章节，不加载章节
+     *
+     * @return {[type]}          {章节对象，目录源章节索引，内容源，内容源章节索引}
+     */
     *__getChapterFromContentSources(chapterA, index, options={}){
 
       let {
@@ -510,7 +569,13 @@
       }
     }
 
-    // 根据标题获取章节在目录中的索引值
+    /**
+     * 根据标题获取章节在目录中的索引值
+     * @param  {[type]} title   [description]
+     * @param  {[type]} index   [description]
+     * @param  {Object} options [description]
+     * @return {[type]}         [description]
+     */
     getChapterIndex(title, index, options={}){
       return this.getCatalog(options)
         .then(catalog => {
@@ -534,16 +599,18 @@
         });
     }
 
-    // 获取指定章节的下一章节
-    // chapterIndex 是从主要目录源中获取的章节索引
-    // nextCount 获取的章节数目
-    // direction 获取章节的方向，大于等于 0 则向下获取，小于 0 则向上获取
-    // options
-    // * noInfluenceWeight false 是否要改变内容源的权重
-    // * excludes 要排除的内容源
-    // * contentSourceId 希望使用的内容源
-    // * contentSourceChapterIndex 希望匹配的索引
-    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+    // 成功返回：
+    /**
+     * 获取指定章节的下一章节
+     * @param  {[type]} chapterIndex 是从主要目录源中获取的章节索引
+     * @param  {[type]} options
+     * options.noInfluenceWeight false 是否要改变内容源的权重
+     * options.excludes 要排除的内容源
+     * options.contentSourceId 希望使用的内容源
+     * options.contentSourceChapterIndex 希望匹配的索引
+     * @param  {Number} direction    获取章节的方向，大于等于 0 则向下获取，小于 0 则向上获取
+     * @return {[type]}              {章节对象，目录源章节索引，内容源，内容源章节索引}
+     */
     nextChapter(chapterIndex, options, direction=1){
 
       options = Object.assign({}, options);
@@ -606,15 +673,14 @@
     //   };
     // }
 
-    // chapterIndex 是从主要目录源中获取的章节索引
-    // nextCount 缓存的章节数目
-    // options
-    // * noInfluenceWeight false 是否要改变内容源的权重
-    // * excludes 要排除的内容源
-    // * contentSourceId 希望使用的内容源
-    // * contentSourceChapterIndex 希望匹配的索引
-    // * count 获取的数目，当 count == 1 时，用于前端获取并显示数据，当 count >= 1 时，用于缓存章节
-    // 成功返回：章节对象，目录源章节索引，内容源，内容源章节索引
+
+    /**
+     * 缓存章节
+     * @param  {[type]} chapterIndex 从主要目录源中获取的章节索引
+     * @param  {[type]} nextCount    缓存的章节数目
+     * @param  {[type]} options      [description]
+     * @return {[type]}              [description]
+     */
     cacheChapter(chapterIndex, nextCount, options){
 
       options = Object.assign({}, options);
@@ -632,15 +698,22 @@
 
     }
 
-    // 清除缓存章节
+    /**
+     * 清除缓存章节
+     * @return {[type]} [description]
+     */
     clearCacheChapters(){
       utils.removeData(`chapter/${this.name}_${this.author}/`, true);
     }
 
     // *************************** 章节部分结束 ****************
 
-    // 获取最新章节
-    // 缺省强制更新
+    /**
+     * 获取最新章节
+     * 缺省强制更新
+     * @param  {[type]} bookSourceId [description]
+     * @return {[type]}              [description]
+     */
     getLastestChapter(bookSourceId){
       return this.getBookSource(bookSourceId)
         .then(bs => bs.refreshLastestChapter());
@@ -662,7 +735,7 @@
       nb.sources[bsid] = nbs;
     }
     return nb;
-  }
+  },
 
   // 判断两本是书是否相等
   Book.equal = function(bookA, bookB){

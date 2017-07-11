@@ -14,6 +14,7 @@
   else
     window["LittleCrawler"] = factory();
 }(function(){
+
   /******* 格式说明 ************
 
     request 设置请求
@@ -78,15 +79,19 @@
 
   class LittleCrawler{
 
-    // ajax：用于发送 HTTP 请求的对象
-    // 可以设置为 map，在 request 中用 ajax 来指定使用哪个 ajax，默认使用 default 键指定的 ajax
-    // * method: "POST", "GET"
-    // * url
-    // * data
-    // * dataType -> String: json
-    // * headers -> Object
-    // * options -> Object
-    //    * timeout
+    /**
+     * [constructor description]
+     * @param  {[type]} ajax 用于发送 HTTP 请求的对象
+     * 可以设置为 map，在 request 中用 ajax 来指定使用哪个 ajax，默认使用 default 键指定的 ajax
+     * * method: "POST", "GET"
+     * * url
+     * * data
+     * * dataType -> String: json
+     * * headers -> Object
+     * * options -> Object
+     *    * timeout
+     * @return {[type]}      [description]
+     */
     constructor(ajax){
 
       let a = {
@@ -117,7 +122,13 @@
     }
 
 
-    // 从配置对象中抓取并获得结果
+    /**
+     * get data from config object - request and response
+     * @param  {Object} options.request    [description]
+     * @param  {Object} options.response} [description]
+     * @param  {Object} dict               [description]
+     * @return {[type]}                    [description]
+     */
     get({request, response}={}, dict={}){
       if(!response)
         return Promise.reject(new Error("Empty response"));
@@ -172,10 +183,12 @@
         .then(data => this.parse(data, type, response, url, dict));
     }
 
-    // get request url
-    // args:
-    // * request: the request config object
-    // * dict: the data dict to help combine url
+    /**
+     * get request url
+     * @param  {[type]} request the request config object
+     * @param  {Object} dict    the data dict to help combine url
+     * @return {[type]}         [description]
+     */
     getLink(request, dict={}){
 
       // if request is empty, get url from dict.url
@@ -197,11 +210,15 @@
       return LittleCrawler.format(request.url, dict);
     }
 
-    // parse the response data
-    // * data: the response data
-    // * type: assign the type of response, it can be "json" or "html"(default)
-    // * response: the config to parse data
-    // * host: the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
+    /**
+     * parse the response data
+     * @param  {[type]} data     the response data
+     * @param  {[type]} type     assign the type of response, it can be "json" or "html"(default)
+     * @param  {[type]} response the config to parse data
+     * @param  {[type]} host     the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
+     * @param  {Object} dict     [description]
+     * @return {[type]}          [description]
+     */
     parse(data, type, response, host, dict={}){
 
       // to make the function noinfluence
@@ -225,7 +242,15 @@
       }
     }
 
-    // handle the response
+    /**
+     * handle the response
+     * @param  {[type]} data       [description]
+     * @param  {[type]} response   [description]
+     * @param  {[type]} keyName    [description]
+     * @param  {Object} globalDict [description]
+     * @param  {Object} dict       [description]
+     * @return {[type]}            [description]
+     */
     __handleResponse(data, response, keyName, globalDict={}, dict={}){
 
       if(response == "")
@@ -366,7 +391,7 @@
                 let r = matcher.slice(1).join(''); // 如果正则表达式中使用了分组，则把结果的分组合并为结果
                 return r ? r : matcher[0];
               }
-            }
+            };
             switch(LittleCrawler.type(response.extract)){
               case "array":
                 result = response.extract.reduce((r, e) =>
@@ -440,7 +465,14 @@
       return this.__getValue(e, keyName, globalDict, dict);
     }
 
-    // 从元素中获取值
+    /**
+     * 从元素中获取值
+     * @param  {[type]} element    [description]
+     * @param  {[type]} keyName    [description]
+     * @param  {Object} globalDict [description]
+     * @param  {Object} dict       [description]
+     * @return {[type]}            [description]
+     */
     __getValue(element, keyName, globalDict={}, dict={}){
       if(element && element.querySelector){
         // html
@@ -473,7 +505,11 @@
       }
     }
 
-    // 将选择器也转换为内部的选择器
+    /**
+     * 将选择器也转换为内部的选择器
+     * @param  {[type]} selector [description]
+     * @return {[type]}          [description]
+     */
     __transformSelector(selector){
       if(!selector) return selector;
       selector = this.insecurityTagList.reduce((s, tag) =>
@@ -485,7 +521,12 @@
       return selector;
     }
 
-    // 获取 HTML 元素对象或者 JOSN 对象
+    /**
+     * 获取 HTML 元素对象或者 JOSN 对象
+     * @param  {[type]} element  [description]
+     * @param  {[type]} selector [description]
+     * @return {[type]}          [description]
+     */
     __getElement(element, selector){
       if(!element) return undefined;
       if(selector == "")
@@ -503,7 +544,12 @@
       }
     }
 
-    // 获取所有匹配值
+    /**
+     * 获取所有匹配值
+     * @param  {[type]} element  [description]
+     * @param  {[type]} selector [description]
+     * @return {[type]}          [description]
+     */
     __getAllElements(element, selector){
       if(!element) return element;
       if(selector == "")
@@ -519,7 +565,11 @@
       }
     }
 
-    // 将诸如 img 标签的 src 属性转换为 lc-src 防止浏览器加载图片
+    /**
+     * 将诸如 img 标签的 src 属性转换为 lc-src 防止浏览器加载图片
+     * @param  {[type]} html [description]
+     * @return {[type]}      [description]
+     */
     __transformHTML(html){
       if(!html) return html;
       // 将 meta link img 等无结束标签变成单结束标签
@@ -543,7 +593,11 @@
       return html;
     }
 
-    // 将之前的转换逆转回来
+    /**
+     * 将之前的转换逆转回来
+     * @param  {[type]} html [description]
+     * @return {[type]}      [description]
+     */
     __reverseHTML(html){
       if(!html) return html;
 
@@ -572,6 +626,16 @@
   /******************** Class Methods ********************/
 
 
+  /**
+   * 用 Cordova API 进行 HTPP 请求
+   * @param  {String} method   [description]
+   * @param  {[type]} url      [description]
+   * @param  {Object} params   [description]
+   * @param  {[type]} dataType [description]
+   * @param  {Object} headers  [description]
+   * @param  {[type]} options  [description]
+   * @return {[type]}          [description]
+   */
   LittleCrawler.cordovaAjax = function(method='get', url, params={}, dataType, headers={},
                 options){
     if(typeof cordovaHTTP == 'undefined')
@@ -613,9 +677,12 @@
   },
 
 
-  /*
-  * 获取 URL 的参数字符串
-  */
+  /**
+   * 获取 URL 的参数字符串
+   * @param  {[type]} url    [description]
+   * @param  {[type]} params [description]
+   * @return {[type]}        [description]
+   */
   LittleCrawler.__urlJoin = function(url, params){
 
     if(!params) return url;
@@ -629,14 +696,20 @@
       return `${url}&${params}`;
     else
       return `${url}${params}`;
-  }
+  },
 
 
-  /*
-  * 原始的 HTTP XHR
-  * url: 完整的 URL
-  * params: 参数
-  */
+  /**
+   * 原始的 HTTP XHR
+   * @param  {String} method          [description]
+   * @param  {[type]} url             [description]
+   * @param  {[type]} params          [description]
+   * @param  {[type]} dataType        [description]
+   * @param  {[type]} headers         [description]
+   * @param  {Number} options.timeout [description]
+   * @param  {[type]} options.retry   [description]
+   * @return {[type]}                 [description]
+   */
   LittleCrawler.ajax = function(method="GET", url, params, dataType, headers, {timeout=5, retry=1}={}) {
 
     return new Promise((resolve, reject) => {
@@ -713,19 +786,25 @@
       request.onabort = () => {
         console.error(`Fail to get: ${url}, 传输中断`);
         reject(new Error("AjaxError: Request Abort"));
-      }
+      };
 
       request.onerror = () => {
         console.error("Fail to get: " + url + ", 网络错误");
         reject(new Error("AjaxError: Request Error"));
-      }
+      };
 
       request.send(sendData);
     });
   },
 
-  // 从 Object 中获取数据
-  // eg: get "abc.def" from "{abc: {def: 1}}" using "abc::def" or "abc.def"
+  /**
+   * 从 Object 中获取数据
+   * @example
+   * get "abc.def" from "{abc: {def: 1}}" using "abc::def" or "abc.def"
+   * @param  {[type]} json [description]
+   * @param  {[type]} key  [description]
+   * @return {[type]}      [description]
+   */
   LittleCrawler.getDataFromObject = function(json, key){
 
     // filter 操作的实现函数
@@ -825,13 +904,15 @@
     keys = keys.map(k => splitKeyAndOperatorAndArgs(k));
     let result = getValue(json, keys, 0);
     return result;
-  }
+  },
 
 
-  // fix the url
-  // args:
-  // * url: the url to fix
-  // * host: the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
+  /**
+   * fix the url
+   * @param  {[type]} url  the url to fix
+   * @param  {[type]} host the host url to fix links, eg: fix /abc/get.php to http://www.abc.com/abc/get.php
+   * @return {[type]}      [description]
+   */
   LittleCrawler.fixurl = function(url, host){
     if(!url || url.match("^https?://"))
       return url;
@@ -855,22 +936,28 @@
       }
       else{
         // host = host.replace(/\?.*$/, ""); // 去掉?后面的内容
-        host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
+        host = host.replace(/\/[^\/]*$/, ""); // 去掉最后一个 / 后面的内容
         let m2 = url.match(/^\.\.\//g);
         url = url.replace(/^\.\.\//g, '');
         if(m2){
           for(let i = 0; i < m2.length; i++)
-            host = host.replace(/\/[^\/]*$/, "") // 去掉最后一个 / 后面的内容
+            host = host.replace(/\/[^\/]*$/, ""); // 去掉最后一个 / 后面的内容
         }
         url = `${scheme}${host}/${url}`;
 
       }
     }
     return url;
-  }
+  },
 
-  // 字符串格式化，类似于 Python 的 string.format
-  // stringify 为 true 表示将属性先 用 JSON.stringify() 处理之后再放入
+  /**
+   * 字符串格式化，类似于 Python 的 string.format
+   * stringify 为 true 表示将属性先 用 JSON.stringify() 处理之后再放入
+   * @param  {[type]}  string    [description]
+   * @param  {Object}  object    [description]
+   * @param  {Boolean} stringify [description]
+   * @return {[type]}            [description]
+   */
   LittleCrawler.format = function(string, object={}, stringify=false){
     if(!string) return string;
 
@@ -887,9 +974,13 @@
         return object[p1];
     });
     return result;
-  }
+  },
 
-  // 将复杂的 HTML 内容转换成只有文字和图片的简单的内容
+  /**
+   * 将复杂的 HTML 内容转换成只有文字和图片的简单的内容
+   * @param  {[type]} html [description]
+   * @return {[type]}      [description]
+   */
   LittleCrawler.clearHtml = function(html){
     if(!html) return html;
 
@@ -921,9 +1012,13 @@
     html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
 
     return html;
-  }
+  },
 
-  // 过滤 HTML 中的不需要的内容（如link、meta、script 等标签），用于爬虫
+  /**
+   * 过滤 HTML 中的不需要的内容（如link、meta、script 等标签），用于爬虫
+   * @param  {[type]} html [description]
+   * @return {[type]}      [description]
+   */
   LittleCrawler.filterHtmlContent = function(html){
     if(!html) return html;
 
@@ -935,10 +1030,15 @@
     let blackList = ['script', 'style', 'link', 'meta', 'iframe'];
     html = blackList.reduce((html, be) => LittleCrawler.filterTag(html, be), html);
     return html;
-  }
+  },
 
 
-  // 过滤某些标签
+  /**
+   * 过滤某些标签
+   * @param  {[type]} html [description]
+   * @param  {[type]} tag  [description]
+   * @return {[type]}      [description]
+   */
   LittleCrawler.filterTag = function(html, tag){
 
     if(!html || !tag) return html;
@@ -949,9 +1049,15 @@
     pattern = `<${tag}\\b([^>]*?)?>`;
     html = html.replace(new RegExp(pattern, 'gi'), '');
     return html;
-  }
+  },
 
-  // 替换标签
+  /**
+   * 替换标签
+   * @param  {[type]} html  [description]
+   * @param  {[type]} tag   [description]
+   * @param  {[type]} retag [description]
+   * @return {[type]}       [description]
+   */
   LittleCrawler.replaceTag = function(html, tag, retag){
     if(!html || !tag || !retag || tag == retag) return html;
     // 替换开头
@@ -961,42 +1067,61 @@
     pattern = `</${tag}>`;
     html = html.replace(new RegExp(pattern, 'gi'), `</${retag}>`);
     return html;
-  }
+  },
 
-  // 替换标签
+  /**
+   * 替换标签属性
+   * @param  {[type]} html   [description]
+   * @param  {[type]} attr   [description]
+   * @param  {[type]} reattr [description]
+   * @return {[type]}        [description]
+   */
   LittleCrawler.replaceAttribute = function(html, attr, reattr){
     if(!html || !attr || !reattr || attr == reattr) return html;
     // 替换开头
     return html.replace(new RegExp(`\\b${attr}=(?=["'])`, 'gi'), `${reattr}=`);
-  }
+  },
 
-  /*
-  * 判断对象的类型
-  * null -> null
-  * undefined -> undefined
-  * [] -> array
-  * {} -> object
-  * '' -> string
-  * 0.1 -> number
-  * new Error() -> error
-  * ()->{} -> function
-  */
+
+  /**
+   * 判断对象的类型
+   * * null -> null
+   * * undefined -> undefined
+   * * [] -> array
+   * * {} -> object
+   * * '' -> string
+   * * 0.1 -> number
+   * * new Error() -> error
+   * * ()->{} -> function
+   * @param  {[type]} obj [description]
+   * @return {[type]}     [description]
+   */
   LittleCrawler.type = function(obj){
     // return $.type(obj); // 只有这里用了 jquery
     let type = typeof(obj);
     if(type != 'object')
       return type;
     return obj.constructor.name.toLowerCase();
-  }
+  },
 
+  /**
+   * 从数组中获取指定索引的值，如果索引为负数，则从后往前反向获取
+   * @param  {[type]} array [description]
+   * @param  {[type]} index [description]
+   * @return {[type]}       [description]
+   */
   LittleCrawler.index = function(array, index){
     if(index >= 0)
       return array[index];
     else
       return array[array.length + index];
-  }
+  },
 
-  // transform text to html
+  /**
+   * transform text to html
+   * @param  {[type]} text [description]
+   * @return {[type]}      [description]
+   */
   LittleCrawler.text2html = function(text){
     if(!text) return text;
 
@@ -1014,7 +1139,7 @@
         .replace(/"/g, "&#34;")
         .replace(/'/g, "&#39;");
     }
-  }
+  },
 
   // 将第二个对象中的属性复制到第一个对象中
   // 只复制第一个对象中有的属性

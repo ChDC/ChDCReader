@@ -14,7 +14,10 @@
   const app = {
     /**************** 全局变量 *******************/
 
-    // 全局设置
+    /**
+     * 全局设置
+     * @type {Object}
+     */
     settings: {
       settings: {
         cacheChapterCount: 3, // 缓存后面章节的数目
@@ -45,7 +48,10 @@
         utils.saveData('settings.json', this.settings);
       }
     },
-    // 书籍来源管理器
+    /**
+     * 书源管理器
+     * @type {[type]}
+     */
     bookSourceManager: null,
 
     // 书架
@@ -73,7 +79,10 @@
       }
     },
 
-    // 初始化程序
+    /**
+     * 初始化程序
+     * @return {[type]} [description]
+     */
     init(){
 
       if(typeof cordova != 'undefined'){
@@ -88,8 +97,12 @@
       this.loadingbar = new uiutils.LoadingBar('./img/loading.gif');
     },
 
-    // 检查资源更新
-    // * isInstanceInstall 下载好资源后是否立即进行安装
+    /**
+     * 检查资源更新
+     * @param  {Boolean} isInstanceInstall 下载好资源后是否立即进行安装
+     * @param  {[type]}  showMessage       [description]
+     * @return {[type]}                    [description]
+     */
     chekcUpdate(isInstanceInstall, showMessage){
 
       if(!window.chcp)
@@ -144,7 +157,10 @@
       });
     },
 
-    // 检查是否是更新资源之后的首次启动
+    /**
+     * 检查是否是更新资源之后的首次启动
+     * @return {[type]} [description]
+     */
     checkIfUpdated(){
       if(localStorage.getItem("updated")){
         this.onUpdated();
@@ -197,14 +213,20 @@
       if(typeof(cordova) != "undefined" && cordova.InAppBrowser)
         window.open = cordova.InAppBrowser.open;
     },
-    // 资源更新完成后触发的事件，不过不能显示界面等
-    // 可用于清理更新数据等
+    /**
+     * 资源更新完成后触发的事件，不过不能显示界面等
+     * 可用于清理更新数据等
+     * @return {[type]} [description]
+     */
     onUpdateInstalled(){
       localStorage.setItem("updated", true);
       // location.reload();
       require(["executeOnUpdated"], (executeOnUpdated)=>executeOnUpdated.run());
     },
-    // 更新资源后首次触发的事件
+    /**
+     * 更新资源后首次触发的事件
+     * @return {[type]} [description]
+     */
     onUpdated(){
 
       // uiutils.showMessage("资源更新成功！");
@@ -212,7 +234,10 @@
       utils.get("data/UpdateLog.html").then(html => uiutils.showMessageDialog("资源更新说明", html, null, null, {position: "top"}));
     },
 
-    // 主题管理器
+    /**
+     * 主题管理器
+     * @type {Object}
+     */
     theme: {
       themes: {
         day: {
@@ -270,27 +295,21 @@
       }
     },
 
-    // 屏幕方向管理器
+    /**
+     * 屏幕方向管理器
+     * @type {Object}
+     */
     ScreenOrientation: {
 
       unlock(){
-        try{
-          window.screen.orientation.unlock();
-          return true;
-        }
-        catch(e){
-          return false;
-        }
+        return window.screen.orientation.unlock();
       },
 
       lock(orientation="landscape"){
-        try{
-          window.screen.orientation.lock("landscape");
-          return true;
-        }
-        catch(e){
-          return false;
-        }
+        return window.screen.orientation.lock("landscape")
+          .catch(e => {
+            uiutils.showError("该设备不支持该操作！");
+          });
       }
     }
   };

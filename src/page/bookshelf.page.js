@@ -59,7 +59,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       return false;
     }
 
-    // 只更新 UI 不重新加载数据
+    /**
+     * 只更新 UI 不重新加载数据
+     * @param  {[type]} bookShelf [description]
+     * @return {[type]}           [description]
+     */
     refreshBooksOrder(bookShelf){
       const books = bookShelf.books;
 
@@ -122,14 +126,21 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.addBookElementToBookShelf(nb, true);
     }
 
-    // 刷新所有的阅读记录
+    /**
+     * 刷新所有的阅读记录
+     * @return {[type]} [description]
+     */
     refreshAllReadingRecord(){
       // 只刷新读完的书的最新章节
       Array.from(this.finishedBookShelfElement.children())
         .forEach(e => this.refreshReadingRecord($(e)));
     }
 
-    // 刷新阅读记录
+    /**
+     * 刷新阅读记录
+     * @param  {[type]} bookElement [description]
+     * @return {[type]}             [description]
+     */
     refreshReadingRecord(bookElement){
       let bookshelfitem = bookElement.data("bookshelfitem");
       if(!bookshelfitem) throw new Error("empty illegal bookshelfitem");
@@ -161,7 +172,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         });
     }
 
-    // 移动书籍
+    /**
+     * 移动书籍
+     * @param {[type]}  bookElement [description]
+     * @param {Boolean} append      [description]
+     */
     addBookElementToFinishedBookShelf(bookElement, append=false){
       bookElement = $(bookElement);
       // 移动到读完书架
@@ -184,7 +199,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         this.bookShelfElement.prepend(bookElement);
     }
 
-    // 刷新每本书所在的书架
+    /**
+     * 刷新每本书所在的书架
+     * @return {[type]} [description]
+     */
     refreshBooksOwner(){
       Array.from(this.bookShelfElement.children()).forEach(bookElement =>
         $(bookElement).data("bookshelfitem").readingRecord.isFinished && this.addBookElementToFinishedBookShelf(bookElement));
@@ -192,7 +210,11 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         !$(bookElement).data("bookshelfitem").readingRecord.isFinished && this.addBookElementToBookShelf(bookElement));
     }
 
-    // 加载书架列表
+    /**
+     * 加载书架列表
+     * @param  {[type]} bookShelf [description]
+     * @return {[type]}           [description]
+     */
     loadBooks(bookShelf){
       const books = bookShelf.books;
       // this.bookShelfElement.empty();
@@ -202,7 +224,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       this.refreshAllReadingRecord();
     }
 
-    // 重新给所有书籍排序
+    /**
+     * 重新给所有书籍排序
+     * @return {[type]} [description]
+     */
     sortBooksByElementOrder(){
       const elements = this.bookShelfElement.children();
       let newBooks = Array.from(elements).map(e => $(e).data('bookshelfitem'))

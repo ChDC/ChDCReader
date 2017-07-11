@@ -24,11 +24,22 @@
 
     }
 
-    // 关闭当前页
+    /**
+     * Close Page
+     * @param  {[type]} params [description]
+     * @return {[type]}        [description]
+     */
     close(params){
       return this.pageManager.closePage(params);
     }
 
+    /**
+     * show page
+     * @param  {[type]} name    [description]
+     * @param  {[type]} params  [description]
+     * @param  {Object} options [description]
+     * @return {[type]}         [description]
+     */
     showPage(name, params, options={}){
       return this.pageManager.showPage(name, params, options);
     }
