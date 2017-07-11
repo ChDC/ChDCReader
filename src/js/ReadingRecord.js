@@ -25,10 +25,18 @@
     //   return this.isFinished ? "读完啦" : this.chapterTitle;
     // }
 
+    /**
+     * 获取章节索引
+     * @return {[type]} [description]
+     */
     getChapterIndex(){
       return this.isFinished ? this.chapterIndex + 1 : this.chapterIndex;
     }
 
+    /**
+     * 获取阅读位置
+     * @return {[type]} [description]
+     */
     getPageScrollTop(){
       return this.isFinished ? 0 : this.pageScrollTop;
     }
@@ -41,7 +49,10 @@
       return opts;
     }
 
-    // 清除数据
+    /**
+     * 清除数据
+     * @return {[type]} [description]
+     */
     reset(){
       this.chapterTitle = "";
       this.chapterIndex = 0;
@@ -49,7 +60,12 @@
       this.options = {};
     }
 
-    // 设置正在读的章节
+    /**
+     * 设置正在读的章节
+     * @param {[type]} chapterTitle [description]
+     * @param {[type]} chapterIndex [description]
+     * @param {[type]} options      [description]
+     */
     setReadingRecord(chapterTitle, chapterIndex, options){
       this.chapterIndex = chapterIndex;
       this.chapterTitle = chapterTitle;
@@ -58,7 +74,11 @@
       this.isFinished = false;
     }
 
-    // 设置阅读记录为下一章
+    /**
+     * 设置阅读记录为下一章
+     * @param {[type]}  book         [description]
+     * @param {Boolean} forceRefresh [description]
+     */
     setNextChapter(book, forceRefresh=false){
       return book.getChapterIndex(this.chapterTitle, this.chapterIndex, {forceRefresh: forceRefresh})
         .then(index => {
@@ -73,6 +93,10 @@
         });
     }
 
+    /**
+     * 标记本书读完
+     * @param {Boolean} isFinished [description]
+     */
     setFinished(isFinished){
       this.isFinished = isFinished;
       if(isFinished){
@@ -88,7 +112,10 @@
       return Chapter.equalTitle(chapterTitle, this.chapterTitle, true);
     }
 
-    // 获取阅读记录的状态文本
+    /**
+     * 获取阅读记录的状态文本
+     * @return {[type]} [description]
+     */
     getReadingRecordStatus(){
       let s = this.isFinished ? "读完" : "读到";
       return `${s}：${this.chapterTitle}`;

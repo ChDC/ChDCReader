@@ -24,7 +24,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         app.page.showPage("bookshelf");
     }
 
-    // 加载书籍详情
+    /**
+     * 加载书籍详情
+     * @return {[type]} [description]
+     */
     loadBookDetail(){
       let book = this.book;
       if(book.cover)
@@ -62,7 +65,11 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       }
     }
 
-    // 加载章节列表
+    /**
+     * 加载章节列表
+     * @param  {[type]} id [description]
+     * @return {[type]}    [description]
+     */
     loadBookChapters(id){
 
       this.bookChapterList.empty();

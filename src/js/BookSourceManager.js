@@ -22,7 +22,11 @@
       this.addCustomSourceFeature();
     }
 
-    // 加载配置
+    /**
+     * 加载配置
+     * @param  {[type]} configFileOrConfig [description]
+     * @return {[type]}                    [description]
+     */
     loadConfig(configFileOrConfig){
       let loadSources = (data) => {
         this.__sources = {};
@@ -41,8 +45,10 @@
       return this.__sources;
     }
 
-    // 把拦截函数功能添加到类中
-    // 可以设置前置拦截器、方法拦截器和后置拦截器
+    /**
+     * 把拦截函数功能添加到类中
+     * 可以设置前置拦截器、方法拦截器和后置拦截器
+     */
     addCustomSourceFeature(){
       if(!this.__customBookSource) return;
       let customFunctionList = ["getBook", "searchBook",
@@ -94,7 +100,13 @@
         .map(cm => cm.init && cm.init()));
     }
 
-    // 通过书名字和目录搜索唯一的书籍
+    /**
+     * 通过书名字和目录搜索唯一的书籍
+     * @param  {[type]} bsid       [description]
+     * @param  {[type]} bookName   [description]
+     * @param  {[type]} bookAuthor [description]
+     * @return {[type]}            [description]
+     */
     getBook(bsid, bookName, bookAuthor){
 
       if(!bsid || !bookName || !(bsid in this.__sources))
@@ -111,9 +123,13 @@
     }
 
 
-    // 全网搜索
-    // * options
-    // *   filterSameResult
+    /**
+     * 全局搜索
+     * @param  {[type]}  keyword                  [description]
+     * @param  {Boolean} options.filterSameResult 过滤不同源中的相同结果
+     * @param  {String}  options.bookType         [description]
+     * @return {[type]}                           [description]
+     */
     searchBookInAllBookSource(keyword, {filterSameResult=true, bookType=""}={}){
 
       let result = {};
@@ -171,7 +187,13 @@
 
 
 
-    // 从获取的数据中提取 Book
+    /**
+     * 从获取的数据中提取 Book
+     * @param  {[type]} bs       [description]
+     * @param  {[type]} m        [description]
+     * @param  {[type]} language [description]
+     * @return {[type]}          [description]
+     */
     __createBook(bs, m, language){
 
       m = translate.toSC(language, m, ['name', 'author', 'catagory', 'introduce', "lastestChapter"]);
@@ -193,7 +215,12 @@
 
     }
 
-    // 搜索书籍
+    /**
+     * 搜索书籍
+     * @param  {[type]} bsid    [description]
+     * @param  {[type]} keyword [description]
+     * @return {[type]}         [description]
+     */
     searchBook(bsid, keyword){
 
       const self = this;
@@ -243,7 +270,12 @@
       }
     }
 
-    // 使用详情页链接刷新书籍信息
+    /**
+     * 使用详情页链接刷新书籍信息
+     * @param  {[type]} bsid [description]
+     * @param  {[type]} dict [description]
+     * @return {[type]}      [description]
+     */
     getBookInfo(bsid, dict){
 
       const bs = this.__sources[bsid];
@@ -259,7 +291,12 @@
         });
     }
 
-    // 获取最新章节
+    /**
+     * 获取最新章节
+     * @param  {[type]} bsid [description]
+     * @param  {[type]} dict [description]
+     * @return {[type]}      [description]
+     */
     getLastestChapter(bsid, dict){
 
       const bs = this.__sources[bsid];
@@ -272,7 +309,12 @@
         });
     }
 
-    // 从某个网页获取目录链接
+    /**
+     * 从某个网页获取目录链接
+     * @param  {[type]} bsid [description]
+     * @param  {[type]} dict [description]
+     * @return {[type]}      [description]
+     */
     getBookCatalogLink(bsid, dict){
 
       const bs = this.__sources[bsid];
@@ -285,7 +327,12 @@
     }
 
 
-    // 获取书籍目录
+    /**
+     * 获取书籍目录
+     * @param  {[type]} bsid [description]
+     * @param  {[type]} dict [description]
+     * @return {[type]}      [description]
+     */
     getBookCatalog(bsid, dict){
 
       const bs = this.__sources[bsid];
@@ -302,7 +349,12 @@
         });
     }
 
-    // 从网络上获取章节内容
+    /**
+     * 从网络上获取章节内容
+     * @param  {[type]} bsid [description]
+     * @param  {Object} dict [description]
+     * @return {[type]}      [description]
+     */
     getChapterContent(bsid, dict={}){
 
       if(!dict.link && !dict.cid) return Promise.reject(206);
@@ -329,14 +381,24 @@
         });
     }
 
-    // 该源的目录是否有卷
+    /**
+     * 该源的目录是否有卷
+     * @param  {[type]}  bsid [description]
+     * @return {Boolean}      [description]
+     */
     hasVolume(bsid){
       const bs = this.__sources[bsid];
       if(!bs) throw new Error("Illegal booksource!");
       return bs.catalog.hasVolume;
     }
 
-    // 获取原网页
+    /**
+     * 获取原网页
+     * @param  {[type]} bsid [description]
+     * @param  {[type]} dict [description]
+     * @param  {[type]} key  [description]
+     * @return {[type]}      [description]
+     */
     getOfficialURLs(bsid, dict, key){
 
       const bs = this.__sources[bsid];
@@ -354,7 +416,12 @@
       return null;
     }
 
-    // 获取书籍的 DetailLink
+    /**
+     * 获取书籍的 DetailLink
+     * @param  {[type]} bsid [description]
+     * @param  {[type]} dict [description]
+     * @return {[type]}      [description]
+     */
     getBookDetailLink(bsid, dict){
 
       const bs = this.__sources[bsid];
@@ -363,7 +430,12 @@
       return this.__lc.getLink(bs.detail.request, dict);
     }
 
-    // 获取书籍的章节链接
+    /**
+     * 获取书籍的章节链接
+     * @param  {[type]} bsid [description]
+     * @param  {Object} dict [description]
+     * @return {[type]}      [description]
+     */
     getChapterLink(bsid, dict={}){
 
       if(!dict.link && !dict.cid) throw new Error(206);
@@ -374,14 +446,22 @@
       return this.__lc.getLink(bs.chapter.request, dict);
     }
 
-    // 按主源权重从大到小排序的数组
+    /**
+     * 按主源权重从大到小排序的数组
+     * @param  {[type]} type [description]
+     * @return {[type]}      [description]
+     */
     getSourcesKeysByMainSourceWeight(type){
       let sources = type != undefined ? this.getBookSourcesByBookType(type) : this.__sources;
       let key = "mainSourceWeight";
       return Object.entries(sources).sort((e1, e2) => - e1[1][key] + e2[1][key]).map(e => e[0]); // 按主源权重从大到小排序的数组
     }
 
-    // 获取和指定的 bsid 相同 type 的所有 sources
+    /**
+     * 获取和指定的 bsid 相同 type 的所有 sources
+     * @param  {[type]} bsid [description]
+     * @return {[type]}      [description]
+     */
     getBookSourcesBySameType(bsid){
       if(!bsid || !(bsid in this.__sources)) return null;
       let result = {};
@@ -389,7 +469,11 @@
       return this.getBookSourcesByBookType(type);
     }
 
-    // 获取和指定的 booktype 的所有 sources
+    /**
+     * 获取和指定的 booktype 的所有 sources
+     * @param  {[type]} type [description]
+     * @return {[type]}      [description]
+     */
     getBookSourcesByBookType(type){
       if(!type)
         return this.__sources;
@@ -401,7 +485,11 @@
       return result;
     }
 
-    // 获取指定的 booksource
+    /**
+     * 获取指定的 booksource
+     * @param  {[type]} bsid [description]
+     * @return {[type]}      [description]
+     */
     getBookSource(bsid){
       try{
         return this.__sources[bsid];
@@ -411,13 +499,17 @@
       }
     }
 
-    // 获取内容源的类型
+    /**
+     * 获取内容源的类型
+     * @param  {[type]} bsid [description]
+     * @return {[type]}      [description]
+     */
     getBookSourceTypeName(bsid){
       try{
         let typeName = {
           "comics": "漫画",
           "novel": "小说"
-        }
+        };
         return typeName[this.__sources[bsid].type];
       }
       catch(e){
@@ -425,7 +517,11 @@
       }
     }
 
-    // 获取内容源的类型
+    /**
+     * 获取内容源的类型
+     * @param  {[type]} bsid [description]
+     * @return {[type]}      [description]
+     */
     getBookSourceType(bsid){
       try{
         return this.__sources[bsid].type;

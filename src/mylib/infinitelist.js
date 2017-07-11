@@ -12,9 +12,14 @@
 
   class Infinitelist{
 
-    // buildElement(boundaryElement, direction) 当为 null 时表示加载第一个元素
-    // options
-    // * disableCheckPrevious 是否检查前面的内容边界
+    /**
+     * 构造 Infinitelist
+     * @param  {HTMLElement} container    存放列表元素的容器
+     * @param  {HTMLElement} elementList  元素列表元素
+     * @param  {Function} buildElement 用于构造元素的函数，buildElement(boundaryElement, direction) 当为 null 时表示加载第一个元素
+     * @param  {Object} options      disableCheckPrevious 是否检查前面的内容边界
+     * @return {[type]}              [description]
+     */
     constructor(container, elementList,
             buildElement,
             options={}){
@@ -49,12 +54,18 @@
     }
 
 
-    // 获取页内的滚动位置
-    getPageScorllTop(){
+    /**
+     * 获取页内的滚动位置
+     * @return {[type]} [description]
+     */
+    getPageScrollTop(){
       return this.__currentElement ? this.__container.scrollTop - this.__currentElement.offsetTop : 0;
     }
 
-    // 获取当前页面的滚动比
+    /**
+     * 获取当前页面的滚动比
+     * @return {[type]} [description]
+     */
     getScrollRate(){
       if(!this.__currentElement)
         return 0;
@@ -62,7 +73,10 @@
       return rate > 1 ? 1 : rate;
     }
 
-    // 滑动到下一个元素
+    /**
+     * 滑动到下一个元素
+     * @return {[type]} [description]
+     */
     nextElement(){
       let i = this.__getCurrentElementIndex();
       const ics = this.__elementList.children;
@@ -89,10 +103,13 @@
         });
     }
 
-    // 滑动到上一个元素
+    /**
+     * 滑动到上一个元素
+     * @return {[type]} [description]
+     */
     previousElement(){
       // 如果当前位置不是本章首位就滚动到本章首位
-      let st = this.getPageScorllTop();
+      let st = this.getPageScrollTop();
       if(st > 0){
         this.__container.scrollTop = this.__currentElement.offsetTop;
         return Promise.resolve();
@@ -127,7 +144,10 @@
         });
     }
 
-    // 加载列表数据
+    /**
+     * 加载列表数据
+     * @return {[type]} [description]
+     */
     loadList(){
 
       return this.checkBoundary(this.NEXT)
@@ -138,7 +158,10 @@
         });
     }
 
-    // 关闭
+    /**
+     * 关闭并清空数据
+     * @return {[type]} [description]
+     */
     close(){
       this.__container.removeEventListener('scroll', this.__scrollEventBindThis);
       Array.from(this.__elementList.children).forEach(e => e.remove());
@@ -147,18 +170,19 @@
         delete this[key];
     }
 
+    /**
+     * 获取当前第一个完全显示的元素
+     * @return {[type]} [description]
+     */
     getCurrentElement(){
       return this.__currentElement;
     }
 
-
-    // 获取当前元素的索引
     __getCurrentElementIndex(){
       if(!this.__currentElement) return -1;
       const ics = this.__elementList.children;
       return Array.from(ics).indexOf(this.__currentElement);
     }
-
 
     __enableScrollSupport(){
 
@@ -187,7 +211,7 @@
             this.fireEvent("scrollUp", {scrollTop: cst});
         }
         __lastScrollTop = cst;
-      }
+      };
 
       // 处理滚动的业务
       let __onScroll = (event, direction) => {
@@ -211,7 +235,11 @@
       this.__container.addEventListener('scroll', this.__scrollEventBindThis);
     }
 
-    // 检查当前元素是否改变
+    /**
+     * 检查当前元素是否改变
+     * @param  {[type]} direction [description]
+     * @return {[type]}           [description]
+     */
     __checkCurrentElementChange(direction){
       // if(!this.__currentElement) return;
       const CURRENT_ELEMENT_CHANGED_THRESHOLD = 0.1; // 检查当前元素变化的阈值，单位为容器的高度
@@ -232,7 +260,10 @@
         this.setCurrentElement(currentElement);
     }
 
-    // 设置当前元素
+    /**
+     * 设置当前元素
+     * @param {[type]} newCurrentElement [description]
+     */
     setCurrentElement(newCurrentElement){
       const oldValue = this.__currentElement;
       if(newCurrentElement == oldValue)
@@ -245,7 +276,11 @@
     }
 
 
-    // 向下、上检查
+    /**
+     * 向下、上检查
+     * @param  {[type]} direction [description]
+     * @return {[type]}           [description]
+     */
     checkBoundary(direction){
       // 加锁
       if(this.__isCheckingBoundary) return;
@@ -265,7 +300,12 @@
     }
 
 
-    // 在指定方向上检查指定元素是否超出边界
+    /**
+     * 在指定方向上检查指定元素是否超出边界
+     * @param  {[type]} element   [description]
+     * @param  {[type]} direction [description]
+     * @return {[type]}           [description]
+     */
     __isOutBoundary(element, direction){
       const wh = this.__container.offsetHeight;
       let result = false;
@@ -277,7 +317,12 @@
       return result;
     }
 
-    // 在指定方向上检查指定元素是否在边界上
+    /**
+     * 在指定方向上检查指定元素是否在边界上
+     * @param  {[type]} element   [description]
+     * @param  {[type]} direction [description]
+     * @return {[type]}           [description]
+     */
     __isOnBoundary(element, direction){
       const wh = this.__container.offsetHeight;
       let result = false;
@@ -289,7 +334,11 @@
       return result;
     }
 
-    // 清理超出边界的元素
+    /**
+     * 清理超出边界的元素
+     * @param  {[type]} direction [description]
+     * @return {[type]}           [description]
+     */
     clearOutBoundary(direction){
       const ies = this.__elementList.children;
       const cii = this.__getCurrentElementIndex();
@@ -319,7 +368,11 @@
         }
     }
 
-    // 获取边界元素
+    /**
+     * 获取边界元素
+     * @param  {[type]} direction [description]
+     * @return {[type]}           [description]
+     */
     __getBoundaryElement(direction){
       const es = this.__elementList.children;
       if(es.length <= 0)

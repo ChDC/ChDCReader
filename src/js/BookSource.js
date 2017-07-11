@@ -60,14 +60,20 @@
         });
     }
 
-    // 获取书籍信息
+    /**
+     * 获取书籍信息
+     * @return {[type]} [description]
+     */
     getBookInfo(){
       return this.__assertBookSource()
         .then(() =>
         this.bookSourceManager.getBookInfo(this.id, this));
     }
 
-    // 确保当前书籍指定的目录页的链接
+    /**
+     * 确保当前书籍指定的目录页的链接
+     * @return {[type]} [description]
+     */
     __assertBookSourceCatalogLink(){
       if(this.catalogLink === undefined)
         return this.bookSourceManager.getBookCatalogLink(this.id, this)
@@ -82,9 +88,12 @@
     // }
 
 
-    // 获取目录
-    // options:
-    // * forceRefresh 强制刷新
+    /**
+     * 获取目录
+     * @param  {Boolean} options.forceRefresh 强制刷新
+     * @param  {Boolean} options.refresh      [description]
+     * @return {[type]}                       [description]
+     */
     getCatalog({forceRefresh=false, refresh=false}){
       if(this.catalog && !forceRefresh &&
           (!refresh || (new Date()).getTime() - this.__updatedCatalogTime < BookSource.settings.refreshCatalogInterval * 1000 ))
@@ -115,7 +124,11 @@
       });
     }
 
-    // 获取书籍最新章节
+    /**
+     * 获取书籍最新章节
+     * @param  {Boolean} forceRefresh [description]
+     * @return {[type]}               [description]
+     */
     refreshLastestChapter(forceRefresh=false){
 
       if(!forceRefresh && (new Date()).getTime() - this.__updatedLastestChapterTime < BookSource.settings.refreshLastestChapterInterval * 1000)
@@ -147,9 +160,12 @@
     //   }
     // }
 
-    // 从本地或网络上获取章节内容
-    // * cacheDir 缓存章节的目录
-    // * onlyCacheNoLoad 只缓存章节，不加载章节
+    /**
+     * 从本地或网络上获取章节内容
+     * @param  {[type]} chapter         缓存章节的目录
+     * @param  {[type]} onlyCacheNoLoad 只缓存章节，不加载章节
+     * @return {[type]}                 [description]
+     */
     getChapter(chapter, onlyCacheNoLoad){
       // 从缓存中获取章节内容
       return this.__assertBookSource()

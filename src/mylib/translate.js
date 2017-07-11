@@ -10,7 +10,13 @@
 
   let translate = {
 
-    // 将数据翻译为简体中文
+    /**
+     * 将指定数据的制定键翻译为简体中文
+     * @param  {[type]} language [description]
+     * @param  {[type]} data     [description]
+     * @param  {[type]} keys     [description]
+     * @return {[type]}          [description]
+     */
     toSC(language, data, keys){
       if(!language) return data;
 
@@ -26,7 +32,13 @@
       return data;
     },
 
-    // 将数据从简体中文转换为另一种语言
+    /**
+     * 将指定数据的制定键转换为另一种语言
+     * @param  {[type]} language [description]
+     * @param  {[type]} data     [description]
+     * @param  {[type]} keys     [description]
+     * @return {[type]}          [description]
+     */
     fromSC(language, data, keys){
       if(!language) return data;
 
@@ -42,7 +54,11 @@
       return data;
     },
 
-    // 繁体中文转换为简体中文
+    /**
+     * 繁体中文转换为简体中文
+     * @param  {[type]} text [description]
+     * @return {[type]}      [description]
+     */
     sc2tc(text){
       if(!text) return text;
 
@@ -57,7 +73,11 @@
       }).join('');
     },
 
-    // 繁体中文转换成简体中文
+    /**
+     * 繁体中文转换成简体中文
+     * @param  {[type]} text [description]
+     * @return {[type]}      [description]
+     */
     tc2sc(text){
       if(!text) return text;
 
@@ -72,7 +92,11 @@
       }).join('');
     },
 
-    // 获取汉字的第一个拼音
+    /**
+     * 获取汉字的第一个拼音
+     * @param  {[type]} str [description]
+     * @return {[type]}     [description]
+     */
     getFirstPY(str){
       let uni = str.charCodeAt(0);
       return this.__strChineseFirstPY.charAt(uni - 19968)

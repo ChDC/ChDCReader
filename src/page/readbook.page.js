@@ -15,7 +15,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       this.isNewBook = true; // 标记是否是未加入书架的新书
       this.buildCatalogView = uifactory.buildCatalogView.bind(this);
       this.lastReadingScrollTop = 0;
-      this.chapterContainer;
+      this.chapterContainer = null;
       this.isFullScreen = false;
       this.screenOrientation = null;
     }
@@ -82,7 +82,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       if(typeof StatusBar != "undefined") StatusBar.show();
       app.ScreenOrientation.unlock(); // 解除屏幕锁定
 
-      this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
+      this.readingRecord.pageScrollTop = this.chapterList.getPageScrollTop();
       app.bookShelf.save();
 
       this.scrollTop = this.chapterContainer.scrollTop();
@@ -139,6 +139,7 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         this.refreshChapterList();
       });
       $("#btnRefresh").click(e => {
+        this.lastReadingScrollTop = this.chapterList.getPageScrollTop();
         this.refreshChapterList();
       });
       $("#btnSortReversed").click((e) => {
@@ -199,7 +200,11 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       });
     };
 
-    // 加载目录源列表
+    /**
+     * 加载目录源列表
+     * @param  {Boolean} changeContentSource [description]
+     * @return {[type]}                      [description]
+     */
     loadBookSource(changeContentSource=false){
 
       let sources = !changeContentSource ? this.book.getSourcesKeysByMainSourceWeight() : this.book.getSourcesKeysSortedByWeight();
@@ -268,7 +273,11 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       };
     }
 
-    // 加载目录
+    /**
+     * 加载目录
+     * @param  {[type]} forceRefresh [description]
+     * @return {[type]}              [description]
+     */
     loadCatalog(forceRefresh){
 
       app.showLoading();
@@ -419,7 +428,12 @@ define(["jquery", "main", "Page", "utils", "uiutils",
     }
 
 
-    // 构造读完页面
+    /**
+     * 构造读完页面
+     * @param  {[type]} chapterIndex [description]
+     * @param  {[type]} options      [description]
+     * @return {[type]}              [description]
+     */
     buildLastPage(chapterIndex, options){
       const nc = $('.template .readFinished').clone();
       if(!nc || nc.length <=0)
@@ -490,7 +504,11 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         });
     }
 
-    // 加载所有的图片
+    /**
+     * 加载所有的图片
+     * @param  {[type]} content [description]
+     * @return {[type]}         [description]
+     */
     loadImages(content){
       // 异步加载
       // 先用灰色的数字占位，等加载完成之后再替换
@@ -570,7 +588,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
       }
     }
 
-    // 下一章节
+    /**
+     * 下一章节
+     * @return {[type]} [description]
+     */
     nextChapter(){
       app.showLoading();
       this.chapterList.nextElement(false)
@@ -578,7 +599,10 @@ define(["jquery", "main", "Page", "utils", "uiutils",
         .catch(e => app.hideLoading());
     }
 
-    // 上一章节
+    /**
+     * 上一章节
+     * @return {[type]} [description]
+     */
     previousChapter(){
       app.showLoading();
       this.chapterList.previousElement(true)

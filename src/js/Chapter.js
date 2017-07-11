@@ -21,13 +21,22 @@
       // this.modifyTime = undefined;  // 修改时间
     }
 
-    // 判断是否是 VIP
+    /**
+     * 判断是否是 VIP
+     * @return {Boolean} [description]
+     */
     isVIP(){
       return !this.cid && !this.link && this.title;
     }
   }
 
-  // 判断两个标题是否相等，传入的是章节标题
+  /**
+   * 判断两个标题是否相等，传入的是章节标题
+   * @param  {[type]}   ca    [description]
+   * @param  {Function} cb    [description]
+   * @param  {Boolean}  loose [description]
+   * @return {[type]}         [description]
+   */
   Chapter.equalTitle = function(ca, cb, loose=false){
 
     if(ca == cb) return true;
@@ -93,7 +102,15 @@
     [true, false, c => {let m = c.replace(/^\d+/, ""); return m ? m : c}], // 去掉章节号只比较章节标题
   ];
 
-  // 在章节列表中查找相同的章节
+  /**
+   * 在章节列表中查找相同的章节
+   * @param  {[type]}  catalog  [description]
+   * @param  {[type]}  catalogB [description]
+   * @param  {[type]}  index    [description]
+   * @param  {[type]}  matches  [description]
+   * @param  {Boolean} loose    [description]
+   * @return {[type]}           [description]
+   */
   Chapter.findEqualChapter = function(catalog, catalogB, index, matches, loose=false){
 
     if(!catalog || !catalogB || !matches || !catalog.length || !catalogB.length) return -1;
@@ -135,9 +152,14 @@
     if(handleCatalog(undefined, false, (c1, c2) => c1.includes(c2) || c2.includes(c1))) return i;
 
     return -1;
-  }
+  },
 
-  // 比较去掉所有空格和标点符号之后的所有符号
+  /**
+   * 比较去掉所有空格和标点符号之后的所有符号
+   * @param  {[type]}  str           [description]
+   * @param  {Boolean} removeNumbers [description]
+   * @return {[type]}                [description]
+   */
   Chapter.stripString = function(str, removeNumbers=false){
     if(!str) return str;
 

@@ -16,11 +16,19 @@
       this.clearChapterCache();
     },
 
+    /**
+     * 清空书籍目录
+     * @return {[type]} [description]
+     */
     clearCatalog(){
       console.log("clear catalog");
       utils.removeData("catalog/");
     },
 
+    /**
+     * 清空缓存章节
+     * @return {[type]} [description]
+     */
     clearChapterCache(){
       console.log("clear chapter cache");
       utils.removeData("chapter/", true);

@@ -30,7 +30,11 @@
     */
     type: LittleCrawler.type,
 
-    // 安全的执行 eval
+    /**
+     * 安全的执行 eval
+     * @param  {[type]} code [description]
+     * @return {[type]}      [description]
+     */
     eval(code){
       let evalCode = `
         'use strict'
@@ -39,9 +43,12 @@
       return eval(evalCode);
     },
 
-    /*
-    * 输出log 信息
-    */
+    /**
+     * 输出log 信息
+     * @param  {[type]} content       [description]
+     * @param  {[type]} detailContent [description]
+     * @return {[type]}               [description]
+     */
     log(content, detailContent) {
       const msg = `[${(new Date()).toLocaleString()}] ${content}${detailContent ? `: ${detailContent}` : '' }`;
       console.log(msg);
@@ -51,47 +58,33 @@
       console.error(msg);
     },
 
-
-    /*
-    * 原始的 HTTP Get
-    * url: 完整的 URL
-    * params: 参数
-    */
-    // get(url, params, dataType, {timeout=5}={}) {
-    //     if(url == null)return Promise.reject();
-
-    //     this.log(`Get: ${this.__urlJoin(url, params)}`);
-
-    //     const getPromise = new Promise((resolve, reject) => {
-    //         url = encodeURI(url);
-    //         $.get(url, params, resolve, dataType)
-    //             .fail(data => reject(data));
-    //     });
-
-    //     if(timeout <= 0)
-    //         return getPromise;
-
-    //     const timeoutPromise = new Promise((resolve, reject) => {
-    //         setTimeout(reject, timeout*1000);
-    //     });
-
-    //     return Promise.race([getPromise, timeoutPromise])
-    //         .catch(error => {
-    //             this.error("Fail to get: " + url + ", 网络错误");
-    //             throw error;
-    //         });
-    // },
-
+    /**
+     * AJAX GET
+     * @param  {[type]} url      [description]
+     * @param  {[type]} params   [description]
+     * @param  {[type]} dataType [description]
+     * @param  {[type]} options  [description]
+     * @return {[type]}          [description]
+     */
     get(url, params, dataType, options){
       return LittleCrawler.ajax("GET", url, params, dataType, {}, options);
     },
 
-    // 获取 JSON 格式
+    /**
+     * AJAX 获取 JSON 格式
+     * @param  {[type]} url    [description]
+     * @param  {[type]} params [description]
+     * @return {[type]}        [description]
+     */
     getJSON(url, params){
       return this.get(url, params, "json");
     },
 
-    // 从 URL 字符串中获取参数对象
+    /**
+     * 从 URL 字符串中获取参数对象
+     * @param  {[type]} url [description]
+     * @return {[type]}     [description]
+     */
     getParamsFromURL(url){
       if(!url)return {};
       let i = url.indexOf("?");
@@ -113,7 +106,9 @@
       return params;
     },
 
-    // HTML 内容转换为 Text
+    /**
+     * HTML 内容转换为 Text
+     */
     // html2text(html){
 
     //   function replaceElement(html, element, replaceString){
@@ -145,8 +140,10 @@
     //   return html.trim();
     // },
 
-    // 将大写数字转换为小写的
-    // 仅支持四位
+    /**
+     * 将大写数字转换为小写的
+     * 注意：仅支持四位
+     */
     lowerCaseNumbers(str){
       if(!str) return str;
       str.replace('两', '二');
@@ -180,7 +177,12 @@
         });
     },
 
-    // 将 Object 类型转换为指定的类
+    /**
+     * 将 Object 类型转换为指定的类
+     * @param  {Object} obj           [description]
+     * @param  {Function} ClassFunction [description]
+     * @return {[type]}               [description]
+     */
     objectCast(obj, ClassFunction){
       if(!obj || !ClassFunction) return obj;
 
@@ -189,7 +191,12 @@
       return nc;
     },
 
-    // 将数组中的每个成员的类型都转换为执行的类
+    /**
+     * 将数组中的每个成员的类型都转换为指定的类
+     * @param  {Array} array         [description]
+     * @param  {Function} ClassFunction [description]
+     * @return {[type]}               [description]
+     */
     arrayCast(array, ClassFunction){
       if(!array || !ClassFunction) return array;
 
@@ -201,7 +208,14 @@
       return array;
     },
 
-    // 从副列表中匹配（必须相等）查询主列表的元素的索引
+    /**
+     * 从副列表中匹配（必须相等）查询主列表的元素的索引
+     * @param  {[type]} listA         主列表
+     * @param  {[type]} listB         被搜索列表
+     * @param  {[type]} indexA        主列表中的匹配记录索引
+     * @param  {[type]} equalFunction 判等函数
+     * @return {[type]}               [description]
+     */
     listMatch(listA, listB, indexA,
       equalFunction=(i1,i2)=>i1==i2, startIndexB=0){
       if(!listA || !listB) return -1;
@@ -272,8 +286,15 @@
       }
     },
 
-    // 通过判断章节上下两个邻居是否相同来判断当前章节是否相等
-    listMatchWithNeighbour(listA, listB, indexA, equalFunction=(i1, i2)=>i1==i2, indexB){
+    /**
+     * 通过判断记录上下两个邻居是否相同来判断当前记录是否符合要求
+     * @param  {[type]} listA         主列表
+     * @param  {[type]} listB         被搜索的列表
+     * @param  {[type]} indexA        主列表中的匹配记录索引
+     * @param  {[type]} equalFunction 判等函数
+     * @return {[type]}               [description]
+     */
+    listMatchWithNeighbour(listA, listB, indexA, equalFunction=(i1, i2)=>i1==i2){
 
       if(!listA || !listB) return -1;
 
@@ -308,12 +329,11 @@
       }
 
       itemALeft = listA[indexALeft];
-      itemARight = listA[indexARight]
+      itemARight = listA[indexARight];
 
 
       let i = -1; // startIndexB
 
-      // 如果提供了 indexB 则使用
       while(true)
       {
         i = listB.slice(i+1).findIndex(e => equalFunction(e, itemALeft));
@@ -343,7 +363,13 @@
       }
     },
 
-    // 保存已经被 JSON.stringify 格式化后的字符串
+    /**
+     * 保存已经被 JSON.stringify 格式化后的字符串
+     * @param  {[type]}  key       [description]
+     * @param  {String}  data      [description]
+     * @param  {Boolean} onlyCache 在缓存存储中操作，否则在永久存储中操作
+     * @return {[type]}            [description]
+     */
     saveTextData(key, data, onlyCache=false){
       if(!key || !data)
         return Promise.reject(new Error("Illegal args"));
@@ -357,7 +383,13 @@
       }
     },
 
-    // 保存数据
+    /**
+     * 保存数据到指定键中
+     * @param  {[type]}  key       [description]
+     * @param  {Object}  data      [description]
+     * @param  {Boolean} onlyCache 在缓存存储中操作，否则在永久存储中操作
+     * @return {[type]}            [description]
+     */
     saveData(key, data, onlyCache=false){
       if(!key || !data)
         return Promise.reject(new Error("Illegal args"));
@@ -366,7 +398,12 @@
       return this.saveTextData(key, data, onlyCache);
     },
 
-    // 加载数据
+    /**
+     * 加载指定键的数据
+     * @param  {[type]}  key       [description]
+     * @param  {Boolean} onlyCache 在缓存存储中操作，否则在永久存储中操作
+     * @return {[type]}            [description]
+     */
     loadData(key, onlyCache=false){
       if(!key) return Promise.reject(new Error("Illegal args"));
 
@@ -381,7 +418,13 @@
       }
     },
 
-    // 删除数据
+    /**
+     * 删除制定键的数据
+     * 如果键的末尾是 /，则删除以该键开头的所有键，该操作用于删除目录
+     * @param  {[type]}  key       [description]
+     * @param  {Boolean} onlyCache 在缓存存储中操作，否则在永久存储中操作
+     * @return {[type]}            [description]
+     */
     removeData(key, onlyCache=false){
       if(!key) return Promise.reject(new Error("Illegal args"));
 
@@ -392,9 +435,9 @@
         const s = onlyCache? sessionStorage : localStorage;
         if(key[key.length - 1] == "/"){
           let pattern = new RegExp(`^${key}`);
-          for(var key in s)
-            if(key.match(pattern))
-              delete s[key];
+          for(let k in s)
+            if(k.match(pattern))
+              delete s[k];
         }
         else
           s.removeItem(key);
@@ -402,7 +445,12 @@
       }
     },
 
-    // 数据是否存在
+    /**
+     * 指定键的数据是否存在
+     * @param  {String}  key       [description]
+     * @param  {Boolean} onlyCache 在缓存存储中操作，否则在永久存储中操作
+     * @return {[type]}            [description]
+     */
     dataExists(key, onlyCache=false){
       if(window.requestFileSystem){
         return fileSystem.fileExists(key, onlyCache);
@@ -413,7 +461,11 @@
       }
     },
 
-    // 在一个错误数组中找出数量最多的那个错误
+    /**
+     * 在一个错误数组中找出数量最多的那个错误
+     * @param  {[type]} errorList [description]
+     * @return {[type]}           [description]
+     */
     findMostError(errorList){
 
       if(!errorList) return errorList;
@@ -465,7 +517,11 @@
     //   return result;
     // },
 
-    // 添加事件监听机制
+    /**
+     * 添加事件监听机制
+     * 支持 addEventListener、fireEvent、removeEventListener 等
+     * @param {[type]} obj [description]
+     */
     addEventSupport(obj){
       obj.__events = {};
       obj.addEventListener = addEventListener.bind(obj);
@@ -540,7 +596,12 @@
       }
     },
 
-    // 持久化数据
+    /**
+     * 将对象持久化
+     * 可在对象的 persistentInclude 字段中指定要持久化的字段列表
+     * @param  {[type]} o [description]
+     * @return {[type]}   [description]
+     */
     persistent(o){
       function __persistent(obj){
         // undefined
@@ -600,7 +661,12 @@
       return __persistent(o);
     },
 
-    // 判断点是否在区域内
+    /**
+     * 判断点是否在区域内
+     * @param  {Rect}  rect  [description]
+     * @param  {Point}  point [description]
+     * @return {Boolean}       [description]
+     */
     isPointInRect(rect, point){
       if(!point || !rect) return false;
       let x = point.x || point.X;
@@ -611,7 +677,11 @@
       return false;
     },
 
-    // 获取箱图
+    /**
+     * 获取数据的箱图
+     * @param  {Array} data [description]
+     * @return {Boxpolt}      [description]
+     */
     getBoxPlot(data){
       let Q1, Q2, Q3;
       data = Object.assign([], data);
@@ -627,10 +697,12 @@
         Q3: Q3,
         Q0: Q1 - 1.5 * (Q3 - Q1),
         Q4: Q3 + 1.5 * (Q3 - Q1),
-      }
+      };
     },
 
-    // 全角转换为半角
+    /**
+     * 将字符串中的全角字符转换为半角字符
+     */
     DBCtoCDB(str)
     {
       let whiteList = "，。！“”《》？（）‘’：；·~……";
@@ -645,7 +717,12 @@
         .join("");
     },
 
-    // 获取压缩文件中的数据
+    /**
+     * 获取压缩文件中的数据
+     * @param  {ArrayBuffer} arrayBuffer 数据
+     * @param  {Number} entryIndex  指定文件列表中想要获取记录的索引
+     * @return {[type]}             [description]
+     */
     getDataFromZipFile(arrayBuffer, entryIndex = 0){
       return new Promise((resolve, reject) => {
         // zip.workerScriptsPath = "lib/zip/";
@@ -660,9 +737,46 @@
       });
     },
 
+    /**
+     * 获取 GUID 值
+     * @param  {Number} scale 使用的进制，默认是32进制，节省空间
+     * @return {[type]}       [description]
+     */
     getGUID(scale=32){
       return new Date().getTime().toString(scale) + (Math.random() * 10000).toFixed().toString(scale);
+    },
+
+    Random: {
+      /**
+       * 生成随机整数
+       * @param  {int} ceil  上界(不包含)
+       * @param  {int} floor 下界(包含)
+       * @return {int}       [description]
+       */
+      randomInt(ceil, floor){
+        if(floor == undefined)
+          floor = 0;
+        if(ceil == undefined)
+          ceil = floor;
+        return Number.parseInt((ceil - floor) * Math.random() + floor);
+      },
+
+      /**
+       * 从数组中随机选择一个元素
+       * @param  {Array} array [description]
+       * @param  {[type]} from  起始
+       * @param  {[type]} to    终止（不包含该索引）
+       * @return {[type]}       [description]
+       */
+      choice(array, from=0, to){
+        if(!array)
+          return null;
+        if(to == undefined)
+          to = array.length;
+        return array[this.randomInt(to, from)];
+      }
     }
+
   };
 
 }));

@@ -20,7 +20,11 @@
       utils.addEventSupport(this); // 添加事件机制
     }
 
-    // 加载书籍
+    /**
+     * 加载书籍
+     * @param  {[type]} bookSourceManager [description]
+     * @return {[type]}                   [description]
+     */
     load(bookSourceManager){
 
       return utils.loadData(this.name+".json")
@@ -35,12 +39,21 @@
         .then(() => this.fireEvent("loadedData"));
     }
 
-    // 保存数据
+    /**
+     * 保存数据
+     * @return {[type]} [description]
+     */
     save(){
       return utils.saveTextData(this.name+".json", utils.persistent(this))
         .then(() => this.fireEvent("savedData"));
     }
 
+    /**
+     * 创建新的书架记录元素
+     * @param  {[type]} book          [description]
+     * @param  {[type]} readingRecord [description]
+     * @return {[type]}               [description]
+     */
     newBookShelfItem(book, readingRecord){
       return {
         book: book,
@@ -50,7 +63,11 @@
       };
     }
 
-    // 获取 BookShelfItem 的设置
+    /**
+     * 获取 BookShelfItem 的设置
+     * @param  {[type]} book [description]
+     * @return {[type]}      [description]
+     */
     getBookSettings(book){
       if(!book) return {};
       let bookShelfItem = this.books.find(e => e.book == book);
@@ -58,6 +75,12 @@
       return bookShelfItem.settings || {};
     }
 
+    /**
+     * 设置指定的书籍设置
+     * @param {[type]} book  [description]
+     * @param {[type]} key   [description]
+     * @param {[type]} value [description]
+     */
     setBookSettingsValue(book, key, value){
       if(!book) return;
       let bookShelfItem = this.books.find(e => e.book == book);
@@ -67,7 +90,11 @@
       bookShelfItem.settings[key] = value;
     }
 
-    // 添加书籍到书架中
+    /**
+     * 添加书籍到书架中
+     * @param {[type]} book          [description]
+     * @param {[type]} readingRecord [description]
+     */
     addBook(book, readingRecord){
       if(!this.hasBook(book)){
         // 默认添加到开头
@@ -90,7 +117,11 @@
     //   return bookshelfitem.lockLocation >= 0;
     // }
 
-    // 用特定的排序函数或者新的排序传递进行排序
+    /**
+     * 用特定的排序函数或者新的排序传递进行排序
+     * @param  {[type]} functionOrArray [description]
+     * @return {[type]}                 [description]
+     */
     sortBooks(functionOrArray){
       let newOrder, unIncludedItems;
       switch(utils.type(functionOrArray)){
@@ -127,7 +158,11 @@
       return true;
     }
 
-    // 判断书架中是否有某书
+    /**
+     * 判断书架中是否有某书
+     * @param  {[type]}  book [description]
+     * @return {Boolean}      [description]
+     */
     hasBook(book){
       if(!book)
         return book;
@@ -137,7 +172,11 @@
       });
     }
 
-    // 删除某书
+    /**
+     * 删除某书
+     * @param  {[type]} book [description]
+     * @return {[type]}      [description]
+     */
     removeBook(book){
       let index = this.books.findIndex(e => e.book == book);
       if(index < 0)

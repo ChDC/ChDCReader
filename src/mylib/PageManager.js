@@ -25,17 +25,27 @@
       window.onpopstate = this.__popState.bind(this);
     }
 
-    // 重载当前页面
+    /**
+     * 重载当前页面
+     * @return {[type]} [description]
+     */
     reload(){
       // TODO
 
     }
 
+    /**
+     * 获取页面栈中当前页的数量
+     * @return {[type]} [description]
+     */
     getPageCount(){
       return this.__pageStack.length;
     }
 
-    // 设置主题
+    /**
+     * 设置主题
+     * @param {[type]} theme [description]
+     */
     setTheme(theme){
       if(this.__theme != theme){
         this.__theme = theme;
@@ -65,6 +75,11 @@
       }
     }
 
+    /**
+     * 获取指定页名字对应的页面资源路径
+     * @param  {[type]} name [description]
+     * @return {[type]}      [description]
+     */
     getURLs(name){
       const baseurl = `${this.__baseurl}/${name}.page`;
       return {
@@ -76,7 +91,11 @@
       };
     }
 
-    // 获取页面，缺省为当前页面
+    /**
+     * 获取页面，缺省为当前页面
+     * @param  {[type]} name [description]
+     * @return {[type]}      [description]
+     */
     getPage(name){
       if(!name)
         // 当前页面
@@ -85,7 +104,14 @@
       return this.__pageStack.find(e => e.name == name);
     }
 
-    // 显示指定的页面
+    /**
+     * 显示指定的页面
+     * @param  {[type]}  name               [description]
+     * @param  {[type]}  params             [description]
+     * @param  {Object}  options            [description]
+     * @param  {Boolean} dontShowTargetPage [description]
+     * @return {[type]}                     [description]
+     */
     showPage(name, params, options={}, dontShowTargetPage=false){
 
       // console.log("showPage", baseurl);
@@ -163,13 +189,25 @@
       return page;
     }
 
-    // 关闭当前页面并跳转到另一个页面
+    /**
+     * 关闭当前页面并跳转到另一个页面
+     * @param  {[type]} name    [description]
+     * @param  {[type]} params  [description]
+     * @param  {Object} options [description]
+     * @return {[type]}         [description]
+     */
     closeCurrentPagetAndShow(name, params, options={}){
       return this.closePage(undefined, undefined, true)
         .then(() => this.showPage(name, params, options, true));
     }
 
-    // 关闭当前页面
+    /**
+     * 关闭当前页面
+     * @param  {[type]}  name               [description]
+     * @param  {[type]}  params             [description]
+     * @param  {Boolean} dontShowTargetPage [description]
+     * @return {[type]}                     [description]
+     */
     closePage(name, params, dontShowTargetPage=false){
 
       let cp = this.getPage();

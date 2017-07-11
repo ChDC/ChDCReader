@@ -43,7 +43,12 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function($, app, Page, ut
       this.loadedRemember = true;
     }
 
-    // 加载结果列表
+    /**
+     * 加载结果列表
+     * @param  {[type]} id    [description]
+     * @param  {[type]} books [description]
+     * @return {[type]}       [description]
+     */
     loadBooks(id, books){
       const bs = $(id);
       const b = $(".template .book");
