@@ -740,9 +740,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       nb.sources[bsid] = nbs;
     }
     return nb;
-  };
-
-  Book.equal = function (bookA, bookB) {
+  }, Book.equal = function (bookA, bookB) {
     return bookA.name == bookB.name && bookA.author == bookB.author;
   };
 

@@ -196,7 +196,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var equalFunction = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (i1, i2) {
         return i1 == i2;
       };
-      var indexB = arguments[4];
 
 
       if (!listA || !listB) return -1;
@@ -235,6 +234,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       itemARight = listA[indexARight];
 
       var i = -1;
+
       while (true) {
         i = listB.slice(i + 1).findIndex(function (e) {
           return equalFunction(e, itemALeft);
@@ -303,8 +303,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         var s = onlyCache ? sessionStorage : localStorage;
         if (key[key.length - 1] == "/") {
           var pattern = new RegExp("^" + key);
-          for (var key in s) {
-            if (key.match(pattern)) delete s[key];
+          for (var k in s) {
+            if (k.match(pattern)) delete s[k];
           }
         } else s.removeItem(key);
         return Promise.resolve();
@@ -580,6 +580,24 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 32;
 
       return new Date().getTime().toString(scale) + (Math.random() * 10000).toFixed().toString(scale);
+    },
+
+
+    Random: {
+      randomInt: function randomInt(ceil, floor) {
+        if (floor == undefined) floor = 0;
+        if (ceil == undefined) ceil = floor;
+        return Number.parseInt((ceil - floor) * Math.random() + floor);
+      },
+      choice: function choice(array) {
+        var from = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        var to = arguments[2];
+
+        if (!array) return null;
+        if (to == undefined) to = array.length;
+        return array[this.randomInt(to, from)];
+      }
     }
+
   };
 });

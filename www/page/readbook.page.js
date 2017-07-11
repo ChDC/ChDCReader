@@ -27,7 +27,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
       _this.isNewBook = true;
       _this.buildCatalogView = uifactory.buildCatalogView.bind(_this);
       _this.lastReadingScrollTop = 0;
-      _this.chapterContainer;
+      _this.chapterContainer = null;
       _this.isFullScreen = false;
       _this.screenOrientation = null;
       return _this;
@@ -98,7 +98,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
         if (typeof StatusBar != "undefined") StatusBar.show();
         app.ScreenOrientation.unlock();
 
-        this.readingRecord.pageScrollTop = this.chapterList.getPageScorllTop();
+        this.readingRecord.pageScrollTop = this.chapterList.getPageScrollTop();
         app.bookShelf.save();
 
         this.scrollTop = this.chapterContainer.scrollTop();
@@ -185,6 +185,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'mylib/infinitelist', "Rea
           _this5.refreshChapterList();
         });
         $("#btnRefresh").click(function (e) {
+          _this5.lastReadingScrollTop = _this5.chapterList.getPageScrollTop();
           _this5.refreshChapterList();
         });
         $("#btnSortReversed").click(function (e) {

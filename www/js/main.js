@@ -226,22 +226,14 @@
 
     ScreenOrientation: {
       unlock: function unlock() {
-        try {
-          window.screen.orientation.unlock();
-          return true;
-        } catch (e) {
-          return false;
-        }
+        return window.screen.orientation.unlock();
       },
       lock: function lock() {
         var orientation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "landscape";
 
-        try {
-          window.screen.orientation.lock("landscape");
-          return true;
-        } catch (e) {
-          return false;
-        }
+        return window.screen.orientation.lock("landscape").catch(function (e) {
+          uiutils.showError("该设备不支持该操作！");
+        });
       }
     }
   };

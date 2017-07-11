@@ -41,8 +41,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(Infinitelist, [{
-      key: "getPageScorllTop",
-      value: function getPageScorllTop() {
+      key: "getPageScrollTop",
+      value: function getPageScrollTop() {
         return this.__currentElement ? this.__container.scrollTop - this.__currentElement.offsetTop : 0;
       }
     }, {
@@ -82,7 +82,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function previousElement() {
         var _this2 = this;
 
-        var st = this.getPageScorllTop();
+        var st = this.getPageScrollTop();
         if (st > 0) {
           this.__container.scrollTop = this.__currentElement.offsetTop;
           return Promise.resolve();

@@ -192,9 +192,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })) return i;
 
     return -1;
-  };
-
-  Chapter.stripString = function (str) {
+  }, Chapter.stripString = function (str) {
     var removeNumbers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
     if (!str) return str;
