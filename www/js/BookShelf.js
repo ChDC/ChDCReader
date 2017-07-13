@@ -94,9 +94,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
     }, {
+      key: "putBookFront",
+      value: function putBookFront(book) {
+        var i = this.books.findIndex(function (e) {
+          return e.book == book;
+        });
+        if (i >= 0) {
+          var bookShelfItem = this.books.splice(i, 1)[0];
+          this.books.unshift(bookShelfItem);
+          return true;
+        }
+        return false;
+      }
+    }, {
       key: "sortBooks",
       value: function sortBooks(functionOrArray) {
         var _this3 = this;
+
+        var putUnIncludedItemsFront = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
         var newOrder = void 0,
             unIncludedItems = void 0;
@@ -114,7 +129,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             unIncludedItems = this.books.filter(function (e) {
               return !newOrder.includes(e);
             });
-            newOrder = newOrder.concat(unIncludedItems);
+            if (putUnIncludedItemsFront) newOrder = unIncludedItems.concat(newOrder);else newOrder = newOrder.concat(unIncludedItems);
             break;
 
           default:

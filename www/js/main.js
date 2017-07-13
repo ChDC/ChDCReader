@@ -18,14 +18,13 @@
         cacheChapterCount: 3,
         cacheCountEachChapter: 1,
         cacheCountEachChapterWithWifi: 3,
+        fatUpMode: false,
         theme: {
           nighttheme: "night1",
           daytheme: "",
           night: false
         },
-        scrollTop: {
-          "bookshelf": 0
-        }
+        scrollTop: {}
       },
 
       load: function load() {
@@ -156,10 +155,13 @@
         var m = Array.from(document.querySelectorAll('.modal')).reverse().find(function (e) {
           return e.style.display == 'block';
         });
-        if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) navigator.app.backHistory();else {
-            var now = new Date().getTime();
-            if (now - lastPressBackTime < 700) navigator.app.exitApp();else lastPressBackTime = now;
-          }
+        if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) {
+          app.hideLoading();
+          navigator.app.backHistory();
+        } else {
+          var now = new Date().getTime();
+          if (now - lastPressBackTime < 700) navigator.app.exitApp();else lastPressBackTime = now;
+        }
       }, false);
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
