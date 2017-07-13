@@ -15,7 +15,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         // 添加了书籍
         // 更新UI
         this.addBook(e.bookShelfItem);
-        this.refreshBooksOrder(this.bookShelf)
+        this.refreshBooksOrder(this.bookShelf);
       });
 
       this.container = $('.container');
@@ -23,7 +23,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
 
     onPause(){
       this.modalFinishedBooks.modal('hide');
-      app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
+      // app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
       app.settings.save();
     }
 
@@ -33,12 +33,12 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           .then(() => {
             this.loaded = true;
             this.loadBooks(this.bookShelf);
-            this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
+            // this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
           });
       else{
         this.refreshBooksOwner();
         this.refreshAllReadingRecord();
-        this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
+        // this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
       }
     }
 
@@ -114,6 +114,10 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
           // nb.find('.btnBookMenu').dropdown('toggle');
         })
         .on("click", e => {
+          // 将本书放到顶部
+          if(this.bookShelf.putBookFront(bookshelfitem.book))
+            this.refreshBooksOrder(this.bookShelf); // 此处不用保存位置，因为阅读页面会保存数据
+
           app.page.showPage("readbook", {book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord});
         });
 
@@ -230,8 +234,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
      */
     sortBooksByElementOrder(){
       const elements = this.bookShelfElement.children();
-      let newBooks = Array.from(elements).map(e => $(e).data('bookshelfitem'))
-      this.bookShelf.sortBooks(newBooks);
+      let newBooks = Array.from(elements).map(e => $(e).data('bookshelfitem'));
+      this.bookShelf.sortBooks(newBooks, !app.settings.settings.fatUpMode);
       this.bookShelf.save();
       this.refreshBooksOrder(this.bookShelf);
     }
@@ -255,10 +259,19 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       $("#btnCheckUpdate").click(e => app.chekcUpdate(true, true));
       $("#btnSearch").click(e => app.page.showPage("search"));
       $("#btnExplore").click(e => app.page.showPage("explorebook"));
+      $("#btnToggleFatUpMode > a").text(app.settings.settings.fatUpMode ? "养肥模式": "追更模式");
+      $("#btnToggleFatUpMode").click(e => {
+        app.settings.settings.fatUpMode = !app.settings.settings.fatUpMode;
+        app.settings.save();
+        $("#btnToggleFatUpMode > a").text(app.settings.settings.fatUpMode ? "养肥模式": "追更模式");
+      });
       $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
       $("#btnToggleNightMode").click(e => {
         app.theme.toggleNight();
         $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式": "夜间模式");
+      });
+      $("#btnAbout").click(e => {
+        utils.get("data/About.html").then(html => uiutils.showMessageDialog("关于", html, null, null, {position: "top"}));
       });
     }
 

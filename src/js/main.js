@@ -24,13 +24,14 @@
         cacheCountEachChapter: 1, // 默认情况下每章缓存的源章节数目
         cacheCountEachChapterWithWifi: 3, // 在 Wifi 下每章缓存的源章节数目
         // chapterCount: 3,   // 每次加载的章节数目
+        fatUpMode: false, // 是否开启养肥模式
         theme: {
           nighttheme: "night1", // 夜间主题
           daytheme: "", // 白天主题
           night: false
         },
         scrollTop: {
-          "bookshelf": 0
+          // "bookshelf": 0
         }
       },
 
@@ -199,9 +200,11 @@
           let m = Array.from(document.querySelectorAll('.modal')).reverse().find(e => e.style.display=='block');
           if(m)
             $(m).modal('hide');
-          else if(app.page.getPageCount() > 1)
+          else if(app.page.getPageCount() > 1){
+            app.hideLoading();
             navigator.app.backHistory();
             // window.history.back();
+          }
           else{
             let now = new Date().getTime();
             if(now - lastPressBackTime < 700)
