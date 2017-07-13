@@ -106,6 +106,22 @@
       }
     }
 
+
+    /**
+     * 将某书置顶
+     * @param  {[type]} book [description]
+     * @return {[type]}      [description]
+     */
+    putBookFront(book){
+      let i = this.books.findIndex(e => e.book == book);
+      if(i >= 0){
+        let bookShelfItem = this.books.splice(i, 1)[0];
+        this.books.unshift(bookShelfItem);
+        return true;
+      }
+      return false;
+    }
+
     // toggleLockBook(bookshelfitem){
     //   if(this.isLockedBook(bookshelfitem))
     //     bookshelfitem.lockLocation = -1;
@@ -119,10 +135,11 @@
 
     /**
      * 用特定的排序函数或者新的排序传递进行排序
-     * @param  {[type]} functionOrArray [description]
-     * @return {[type]}                 [description]
+     * @param  {[type]}  functionOrArray         [description]
+     * @param  {Boolean} putUnIncludedItemsFront 是否将未包含在内的书放到最前面
+     * @return {[type]}                          [description]
      */
-    sortBooks(functionOrArray){
+    sortBooks(functionOrArray, putUnIncludedItemsFront=false){
       let newOrder, unIncludedItems;
       switch(utils.type(functionOrArray)){
         case "function":
@@ -136,7 +153,10 @@
             return false;
           newOrder = functionOrArray;
           unIncludedItems = this.books.filter(e => !newOrder.includes(e));
-          newOrder = newOrder.concat(unIncludedItems);
+          if(putUnIncludedItemsFront)
+            newOrder = unIncludedItems.concat(newOrder);
+          else
+            newOrder = newOrder.concat(unIncludedItems);
           break;
 
         default:
