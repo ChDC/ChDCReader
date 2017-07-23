@@ -209,7 +209,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (newCurrentElement == oldValue) return;
 
         this.__currentElement = newCurrentElement;
-        this.clearOutBoundary(-1);
+
 
         this.fireEvent("currentElementChanged", { new: newCurrentElement, old: oldValue });
       }
