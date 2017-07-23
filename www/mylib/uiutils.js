@@ -97,26 +97,18 @@
     },
 
     onLongPress: function onLongPress(obj, handler) {
-      $(obj).on("touchstart", function (e) {
-        if (e.touches.length != 1) return;
-        e.stopImmediatePropagation();
+      var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 500;
 
-        $(e.target).data("longpress-timestart", new Date().getTime()).data("longpress-x", e.touches[0].clientX).data("longpress-y", e.touches[0].clientY);
-      }).on("touchend", function (e) {
+      $(obj).on("mousedown touchstart", function (e) {
+        if (e.touches && e.touches.length != 1) return;
 
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-
-        if (e.changedTouches.length != 1) return;
-        var target = $(e.target);
-        var t1 = target.data("longpress-timestart");
-        var x = target.data("longpress-x"),
-            y = target.data("longpress-y");
-        var touch = e.changedTouches[0];
-        if (Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50 && t1 && new Date().getTime() - t1 > 100) {
+        var longpressTimeoutId = setTimeout(function () {
           handler(e);
-          return false;
-        }
+        }, timeout);
+
+        $(e.target).data("longpressTimeoutId", longpressTimeoutId);
+      }).on("mouseup touchend", function (e) {
+        clearTimeout($(e.target).data("longpressTimeoutId"));
       });
       return obj;
     }
