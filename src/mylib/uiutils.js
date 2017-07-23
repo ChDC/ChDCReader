@@ -147,44 +147,30 @@
       };
     },
 
-    /**
-     * 给指定对象绑定长按事件
-     * @param  {HTMLElement} obj     [description]
-     * @param  {[type]} handler [description]
-     * @return {[type]}         [description]
-     */
-    onLongPress(obj, handler){
+    onLongPress(obj, handler, timeout=500){
       $(obj)
-        .on("touchstart", e => { // 此处不能注册 mousedown 事件，会有弹不出菜单的 BUG
-          if(e.touches.length != 1) return;
-          e.stopImmediatePropagation();
+        .on("mousedown touchstart", e => {
+          if(e.touches && e.touches.length != 1) return;
+          // e.stopImmediatePropagation();
           // e.stopPropagation();
-          $(e.target)
-            .data("longpress-timestart", new Date().getTime())
-            .data("longpress-x", e.touches[0].clientX)
-            .data("longpress-y", e.touches[0].clientY);
+          let longpressTimeoutId = setTimeout(() => {
+            handler(e);
+          }, timeout);
+
+          $(e.target).data("longpressTimeoutId", longpressTimeoutId);
           // return false;
         })
-        .on("touchend", e => {
+        .on("mouseup touchend", e => {
 
-          e.stopImmediatePropagation();
-          e.stopPropagation();
+          // e.stopImmediatePropagation();
+          // e.stopPropagation();
 
-          if(e.changedTouches.length != 1) return;
-          let target = $(e.target);
-          let t1 = target.data("longpress-timestart");
-          let x = target.data("longpress-x"), y = target.data("longpress-y");
-          let touch = e.changedTouches[0];
-          if(Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50
-            && t1 && new Date().getTime() - t1 > 100){
-            // long press
-            handler(e);
-            return false;
-          }
+          // if(e.touches && e.changedTouches.length != 1) return;
+          clearTimeout($(e.target).data("longpressTimeoutId"));
+          // return false;
 
         });
       return obj;
     }
-
   };
 }));
