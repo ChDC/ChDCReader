@@ -218,40 +218,47 @@
 
         var link = this.getChapterLink(bsid, dict);
         return utils.get(link).then(function (html) {
-          var data = CBS.common.getEncryptedData(html);
+          var hostMatcher = html.match(/[^"]*config[^"]*/i);
+          if (!hostMatcher) return null;
+          return utils.get(hostMatcher[0]).then(function (hostHTML) {
+            var host = JSON.parse(hostHTML.match(/{[\d\D]*}/)[0].replace(/'/g, '"'));
+            host = host.host.auto[0];
 
-          var matcher = data.match(/{.*}/);
-          if (!matcher) return null;
-          data = JSON.parse(matcher[0].replace(/'/g, '"'));
-          data = data.fs;
-          if (data.length <= 0) return null;
+            var data = CBS.common.getEncryptedData(html);
 
-          var box = utils.getBoxPlot(data.map(function (e) {
-            return e.length;
-          }));
-          data = data.filter(function (e) {
-            return e.length >= box.Q0 && e.length <= box.Q4;
-          });
+            var matcher = data.match(/{.*}/);
+            if (!matcher) return null;
+            data = JSON.parse(matcher[0].replace(/'/g, '"'));
+            data = data.fs;
+            if (data.length <= 0) return null;
 
-          if (data[0].match(/\/\d+\.\w{0,3}$/)) {
-            var sortedData = Object.assign([], data).sort();
-            var splitIndex = -1;
-            for (var i = 1; i < data.length; i++) {
-              var ni = sortedData.indexOf(data[i - 1]);
-              if (sortedData[ni + 1] != data[i]) {
-                splitIndex = i;
-                break;
+            var box = utils.getBoxPlot(data.map(function (e) {
+              return e.length;
+            }));
+            data = data.filter(function (e) {
+              return e.length >= box.Q0 && e.length <= box.Q4;
+            });
+
+            if (data[0].match(/\/\d+\.\w{0,3}$/)) {
+              var sortedData = Object.assign([], data).sort();
+              var splitIndex = -1;
+              for (var i = 1; i < data.length; i++) {
+                var ni = sortedData.indexOf(data[i - 1]);
+                if (sortedData[ni + 1] != data[i]) {
+                  splitIndex = i;
+                  break;
+                }
               }
+              if (splitIndex > 0) data = data.splice(0, splitIndex);
             }
-            if (splitIndex > 0) data = data.splice(0, splitIndex);
-          }
 
-          data = data.map(function (e) {
-            return "http://tupianku.333dm.com" + e;
+            data = data.map(function (e) {
+              return "http://" + host + e;
+            });
+            return data.map(function (e) {
+              return "<img src=\"" + e + "\">";
+            }).join('\n');
           });
-          return data.map(function (e) {
-            return "<img src=\"" + e + "\">";
-          }).join('\n');
         });
       }
     },
