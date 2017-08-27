@@ -233,18 +233,21 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       itemALeft = listA[indexALeft];
       itemARight = listA[indexARight];
 
+      var startIndexB = 0;
       var i = -1;
 
       while (true) {
-        i = listB.slice(i + 1).findIndex(function (e) {
+        i = listB.slice(startIndexB).findIndex(function (e) {
           return equalFunction(e, itemALeft);
         });
-
         if (i < 0) {
           indexBRight = 1;
           itemBRight = listB[indexBRight];
           return equalFunction(itemARight, itemBRight) ? indexBRight - 1 : -1;
         }
+
+        i += startIndexB;
+        startIndexB = i + 1;
 
         indexBRight = i + 2;
 
