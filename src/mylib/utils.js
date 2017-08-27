@@ -332,12 +332,12 @@
       itemARight = listA[indexARight];
 
 
-      let i = -1; // startIndexB
+      let startIndexB = 0;
+      let i = -1;
 
       while(true)
       {
-        i = listB.slice(i+1).findIndex(e => equalFunction(e, itemALeft));
-
+        i = listB.slice(startIndexB).findIndex(e => equalFunction(e, itemALeft));
         if(i < 0){
           // 没找到结果
           // 从前一个匹配不成功，表示listB 中没有匹配的前一个对象
@@ -346,6 +346,9 @@
           itemBRight = listB[indexBRight];
           return equalFunction(itemARight, itemBRight) ? indexBRight - 1 : -1;
         }
+
+        i += startIndexB;
+        startIndexB = i + 1;
 
         // 找到结果，开始分析
         // 比较后面第二个是否相同
