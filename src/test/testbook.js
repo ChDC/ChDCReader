@@ -111,9 +111,25 @@
               equal(true, !!c, `${book.name}: the content of ${chapter.title} is empty`);
               equal(true, c.indexOf(chapter.content) >= 0, `${book.name}: ${chapter.title} doesn't contains ${chapter.content}`);
               assert.notInclude(c, "<br");
+              // 如果内容中包含图片则检查图片的连通性
+              if(c.indexOf("<img") >= 0){
+                // 获取第一个图片并测试连通性
+                let imgMatch = c.match(/<img .*\bsrc="(.*?)"/i);
+                let imgUrl = imgMatch[1];
+                return this.testImage(imgUrl, `${book.name}: the image of ${chapter.title} is error`);
+              }
             })
         ))
       ))
+    },
+
+    testImage(imgUrl, errorInfo){
+      return new Promise((resolve, reject) => {
+        let image = new Image();
+        image.onload = () => { equal(true, true); resolve(true); };
+        image.onerror = () => { equal(true, false, errorInfo); reject(false); };
+        image.src = imgUrl;
+      });
     },
 
     // 测试书籍主方法

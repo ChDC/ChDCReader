@@ -67,7 +67,7 @@
         return utils.get(link)
           .then(html => {
             if(!html) return null;
-            let regex = /<script>[^<]*image_list: \$\.evalJSON\('([^<]*)'\),\s*image_pages:[^<]*<\/script>/i;
+            let regex = /<script>[^<]*image_list: ([^<]*),\s*image_pages:[^<]*<\/script>/i;
             html = html.match(regex);
             if(!html) return null;
             let json = JSON.parse(html[1]);
@@ -331,6 +331,8 @@
 
       getChapterContent(bsid, dict={}){
         let link = this.getChapterLink(bsid, dict);
+        let img_s;
+        let imgs;
         return utils.get(link)
           .then(html => {
             let link = html.match(/http:\/\/css.177mh.com\/coojs\/.*?\.js/i)[0];
@@ -340,76 +342,20 @@
             let data = CBS.common.getEncryptedData(html);
             let msg = data.match(/'(.*?)'/);
             if(!msg) return null;
-            let imgs = msg[1].split('|');
-            let img_s = Number.parseInt(data.match(/img_s=(\w+);/)[1]);
+            imgs = msg[1].split('|');
+            img_s = Number.parseInt(data.match(/img_s=(\w+);/)[1]);
             if (img_s == 46) // 取自 http://css.177mh.com/img_v1/n17_co.js?v170202
               img_s = 150;
 
-            // 取自 http://css.177mh.com/img_v1/cn_160903a.js
-            let img_qianzso = new Array();
-            img_qianzso[1] = "http://oo62.177mh.com/h1/";
-            img_qianzso[2] = "http://o76.177mh.com/e2/";
-            img_qianzso[3] = "http://o59.177mh.com/h3/";
-            img_qianzso[4] = "http://o59.177mh.com/h4/";
-            img_qianzso[5] = "http://o59.177mh.com/h5/";
-            img_qianzso[6] = "http://o16.177mh.com/h6/";
-            img_qianzso[7] = "http://o16.177mh.com/h7/";
-            img_qianzso[8] = "http://o16.177mh.com/h8/";
-            img_qianzso[9] = "http://o16.177mh.com/h9/";
-            img_qianzso[10] = "http://o16.177mh.com/h10/";
-            img_qianzso[11] = "http://o59.177mh.com/h11/";
-            img_qianzso[12] = "http://oo62.177mh.com/h12/";
-            img_qianzso[13] = "http://o16.177mh.com/h13/";
-            img_qianzso[14] = "http://o16.177mh.com/h14/";
-            img_qianzso[15] = "http://o59.177mh.com/h15/";
-            img_qianzso[16] = "http://o59.177mh.com/h16/";
-            img_qianzso[17] = "http://o16.177mh.com/h17/";
-            img_qianzso[18] = "http://oo62.177mh.com/h18/";
-            img_qianzso[19] = "http://o16.177mh.com/h19/";
-            img_qianzso[20] = "http://oo62.177mh.com/h20/";
-            img_qianzso[21] = "http://oo62.177mh.com/h21/";
-            img_qianzso[22] = "http://o16.177mh.com/h22/";
-            img_qianzso[23] = "http://o16.177mh.com/h23/";
-            img_qianzso[24] = "http://o16.177mh.com/h24/";
-            img_qianzso[25] = "http://o16.177mh.com/h25/";
-            img_qianzso[26] = "http://o16.177mh.com/h26/";
-            img_qianzso[27] = "http://o16.177mh.com/h27/";
-            img_qianzso[28] = "http://oo62.177mh.com/h28/";
-            img_qianzso[29] = "http://o59.177mh.com/h29/";
-            img_qianzso[30] = "http://oo62.177mh.com/h30/";
-            img_qianzso[31] = "http://oo62.177mh.com/h31/";
-            img_qianzso[32] = "http://oo62.177mh.com/h32/";
-            img_qianzso[33] = "http://oo62.177mh.com/h33/";
-            img_qianzso[34] = "http://oo62.177mh.com/h34/";
-            img_qianzso[35] = "http://o59.177mh.com/h35/";
-            img_qianzso[36] = "http://o59.177mh.com/h36/";
-            img_qianzso[37] = "http://o59.177mh.com/h37/";
-            img_qianzso[38] = "http://o70.177mh.com/h38/";
-            img_qianzso[39] = "http://o70.177mh.com/h39/";
-            img_qianzso[40] = "http://o70.177mh.com/h40/";
-            img_qianzso[41] = "http://o70.177mh.com/h41/";
-            img_qianzso[42] = "http://o70.177mh.com/h42/";
-            img_qianzso[43] = "http://o70.177mh.com/h43/";
-            img_qianzso[44] = "http://o70.177mh.com/h44/";
-            img_qianzso[45] = "http://oo62.177mh.com/h45/";
-            img_qianzso[46] = "http://o59.177mh.com/h46/";
-            img_qianzso[47] = "http://o70.177mh.com/h47/";
-            img_qianzso[48] = "http://oo62.177mh.com/h48/";
-            img_qianzso[49] = "http://o16.177mh.com/h49/";
-            img_qianzso[50] = "http://o70.177mh.com/h50/";
-            img_qianzso[51] = "http://o16.177mh.com/h51/";
-            img_qianzso[52] = "http://o76.177mh.com/h52/";
-            img_qianzso[53] = "http://o76.177mh.com/h53/";
-            img_qianzso[54] = "http://ofdc.177mh.com/h54/";
-            img_qianzso[55] = "http://o76.177mh.com/h55/";
-            img_qianzso[56] = "http://o76.177mh.com/h56/";
-            img_qianzso[57] = "http://o76.177mh.com/h57/";
-            img_qianzso[58] = "http://o70.177mh.com/h58/";
-            img_qianzso[59] = "http://o16.177mh.com/h59/";
-            img_qianzso[60] = "http://o59.177mh.com/h60/";
-            img_qianzso[61] = "http://o59.177mh.com/h61/";
-            img_qianzso[150] = "http://o59.177mh.com/h46/";
-            let host = img_qianzso[img_s];
+            // 取自 http://css.177mh.com/img_v1/n17_co.js?v170531
+            // 获取图片服务器
+            let svrss = Array("http://css.177mh.com/img_v1/cn_svr.aspx", "http://css.177mh.com/img_v1/hw2_svr.aspx", "http://css.177mh.com/img_v1/fdc_svr.aspx");
+            let coid_num = /\d+\/(\d+)/.exec(link)[1];
+            let scriptUrl = `${svrss[0]}?s=${img_s}&cid=${dict.bookid}&coid=${coid_num}`;
+            return utils.get(scriptUrl);
+          })
+          .then(html => {
+            let host = utils.eval(html);
             imgs = imgs.map(e => `${host}${e}`);
             if(imgs.length <= 0) return null;
             return imgs.map(e => `<img src="${e}">`).join('\n');
@@ -438,7 +384,7 @@
         let link = this.getChapterLink(bsid, dict);
         return utils.get(link)
           .then(html => {
-            let mh_info = html.match(/<script>var mh_info=(.*?);<\/script>/i)[1];
+            let mh_info = html.match(/<script>var mh_info=(.*?);var.*<\/script>/i)[1];
             mh_info = utils.eval(`(${mh_info})`);
 
             mh_info.imgpath = mh_info.imgpath.replace(/./g, function(a) {
