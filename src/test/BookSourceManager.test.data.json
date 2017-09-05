@@ -1,18 +1,6 @@
 {
   "buka": [
       {
-          "bookid" : "104008",
-          "name" : "班长大人",
-          "author" : "陈岚/漫铠动漫",
-          "chapters" : [
-              {
-                  "content" : "<img",
-                  "cid" : "65600",
-                  "title" : "第64话"
-              }
-          ]
-      },
-      {
           "bookid" : "100024",
           "name" : "蜡笔小新",
           "author" : "臼井义人",
@@ -101,6 +89,19 @@
            "content": "<img",
            "link": "http://www.77mh.com/201306/249218.html",
            "title": "50话日文"
+         }
+       ]
+     },
+     {
+       "bookid": "238320",
+       "name": "欢迎来到实力至上主义的教室",
+       "author": "衣笠彰梧 一乃ゆゆ",
+       "introduce": "",
+       "chapters": [
+         {
+           "content": "<img",
+           "link": "http://www.77mh.com/201607/336758.html",
+           "title": "第2话"
          }
        ]
      }
@@ -415,7 +416,7 @@
             }
          ],
          "bookid": "3166",
-         "introduce" : "镇魂街，此乃吸纳亡灵镇压恶灵之地",
+         "introduce" : "镇魂街乃吸纳亡灵镇压恶灵之地",
          "name" : "镇魂街"
       },
       {
@@ -635,7 +636,6 @@
                "title" : "第二十六章 窗烛（2）"
             }
          ],
-         "complete" : false,
          "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
          "introduce" : "温州女孩左再",
          "lastestChapter" : "",
@@ -651,7 +651,7 @@
                "title" : "第十四章 肖薇"
             }
          ],
-         "complete" : true,
+
          "cover" : "http://img1.write.qq.com/upload/cover/2016-01-20/cb_569f491f778dd.jpg",
          "bookid": "11331168",
          "introduce" : "你是我一个人的小少爷",
@@ -668,7 +668,6 @@
                "title" : "第八章 柳阳"
             }
          ],
-         "complete" : false,
          "cover" : "http://img1.write.qq.com/upload/cover/2013-05-01/cm_4d00258637d3464c3ea19f932d58d1d0.jpg",
          "detailLink" : "http://chuangshi.qq.com/bk/xh/462523.html?sword=大主宰",
          "bookid": "462523",
@@ -689,7 +688,7 @@
             }
          ],
          "maxfreechapter": "139",
-         "complete" : false,
+
          "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
          "lastestChapter" : "",
          "name" : "神魔变"
@@ -705,7 +704,7 @@
                "title" : "第26章 窗烛（2）"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
          "lastestChapter" : "",
          "name" : "邂逅调香师"
@@ -716,11 +715,11 @@
          "chapters" : [
             {
                "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
-               "cid" : "14",
-               "title" : "第14章 肖薇"
+               "cid" : "13",
+               "title" : "第13章 肖薇"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://img1.write.qq.com/upload/cover/2016-01-20/cb_569f491f778dd.jpg",
          "bookid": "11331168",
          "lastestChapter" : "",
@@ -736,7 +735,7 @@
                "title" : "第8章 柳阳"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://img1.write.qq.com/upload/cover/2013-05-01/cm_4d00258637d3464c3ea19f932d58d1d0.jpg",
          "bookid": "462523",
          "introduce" : "大千世界",
@@ -754,7 +753,7 @@
                "title" : "第九十八章 龙象化海经"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://img.dzz8.com/public/cover/5e/b0/bd/5eb0bd600f38ed89e26bd0dc3d70ff0d.jpg",
          "detailLink" : "http://www.daizhuzai.com/351/",
          "introduce" : "一念成沧海，一念化桑田。",
@@ -770,7 +769,7 @@
                "title" : "第九十七章黑了心的铁心源"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://img.dzz8.com/public/cover/20/ef/10/20ef1080b85cd4570cee3718809683cf.jpg",
          "detailLink" : "http://www.daizhuzai.com/248/",
          "introduce" : "人的第一要求就是活着，第二要求还是活着",
@@ -786,7 +785,7 @@
                "title" : "第九十五章 黑色卷轴"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://img.dzz8.com/public/cover/ad/53/d9/ad53d94c9d60c650d7db17bb7d98636a.jpg",
          "detailLink" : "http://www.daizhuzai.com/1/",
          "introduce" : "大千世界，位面交汇，万族林立",
@@ -848,7 +847,7 @@
                "title" : "第十四章 肖薇"
             }
          ],
-         "complete" : true,
+
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003429036/180",
          "bookid": "1003429036",
          "introduce" : "你是我一个人的小少爷",
@@ -865,7 +864,7 @@
                "title" : "第二十六章 窗烛（2）"
             }
          ],
-         "complete" : true,
+
          "cover" : "http://read.qidian.com/chapter/7ouSWYzZUBVQv4sKnwMhGg2/nyk1qMUTiJ7gn4SMoDUcDQ2",
          "introduce" : "温州女孩左再",
          "lastestChapter" : "",
@@ -881,7 +880,7 @@
                "title" : "第四章 炼灵"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
          "introduce" : "一念成沧海，一念化桑田。一念斩千魔",
          "lastestChapter" : "",
@@ -897,7 +896,7 @@
                "title" : "第二章铁心源的运气"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/3650892/150",
          "introduce" : "人的第一要求就是活着，第二要求还是活着，",
          "lastestChapter" : "",
@@ -913,7 +912,7 @@
                "title" : "第三章 牧域"
             }
          ],
-         "complete" : false,
+
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/2750457/150",
          "introduce" : "大千世界，位面交汇，万族林立",
          "lastestChapter" : "",
