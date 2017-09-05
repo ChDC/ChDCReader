@@ -82,54 +82,74 @@
       }));
     },
     testGetChapterContentCaller: function testGetChapterContentCaller(bsid, bsm, books) {
+      var _this4 = this;
+
       return Promise.all(books.map(function (book) {
         return Promise.all(book.chapters.map(function (chapter) {
           return bsm.getChapterContent(bsid, Object.assign({}, book, chapter)).then(function (c) {
             equal(true, !!c, book.name + ": the content of " + chapter.title + " is empty");
             equal(true, c.indexOf(chapter.content) >= 0, book.name + ": " + chapter.title + " doesn't contains " + chapter.content);
             assert.notInclude(c, "<br");
+
+            if (c.indexOf("<img") >= 0) {
+              var imgMatch = c.match(/<img .*\bsrc="(.*?)"/i);
+              var imgUrl = imgMatch[1];
+              return _this4.testImage(imgUrl, book.name + ": the image of " + chapter.title + " is error");
+            }
           });
         }));
       }));
     },
+    testImage: function testImage(imgUrl, errorInfo) {
+      return new Promise(function (resolve, reject) {
+        var image = new Image();
+        image.onload = function () {
+          equal(true, true);resolve(true);
+        };
+        image.onerror = function () {
+          equal(true, false, errorInfo);reject(false);
+        };
+        image.src = imgUrl;
+      });
+    },
     testBook: function testBook(bsid, bsm, books, item) {
-      var _this4 = this;
+      var _this5 = this;
 
       var items = {
         search: {
           title: '测试搜索',
           caller: function caller() {
-            return _this4.testSearchCaller(bsid, bsm, books);
+            return _this5.testSearchCaller(bsid, bsm, books);
           }
         },
         getbook: {
           title: '测试获取书籍',
           caller: function caller() {
-            return _this4.testGetBookCaller(bsid, bsm, books);
+            return _this5.testGetBookCaller(bsid, bsm, books);
           }
         },
         bookinfo: {
           title: '测试获取书籍信息',
           caller: function caller() {
-            return _this4.testGetBookInfoCaller(bsid, bsm, books);
+            return _this5.testGetBookInfoCaller(bsid, bsm, books);
           }
         },
         lastestchapter: {
           title: '测试最新章节',
           caller: function caller() {
-            return _this4.testGetLastestChapterCaller(bsid, bsm, books);
+            return _this5.testGetLastestChapterCaller(bsid, bsm, books);
           }
         },
         catalog: {
           title: '测试书籍目录',
           caller: function caller() {
-            return _this4.testGetBookCatalogCaller(bsid, bsm, books);
+            return _this5.testGetBookCatalogCaller(bsid, bsm, books);
           }
         },
         chapter: {
           title: '测试获取章节',
           caller: function caller() {
-            return _this4.testGetChapterContentCaller(bsid, bsm, books);
+            return _this5.testGetChapterContentCaller(bsid, bsm, books);
           }
         }
       };

@@ -137,7 +137,7 @@
   },
   {
     "file": "js/CustomBookSource.js",
-    "hash": "b7748406480232fb3c76f4b3684d95e0"
+    "hash": "06067e327925e9375692c6db0fc818ac"
   },
   {
     "file": "js/executeOnUpdated.js",
@@ -537,7 +537,7 @@
   },
   {
     "file": "test/BookSourceManager.test.data.json",
-    "hash": "969254bf4491c2a52341104c6370bea9"
+    "hash": "5f9797a4cf9bffc3d6a55f467c804922"
   },
   {
     "file": "test/BookSourceManager.test.js",
@@ -569,7 +569,7 @@
   },
   {
     "file": "test/testbook.js",
-    "hash": "fc73bae22426b9f0a58fa4c20b07acf5"
+    "hash": "6d2fb9beec010bc51ad2eb8867210d89"
   },
   {
     "file": "test/translate.test.js",
