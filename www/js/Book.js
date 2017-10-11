@@ -639,33 +639,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         });
       }
     }, {
-      key: "buildChapterIterator",
-      value: function buildChapterIterator(chapterIndex, direction, options) {
-        var map = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (e) {
-          return e;
-        };
+      key: "nextChapter",
+      value: function nextChapter(chapterIndex, options) {
+        var direction = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
 
         options = Object.assign({}, options);
-        var self = this;
-        var finished = false;
-        return {
-          next: function next() {
-            if (finished) return Promise.resolve({ done: true });
-            return self.getChapter(chapterIndex, options).then(function (result) {
-              if (options.forceRefresh) options.forceRefresh = false;
-              Object.assign(options, result.options);
-              chapterIndex += direction >= 0 ? 1 : -1;
-              options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
-              return { value: map(result, direction), done: false };
-            }).catch(function (error) {
-              if (error == 203 || error == 202) {
-                finished = true;
-                return Promise.resolve({ value: map(undefined, direction), done: true });
-              }
-              throw error;
-            });
+        chapterIndex += direction >= 0 ? 1 : -1;
+        if (options.contentSourceChapterIndex != undefined) options.contentSourceChapterIndex += direction >= 0 ? 1 : -1;
+
+        return this.getChapter(chapterIndex, options).then(function (result) {
+          if (options.forceRefresh) options.forceRefresh = false;
+          Object.assign(result.options, options, result.options);
+          return result;
+        }).catch(function (error) {
+          if (error == 203 || error == 202) {
+            return Promise.resolve({ chapter: null, index: -1, options: null });
           }
-        };
+          throw error;
+        });
       }
     }, {
       key: "cacheChapter",
@@ -675,31 +667,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         options.noInfluenceWeight = true;
         options.onlyCacheNoLoad = true;
 
-        var citer = this.buildChapterIterator(chapterIndex, 1, options);
-
+        var self = this;
         return co(regeneratorRuntime.mark(function _callee2() {
-          var i;
+          var _ref3, index, opts, i, _ref4;
+
           return regeneratorRuntime.wrap(function _callee2$(_context6) {
             while (1) {
               switch (_context6.prev = _context6.next) {
                 case 0:
+                  _context6.next = 2;
+                  return self.getChapter(chapterIndex, options);
+
+                case 2:
+                  _ref3 = _context6.sent;
+                  index = _ref3.index;
+                  opts = _ref3.options;
                   i = 0;
 
-                case 1:
+                case 6:
                   if (!(i < nextCount)) {
-                    _context6.next = 7;
+                    _context6.next = 15;
                     break;
                   }
 
-                  _context6.next = 4;
-                  return citer.next();
+                  _context6.next = 9;
+                  return self.nextChapter(index, opts);
 
-                case 4:
+                case 9:
+                  _ref4 = _context6.sent;
+                  index = _ref4.index;
+                  opts = _ref4.options;
+
+                case 12:
                   i++;
-                  _context6.next = 1;
+                  _context6.next = 6;
                   break;
 
-                case 7:
+                case 15:
                 case "end":
                   return _context6.stop();
               }
@@ -736,9 +740,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       nb.sources[bsid] = nbs;
     }
     return nb;
-  };
-
-  Book.equal = function (bookA, bookB) {
+  }, Book.equal = function (bookA, bookB) {
     return bookA.name == bookB.name && bookA.author == bookB.author;
   };
 

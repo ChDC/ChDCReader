@@ -23,7 +23,9 @@
     });
 
     it('全局搜索', function () {
-      return bsm.searchBookInAllBookSource("三生三世十里桃花").then(function (books) {
+      return bsm.searchBookInAllBookSource("三生三世十里桃花").then(function (_ref) {
+        var books = _ref.books;
+
         equal(true, books.length >= 0);
         equal("三生三世十里桃花", books.find(function (b) {
           return b.name == "三生三世十里桃花";

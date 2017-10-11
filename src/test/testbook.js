@@ -114,21 +114,29 @@
               // 如果内容中包含图片则检查图片的连通性
               if(c.indexOf("<img") >= 0){
                 // 获取第一个图片并测试连通性
-                let imgMatch = c.match(/<img .*\bsrc="(.*?)"/i);
-                let imgUrl = imgMatch[1];
-                return this.testImage(imgUrl, `${book.name}: the image of ${chapter.title} is error`);
+                let imgMatch = c.match(/<img\b(?: *data-skip="(\d+)")?.*\bsrc="(.*?)"/i);
+                return this.testImage(imgMatch[2], imgMatch[1] && Number.parseInt(imgMatch[1]), `${book.name}: the image of ${chapter.title} is error`);
               }
             })
         ))
       ))
     },
 
-    testImage(imgUrl, errorInfo){
+    testImage(imgUrl, skipHeadByteCount, errorInfo){
       return new Promise((resolve, reject) => {
         let image = new Image();
         image.onload = () => { equal(true, true); resolve(true); };
         image.onerror = () => { equal(true, false, errorInfo); reject(false); };
-        image.src = imgUrl;
+        if(skipHeadByteCount != undefined){
+          utils.get(imgUrl, {}, "blob")
+            .then(blob => {
+              let url = URL.createObjectURL(blob.slice(skipHeadByteCount));
+              image.src = url;
+            })
+            .catch(image.onerror);
+        }
+        else
+          image.src = imgUrl;
       });
     },
 

@@ -230,9 +230,8 @@ define(["jquery", "main", "Page", "utils", "uiutils", "cookie"], function ($, ap
         }
 
         function urlAction(matcher, target) {
-          debugger;
           ref.executeScript({ code: "debugger;window.location.href = \"" + target + "\";" });
-        };
+        }
 
         function getRemoveCode(remove) {
           if (!remove) return "";

@@ -94,9 +94,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }], [false, true, utils.lowerCaseNumbers], [false, true, function (e) {
     return e.replace(/[第总]?0*(\d+)[弹话章节卷集]?/gi, '$1');
   }], [true, false, function (c) {
-    var m = c.match(/\d+/);return m ? m[0] : c;
+    var m = c.replace(/^\d+/, "");return m ? m : c;
   }], [true, false, function (c) {
-    var m = c.replace(/\d+/, "");return m ? m : c;
+    var m = c.match(/^\d+/);return m ? m[0] : c;
   }]];
 
   Chapter.findEqualChapter = function (catalog, catalogB, index, matches) {
@@ -192,9 +192,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })) return i;
 
     return -1;
-  };
-
-  Chapter.stripString = function (str) {
+  }, Chapter.stripString = function (str) {
     var removeNumbers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
     if (!str) return str;

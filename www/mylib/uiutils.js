@@ -50,9 +50,11 @@
           _ref$oktext = _ref.oktext,
           oktext = _ref$oktext === undefined ? "确定" : _ref$oktext,
           _ref$canceltext = _ref.canceltext,
-          canceltext = _ref$canceltext === undefined ? "取消" : _ref$canceltext;
+          canceltext = _ref$canceltext === undefined ? "取消" : _ref$canceltext,
+          _ref$position = _ref.position,
+          position = _ref$position === undefined ? "middle" : _ref$position;
 
-      var dialog = $("<div class=\"modal fade\" id=\"modalMessage\">\n          <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h4 class=\"modal-title\">\n                </h4>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"modal-message\"></div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default btnCancel\" data-dismiss=\"modal\">\n                  " + canceltext + "\n                </button>\n                <button type=\"button\" class=\"btn btn-primary btnOK\" data-dismiss=\"modal\">\n                  " + oktext + "\n                </button>\n              </div>\n            </div>\n          </div>\n        </div>");
+      var dialog = $("<div class=\"modal fade\" id=\"modalMessage\">\n          <div class=\"modal-dialog\" " + (position == "middle" ? 'style="position: absolute; top: 40%; width: 80%; margin: 0 10%;"' : "") + ">\n            <div class=\"modal-content\">\n              <div class=\"modal-header\">\n                <h4 class=\"modal-title\">\n                </h4>\n              </div>\n              <div class=\"modal-body\">\n                <div class=\"modal-message\"></div>\n              </div>\n              <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default btnCancel\" data-dismiss=\"modal\">\n                  " + canceltext + "\n                </button>\n                <button type=\"button\" class=\"btn btn-primary btnOK\" data-dismiss=\"modal\">\n                  " + oktext + "\n                </button>\n              </div>\n            </div>\n          </div>\n        </div>");
 
       $(document.body).append(dialog);
 
@@ -92,7 +94,23 @@
       this.hide = function () {
         if (_this.__loadingbar) _this.__loadingbar.remove();
       };
-    }
+    },
 
+    onLongPress: function onLongPress(obj, handler) {
+      var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 500;
+
+      $(obj).on("mousedown touchstart", function (e) {
+        if (e.touches && e.touches.length != 1) return;
+
+        var longpressTimeoutId = setTimeout(function () {
+          handler(e);
+        }, timeout);
+
+        $(e.target).data("longpressTimeoutId", longpressTimeoutId);
+      }).on("mouseup touchend", function (e) {
+        clearTimeout($(e.target).data("longpressTimeoutId"));
+      });
+      return obj;
+    }
   };
 });

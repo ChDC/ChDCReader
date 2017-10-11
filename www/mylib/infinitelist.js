@@ -17,15 +17,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   "use strict";
 
   var Infinitelist = function () {
-    function Infinitelist(container, elementList, nextElementGenerator, previousElementGenerator) {
-      var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+    function Infinitelist(container, elementList, buildElement) {
+      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
       _classCallCheck(this, Infinitelist);
 
       this.__container = container;
       this.__elementList = elementList;
-      this.previousElementGenerator = previousElementGenerator;
-      this.nextElementGenerator = nextElementGenerator;
+      this.buildElement = buildElement;
+
       this.options = options;
 
       this.__currentElement = null;
@@ -41,8 +41,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(Infinitelist, [{
-      key: "getPageScorllTop",
-      value: function getPageScorllTop() {
+      key: "getPageScrollTop",
+      value: function getPageScrollTop() {
         return this.__currentElement ? this.__container.scrollTop - this.__currentElement.offsetTop : 0;
       }
     }, {
@@ -82,7 +82,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function previousElement() {
         var _this2 = this;
 
-        var st = this.getPageScorllTop();
+        var st = this.getPageScrollTop();
         if (st > 0) {
           this.__container.scrollTop = this.__currentElement.offsetTop;
           return Promise.resolve();
@@ -159,11 +159,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var direction = offset >= 0 ? 1 : -1;
 
           if (offset > 0) {
-            __onScroll(event, direction);
-            _this4.fireEvent("scrollDown", { scrollTop: cst });
+            if (__onScroll(event, direction)) _this4.fireEvent("scrollDown", { scrollTop: cst });
           } else if (offset < 0) {
-            __onScroll(event, direction);
-            _this4.fireEvent("scrollUp", { scrollTop: cst });
+            if (__onScroll(event, direction)) _this4.fireEvent("scrollUp", { scrollTop: cst });
           }
           __lastScrollTop = cst;
         };
@@ -181,6 +179,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             __lastCheckScrollY = _this4.__container.scrollTop;
             _this4.checkBoundary(direction);
           }
+          return !_this4.__isCheckingBoundary;
         };
 
         this.__scrollEventBindThis = __scrollEvent.bind(this);
@@ -210,6 +209,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (newCurrentElement == oldValue) return;
 
         this.__currentElement = newCurrentElement;
+
+
         this.fireEvent("currentElementChanged", { new: newCurrentElement, old: oldValue });
       }
     }, {
@@ -221,7 +222,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.__isCheckingBoundary = true;
 
 
-        return co(this.__checkBoundary(direction, false)).then(function () {
+        return co(this.__checkBoundary(direction)).then(function () {
           _this5.__isCheckingBoundary = false;
         }).catch(function (error) {
           _this5.__isCheckingBoundary = false;
@@ -254,19 +255,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var select = !direction ? 3 : direction > 0 ? 1 : 2;
 
-        if (select & 1) for (var i = ies.length - 1; i >= 0; i--) {
+        if (select & 2) for (var i = 0; i <= cii - 3; i++) {
             var element = ies[i];
-            if (!this.__isOutBoundary(element, this.NEXT) || i <= cii + 1) break;
-            element.remove();
-          }
-
-        if (select & 2) for (var _i = 0; _i < ies.length; _i++) {
-            var _element = ies[_i];
-            if (!this.__isOutBoundary(_element, this.PREVIOUS) || _i >= cii - 1) break;
-            var elementHeight = _element.offsetHeight;
+            if (!this.__isOutBoundary(element, this.PREVIOUS)) break;
+            var elementHeight = element.offsetHeight;
             var cs = this.__container.scrollTop;
-            _element.remove();
-            this.__container.scrollTop = cs - elementHeight;
+            element.remove();
+            if (this.__container.scrollTop == cs) this.__container.scrollTop -= elementHeight;
           }
       }
     }, {
@@ -290,68 +285,59 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "__addElement",
       value: regeneratorRuntime.mark(function __addElement(direction) {
-        var result, isFirstElement, _result, newElement, done, cs, be;
+        var result, boundaryElement, isFirstElement, _result, newElement, done, cs, be;
 
         return regeneratorRuntime.wrap(function __addElement$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 result = void 0;
-                isFirstElement = !this.__getBoundaryElement(direction);
-                _context.prev = 2;
+                boundaryElement = this.__getBoundaryElement(direction);
+                isFirstElement = !boundaryElement;
+                _context.prev = 3;
 
-                if (!(direction >= 0 && this.nextElementGenerator)) {
-                  _context.next = 9;
+                if (!this.buildElement) {
+                  _context.next = 10;
                   break;
                 }
 
-                _context.next = 6;
-                return this.nextElementGenerator.next();
+                _context.next = 7;
+                return this.buildElement(boundaryElement, direction);
 
-              case 6:
+              case 7:
                 result = _context.sent;
-                _context.next = 16;
+                _context.next = 11;
                 break;
 
-              case 9:
-                if (!(direction < 0 && this.previousElementGenerator)) {
-                  _context.next = 15;
-                  break;
-                }
-
-                _context.next = 12;
-                return this.previousElementGenerator.next();
-
-              case 12:
-                result = _context.sent;
-                _context.next = 16;
-                break;
-
-              case 15:
+              case 10:
                 return _context.abrupt("return", Promise.resolve(null));
 
-              case 16:
-                _context.next = 22;
+              case 11:
+                _context.next = 17;
                 break;
 
-              case 18:
-                _context.prev = 18;
-                _context.t0 = _context["catch"](2);
+              case 13:
+                _context.prev = 13;
+                _context.t0 = _context["catch"](3);
 
                 this.fireEvent("error", { error: _context.t0 });
                 throw _context.t0;
 
-              case 22:
+              case 17:
                 _result = result, newElement = _result.value, done = _result.done;
 
-                if (direction >= 0 && newElement) this.__elementList.appendChild(newElement);else if (direction < 0 && newElement) {
+                if (direction >= 0 && newElement) {
+                  this.__elementList.appendChild(newElement);
+                } else if (direction < 0 && newElement) {
                   cs = this.__container.scrollTop;
 
                   this.__elementList.insertBefore(newElement, this.__elementList.children[0]);
-                  this.__container.scrollTop = cs + newElement.offsetHeight;
+                  if (this.__container.scrollTop == cs) this.__container.scrollTop = cs + newElement.offsetHeight;
                 }
 
-                if (newElement) this.fireEvent("newElementAddedToDOM", { newElement: newElement, direction: direction });
+                if (newElement) {
+                  this.fireEvent("newElementAddedToDOM", { newElement: newElement, direction: direction });
+                }
 
                 if (isFirstElement) this.setCurrentElement(newElement);
 
@@ -366,12 +352,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 return _context.abrupt("return", Promise.resolve(newElement));
 
-              case 29:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, __addElement, this, [[2, 18]]);
+        }, __addElement, this, [[3, 13]]);
       })
     }, {
       key: "__checkBoundary",
@@ -381,7 +367,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (this.__isBoundarySatisfied(direction)) {
-                  _context2.next = 6;
+                  _context2.next = 5;
                   break;
                 }
 
@@ -389,14 +375,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this.__addElement(direction);
 
               case 3:
-                if (ifClear) this.clearOutBoundary(-direction);
                 _context2.next = 0;
                 break;
 
-              case 6:
+              case 5:
                 return _context2.abrupt("return", Promise.resolve());
 
-              case 7:
+              case 6:
               case "end":
                 return _context2.stop();
             }

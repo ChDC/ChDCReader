@@ -135,6 +135,8 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
 
         $("#result").show();
         $("#searchLogPanel").hide();
+        $("#searchFailedPanel").hide();
+
         app.showLoading();
         var keyword = $("#keyword").val().trim();
         var bookSourceId = $("#bookSource").val();
@@ -154,9 +156,22 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
         }
 
         if (!bookSourceId) {
-          app.bookSourceManager.searchBookInAllBookSource(keyword, { filterSameResult: ifFilterResult, bookType: bookType }).then(function (books) {
+          app.bookSourceManager.searchBookInAllBookSource(keyword, { filterSameResult: ifFilterResult, bookType: bookType }).then(function (_ref2) {
+            var books = _ref2.books,
+                failBookSources = _ref2.failBookSources;
+
             app.hideLoading();
             _this3.loadBooks("#result", books);
+
+            if (failBookSources.length > 0) {
+              $("#searchFailedPanel").show();
+              $("#searchFailed").empty().append(failBookSources.map(function (e) {
+                return $("<li>" + app.bookSourceManager.getBookSource(e).name + "</li>").click(function (o) {
+                  $("#bookSource").val(e);
+                  _this3.search();
+                });
+              }));
+            }
           }).catch(function (error) {
             app.hideLoading();
             uiutils.showError(app.error.getMessage(error));
@@ -202,6 +217,7 @@ define(["jquery", "main", "Page", "utils", "uiutils"], function ($, app, Page, u
         var keys = app.bookSourceManager.getSourcesKeysByMainSourceWeight(booktype);
 
         bookSource.empty();
+        bookSource.append('<option value ="">[全网搜索]</option>');
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;

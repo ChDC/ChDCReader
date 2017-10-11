@@ -16,7 +16,7 @@
       "url": "http://m.manhuatai.com/",
       "interceptor": [
         {
-          "match": "^http://m.manhuatai.com/(\\w+)/\\d+\\w*\\.html",
+          "match": "^https?://m.manhuatai.com/(\\w+)/\\d+\\w*\\.html",
           "goto": "readbook"
         }
       ],
@@ -26,7 +26,7 @@
       "url": "http://m.omanhua.com/",
       "interceptor": [
         {
-          "match": "^http://m.omanhua.com/comic/(\\d+)/\\d+/",
+          "match": "^https?://m.omanhua.com/comic/(\\d+)/\\d+/",
           "goto": "readbook"
         }
       ]
@@ -35,7 +35,7 @@
       "url": "http://m.2manhua.com",
       "interceptor": [
         {
-          "match": "^http://m.2manhua.com/comic/(\\d+)/\\d+.html",
+          "match": "^https?://m.2manhua.com/comic/(\\d+)/\\d+.html",
           "goto": "readbook"
         }
       ]
@@ -44,7 +44,7 @@
       "url": "http://m.57mh.com",
       "interceptor": [
         {
-          "match": "^http://m.57mh.com/(\\d+)/\\d+.html",
+          "match": "^https?://m.57mh.com/(\\d+)/\\d+.html",
           "goto": "readbook"
         }
       ],
@@ -54,7 +54,7 @@
       "url": "http://m.77mh.com/",
       "interceptor": [
         {
-          "match": "^http://m.77mh.com/colist_(\\d+).html",
+          "match": "^https?://m.77mh.com/colist_(\\d+).html",
           "goto": "bookdetail"
         }
       ]
@@ -63,7 +63,7 @@
       "url": "http://8comic.se/",
       "interceptor": [
         {
-          "match": "^http://8comic.se/(\\d+)/",
+          "match": "^https?://8comic.se/(\\d+)/",
           "goto": "bookdetail"
         }
       ],
@@ -73,7 +73,7 @@
       "url": "http://m.sfacg.com/",
       "interceptor": [
         {
-          "match": "^http://m.sfacg.com/b/(\\d+)",
+          "match": "^https?://m.sfacg.com/b/(\\d+)",
           "goto": "bookdetail"
         }
       ],
@@ -90,7 +90,7 @@
           }
         },
         {
-          "match": "^http://m.ac.qq.com/chapter/index/id/(\\d+)/(cid|seqno)/\\d+",
+          "match": "^https?://m.ac.qq.com/chapter/index/id/(\\d+)/(cid|seqno)/\\d+",
           "execute": "window.stop()",
           "goto": {
             "type": "page",
@@ -101,10 +101,10 @@
       "remove": [".app-guiding"]
     },
     "qidian": {
-      "url": "http://m.qidian.com/",
+      "url": "https://m.qidian.com/",
       "interceptor": [
         {
-          "match": "^http://m.qidian.com/book/(\\d+)/\\d+",
+          "match": "^https?://m.qidian.com/book/(\\d+)/\\d+",
           "goto": "readbook"
         }
       ],
@@ -114,7 +114,7 @@
       "url": "http://m.u17.com",
       "interceptor": [
         {
-          "match": "^http://m.u17.com/c/(\\d+).html",
+          "match": "^https?://m.u17.com/c/(\\d+).html",
           "goto": "bookdetail"
         }
       ],
@@ -124,7 +124,7 @@
       "url": "http://www.comico.com.tw/spweb/index.nhn",
       "interceptor": [
         {
-          "match": "^http://www.comico.com.tw/.*?titleNo=(\\d+)",
+          "match": "^https?://www.comico.com.tw/.*?titleNo=(\\d+)",
           "goto": "bookdetail"
         }
       ],
@@ -134,7 +134,7 @@
       "url": "http://ubook.qq.com",
       "interceptor": [
         {
-          "match": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*",
+          "match": "^https?://ubook.qq.com/8/read.html\\?bid=(\\d+).*",
           "goto": "readbook"
         }
       ]
@@ -143,7 +143,7 @@
       "url": "http://ubook.qq.com",
       "interceptor": [
         {
-          "match": "^http://ubook.qq.com/8/read.html\\?bid=(\\d+).*",
+          "match": "^https?://ubook.qq.com/8/read.html\\?bid=(\\d+).*",
           "goto": "readbook"
         }
       ]

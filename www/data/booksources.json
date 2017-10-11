@@ -106,7 +106,7 @@
                     "type": "string",
                     "element": "",
                     "attribute": "onclick",
-                    "extract": "/view/\\d+/(\\d+)'",
+                    "extract": "/view/\\d+/(\\d+)(?:/[^']*)?'",
                     "valid": "!{vip} || !({vip}.includes('price_tag_icon'))"
                   }
               }
@@ -333,7 +333,7 @@
         },
         "response": {
           "type": "array",
-          "element": "#dp-widget-posts-2 > ul > li",
+          "element": "#content ul > li",
           "reverse": true,
           "children": {
             "name": "a",
@@ -582,7 +582,7 @@
       "search": {
         "request": {
           "url": "http://www.2manhua.com/search/q_{keyword}",
-          "timeout": 5
+          "timeout": 10
         },
         "response": {
           "type": "array",
@@ -1161,14 +1161,14 @@
       "contentSourceWeight": -10,
       "mainSourceWeight": 20,
       "officialurls": {
-        "host": "http://www.qidian.com/",
-        "bookdetail": "http://m.qidian.com/book/{bookid}",
-        "bookchapter": "http://read.qidian.com/chapter/{cid}",
-        "booksearch": "http://m.qidian.com/search"
+        "host": "https://www.qidian.com/",
+        "bookdetail": "https://m.qidian.com/book/{bookid}",
+        "bookchapter": "https://read.qidian.com/chapter/{cid}",
+        "booksearch": "https://m.qidian.com/search"
       },
       "search": {
         "request": {
-          "url": "http://se.qidian.com/?kw={keyword}",
+          "url": "https://se.qidian.com/?kw={keyword}",
           "timeout": 5
         },
         "response": {
@@ -1197,7 +1197,7 @@
       },
       "detail": {
         "request": {
-          "url": "http://book.qidian.com/info/{bookid}",
+          "url": "https://book.qidian.com/info/{bookid}",
           "timeout": 5
         },
         "response": {
@@ -1218,7 +1218,7 @@
       "catalog": {
         "hasVolume": true,
         "request": {
-          "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
+          "url": "https://book.qidian.com/ajax/book/category?_csrfToken=&bookId={bookid}",
           "type": "JSON",
           "ajax": "cordova"
         },
@@ -1244,7 +1244,7 @@
       },
       "chapter": {
         "request": {
-          "url": "http://read.qidian.com/chapter/{cid}"
+          "url": "https://read.qidian.com/chapter/{cid}"
         },
         "response": {
           "contentHTML": "div.read-content",

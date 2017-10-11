@@ -1,10 +1,11 @@
 /*********** Color ***************/
 
-body, .dropdown-menu, .modal-content{
+body, .dropdown-menu, .modal-content, .list-group-item{
     background-color: #252526;
     background-image: none;
     /*color: #3399ff;*/
     color: #f1f1cf;
+    border-color: #252527;
 }
 
 .header{

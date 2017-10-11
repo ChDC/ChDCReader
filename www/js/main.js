@@ -18,14 +18,13 @@
         cacheChapterCount: 3,
         cacheCountEachChapter: 1,
         cacheCountEachChapterWithWifi: 3,
+        fatUpMode: false,
         theme: {
           nighttheme: "night1",
           daytheme: "",
           night: false
         },
-        scrollTop: {
-          "bookshelf": 0
-        }
+        scrollTop: {}
       },
 
       load: function load() {
@@ -156,10 +155,13 @@
         var m = Array.from(document.querySelectorAll('.modal')).reverse().find(function (e) {
           return e.style.display == 'block';
         });
-        if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) navigator.app.backHistory();else {
-            var now = new Date().getTime();
-            if (now - lastPressBackTime < 700) navigator.app.exitApp();else lastPressBackTime = now;
-          }
+        if (m) $(m).modal('hide');else if (app.page.getPageCount() > 1) {
+          app.hideLoading();
+          navigator.app.backHistory();
+        } else {
+          var now = new Date().getTime();
+          if (now - lastPressBackTime < 700) navigator.app.exitApp();else lastPressBackTime = now;
+        }
       }, false);
       if (typeof cordova != "undefined" && cordova.InAppBrowser) window.open = cordova.InAppBrowser.open;
     },
@@ -172,7 +174,7 @@
     },
     onUpdated: function onUpdated() {
       utils.get("data/UpdateLog.html").then(function (html) {
-        return uiutils.showMessageDialog("资源更新说明", html);
+        return uiutils.showMessageDialog("资源更新说明", html, null, null, { position: "top" });
       });
     },
 
@@ -226,22 +228,14 @@
 
     ScreenOrientation: {
       unlock: function unlock() {
-        try {
-          window.screen.orientation.unlock();
-          return true;
-        } catch (e) {
-          return false;
-        }
+        return window.screen.orientation.unlock();
       },
       lock: function lock() {
         var orientation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "landscape";
 
-        try {
-          window.screen.orientation.lock("landscape");
-          return true;
-        } catch (e) {
-          return false;
-        }
+        return window.screen.orientation.lock("landscape").catch(function (e) {
+          uiutils.showError("该设备不支持该操作！");
+        });
       }
     }
   };

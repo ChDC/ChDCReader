@@ -177,6 +177,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             bookType = _ref$bookType === undefined ? "" : _ref$bookType;
 
         var result = {};
+        var successBS = [];
+        var failBS = [];
         var errorList = [];
         var allBsids = this.getSourcesKeysByMainSourceWeight();
         var bsids = !bookType ? allBsids : allBsids.filter(function (e) {
@@ -185,7 +187,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var tasks = bsids.map(function (bsid) {
           return _this4.searchBook(bsid, keyword).then(function (books) {
             result[bsid] = books;
+            successBS.push(bsid);
           }).catch(function (error) {
+            failBS.push(bsid);
             errorList.push(error);
           });
         });
@@ -253,7 +257,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (finalResult.length === 0 && errorList.length > 0) throw utils.findMostError(errorList);
 
-          return finalResult;
+          return {
+            books: finalResult,
+            successBookSources: successBS,
+            failBookSources: failBS
+          };
         }
 
         return Promise.all(tasks).then(handleResult);

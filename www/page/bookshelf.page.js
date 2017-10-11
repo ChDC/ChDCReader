@@ -46,7 +46,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
       key: "onPause",
       value: function onPause() {
         this.modalFinishedBooks.modal('hide');
-        app.settings.settings.scrollTop.bookshelf = this.container.scrollTop();
+
         app.settings.save();
       }
     }, {
@@ -57,11 +57,9 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         if (!this.loaded) this.bookShelf.load(app.bookSourceManager).then(function () {
           _this3.loaded = true;
           _this3.loadBooks(_this3.bookShelf);
-          _this3.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
         });else {
           this.refreshBooksOwner();
           this.refreshAllReadingRecord();
-          this.container.scrollTop(app.settings.settings.scrollTop.bookshelf || 0);
         }
       }
     }, {
@@ -117,29 +115,22 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         }
         nb.find(".book-name").text(book.name).addClass("type-" + app.bookSourceManager.getBookSourceType(book.mainSourceId));
 
-        nb.find(".book-cover").on("touchstart", function (e) {
-          if (e.touches.length != 1) return;
-          e.stopImmediatePropagation();
-          $(e.target).data("longpress-timestart", new Date().getTime()).data("longpress-x", e.touches[0].clientX).data("longpress-y", e.touches[0].clientY);
-        }).on("touchend", function (e) {
-          if (e.changedTouches.length != 1) return;
-          var target = $(e.target);
-          var t1 = target.data("longpress-timestart");
-          var x = target.data("longpress-x"),
-              y = target.data("longpress-y");
-          var touch = e.changedTouches[0];
-          if (Math.abs(touch.clientX - x) < 50 && Math.abs(touch.clientY - y) < 50 && t1 && new Date().getTime() - t1 > 100) {
-            nb.find('.btnBookMenu').dropdown('toggle');
-          }
+        uiutils.onLongPress(nb.find(".book-cover"), function (e) {
+          var bm = $("#modalBookMenu");
+          bm.modal("show");
+          bm.find(".modal-title").text(book.name);
+          bm.find(".btnDetail")[0].onclick = function (e) {
+            bm.modal("hide");
+            app.page.showPage("bookdetail", { book: book });
+          };
+          bm.find(".btnRemoveBook")[0].onclick = function (e) {
+            bm.modal("hide");
+            _this5.removeBook(book);
+          };
         }).on("click", function (e) {
-          app.page.showPage("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
-        });
+          if (_this5.bookShelf.putBookFront(bookshelfitem.book)) _this5.refreshBooksOrder(_this5.bookShelf);
 
-        nb.find(".btnDetail").click(function (e) {
-          return app.page.showPage("bookdetail", { book: book });
-        });
-        nb.find(".btnRemoveBook").click(function (e) {
-          return _this5.removeBook(book);
+          app.page.showPage("readbook", { book: bookshelfitem.book, readingRecord: bookshelfitem.readingRecord });
         });
 
         if (readingRecord.isFinished) this.addBookElementToFinishedBookShelf(nb, true);else this.addBookElementToBookShelf(nb, true);
@@ -234,7 +225,7 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         var newBooks = Array.from(elements).map(function (e) {
           return $(e).data('bookshelfitem');
         });
-        this.bookShelf.sortBooks(newBooks);
+        this.bookShelf.sortBooks(newBooks, !app.settings.settings.fatUpMode);
         this.bookShelf.save();
         this.refreshBooksOrder(this.bookShelf);
       }
@@ -266,10 +257,21 @@ define(["jquery", "main", "Page", "utils", "uiutils", 'Chapter', 'sortablejs'], 
         $("#btnExplore").click(function (e) {
           return app.page.showPage("explorebook");
         });
+        $("#btnToggleFatUpMode > a").text(app.settings.settings.fatUpMode ? "养肥模式" : "追更模式");
+        $("#btnToggleFatUpMode").click(function (e) {
+          app.settings.settings.fatUpMode = !app.settings.settings.fatUpMode;
+          app.settings.save();
+          $("#btnToggleFatUpMode > a").text(app.settings.settings.fatUpMode ? "养肥模式" : "追更模式");
+        });
         $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式" : "夜间模式");
         $("#btnToggleNightMode").click(function (e) {
           app.theme.toggleNight();
           $("#btnToggleNightMode > a").text(app.theme.isNight() ? "白天模式" : "夜间模式");
+        });
+        $("#btnAbout").click(function (e) {
+          utils.get("data/About.html").then(function (html) {
+            return uiutils.showMessageDialog("关于", html, null, null, { position: "top" });
+          });
         });
       }
     }]);

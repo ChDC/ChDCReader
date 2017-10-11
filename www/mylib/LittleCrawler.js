@@ -521,14 +521,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var i = url.indexOf("?");
     if (i == -1) return url + "?" + params;else if (i < url.length - 1) return url + "&" + params;else return "" + url + params;
-  };
-
-  LittleCrawler.ajax = function () {
+  }, LittleCrawler.ajax = function () {
     var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "GET";
     var url = arguments[1];
-    var params = arguments[2];
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var dataType = arguments[3];
-    var headers = arguments[4];
+    var headers = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
     var _ref2 = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {},
         _ref2$timeout = _ref2.timeout,
@@ -573,6 +571,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           request.responseType = "arraybuffer";
           break;
       }
+
+      Object.keys(headers).forEach(function (e) {
+        return request.setRequestHeader(e, headers[e]);
+      });
 
       request.onload = function () {
         switch (dataType) {
@@ -686,9 +688,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
     var result = getValue(json, keys, 0);
     return result;
-  };
-
-  LittleCrawler.fixurl = function (url, host) {
+  }, LittleCrawler.fixurl = function (url, host) {
     if (!url || url.match("^https?://")) return url;
 
     if (url.match("^//")) url = "http:" + url;else if (url.match("^://")) url = "http" + url;else if (url.match("^javascript:")) url = "";else {
@@ -712,9 +712,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
     return url;
-  };
-
-  LittleCrawler.format = function (string) {
+  }, LittleCrawler.format = function (string) {
     var object = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var stringify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -728,9 +726,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (stringify) return JSON.stringify(object[p1]);else return object[p1];
     });
     return result;
-  };
-
-  LittleCrawler.clearHtml = function (html) {
+  }, LittleCrawler.clearHtml = function (html) {
     if (!html) return html;
 
     html = LittleCrawler.filterHtmlContent(html);
@@ -752,9 +748,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     html = html.replace(/(　|\s|&nbsp;)+</gi, '<');
 
     return html;
-  };
-
-  LittleCrawler.filterHtmlContent = function (html) {
+  }, LittleCrawler.filterHtmlContent = function (html) {
     if (!html) return html;
 
     var m = html.match(/<body(?: [^>]*?)?>([\s\S]*?)<\/body>/);
@@ -765,9 +759,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return LittleCrawler.filterTag(html, be);
     }, html);
     return html;
-  };
-
-  LittleCrawler.filterTag = function (html, tag) {
+  }, LittleCrawler.filterTag = function (html, tag) {
 
     if (!html || !tag) return html;
 
@@ -777,9 +769,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     pattern = "<" + tag + "\\b([^>]*?)?>";
     html = html.replace(new RegExp(pattern, 'gi'), '');
     return html;
-  };
-
-  LittleCrawler.replaceTag = function (html, tag, retag) {
+  }, LittleCrawler.replaceTag = function (html, tag, retag) {
     if (!html || !tag || !retag || tag == retag) return html;
 
     var pattern = "<" + tag + "\\b(?=[ >/])";
@@ -788,25 +778,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     pattern = "</" + tag + ">";
     html = html.replace(new RegExp(pattern, 'gi'), "</" + retag + ">");
     return html;
-  };
-
-  LittleCrawler.replaceAttribute = function (html, attr, reattr) {
+  }, LittleCrawler.replaceAttribute = function (html, attr, reattr) {
     if (!html || !attr || !reattr || attr == reattr) return html;
 
     return html.replace(new RegExp("\\b" + attr + "=(?=[\"'])", 'gi'), reattr + "=");
-  };
-
-  LittleCrawler.type = function (obj) {
+  }, LittleCrawler.type = function (obj) {
     var type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
     if (type != 'object') return type;
     return obj.constructor.name.toLowerCase();
-  };
-
-  LittleCrawler.index = function (array, index) {
+  }, LittleCrawler.index = function (array, index) {
     if (index >= 0) return array[index];else return array[array.length + index];
-  };
-
-  LittleCrawler.text2html = function (text) {
+  }, LittleCrawler.text2html = function (text) {
     if (!text) return text;
 
     var lines = text.split("\n").map(function (line) {
@@ -817,9 +799,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function escapeHTML(t) {
       return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/ /g, "&nbsp;").replace(/"/g, "&#34;").replace(/'/g, "&#39;");
     }
-  };
-
-  LittleCrawler.cloneObjectValues = function (dest, src) {
+  }, LittleCrawler.cloneObjectValues = function (dest, src) {
     if (!dest || !src) return dest;
 
     for (var key in dest) {
