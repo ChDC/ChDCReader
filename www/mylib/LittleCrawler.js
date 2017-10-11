@@ -524,9 +524,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }, LittleCrawler.ajax = function () {
     var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "GET";
     var url = arguments[1];
-    var params = arguments[2];
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var dataType = arguments[3];
-    var headers = arguments[4];
+    var headers = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
     var _ref2 = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {},
         _ref2$timeout = _ref2.timeout,
@@ -571,6 +571,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           request.responseType = "arraybuffer";
           break;
       }
+
+      Object.keys(headers).forEach(function (e) {
+        return request.setRequestHeader(e, headers[e]);
+      });
 
       request.onload = function () {
         switch (dataType) {

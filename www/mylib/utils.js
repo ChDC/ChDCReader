@@ -20,6 +20,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   return {
     DEBUG: true,
 
+    sleep: function sleep(timeout) {
+      return new Promise(function (resolve, reject) {
+        setTimeout(resolve, timeout);
+      });
+    },
+
     type: LittleCrawler.type,
 
     eval: function _eval(code) {
@@ -34,8 +40,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var msg = "[" + new Date().toLocaleString() + "] " + content + (detailContent ? ": " + detailContent : '');
       console.error(msg);
     },
-    get: function get(url, params, dataType, options) {
-      return LittleCrawler.ajax("GET", url, params, dataType, {}, options);
+    get: function get(url, params, dataType) {
+      var headers = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+      var options = arguments[4];
+
+      return LittleCrawler.ajax("GET", url, params, dataType, headers, options);
     },
     getJSON: function getJSON(url, params) {
       return this.get(url, params, "json");

@@ -253,18 +253,6 @@
          ],
          "bookid": "17540",
          "name" : "通职者"
-      },
-      {
-         "author" : "",
-         "chapters" : [
-            {
-               "content" : "<img",
-               "link": "http://www.omanhua.com/comic/17880/275545/",
-               "title" : "177 一百六十八 化煞"
-            }
-         ],
-         "bookid": "17880",
-         "name" : "镇魂街"
       }
    ],
    "2manhua": [
@@ -839,20 +827,26 @@
    ],
    "qidian" : [
       {
-         "author" : "月离",
+         "author" : "耳根",
+         "bookid" : "1003354631",
          "chapters" : [
             {
-               "content" : "乔良言自然不会在乎，其实他们并不是很熟，只不过在床上做了一次，男人嘛，谁没有过几次，乔良言裹着棉衣坐在窗台上翻着剧本。",
-               "cid" : "6u3w2_ut08NH9vdK3C5yvw2/dB_RwQjbPcZp4rPq4Fd4KQ2",
-               "title" : "第十四章 肖薇"
+               "content" : "众人大喜，看向白小纯时，已是喜欢到了极点，觉得这白小纯不但可爱，肚子里坏水还不少",
+               "cid" : "rJgN8tJ_cVdRGoWu-UQg7Q2/N7RItTUlse2aGfXRMrUjdw2",
+               "title" : "第四章 炼灵"
             }
          ],
 
+<<<<<<< HEAD
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003429036/180",
          "bookid": "1003429036",
          "introduce" : "你是我一个人的小少爷",
+=======
+         "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
+         "introduce" : "一念成沧海，一念化桑田。一念斩千魔",
+>>>>>>> dev
          "lastestChapter" : "",
-         "name" : "完美邂逅：专宠傲娇贵公子"
+         "name" : "一念永恒"
       },
       {
          "author" : "飘荡墨尔本",
@@ -871,6 +865,7 @@
          "name" : "邂逅调香师"
       },
       {
+<<<<<<< HEAD
          "author" : "耳根",
          "bookid" : "1003354631",
          "chapters" : [
@@ -887,6 +882,8 @@
          "name" : "一念永恒"
       },
       {
+=======
+>>>>>>> dev
          "author" : "孑与2",
          "bookid" : "3650892",
          "chapters" : [

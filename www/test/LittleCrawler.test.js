@@ -162,7 +162,7 @@
     before(function () {
       lc = new LittleCrawler();
       config = {
-        "request": "http://se.qidian.com/?kw={keyword}",
+        "request": "https://se.qidian.com/?kw={keyword}",
         "response": {
           "type": "array",
           "element": "#result-list li[data-rid]",
@@ -399,6 +399,33 @@
       });
     });
 
+    it('完整的 Request 类型为 JSON，type 为 format', function () {
+      var config = {
+        "request": {
+          "url": "https://book.qidian.com/ajax/book/category?_csrfToken=&bookId=63856",
+          "timeout": 15,
+          "type": "JSON",
+          "ajax": "cordova"
+        },
+        "response": {
+          "type": "array",
+          "element": "data::vs::cs#filter(\"$parent.vN.indexOf(\\\"相关\\\") < 0\")#concat",
+          "children": {
+            "name": "cN",
+            "linkid": "cU",
+            "link": {
+              "type": "format",
+              "value": "https://read.qidian.com/chapter/{linkid}"
+            }
+          }
+        }
+      };
+      return lc.get(config).then(function (r) {
+        equal('第一章 远古神墓', r[0].name);
+        assert.lengthOf(r[0].link.match(/^http/), 1);
+      });
+    });
+
     it('空 Request 2 和 非空 url 的 dict', function () {
       var config = {
         "response": {
@@ -426,7 +453,7 @@
           }
         }
       };
-      return lc.get(config, { keyword: "神墓", url: 'http://se.qidian.com/?kw=神墓' }).then(function (r) {
+      return lc.get(config, { keyword: "神墓", url: 'https://se.qidian.com/?kw=神墓' }).then(function (r) {
         equal('神墓', r[0].name);
         equal(true, !!r[0].coverImg);
       });
@@ -435,7 +462,7 @@
     it('完整的 Request 类型为 HTML，类型为 Object，type 为 array', function () {
       var config = {
         "request": {
-          "url": "http://se.qidian.com/?kw={keyword}",
+          "url": "https://se.qidian.com/?kw={keyword}",
           "timeout": 5
         },
         "response": {
@@ -468,36 +495,10 @@
       });
     });
 
-    it('完整的 Request 类型为 JSON，type 为 format', function () {
-      var config = {
-        "request": {
-          "url": "http://book.qidian.com/ajax/book/category?_csrfToken=&bookId=63856",
-          "timeout": 15,
-          "type": "JSON"
-        },
-        "response": {
-          "type": "array",
-          "element": "data::vs::cs#filter(\"$parent.vN.indexOf(\\\"相关\\\") < 0\")#concat",
-          "children": {
-            "name": "cN",
-            "linkid": "cU",
-            "link": {
-              "type": "format",
-              "value": "http://read.qidian.com/chapter/{linkid}"
-            }
-          }
-        }
-      };
-      return lc.get(config).then(function (r) {
-        equal('第一章 远古神墓', r[0].name);
-        assert.lengthOf(r[0].link.match(/^http/), 1);
-      });
-    });
-
     it('timeout == 0.05', function () {
       var config = {
         "request": {
-          "url": "http://se.qidian.com/?kw={keyword}",
+          "url": "https://se.qidian.com/?kw={keyword}",
           "timeout": 0.05
         },
         "response": {
@@ -540,7 +541,7 @@
     it('Response 类型为 Array', function () {
       var config = {
         "request": {
-          "url": "http://book.qidian.com/info/63856",
+          "url": "https://book.qidian.com/info/63856",
           "timeout": 5
         },
         "response": ["div.book-info > h1 > em", "div.book-info > h1 > span > a"]
@@ -554,7 +555,7 @@
     it('Response 类型为 String', function () {
       var config = {
         "request": {
-          "url": "http://book.qidian.com/info/63856",
+          "url": "https://book.qidian.com/info/63856",
           "timeout": 5
         },
         "response": "div.book-info > h1 > em"
@@ -592,7 +593,7 @@
         "response": {
           "type": "array",
           "element": "#result-list li[data-rid]",
-          "valideach": "{complete}==false",
+          "valideach": "{complete}==true",
           "children": {
             "name": ".book-mid-info>h4>a",
             "author": ".book-mid-info .author>a.name",
@@ -616,7 +617,7 @@
         }
       };
       return lc.get(config, { keyword: "神墓" }).then(function (r) {
-        return equal('神墓深渊', r[0].name);
+        return equal('神墓', r[0].name);
       });
     });
   });

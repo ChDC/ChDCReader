@@ -21,24 +21,6 @@
         if(!evalCode) return null;
         return utils.eval(evalCode[1]);
       },
-
-      // getImages(html, key, host, filter){
-      //   let data = CBS.common.getEncryptedData(html);
-
-      //   let matcher = data.match(/{.*}/);
-      //   if(!matcher) return null;
-      //   data = JSON.parse(matcher[0].replace(/'/g, '"'));
-
-      //   if(key) data = data[key];
-      //   data = data.map(e => `${host}${e}`);
-      //   if(data.length <= 0) return null;
-      //   if(filter){
-      //     let filteredData = data.filter(filter);
-      //     if(filteredData.length > 3)
-      //       data = filteredData;
-      //   }
-      //   return data.map(e => `<img src="${e}">`).join('\n');
-      // },
     },
 
     "qqac": {
@@ -302,6 +284,65 @@
 
 
           });
+      },
+
+      CF(){
+        let url = "http://www.2manhua.com/";
+        return utils.get(url)
+          .then(html => {
+            // if(errorCode == 503){
+            if(html.includes("jschl-answer")){
+              // 解决跨域
+              let matcher = html.match(/var s,t,o,p,b,r,e,a,k,i,n,g,f, ((\w+)=.*)/);
+              let evalCode = `
+                let t = "www.2manhua.com";
+                let a = {};
+                let ${matcher[1]}
+                ${html.match(`;${matcher[2]}\..*`)[0]}
+                a.value;
+              `;
+
+              let jschl_vc = html.match(/name="jschl_vc" value="([^"]+)"/)[1];
+              let pass = html.match(/name="pass" value="([^"]+)"/)[1];
+              let jschl_answer = utils.eval(evalCode);
+              let link = `http://www.2manhua.com/cdn-cgi/l/chk_jschl?jschl_vc=${jschl_vc}&pass=${pass}&jschl_answer=${jschl_answer}`;
+
+              return utils.get(link, undefined, undefined,
+                  {
+                    "Accept-Language": "en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                    "Referer": "http://www.2manhua.com/"
+                  });
+            }
+            else{
+              return true;
+            }
+          });
+      },
+
+      beforeSearchBook(){
+        return CBS["2manhua"].CF()
+          .then(() => arguments);
+      },
+
+      beforeGetBookInfo(){
+        return CBS["2manhua"].CF()
+          .then(() => arguments);
+      },
+
+      beforeGetBookCatalog(){
+        return CBS["2manhua"].CF()
+          .then(() => arguments);
+      },
+
+      beforeGetLastestChapter(){
+        return CBS["2manhua"].CF()
+          .then(() => arguments);
+      },
+
+      beforeGetBookCatalogLink(){
+        return CBS["2manhua"].CF()
+          .then(() => arguments);
       }
     },
 
@@ -335,7 +376,7 @@
         let imgs;
         return utils.get(link)
           .then(html => {
-            let link = html.match(/http:\/\/css.177mh.com\/coojs\/.*?\.js/i)[0];
+            let link = html.match(/https?:\/\/css.177mh.com\/coojs\/.*?\.js/i)[0];
             return utils.get(link);
           })
           .then(html => {
@@ -358,6 +399,11 @@
             let host = utils.eval(html);
             imgs = imgs.map(e => `${host}${e}`);
             if(imgs.length <= 0) return null;
+
+            // TODO: 由于该网站的图片禁止跨域所以需要将图片下载到本地然后再加载
+            // eg: http://h16.readingbox.net/h51/201607/11/1522542411.jpg
+            // Referer:http://www.77mh.com/201607/336757.html
+            // Referer 指向当前章节链接
             return imgs.map(e => `<img src="${e}">`).join('\n');
           });
       }

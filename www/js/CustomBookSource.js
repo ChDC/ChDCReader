@@ -259,6 +259,66 @@
               return "<img src=\"" + e + "\">";
             }).join('\n');
           });
+<<<<<<< HEAD
+=======
+        });
+      },
+      CF: function CF() {
+        var url = "http://www.2manhua.com/";
+        return utils.get(url).then(function (html) {
+          if (html.includes("jschl-answer")) {
+            var matcher = html.match(/var s,t,o,p,b,r,e,a,k,i,n,g,f, ((\w+)=.*)/);
+            var evalCode = "\n                let t = \"www.2manhua.com\";\n                let a = {};\n                let " + matcher[1] + "\n                " + html.match(";" + matcher[2] + "..*")[0] + "\n                a.value;\n              ";
+
+            var jschl_vc = html.match(/name="jschl_vc" value="([^"]+)"/)[1];
+            var pass = html.match(/name="pass" value="([^"]+)"/)[1];
+            var jschl_answer = utils.eval(evalCode);
+            var link = "http://www.2manhua.com/cdn-cgi/l/chk_jschl?jschl_vc=" + jschl_vc + "&pass=" + pass + "&jschl_answer=" + jschl_answer;
+
+            return utils.get(link, undefined, undefined, {
+              "Accept-Language": "en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+              "Referer": "http://www.2manhua.com/"
+            });
+          } else {
+            return true;
+          }
+        });
+      },
+      beforeSearchBook: function beforeSearchBook() {
+        var _arguments = arguments;
+
+        return CBS["2manhua"].CF().then(function () {
+          return _arguments;
+        });
+      },
+      beforeGetBookInfo: function beforeGetBookInfo() {
+        var _arguments2 = arguments;
+
+        return CBS["2manhua"].CF().then(function () {
+          return _arguments2;
+        });
+      },
+      beforeGetBookCatalog: function beforeGetBookCatalog() {
+        var _arguments3 = arguments;
+
+        return CBS["2manhua"].CF().then(function () {
+          return _arguments3;
+        });
+      },
+      beforeGetLastestChapter: function beforeGetLastestChapter() {
+        var _arguments4 = arguments;
+
+        return CBS["2manhua"].CF().then(function () {
+          return _arguments4;
+        });
+      },
+      beforeGetBookCatalogLink: function beforeGetBookCatalogLink() {
+        var _arguments5 = arguments;
+
+        return CBS["2manhua"].CF().then(function () {
+          return _arguments5;
+>>>>>>> dev
         });
       }
     },
@@ -279,7 +339,7 @@
         var img_s = void 0;
         var imgs = void 0;
         return utils.get(link).then(function (html) {
-          var link = html.match(/http:\/\/css.177mh.com\/coojs\/.*?\.js/i)[0];
+          var link = html.match(/https?:\/\/css.177mh.com\/coojs\/.*?\.js/i)[0];
           return utils.get(link);
         }).then(function (html) {
           var data = CBS.common.getEncryptedData(html);
@@ -299,6 +359,7 @@
             return "" + host + e;
           });
           if (imgs.length <= 0) return null;
+
           return imgs.map(function (e) {
             return "<img src=\"" + e + "\">";
           }).join('\n');

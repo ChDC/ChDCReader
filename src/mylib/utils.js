@@ -17,6 +17,12 @@
     */
     DEBUG: true,
 
+    sleep(timeout){
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, timeout);
+      });
+    },
+
     /*
     * 判断对象的类型
     * null -> null
@@ -66,8 +72,8 @@
      * @param  {[type]} options  [description]
      * @return {[type]}          [description]
      */
-    get(url, params, dataType, options){
-      return LittleCrawler.ajax("GET", url, params, dataType, {}, options);
+    get(url, params, dataType, headers={}, options){
+      return LittleCrawler.ajax("GET", url, params, dataType, headers, options);
     },
 
     /**

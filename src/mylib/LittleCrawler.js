@@ -710,7 +710,7 @@
    * @param  {[type]} options.retry   [description]
    * @return {[type]}                 [description]
    */
-  LittleCrawler.ajax = function(method="GET", url, params, dataType, headers, {timeout=5, retry=1}={}) {
+  LittleCrawler.ajax = function(method="GET", url, params={}, dataType, headers={}, {timeout=5, retry=1}={}) {
 
     return new Promise((resolve, reject) => {
       if(!url) return reject(new Error("url is null"));
@@ -750,6 +750,8 @@
         //     request.setRequestHeader("Content-Type", "text/plain");
         //     break;
       }
+
+      Object.keys(headers).forEach(e => request.setRequestHeader(e, headers[e]));
 
       request.onload = () => {
         // success
