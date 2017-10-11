@@ -837,14 +837,8 @@
             }
          ],
 
-<<<<<<< HEAD
-         "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003429036/180",
-         "bookid": "1003429036",
-         "introduce" : "你是我一个人的小少爷",
-=======
          "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
          "introduce" : "一念成沧海，一念化桑田。一念斩千魔",
->>>>>>> dev
          "lastestChapter" : "",
          "name" : "一念永恒"
       },
@@ -865,25 +859,6 @@
          "name" : "邂逅调香师"
       },
       {
-<<<<<<< HEAD
-         "author" : "耳根",
-         "bookid" : "1003354631",
-         "chapters" : [
-            {
-               "content" : "众人大喜，看向白小纯时，已是喜欢到了极点，觉得这白小纯不但可爱，肚子里坏水还不少",
-               "cid" : "rJgN8tJ_cVdRGoWu-UQg7Q2/N7RItTUlse2aGfXRMrUjdw2",
-               "title" : "第四章 炼灵"
-            }
-         ],
-
-         "cover" : "http://qidian.qpic.cn/qdbimg/349573/1003354631/150",
-         "introduce" : "一念成沧海，一念化桑田。一念斩千魔",
-         "lastestChapter" : "",
-         "name" : "一念永恒"
-      },
-      {
-=======
->>>>>>> dev
          "author" : "孑与2",
          "bookid" : "3650892",
          "chapters" : [

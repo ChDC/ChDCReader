@@ -92,24 +92,14 @@
             assert.notInclude(c, "<br");
 
             if (c.indexOf("<img") >= 0) {
-<<<<<<< HEAD
-              var imgMatch = c.match(/<img .*\bsrc="(.*?)"/i);
-              var imgUrl = imgMatch[1];
-              return _this4.testImage(imgUrl, book.name + ": the image of " + chapter.title + " is error");
-=======
               var imgMatch = c.match(/<img\b(?: *data-skip="(\d+)")?.*\bsrc="(.*?)"/i);
               return _this4.testImage(imgMatch[2], imgMatch[1] && Number.parseInt(imgMatch[1]), book.name + ": the image of " + chapter.title + " is error");
->>>>>>> dev
             }
           });
         }));
       }));
     },
-<<<<<<< HEAD
-    testImage: function testImage(imgUrl, errorInfo) {
-=======
     testImage: function testImage(imgUrl, skipHeadByteCount, errorInfo) {
->>>>>>> dev
       return new Promise(function (resolve, reject) {
         var image = new Image();
         image.onload = function () {
@@ -118,16 +108,12 @@
         image.onerror = function () {
           equal(true, false, errorInfo);reject(false);
         };
-<<<<<<< HEAD
-        image.src = imgUrl;
-=======
         if (skipHeadByteCount != undefined) {
           utils.get(imgUrl, {}, "blob").then(function (blob) {
             var url = URL.createObjectURL(blob.slice(skipHeadByteCount));
             image.src = url;
           }).catch(image.onerror);
         } else image.src = imgUrl;
->>>>>>> dev
       });
     },
     testBook: function testBook(bsid, bsm, books, item) {

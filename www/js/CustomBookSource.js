@@ -259,8 +259,6 @@
               return "<img src=\"" + e + "\">";
             }).join('\n');
           });
-<<<<<<< HEAD
-=======
         });
       },
       CF: function CF() {
@@ -318,7 +316,6 @@
 
         return CBS["2manhua"].CF().then(function () {
           return _arguments5;
->>>>>>> dev
         });
       }
     },
