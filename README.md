@@ -48,7 +48,7 @@
 
 ## 技术框架
 
-* 本项目基于 Corodva 框架实现。
+* 本项目基于 Cordova 框架实现。
 
 * 本项目中的爬虫部分使用的是本人创作的爬虫框架 [LittleCrawlerJS](https://github.com/ChDC/LittleCrawlerJS)
 
